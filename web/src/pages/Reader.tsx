@@ -10,6 +10,7 @@ import { getReaderDoc, translate, type TranslationStyle } from '../api/reader';
 import { useAsync } from '../hooks/useAsync';
 import { enterFullscreen, exitFullscreen, fullscreenElement, onFullscreenChange } from '../hooks/fullscreen';
 import type { ShellContext } from '../components/AppShell';
+import { useSettings } from '../settings/SettingsProvider';
 import type { ReaderBlock, ReaderDoc, Segment } from '../api/types';
 import s from './Reader.module.css';
 
@@ -38,8 +39,10 @@ export default function Reader() {
   const doc = useAsync(() => getReaderDoc(courseId, pdfId), [courseId, pdfId]);
   const pdfInfo = useAsync(() => getPdf(courseId, pdfId), [courseId, pdfId]);
 
+  const { settings } = useSettings();
   const [paper, setPaper] = useState<Paper | null>(null);
-  const paperNow: Paper = paper ?? (theme === 'dark' ? 'dark' : 'sepia');
+  // Default paper comes from Settings; in dark mode the dark paper is used.
+  const paperNow: Paper = paper ?? (theme === 'dark' ? 'dark' : settings.readerPaper);
   const [sec, setSec] = useState(1);
   const [fontI, setFontI] = useState(0);
   const [panel, setPanel] = useState(() => window.innerWidth > 1200);
@@ -96,7 +99,7 @@ export default function Reader() {
   const isSample = pdfInfo !== undefined && pdfInfo?.pdf.id !== doc.id;
   const title = isSample && pdfInfo ? pdfInfo.pdf.title[lang] : doc.title;
   const section = doc.sections[sec];
-  const fontSize = FONT_SIZES[fontI];
+  const fontSize = fontI === 0 ? settings.readerFontSize : FONT_SIZES[fontI];
   const clock = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
 
   const goSection = (i: number) => {
@@ -428,7 +431,8 @@ function TranslateDialog({ doc, source, onClose }: { doc: ReaderDoc; source: str
   const toast = useToast();
   const targets = Object.keys(doc.sampleTranslations);
   const [target, setTarget] = useState(targets.includes(lang) ? lang : targets[0]);
-  const [style, setStyle] = useState<TranslationStyle>('natural');
+  const { settings } = useSettings();
+  const [style, setStyle] = useState<TranslationStyle>(settings.translationStyle);
   const text = useAsync(() => translate(doc, source, target, style), [source, target, style]);
   const dir = doc.sampleTranslations[target]?.dir ?? 'ltr';
 

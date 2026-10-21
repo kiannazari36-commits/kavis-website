@@ -12,10 +12,33 @@ export type Settings = {
   /** Study days per week and hours per day (chosen at sign-up, editable in Settings). */
   studyDays: number;
   studyHours: number;
+  /** Default reading paper and text size in the reader. */
+  readerPaper: 'light' | 'sepia' | 'dark';
+  readerFontSize: number;
+  translationStyle: 'literal' | 'natural';
+  browserNotifications: boolean;
+  sync: boolean;
+  cheerNotifications: boolean;
+  offlineMode: boolean;
+  autoDownload: boolean;
 };
 
 const KEY = 'kavis.settings';
-export const DEFAULT_SETTINGS: Settings = { contentLang: 'pdf', courseContentLang: {}, planMode: 'aim', studyDays: 4, studyHours: 1.5 };
+export const DEFAULT_SETTINGS: Settings = {
+  contentLang: 'pdf',
+  courseContentLang: {},
+  planMode: 'aim',
+  studyDays: 4,
+  studyHours: 1.5,
+  readerPaper: 'sepia',
+  readerFontSize: 20,
+  translationStyle: 'natural',
+  browserNotifications: true,
+  sync: true,
+  cheerNotifications: true,
+  offlineMode: false,
+  autoDownload: true,
+};
 
 // The mock keeps settings in the browser; a real server will store them in the account.
 export function loadSettingsNow(): Settings {

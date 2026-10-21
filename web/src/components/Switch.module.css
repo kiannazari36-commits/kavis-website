@@ -1,0 +1,32 @@
+.sw {
+  width: 52px;
+  height: 30px;
+  flex: none;
+  border: 0;
+  border-radius: 15px;
+  background: var(--line);
+  position: relative;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.sw span {
+  position: absolute;
+  top: 3px;
+  inset-inline-start: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: inset-inline-start 0.15s ease;
+}
+
+.on {
+  background: var(--pri);
+}
+
+.on span {
+  inset-inline-start: 25px;
+}

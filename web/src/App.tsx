@@ -16,6 +16,7 @@ import Quiz from './pages/Quiz';
 import Cards from './pages/Cards';
 import Plan from './pages/Plan';
 import Progress from './pages/Progress';
+import Settings from './pages/Settings';
 
 export default function App() {
   return (
@@ -38,7 +39,7 @@ export default function App() {
                   <Route path="/cards" element={<Cards />} />
                   <Route path="/plan" element={<Plan />} />
                   <Route path="/progress" element={<Progress />} />
-                  <Route path="/settings" element={<Placeholder name="settings" />} />
+                  <Route path="/settings" element={<Settings />} />
                 </Route>
                 <Route path="/premium" element={<Placeholder name="paywall" />} />
                 <Route path="*" element={<Navigate to="/" replace />} />

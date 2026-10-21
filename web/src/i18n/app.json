@@ -31,7 +31,14 @@
   "clSameApp": "Uygulama ile aynı",
   "clDefault": "Genel ayarı kullan",
   "clNow": "Şu an: ",
-  "clCourseHint": "Bu dersin soruları, kartları ve özetleri"
+  "clCourseHint": "Bu dersin soruları, kartları ve özetleri",
+  "delTitle": "Hesabın silinsin mi?",
+  "delText": "Derslerin, notların, kartların, sınav sonuçların ve asistan konuşmaların kalıcı olarak silinir. Bu işlem geri alınamaz.",
+  "delSub": "Premium aboneliğin varsa silmek ödemeyi durdurmaz. Önce App Store ya da Google Play'den aboneliğini iptal et.",
+  "delMail": "Onay için e-postana bir bağlantı göndereceğiz. 30 gün içinde fikrini değiştirebilirsin.",
+  "delCancel": "Vazgeç",
+  "delSent": "Hesabı silmek için e-postana onay bağlantısı gönderdik",
+  "expSent": "Hesap bilgilerin hazırlanıyor · e-postana gönderilecek"
  },
  "en": {
   "pdfs": "PDFs",
@@ -65,7 +72,14 @@
   "clSameApp": "Same as app",
   "clDefault": "Use general setting",
   "clNow": "Now: ",
-  "clCourseHint": "This course's questions, cards and summaries"
+  "clCourseHint": "This course's questions, cards and summaries",
+  "delTitle": "Delete your account?",
+  "delText": "Your lessons, notes, cards, exam results and assistant chats will be permanently deleted. This cannot be undone.",
+  "delSub": "Deleting your account does not stop a Premium subscription. Cancel it first in the App Store or Google Play.",
+  "delMail": "We will email you a confirmation link. You can change your mind within 30 days.",
+  "delCancel": "Cancel",
+  "delSent": "We sent a confirmation link to your email",
+  "expSent": "Preparing your data · it will be emailed to you"
  },
  "fa": {
   "pdfs": "PDFها",
@@ -99,7 +113,14 @@
   "clSameApp": "مثل زبان برنامه",
   "clDefault": "مطابق تنظیم کلی",
   "clNow": "اکنون: ",
-  "clCourseHint": "سؤال‌ها، کارت‌ها و خلاصه‌های این درس"
+  "clCourseHint": "سؤال‌ها، کارت‌ها و خلاصه‌های این درس",
+  "delTitle": "حسابت حذف شود؟",
+  "delText": "درس‌ها، یادداشت‌ها، کارت‌ها، نتیجه‌های آزمون و گفتگوهای دستیارت برای همیشه حذف می‌شوند. این کار برگشت‌پذیر نیست.",
+  "delSub": "اگر اشتراک پریمیوم داری، حذف حساب پرداخت را متوقف نمی‌کند. اول اشتراکت را از App Store یا Google Play لغو کن.",
+  "delMail": "برای تأیید، لینکی به ایمیلت می‌فرستیم. تا ۳۰ روز می‌توانی منصرف شوی.",
+  "delCancel": "انصراف",
+  "delSent": "لینک تأیید حذف حساب به ایمیلت فرستاده شد",
+  "expSent": "اطلاعات حسابت آماده می‌شود · به ایمیلت فرستاده می‌شود"
  },
  "ar": {
   "pdfs": "ملفات PDF",
@@ -133,6 +154,13 @@
   "clSameApp": "مثل لغة التطبيق",
   "clDefault": "استخدم الإعداد العام",
   "clNow": "الآن: ",
-  "clCourseHint": "أسئلة هذه المادة وبطاقاتها وملخصاتها"
+  "clCourseHint": "أسئلة هذه المادة وبطاقاتها وملخصاتها",
+  "delTitle": "هل تريد حذف حسابك؟",
+  "delText": "ستُحذف دروسك وملاحظاتك وبطاقاتك ونتائج اختباراتك ومحادثات المساعد نهائيًا. لا يمكن التراجع عن ذلك.",
+  "delSub": "حذف الحساب لا يوقف اشتراك بريميوم. ألغِ اشتراكك أولًا من App Store أو Google Play.",
+  "delMail": "سنرسل رابط تأكيد إلى بريدك. يمكنك التراجع خلال 30 يومًا.",
+  "delCancel": "إلغاء",
+  "delSent": "أرسلنا رابط تأكيد الحذف إلى بريدك",
+  "expSent": "جارٍ تجهيز بياناتك · ستُرسل إلى بريدك"
  }
 }
