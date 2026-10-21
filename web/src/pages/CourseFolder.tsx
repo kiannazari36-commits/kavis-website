@@ -7,6 +7,8 @@ import { COURSE_COLOR } from '../components/courseColors';
 import { courseStats, getCourse } from '../api/courses';
 import { useAsync } from '../hooks/useAsync';
 import type { Pdf } from '../api/types';
+import ContentLangPicker from '../components/ContentLangPicker';
+import { useContentLang, useSettings } from '../settings/SettingsProvider';
 import s from './CourseFolder.module.css';
 
 // Design: design/NewCourses.dc.html, variant "detail" (one course folder with its PDFs), laid out for the web.
@@ -23,6 +25,8 @@ export default function CourseFolder() {
   const toast = useToast();
   const navigate = useNavigate();
   const course = useAsync(() => getCourse(courseId), [courseId]);
+  const { settings, setCourseContentLang } = useSettings();
+  const contentLang = useContentLang(course ?? undefined);
 
   if (course === undefined) return <main className={s.main} />;
   if (course === null)
@@ -77,6 +81,19 @@ export default function CourseFolder() {
             <small>{t('study')}</small>
           </span>
         </div>
+      </section>
+
+      <section className={s.langBox}>
+        <span className={s.langTitle}>
+          <b>{t('contentLang')}</b>
+          <span>{t('clCourseHint')}</span>
+        </span>
+        <ContentLangPicker
+          withDefault
+          value={settings.courseContentLang[course.id] ?? null}
+          resolved={contentLang}
+          onChange={(v) => setCourseContentLang(course.id, v)}
+        />
       </section>
 
       {course.pdfs.length > 0 ? (

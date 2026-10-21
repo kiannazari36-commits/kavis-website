@@ -329,3 +329,31 @@
     font-size: 26px;
   }
 }
+
+/* Content language for this course */
+.langBox {
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.langTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.langTitle b {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.langTitle span {
+  font-size: 12px;
+  color: var(--text2);
+}

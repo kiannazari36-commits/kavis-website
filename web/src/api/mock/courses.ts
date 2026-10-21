@@ -12,6 +12,7 @@ export const COURSES: Course[] = [
       "ar": "العلاج الدوائي"
     },
     "color": "red",
+    "language": "tr",
     "exam": {
       "tr": "Vize · 19 Ekim",
       "en": "Midterm · Oct 19",
@@ -80,6 +81,7 @@ export const COURSES: Course[] = [
       "ar": "علم السموم"
     },
     "color": "amb",
+    "language": "tr",
     "exam": {
       "tr": "Vize · 20 Ekim",
       "en": "Midterm · Oct 20",
@@ -137,6 +139,7 @@ export const COURSES: Course[] = [
     },
     "short": {"tr":"Farm. Tek. III","en":"Pharm. Tech. III","fa":"فناوری دارویی III","ar":"التقنية الصيدلانية III"},
     "color": "vio",
+    "language": "tr",
     "exam": {
       "tr": "Vize · 21 Ekim",
       "en": "Midterm · Oct 21",
@@ -193,6 +196,7 @@ export const COURSES: Course[] = [
       "ar": "علم العقاقير"
     },
     "color": "grn",
+    "language": "tr",
     "exam": {
       "tr": "Vize · 22 Ekim",
       "en": "Midterm · Oct 22",
@@ -237,6 +241,7 @@ export const COURSES: Course[] = [
       "ar": "الكيمياء الصيدلانية II"
     },
     "color": "teal",
+    "language": "tr",
     "exam": {
       "tr": "Vize · 23 Ekim",
       "en": "Midterm · Oct 23",

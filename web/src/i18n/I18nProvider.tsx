@@ -15,6 +15,15 @@ export const LANG_NAMES: Record<Lang, string> = { tr: 'Türkçe', en: 'English',
 // study.json: assistant, quiz and cards texts from design/NewIPad.dc.html.
 // app.json: course folder texts from design/NewCourses.dc.html, plus a few added for the web.
 type Dict = Record<string, string>;
+const SOURCES = { desk, auth, app, reader, study } as Record<string, Record<Lang, Dict>>;
+if (import.meta.env.DEV) {
+  const seen = new Map<string, string>();
+  for (const [file, d] of Object.entries(SOURCES))
+    for (const k of Object.keys(d.en)) {
+      if (seen.has(k)) console.warn(`i18n: key "${k}" is in both ${seen.get(k)}.json and ${file}.json`);
+      seen.set(k, file);
+    }
+}
 const dicts = Object.fromEntries(
   LANGS.map((l) => [l, { ...(desk as Record<Lang, Dict>)[l], ...(auth as Record<Lang, Dict>)[l], ...(app as Record<Lang, Dict>)[l], ...(reader as Record<Lang, Dict>)[l], ...(study as Record<Lang, Dict>)[l] }]),
 ) as Record<Lang, Dict>;

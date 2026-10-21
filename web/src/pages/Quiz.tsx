@@ -8,11 +8,14 @@ import MolViewer from '../components/MolViewer';
 import { addWrongsToPlan, getExamPack, setStudyReminder } from '../api/quiz';
 import { listCourses } from '../api/courses';
 import { useAsync } from '../hooks/useAsync';
+import { dirOf, useContentLang } from '../settings/SettingsProvider';
+import type { Lang } from '../i18n/I18nProvider';
 import type { QuizQuestion } from '../api/types';
 import s from './Quiz.module.css';
 
 // Design: design/NewIPad.dc.html, screen "exam" ("Sınava özel"): summary by importance,
 // questions in the lecturer's style with hints and confidence, then results with wrong answers.
+// Summary, questions and explanations use the content language (CLAUDE.md); labels use the app language.
 
 type Tab = 'sum' | 'quiz' | 'res';
 type Confidence = 'sure' | 'unsure' | 'guess';
@@ -33,6 +36,8 @@ export default function Quiz() {
   const fromReader = params.get('from') === 'reader';
   const pack = useAsync(() => getExamPack('pharmacotherapy'), []);
   const courses = useAsync(listCourses, []);
+  const cl = useContentLang(courses?.find((c) => c.id === 'pharmacotherapy'));
+  const cdir = dirOf(cl);
 
   const [tab, setTab] = useState<Tab>(params.get('tab') === 'quiz' || fromReader ? 'quiz' : 'sum');
   const [topic, setTopic] = useState(0);
@@ -153,7 +158,9 @@ export default function Quiz() {
               <button key={i} aria-current={i === topic} className={i === topic ? `${s.topic} ${s.topicOn}` : s.topic} onClick={() => setTopic(i)}>
                 <span className={`${s.topicNo} ${s[x.kind]}`}>{num(i + 1, lang)}</span>
                 <span className={s.topicText}>
-                  <b>{x.title[lang]}</b>
+                  <b lang={cl} dir={cdir}>
+                    {x.title[cl]}
+                  </b>
                   <span className={s[`${x.kind}Fg`]}>{x.tag[lang]}</span>
                 </span>
               </button>
@@ -162,34 +169,36 @@ export default function Quiz() {
           <section className={s.paper}>
             <div className={s.paperTop}>
               <span className="mono">
-                {t('summaryPrefix')} {pack.topics[topic].src[lang]}
+                {t('summaryPrefix')} {pack.topics[topic].src[cl]}
               </span>
               <span className={`${s.tag} ${s[pack.topics[topic].kind]}`}>{pack.topics[topic].tag[lang]}</span>
             </div>
-            <h2>{pack.topics[topic].title[lang]}</h2>
+            <h2 lang={cl} dir={cdir}>
+              {pack.topics[topic].title[cl]}
+            </h2>
             {pack.topics[topic].points.map((p, i) => (
-              <p key={i} className={s.point}>
+              <p key={i} className={s.point} lang={cl} dir={cdir}>
                 <span>•</span>
-                <span>{p[lang]}</span>
+                <span>{p[cl]}</span>
               </p>
             ))}
             {pack.topics[topic].teacher && (
-              <span className={s.teacher}>
+              <span className={s.teacher} lang={cl} dir={cdir}>
                 <span>
                   <Icon name="mic" size={14} />
                 </span>
-                {pack.topics[topic].teacher![lang]}
+                {pack.topics[topic].teacher![cl]}
               </span>
             )}
             {pack.topics[topic].molecule && (
               <div className={s.mol}>
                 <span className={`mono ${s.label}`}>{t('molLabel')}</span>
-                <MolViewer size="full" mark="thiol" />
+                <MolViewer size="full" mark="thiol" contentLang={cl} />
               </div>
             )}
             <div className={s.actions}>
               <button className={s.ghost} onClick={() => setTopic((topic + 1) % pack.topics.length)}>
-                {topic < pack.topics.length - 1 ? t('nextTopic') + pack.topics[topic + 1].title[lang] : t('readAgain')}
+                {topic < pack.topics.length - 1 ? t('nextTopic') + pack.topics[topic + 1].title[cl] : t('readAgain')}
               </button>
               <button className={s.pri} onClick={() => startQuiz()}>
                 {t('startQuiz')}
@@ -212,9 +221,11 @@ export default function Quiz() {
               <span style={{ width: `${Math.round(((qi + 1) / qList.length) * 100)}%` }} />
             </span>
           </div>
-          <p className={s.qText}>{Q.text[lang]}</p>
-          {Q.molecule && <MolViewer size="mini" mark="thiol" />}
-          <div role="radiogroup" className={s.options}>
+          <p className={s.qText} lang={cl} dir={cdir}>
+            {Q.text[cl]}
+          </p>
+          {Q.molecule && <MolViewer size="mini" mark="thiol" contentLang={cl} />}
+          <div role="radiogroup" className={s.options} lang={cl} dir={cdir}>
             {Q.options.map((o, i) => (
               <button
                 key={i}
@@ -224,18 +235,18 @@ export default function Quiz() {
                 onClick={() => setAnswers({ ...answers, [qIdx]: i })}
               >
                 <span className={s.letter}>{LETTERS[i]}</span>
-                {o[lang]}
+                {o[cl]}
               </button>
             ))}
           </div>
-          <div className={s.hints}>
+          <div className={s.hints} lang={cl} dir={cdir}>
             {Q.hints.slice(0, nH).map((h, i) => (
               <div key={i} className={s.hint}>
                 <span className="mono">
                   {t('hintTag')}
                   {i + 1} / 3
                 </span>
-                <span>{h[lang]}</span>
+                <span>{h[cl]}</span>
               </div>
             ))}
             <button className={nH > 0 ? s.hintBtn : `${s.hintBtn} ${s.hintBtnFirst}`} onClick={addHint}>
@@ -310,6 +321,7 @@ export default function Quiz() {
               <Wrong
                 key={k}
                 q={qs[k]}
+                cl={cl}
                 your={answers[k]}
                 sure={conf[k] === 'sure'}
                 find={finds[k] ?? { mode: 'choose', hints: 1, bad: -1 }}
@@ -323,14 +335,30 @@ export default function Quiz() {
   );
 }
 
-function Wrong({ q, your, sure, find, setFind }: { q: QuizQuestion; your?: number; sure: boolean; find: Find; setFind: (f: Find) => void }) {
-  const { t, lang } = useI18n();
+function Wrong({
+  q,
+  cl,
+  your,
+  sure,
+  find,
+  setFind,
+}: {
+  q: QuizQuestion;
+  cl: Lang;
+  your?: number;
+  sure: boolean;
+  find: Find;
+  setFind: (f: Find) => void;
+}) {
+  const { t } = useI18n();
   const reveal = find.mode === 'show' || find.mode === 'solved';
-  const opt = (i: number) => `${LETTERS[i]}) ${q.options[i][lang]}`;
+  const opt = (i: number) => `${LETTERS[i]}) ${q.options[i][cl]}`;
 
   return (
     <div className={s.wrong}>
-      <span className={s.wrongQ}>{q.text[lang]}</span>
+      <span className={s.wrongQ} lang={cl} dir={dirOf(cl)}>
+        {q.text[cl]}
+      </span>
       <div className={s.wrongTags}>
         <span className={s.bad}>
           {t('yourAnswer')} {your === undefined ? t('emptyAns') : opt(your)}
@@ -356,14 +384,14 @@ function Wrong({ q, your, sure, find, setFind }: { q: QuizQuestion; your?: numbe
       )}
 
       {find.mode === 'find' && (
-        <div className={s.findBox}>
+        <div className={s.findBox} lang={cl} dir={dirOf(cl)}>
           {q.hints.slice(0, find.hints).map((h, i) => (
             <div key={i} className={s.hint}>
               <span className="mono">
                 {t('hintTag')}
                 {i + 1} / 3
               </span>
-              <span>{h[lang]}</span>
+              <span>{h[cl]}</span>
             </div>
           ))}
           <span className={s.muted}>{find.bad >= 0 ? t('notQuite') + (find.hints < 3 ? t('oneMoreHint') : t('orShow')) : t('readHint')}</span>
@@ -389,10 +417,10 @@ function Wrong({ q, your, sure, find, setFind }: { q: QuizQuestion; your?: numbe
         <>
           {find.mode === 'solved' && <span className={s.solved}>{t('solvedSelf')}</span>}
           <span className={s.whyText}>
-            <b>{t('why')}</b> {q.why[lang]}
+            <b>{t('why')}</b> {q.why[cl]}
           </span>
           <span className={`mono ${s.src}`}>
-            {t('sourcePrefix')} {q.src[lang]}
+            {t('sourcePrefix')} {q.src[cl]}
           </span>
         </>
       )}

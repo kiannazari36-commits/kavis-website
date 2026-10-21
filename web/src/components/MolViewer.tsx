@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useI18n, type Lang } from '../i18n/I18nProvider';
+import { dirOf } from '../settings/SettingsProvider';
 import Icon from './Icon';
 import s from './MolViewer.module.css';
 
@@ -66,8 +67,10 @@ const CAPTOPRIL = {
 const EL: Record<string, string> = { O: '#C0352B', N: '#2F5E9C', S: '#C99A12', C: '#6E645A' };
 const f = (n: number) => n.toFixed(1);
 
-export default function MolViewer({ size = 'full', mark = '' }: { size?: 'full' | 'mini'; mark?: string }) {
-  const { t, lang } = useI18n();
+// Names and notes follow `contentLang` (the course content language); buttons follow the app language.
+export default function MolViewer({ size = 'full', mark = '', contentLang }: { size?: 'full' | 'mini'; mark?: string; contentLang?: Lang }) {
+  const { t, lang: appLang } = useI18n();
+  const lang = contentLang ?? appLang;
   const m = CAPTOPRIL;
   const full = size === 'full';
   const [deg, setDeg] = useState(0);
@@ -181,7 +184,7 @@ export default function MolViewer({ size = 'full', mark = '' }: { size?: 'full' 
               {t('molRotate')} · {deg}°
             </button>
             <span className={s.hint}>{t('molTap')}</span>
-            <div className={s.groups}>
+            <div className={s.groups} lang={lang} dir={dirOf(lang)}>
               {m.groups.map((g) => (
                 <button key={g.id} aria-pressed={g.id === sel} className={g.id === sel ? s.groupOn : ''} onClick={() => setSel(g.id === sel ? '' : g.id)}>
                   {g.name[lang]}
@@ -192,7 +195,7 @@ export default function MolViewer({ size = 'full', mark = '' }: { size?: 'full' 
         )}
       </div>
       {full && grp && (
-        <div className={s.note}>
+        <div className={s.note} lang={lang} dir={dirOf(lang)}>
           <b>{grp.name[lang]}:</b> {grp.note[lang]}
         </div>
       )}

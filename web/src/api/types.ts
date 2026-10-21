@@ -21,6 +21,8 @@ export type Course = {
   /** Shorter name for the sidebar. */
   short?: L10n;
   color: CourseColor;
+  /** Language of the course PDFs (the teacher's material). */
+  language: Lang;
   exam: L10n;
   /** ISO date of the next exam. */
   examDate?: string;

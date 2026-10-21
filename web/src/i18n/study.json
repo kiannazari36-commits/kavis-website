@@ -58,7 +58,6 @@
   "attUses": " · asistan artık bunu da kullanır",
   "attUploaded": " yüklendi · ders tahmin ediliyor",
   "youChose": "sen seçtin",
-  "addPdf": "PDF ekle",
   "addPdfS": "Ders notu ya da slayt",
   "addPhoto": "Soru fotoğrafı",
   "addPhotoS": "Hocanın soruları, sınav kâğıdı",
@@ -157,7 +156,8 @@
   "molTap": "Gruba dokun, ne işe yaradığını gör:",
   "molAria": " molekül yapısı",
   "addMenu": "Ekle: PDF, soru, ses kaydı",
-  "retryB1": " soru"
+  "retryB1": " soru",
+  "addPdfItem": "PDF ekle"
  },
  "en": {
   "heroA": "How can I",
@@ -218,7 +218,6 @@
   "attUses": " · assistant will use this too",
   "attUploaded": " uploaded · guessing the course",
   "youChose": "you chose",
-  "addPdf": "Add PDF",
   "addPdfS": "Lecture notes or slides",
   "addPhoto": "Question photo",
   "addPhotoS": "Lecturer's questions, exam paper",
@@ -317,7 +316,8 @@
   "molTap": "Tap a group to see what it does:",
   "molAria": " molecule structure",
   "addMenu": "Add: PDF, question, audio recording",
-  "retryB1": " question"
+  "retryB1": " question",
+  "addPdfItem": "Add PDF"
  },
  "fa": {
   "heroA": "امروز چطور",
@@ -378,7 +378,6 @@
   "attUses": " · دستیار از این هم استفاده می‌کند",
   "attUploaded": " بارگذاری شد · در حال تشخیص درس",
   "youChose": "خودت انتخاب کردی",
-  "addPdf": "افزودن PDF",
   "addPdfS": "جزوه یا اسلاید درس",
   "addPhoto": "عکس سؤال",
   "addPhotoS": "سؤال‌های استاد، برگه امتحان",
@@ -477,7 +476,8 @@
   "molTap": "روی یک گروه بزن تا نقشش را ببینی:",
   "molAria": " ساختار مولکول",
   "addMenu": "افزودن: PDF، سؤال، ضبط صدا",
-  "retryB1": " سؤال"
+  "retryB1": " سؤال",
+  "addPdfItem": "افزودن PDF"
  },
  "ar": {
   "heroA": "كيف يمكنني اليوم",
@@ -538,7 +538,6 @@
   "attUses": " · سيستخدمه المساعد أيضًا",
   "attUploaded": " رُفع · جارٍ تخمين المادة",
   "youChose": "أنت اخترت",
-  "addPdf": "إضافة PDF",
   "addPdfS": "ملاحظات الدرس أو الشرائح",
   "addPhoto": "صورة السؤال",
   "addPhotoS": "أسئلة الأستاذ، ورقة الامتحان",
@@ -637,6 +636,7 @@
   "molTap": "المس مجموعة لترى وظيفتها:",
   "molAria": " بنية الجزيء",
   "addMenu": "إضافة: PDF، سؤال، تسجيل صوتي",
-  "retryB1": " سؤال"
+  "retryB1": " سؤال",
+  "addPdfItem": "إضافة PDF"
  }
 }

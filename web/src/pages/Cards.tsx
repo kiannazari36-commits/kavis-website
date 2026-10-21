@@ -5,11 +5,13 @@ import { num } from '../i18n/format';
 import Icon from '../components/Icon';
 import { DECK_SIZE, getDeck, rateCard } from '../api/cards';
 import { useAsync } from '../hooks/useAsync';
+import { listCourses } from '../api/courses';
+import { dirOf, useContentLang } from '../settings/SettingsProvider';
 import type { CardRating } from '../api/types';
 import s from './Cards.module.css';
 
 // Design: design/NewIPad.dc.html, screen "cards": flip a card, then rate it (next review time).
-// Keyboard: Space flips, 1 / 2 / 3 rate.
+// Keyboard: Space flips, 1 / 2 / 3 rate. Card text uses the content language (CLAUDE.md).
 const RATES: [CardRating, string, string][] = [
   ['again', 'rateNo', 'rateNoT'],
   ['hard', 'rateHard', 'rateHardT'],
@@ -20,6 +22,8 @@ export default function Cards() {
   const { t, lang } = useI18n();
   const navigate = useNavigate();
   const deck = useAsync(() => getDeck('pharmacotherapy', 'hypertension'), []);
+  const courses = useAsync(listCourses, []);
+  const cl = useContentLang(courses?.find((c) => c.id === 'pharmacotherapy'));
   const [i, setI] = useState(0);
   const [back, setBack] = useState(false);
   const [stats, setStats] = useState([0, 0, 0]);
@@ -74,8 +78,16 @@ export default function Cards() {
           <span className={`mono ${s.side}`}>
             {t(back ? 'sideA' : 'sideQ')} {t('pageShort')} {num(card.page, lang)}
           </span>
-          <span className={back ? `${s.main2} ${s.answer}` : s.main2}>{back ? card.a[lang] : card.q[lang]}</span>
-          <span className={s.sub}>{back ? card.note[lang] : t('tapToSee')}</span>
+          <span className={back ? `${s.main2} ${s.answer}` : s.main2} lang={cl} dir={dirOf(cl)}>
+            {back ? card.a[cl] : card.q[cl]}
+          </span>
+          {back ? (
+            <span className={s.sub} lang={cl} dir={dirOf(cl)}>
+              {card.note[cl]}
+            </span>
+          ) : (
+            <span className={s.sub}>{t('tapToSee')}</span>
+          )}
         </button>
 
         {back ? (

@@ -211,7 +211,7 @@ export default function Assistant() {
             <section className={`${s.card} ${s.addMenu}`}>
               {(
                 [
-                  ['pdf', 'upload', 'addPdf', 'addPdfS'],
+                  ['pdf', 'upload', 'addPdfItem', 'addPdfS'],
                   ['photo', 'camera', 'addPhoto', 'addPhotoS'],
                   ['audio', 'mic', 'addAudio', 'addAudioS'],
                   ['solve', 'solve', 'addSolve', 'addSolveS'],

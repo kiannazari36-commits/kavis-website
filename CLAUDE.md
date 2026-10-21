@@ -33,6 +33,7 @@ A student uploads the teacher's PDF, a slide photo or a lecture recording. The a
 
 ## Product rules
 - Interface languages: Turkish, English, Persian, Arabic (Persian and Arabic right-to-left). An uploaded PDF stays in its own language; there is a translate button. The assistant speaks the language the student wants.
+- Content language: quiz questions, flash cards and summaries are written in the language of the uploaded PDF, not the interface language. Settings has a "Content language" option: "Same as PDF" (default), "Same as app", or a chosen language (tr/en/fa/ar). It can also be changed per course on the course page (the course setting wins over the global one). Buttons and menus always stay in the app language.
 - Offline use in every plan (free included); sharing only in Premium.
 - Free trial: 3 days, max 2 PDFs and 60 assistant questions; each PDF max 100 pages. "Delete account" exists everywhere.
 

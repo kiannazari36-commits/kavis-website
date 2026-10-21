@@ -24,7 +24,14 @@
   "logout": "Çıkış yap",
   "noResults": "Sonuç yok",
   "notifs": "Bildirimler",
-  "addPdfShort": "PDF ekle"
+  "addPdfShort": "PDF ekle",
+  "contentLang": "İçerik dili",
+  "contentLangHint": "Sınav soruları, kartlar ve özetler bu dilde hazırlanır. Düğmeler ve menüler uygulama dilinde kalır.",
+  "clSamePdf": "PDF ile aynı",
+  "clSameApp": "Uygulama ile aynı",
+  "clDefault": "Genel ayarı kullan",
+  "clNow": "Şu an: ",
+  "clCourseHint": "Bu dersin soruları, kartları ve özetleri"
  },
  "en": {
   "pdfs": "PDFs",
@@ -51,7 +58,14 @@
   "logout": "Log out",
   "noResults": "No results",
   "notifs": "Notifications",
-  "addPdfShort": "Add PDF"
+  "addPdfShort": "Add PDF",
+  "contentLang": "Content language",
+  "contentLangHint": "Quiz questions, cards and summaries are written in this language. Buttons and menus stay in the app language.",
+  "clSamePdf": "Same as PDF",
+  "clSameApp": "Same as app",
+  "clDefault": "Use general setting",
+  "clNow": "Now: ",
+  "clCourseHint": "This course's questions, cards and summaries"
  },
  "fa": {
   "pdfs": "PDFها",
@@ -78,7 +92,14 @@
   "logout": "خروج",
   "noResults": "نتیجه‌ای نیست",
   "notifs": "اعلان‌ها",
-  "addPdfShort": "افزودن PDF"
+  "addPdfShort": "افزودن PDF",
+  "contentLang": "زبان محتوا",
+  "contentLangHint": "سؤال‌های آزمون، کارت‌ها و خلاصه‌ها به این زبان نوشته می‌شوند. دکمه‌ها و منوها به زبان برنامه می‌مانند.",
+  "clSamePdf": "مثل PDF",
+  "clSameApp": "مثل زبان برنامه",
+  "clDefault": "مطابق تنظیم کلی",
+  "clNow": "اکنون: ",
+  "clCourseHint": "سؤال‌ها، کارت‌ها و خلاصه‌های این درس"
  },
  "ar": {
   "pdfs": "ملفات PDF",
@@ -105,6 +126,13 @@
   "logout": "تسجيل الخروج",
   "noResults": "لا نتائج",
   "notifs": "الإشعارات",
-  "addPdfShort": "إضافة PDF"
+  "addPdfShort": "إضافة PDF",
+  "contentLang": "لغة المحتوى",
+  "contentLangHint": "تُكتب أسئلة الاختبار والبطاقات والملخصات بهذه اللغة. تبقى الأزرار والقوائم بلغة التطبيق.",
+  "clSamePdf": "مثل ملف PDF",
+  "clSameApp": "مثل لغة التطبيق",
+  "clDefault": "استخدم الإعداد العام",
+  "clNow": "الآن: ",
+  "clCourseHint": "أسئلة هذه المادة وبطاقاتها وملخصاتها"
  }
 }
