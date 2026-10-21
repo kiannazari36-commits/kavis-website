@@ -1,0 +1,265 @@
+.page {
+  min-height: 100vh;
+  background: var(--login-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+}
+
+.sheet {
+  width: 620px;
+  max-width: 100%;
+  border-radius: 30px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: 0 30px 70px rgba(42, 36, 32, 0.3);
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.head img {
+  border-radius: 12px;
+  flex: none;
+}
+
+.headText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.badge {
+  padding: 5px 10px 4px;
+  border-radius: 10px;
+  background: var(--pb);
+  color: var(--on-inv);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+:global([data-theme='light']) .badge {
+  color: #fff6e6;
+}
+
+.sub {
+  font-size: 13px;
+  color: var(--text2);
+}
+
+.why {
+  align-self: flex-start;
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 12px;
+  background: var(--amb-soft);
+}
+
+.x {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Free vs Premium */
+.table {
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.tHead,
+.tRow {
+  display: grid;
+  grid-template-columns: 1fr 110px 110px;
+  padding: 8px 14px;
+}
+
+.tHead {
+  background: var(--seg);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text2);
+}
+
+.tHead span,
+.tRow > :not(:first-child) {
+  text-align: center;
+}
+
+.prem {
+  color: var(--pri-t);
+}
+
+.tRow {
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+}
+
+.free {
+  color: var(--text2);
+}
+
+.tRow b {
+  font-weight: 600;
+}
+
+.fair {
+  margin-top: -4px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--text2);
+}
+
+/* Plans */
+.plans {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.plan {
+  position: relative;
+  margin-top: 10px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  padding: 18px 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: start;
+  cursor: pointer;
+}
+
+.planOn {
+  border: 2px solid var(--pri);
+  background: var(--pri-soft);
+}
+
+.tag {
+  position: absolute;
+  top: -13px;
+  inset-inline-end: 12px;
+  padding: 4px 11px;
+  border-radius: 8px;
+  background: var(--pri);
+  color: #fffcf6;
+  font-size: 12px;
+  font-weight: 700;
+  transform: rotate(-4deg);
+  box-shadow: 0 3px 8px rgba(42, 36, 32, 0.22);
+}
+
+.tagAmb {
+  background: var(--amb);
+  color: #2a2420;
+}
+
+.plan b {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.prices {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.price {
+  unicode-bidi: isolate;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.old {
+  unicode-bidi: isolate;
+  font-size: 13px;
+  color: var(--text3);
+  text-decoration: line-through;
+}
+
+.planSub {
+  font-size: 12px;
+  color: var(--text2);
+}
+
+.start {
+  height: 52px;
+  border-radius: 26px;
+  border: 0;
+  background: var(--pri);
+  color: #fffcf6;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.links {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.links button {
+  border: 0;
+  background: transparent;
+  color: var(--text2);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.note {
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--text2);
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .sheet {
+    padding: 18px;
+  }
+  .plans {
+    grid-template-columns: 1fr;
+  }
+  .tHead,
+  .tRow {
+    grid-template-columns: 1fr 80px 80px;
+  }
+}

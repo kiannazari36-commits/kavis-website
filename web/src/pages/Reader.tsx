@@ -156,7 +156,7 @@ export default function Reader() {
               </button>
             ))}
           </div>
-          <button className={s.round} aria-label={t('share')} onClick={() => navigate('/premium')}>
+          <button className={s.round} aria-label={t('share')} onClick={() => navigate('/premium?why=share')}>
             <Icon name="share" size={19} />
           </button>
           <button className={`${s.round} ${s.aa}`} aria-label={t('textSize')} onClick={cycleFont}>

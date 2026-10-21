@@ -4,7 +4,6 @@ import { ThemeProvider } from './theme/ThemeProvider';
 import { ToastProvider } from './components/Toast';
 import { SettingsProvider } from './settings/SettingsProvider';
 import AppShell from './components/AppShell';
-import Placeholder from './pages/Placeholder';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Home from './pages/Home';
@@ -17,6 +16,7 @@ import Cards from './pages/Cards';
 import Plan from './pages/Plan';
 import Progress from './pages/Progress';
 import Settings from './pages/Settings';
+import Paywall from './pages/Paywall';
 
 export default function App() {
   return (
@@ -41,7 +41,7 @@ export default function App() {
                   <Route path="/progress" element={<Progress />} />
                   <Route path="/settings" element={<Settings />} />
                 </Route>
-                <Route path="/premium" element={<Placeholder name="paywall" />} />
+                <Route path="/premium" element={<Paywall />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </BrowserRouter>
