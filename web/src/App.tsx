@@ -19,6 +19,7 @@ import Progress from './pages/Progress';
 import Settings from './pages/Settings';
 import Paywall from './pages/Paywall';
 import DeviceLimit from './pages/DeviceLimit';
+import ShareLink from './pages/ShareLink';
 
 export default function App() {
   return (
@@ -46,6 +47,7 @@ export default function App() {
                   </Route>
                   <Route path="/premium" element={<Paywall />} />
                   <Route path="/devices" element={<DeviceLimit />} />
+                  <Route path="/s/:shareId" element={<ShareLink />} />
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </TrialProvider>

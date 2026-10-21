@@ -11,6 +11,7 @@ import { useAsync } from '../hooks/useAsync';
 import { enterFullscreen, exitFullscreen, fullscreenElement, onFullscreenChange } from '../hooks/fullscreen';
 import type { ShellContext } from '../components/AppShell';
 import { useSettings } from '../settings/SettingsProvider';
+import ShareDialog from '../components/ShareDialog';
 import type { ReaderBlock, ReaderDoc, Segment } from '../api/types';
 import { useTrial } from '../trial/TrialProvider';
 import s from './Reader.module.css';
@@ -52,6 +53,7 @@ export default function Reader() {
   const [highlighted, setHighlighted] = useState(false);
   const [trSource, setTrSource] = useState<string | null>(null);
   const [paused, setPaused] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const [seconds, setSeconds] = useState(START_SECONDS);
   const scroller = useRef<HTMLDivElement>(null);
   const { guard } = useTrial();
@@ -158,7 +160,7 @@ export default function Reader() {
               </button>
             ))}
           </div>
-          <button className={s.round} aria-label={t('share')} onClick={() => navigate('/premium?why=share')}>
+          <button className={s.round} aria-label={t('share')} onClick={() => guard('share', () => setShareOpen(true))}>
             <Icon name="share" size={19} />
           </button>
           <button className={`${s.round} ${s.aa}`} aria-label={t('textSize')} onClick={cycleFont}>
@@ -275,6 +277,8 @@ export default function Reader() {
       </main>
 
       {panel && !focus && <AssistantPanel onClose={() => setPanel(false)} />}
+
+      {shareOpen && <ShareDialog pdfId={pdfId} onClose={() => setShareOpen(false)} />}
 
       {trSource && <TranslateDialog doc={doc} source={trSource} onClose={() => setTrSource(null)} />}
     </div>

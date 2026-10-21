@@ -27,8 +27,8 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Real device names from the apps (the web name comes from the browser)
 
 ## Sharing
-- [ ] Real share links for app-made content (quizzes, summaries, cards — never the PDF)
-- [ ] App opens share links; non-Premium receiver sees the Premium message
+- [ ] Real share links for app-made content (quizzes, summaries, cards — never the PDF). Web UI ready: share dialog in the reader (Premium only) and the link page `/s/:id` with mock links
+- [ ] iPhone app opens share links (universal links); non-Premium receiver sees "This lesson can only be opened with Premium." (text is ready in `web/src/i18n/app.json` → `sharePremiumOnly`)
 
 ## Web app — not built yet
 - [ ] Upload screen (PDF, photo, audio recording)
