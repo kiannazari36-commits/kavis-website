@@ -34,8 +34,14 @@ A student uploads the teacher's PDF, a slide photo or a lecture recording. The a
 ## Product rules
 - Interface languages: Turkish, English, Persian, Arabic (Persian and Arabic right-to-left). An uploaded PDF stays in its own language; there is a translate button. The assistant speaks the language the student wants.
 - Content language: quiz questions, flash cards and summaries are written in the language of the uploaded PDF, not the interface language. Settings has a "Content language" option: "Same as PDF" (default), "Same as app", or a chosen language (tr/en/fa/ar). It can also be changed per course on the course page (the course setting wins over the global one). Buttons and menus always stay in the app language.
-- Offline use in every plan (free included); sharing only in Premium.
-- Free trial: 3 days, max 2 PDFs and 60 assistant questions; each PDF max 100 pages. "Delete account" exists everywhere.
+- Offline use in every plan (free included). "Delete account" exists everywhere.
+- Payments: only Apple in-app purchase in the iPhone app. Premium bought on iPhone also unlocks the web (needs a server later). The web never sells Premium: the web Premium page has no buy buttons and no App Store billing text; it says "Upgrade to Premium in the Kavis Study iPhone app" with an App Store button.
+- Prices: Apple sets the local price per country, so never hardcode prices or currencies. On the web show "Price in the App Store".
+- Free trial: 3 days, max 2 PDFs, 60 assistant questions, each PDF max 100 pages. Show the remaining limits during the trial. After the trial the student keeps: reading old PDFs, own notes, highlights, existing cards and summaries, and offline use. Premium only: new PDF upload, new assistant questions, generating new quizzes/cards, sharing. Locked message: "Deneme süren doldu. Çalıştığın PDF'ler seninle kalıyor; yeni PDF yüklemek için Premium'a geç." (also in en/fa/ar). There is no "2 courses / 20 questions per month" free plan.
+- Devices: max 2 devices per account; the web counts as one. On a 3rd device show "You're signed in on 2 devices. Choose one to sign out." with the device list. Settings has "My devices" with the list and a sign-out button for each. (UI only with mock data until the server exists.)
+- Sharing (Premium only): only what the app made (quizzes, summaries, flash cards), never the original PDF. A share link opens a web page "To open this, download the Kavis Study app" with an App Store button and no preview. In the app, a non-Premium receiver sees "This lesson can only be opened with Premium."
+- Android: no Android app yet. Android users use the web with the free trial; Premium for them comes later (Google Play or a web payment).
+- `TODO.md` lists everything not finished yet (server, real payments, Android payment, device limit on the server, legal check of texts, …). Update it after every step.
 
 ## The task (do it step by step, tell me after each step)
 1. Read `design/canvas.json`, `design/DeskApp.dc.html` and `design/DesignSystem.dc.html`; give me a 5-line summary of the pages you will build.
