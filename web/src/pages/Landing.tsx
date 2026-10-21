@@ -4,6 +4,8 @@ import { useToast } from '../components/Toast';
 import Wordmark from '../components/Wordmark';
 import LangThemeSwitch from '../components/LangThemeSwitch';
 import Icon, { AppleLogo, PlayLogo, type IconName } from '../components/Icon';
+import StoreButton from '../components/StoreButton';
+import { APP_STORE_URL, MAC_STORE_URL, PLAY_STORE_URL } from '../config';
 import s from './Landing.module.css';
 
 // Design: design/DeskApp.dc.html, screen "landing" (web).
@@ -22,7 +24,6 @@ export default function Landing() {
   const navigate = useNavigate();
   const toSignup = () => navigate('/login');
   const toLogin = () => navigate('/login?mode=login');
-  const store = () => toast(t('k166'));
   const soon = () => toast(t('k165'));
   const toFeatures = () => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
 
@@ -57,33 +58,15 @@ export default function Landing() {
           </h1>
           <p className={s.lead}>{t('k11')}</p>
           <div className={s.stores}>
-            <button className={s.store} onClick={store}>
-              <AppleLogo size={22} />
-              <span className={s.storeText}>
-                <small>{t('k12')}</small>
-                <b>App Store</b>
-              </span>
-            </button>
-            <button className={s.store} onClick={() => toast(t('androidSoon'))}>
-              <PlayLogo size={20} />
-              <span className={s.storeText}>
-                <small>{t('k13')}</small>
-                <b>Google Play</b>
-              </span>
-            </button>
-            <button className={s.store} onClick={store}>
-              <AppleLogo size={22} />
-              <span className={s.storeText}>
-                <small>{t('k14')}</small>
-                <b>macOS</b>
-              </span>
-            </button>
+            <StoreButton url={APP_STORE_URL} logo={<AppleLogo size={22} />} small={t('k12')} name="App Store" />
+            <StoreButton url={PLAY_STORE_URL} logo={<PlayLogo size={20} />} small={t('k13')} name="Google Play" />
+            <StoreButton url={MAC_STORE_URL} logo={<AppleLogo size={22} />} small={t('k14')} name="macOS" />
             <button className={s.webBtn} onClick={toSignup}>
               <Icon name="globe" size={18} />
               {t('k15')}
             </button>
           </div>
-          <span className={s.devices}>{t('k16')}</span>
+          <span className={s.devices}>{t('storesSoon')}</span>
         </div>
 
         <div className={s.art} aria-hidden="true">

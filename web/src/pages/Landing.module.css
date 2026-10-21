@@ -122,39 +122,9 @@
 
 .stores {
   display: flex;
-  gap: 12px;
+  gap: 14px 12px;
   flex-wrap: wrap;
   margin-top: 6px;
-}
-
-.store {
-  border: 0;
-  height: 56px;
-  padding: 0 20px;
-  border-radius: 16px;
-  background: var(--inv);
-  color: var(--on-inv);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-}
-
-.storeText {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.1;
-  text-align: start;
-}
-
-.storeText small {
-  font-size: 10px;
-  opacity: 0.75;
-}
-
-.storeText b {
-  font-size: 16px;
-  font-weight: 600;
 }
 
 .webBtn {

@@ -1,7 +1,13 @@
 // App-wide settings for the web.
 
-/** Kavis Study on the App Store. Empty until the iPhone app is published (see TODO.md). */
+// Store pages of the apps. Empty = not published yet: the button shows "Yakında" and cannot be clicked.
+// Put the real link here when the app is live (see TODO.md).
+/** Kavis Study iPhone / iPad app on the App Store. */
 export const APP_STORE_URL = '';
+/** Android app on Google Play (no Android app yet, CLAUDE.md). */
+export const PLAY_STORE_URL = '';
+/** Mac app on the Mac App Store. */
+export const MAC_STORE_URL = '';
 
 /** No Android app yet (CLAUDE.md): Android users use the web with the free trial. */
 export const isAndroid = () => /Android/i.test(navigator.userAgent);

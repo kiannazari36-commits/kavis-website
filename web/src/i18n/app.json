@@ -83,14 +83,15 @@
   "sharePremiumOnly": "Bu ders yalnızca Premium ile açılabilir.",
   "shareNoPdf": "Yalnızca Kavis'in hazırladıkları paylaşılır; hocanın PDF'i asla paylaşılmaz.",
   "androidNote": "Android uygulaması henüz yok. Web'de ücretsiz denemeyle çalışabilirsin; Android için Premium yakında gelecek.",
-  "androidSoon": "Android uygulaması henüz yok · web'de ücretsiz denemeyle başlayabilirsin",
   "planTab": "Bugünün planı",
   "planOpen": "Bugünün planını aç",
   "planClose": "Bugünün planını kapat",
   "weeklyPlan": "Haftalık plan ›",
   "mainNav": "Ana gezinme",
   "sideCollapse": "Menüyü daralt",
-  "sideExpand": "Menüyü genişlet"
+  "sideExpand": "Menüyü genişlet",
+  "comingSoon": "Yakında",
+  "storesSoon": "iPhone, iPad, Android ve Mac uygulamaları yakında · web şimdi kullanılabilir."
  },
  "en": {
   "pdfs": "PDFs",
@@ -176,14 +177,15 @@
   "sharePremiumOnly": "This lesson can only be opened with Premium.",
   "shareNoPdf": "Only what Kavis made is shared; the lecturer's PDF is never shared.",
   "androidNote": "There is no Android app yet. You can study on the web with the free trial; Premium for Android is coming later.",
-  "androidSoon": "No Android app yet · you can start on the web with the free trial",
   "planTab": "Today's plan",
   "planOpen": "Open today's plan",
   "planClose": "Close today's plan",
   "weeklyPlan": "Weekly plan ›",
   "mainNav": "Main navigation",
   "sideCollapse": "Collapse menu",
-  "sideExpand": "Expand menu"
+  "sideExpand": "Expand menu",
+  "comingSoon": "Coming soon",
+  "storesSoon": "iPhone, iPad, Android and Mac apps are coming soon · the web works now."
  },
  "fa": {
   "pdfs": "PDFها",
@@ -269,14 +271,15 @@
   "sharePremiumOnly": "این درس فقط با پریمیوم باز می‌شود.",
   "shareNoPdf": "فقط آنچه Kavis ساخته به اشتراک گذاشته می‌شود؛ PDF استاد هرگز به اشتراک گذاشته نمی‌شود.",
   "androidNote": "اپلیکیشن اندروید هنوز آماده نیست. می‌توانی در وب با دورهٔ آزمایشی رایگان درس بخوانی؛ پریمیوم برای اندروید بعداً می‌آید.",
-  "androidSoon": "اپلیکیشن اندروید هنوز نیست · می‌توانی در وب با دورهٔ آزمایشی رایگان شروع کنی",
   "planTab": "برنامه‌ی امروز",
   "planOpen": "باز کردن برنامه‌ی امروز",
   "planClose": "بستن برنامه‌ی امروز",
   "weeklyPlan": "برنامه هفتگی ›",
   "mainNav": "ناوبری اصلی",
   "sideCollapse": "جمع کردن منو",
-  "sideExpand": "باز کردن منو"
+  "sideExpand": "باز کردن منو",
+  "comingSoon": "به‌زودی",
+  "storesSoon": "اپلیکیشن‌های آیفون، آیپد، اندروید و مک به‌زودی می‌آیند · نسخهٔ وب همین حالا کار می‌کند."
  },
  "ar": {
   "pdfs": "ملفات PDF",
@@ -362,13 +365,14 @@
   "sharePremiumOnly": "لا يمكن فتح هذا الدرس إلا مع بريميوم.",
   "shareNoPdf": "تتم مشاركة ما أعدّه Kavis فقط؛ لا تتم مشاركة ملف PDF الخاص بالأستاذ أبدًا.",
   "androidNote": "لا يوجد تطبيق Android بعد. يمكنك الدراسة على الويب بالتجربة المجانية؛ وبريميوم لأجهزة Android سيأتي لاحقًا.",
-  "androidSoon": "لا يوجد تطبيق Android بعد · يمكنك البدء على الويب بالتجربة المجانية",
   "planTab": "خطة اليوم",
   "planOpen": "افتح خطة اليوم",
   "planClose": "أغلق خطة اليوم",
   "weeklyPlan": "الخطة الأسبوعية ›",
   "mainNav": "التنقل الرئيسي",
   "sideCollapse": "طيّ القائمة",
-  "sideExpand": "توسيع القائمة"
+  "sideExpand": "توسيع القائمة",
+  "comingSoon": "قريبًا",
+  "storesSoon": "تطبيقات iPhone وiPad وAndroid وMac قريبًا · الويب يعمل الآن."
  }
 }
