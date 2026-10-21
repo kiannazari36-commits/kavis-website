@@ -1,0 +1,525 @@
+.main {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.title {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+.title span {
+  color: var(--text2);
+  font-weight: 400;
+}
+
+/* Level colors: good (green), mid (amber), low (bordo) */
+.good {
+  background: var(--good-soft);
+  color: var(--good);
+}
+
+.mid {
+  background: var(--amb-soft);
+  color: var(--amb-t);
+}
+
+.low {
+  background: var(--pri-soft);
+  color: var(--pri-t);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.stat {
+  border-radius: 24px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.statIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat b {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.stat > span:last-child {
+  font-size: 12px;
+  color: var(--text2);
+}
+
+/* Course ranking */
+.rankBox,
+.box {
+  border-radius: 28px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.secHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.secHead h2,
+.h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.secHead h2 span {
+  color: var(--text2);
+  font-weight: 400;
+}
+
+.secHead > span {
+  font-size: 13px;
+  color: var(--text2);
+}
+
+.cheer {
+  border-radius: 26px;
+  background: linear-gradient(135deg, #fbe9bd, #f8d68c);
+  color: var(--text);
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+:global([data-theme='dark']) .cheer {
+  background: linear-gradient(135deg, #3a2e18, #4a3520);
+}
+
+.cheerIcon {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 22px;
+  background: rgba(255, 252, 246, 0.7);
+  color: var(--amb-t);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:global([data-theme='dark']) .cheerIcon {
+  background: rgba(255, 240, 210, 0.14);
+}
+
+.cheerText {
+  flex: 1;
+  min-width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cheerText b {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.cheerText span {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.cheerText small {
+  font-size: 11px;
+  color: var(--text2);
+}
+
+.cheer button {
+  height: 38px;
+  flex: none;
+  padding: 0 14px;
+  border-radius: 19px;
+  border: 1px solid var(--amb-line);
+  background: var(--card);
+  color: var(--text);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.ranks {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.rank {
+  border-radius: 26px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: start;
+  cursor: pointer;
+}
+
+.rankLow {
+  border-color: var(--comp-border);
+}
+
+.rank:hover {
+  border-color: var(--text3);
+}
+
+.rankTop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.medal {
+  position: relative;
+  width: 46px;
+  height: 54px;
+  flex: none;
+}
+
+.medal svg {
+  display: block;
+}
+
+.medal b {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 23px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.rankName {
+  flex: 1;
+  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rankName b {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.rankName span {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--text2);
+}
+
+.badge {
+  align-self: flex-start;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.rankMid {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.avg {
+  display: flex;
+  flex-direction: column;
+}
+
+.avg b {
+  font-size: 40px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.avg span {
+  font-size: 11px;
+  color: var(--text2);
+}
+
+.grow {
+  flex: 1;
+}
+
+.bars {
+  height: 44px;
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.bars span {
+  width: 10px;
+  border-radius: 4px;
+  background: var(--line);
+}
+
+.bars span.bar_good {
+  background: var(--good);
+}
+
+.bars span.bar_mid {
+  background: var(--amb-t);
+}
+
+.bars span.bar_low {
+  background: var(--pri-t);
+}
+
+.growth {
+  align-self: flex-start;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 14px;
+  background: var(--good-soft);
+  color: var(--good);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.growthHot {
+  background: var(--amb-soft);
+  color: var(--amb-t);
+}
+
+.note {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text2);
+}
+
+.cta {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.cta_good {
+  color: var(--good);
+}
+
+.cta_mid {
+  color: var(--amb-t);
+}
+
+.cta_low {
+  color: var(--pri-t);
+}
+
+/* Week chart + streak */
+.twoCol {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.chart {
+  height: 170px;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text2);
+}
+
+.colBar {
+  width: 100%;
+  border-radius: 12px;
+  background: var(--seg);
+}
+
+.colOn {
+  background: #f5c76a;
+}
+
+:global([data-theme='dark']) .colOn {
+  background: #6b4a22;
+}
+
+.colToday {
+  background: var(--pri);
+}
+
+.sideCol {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.streak {
+  border-radius: 28px;
+  background: var(--hero);
+  color: var(--on-hero);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.streak .mono {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.streak b {
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.streak > span:last-child {
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.words {
+  border-radius: 28px;
+  border: 1.5px dashed var(--amb-line);
+  background: var(--card);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.words b {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.words span {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text2);
+}
+
+/* Weak topics */
+.weak {
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  padding: 12px 0 2px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: start;
+  cursor: pointer;
+}
+
+.weakName {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.weakPdf {
+  font-size: 12px;
+  color: var(--text2);
+}
+
+.weakBar {
+  width: 160px;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--seg);
+  display: flex;
+  overflow: hidden;
+}
+
+.weakBar span {
+  border-radius: 4px;
+}
+
+.weakPct {
+  font-size: 12px;
+  min-width: 36px;
+  text-align: end;
+}
+
+:global([dir='rtl']) .title,
+:global([dir='rtl']) .avg b {
+  letter-spacing: 0;
+}
+
+@media (max-width: 1150px) {
+  .ranks {
+    grid-template-columns: 1fr;
+  }
+  .twoCol {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .main {
+    padding: 20px 16px 32px;
+  }
+  .title {
+    font-size: 30px;
+  }
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .weakBar {
+    width: 80px;
+  }
+  .weakPdf {
+    display: none;
+  }
+}
