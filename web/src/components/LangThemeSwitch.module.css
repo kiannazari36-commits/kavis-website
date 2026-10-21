@@ -1,0 +1,84 @@
+.wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lang {
+  height: 42px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 21px;
+  background: transparent;
+  color: var(--text);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.theme {
+  width: 42px;
+  height: 42px;
+  border-radius: 21px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.lang:hover,
+.theme:hover {
+  background: var(--sub);
+}
+
+.menu {
+  position: absolute;
+  top: 48px;
+  inset-inline-start: 0;
+  z-index: 40;
+  min-width: 180px;
+  padding: 6px;
+  border-radius: 20px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: 0 18px 40px rgba(42, 36, 32, 0.18);
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  height: 42px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--text);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  text-align: start;
+}
+
+.item span {
+  width: 22px;
+  font-size: 11px;
+  color: var(--text3);
+}
+
+.item:hover {
+  background: var(--sub);
+}
+
+.on {
+  background: var(--pri-soft);
+  color: var(--pri-t);
+  font-weight: 600;
+}

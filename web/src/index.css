@@ -120,3 +120,8 @@ a {
   outline: 2px solid var(--amb);
   outline-offset: 2px;
 }
+
+/* Arrows point the other way in right-to-left languages. */
+[dir='rtl'] .flip-rtl {
+  transform: scaleX(-1);
+}

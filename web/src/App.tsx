@@ -3,6 +3,8 @@ import { I18nProvider } from './i18n/I18nProvider';
 import { ThemeProvider } from './theme/ThemeProvider';
 import { ToastProvider } from './components/Toast';
 import Placeholder from './pages/Placeholder';
+import Landing from './pages/Landing';
+import Login from './pages/Login';
 
 export default function App() {
   return (
@@ -11,8 +13,8 @@ export default function App() {
         <ToastProvider>
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Placeholder name="landing" />} />
-              <Route path="/login" element={<Placeholder name="login" />} />
+              <Route path="/" element={<Landing />} />
+              <Route path="/login" element={<Login />} />
               <Route path="/home" element={<Placeholder name="home" />} />
               <Route path="/courses" element={<Placeholder name="courses" />} />
               <Route path="/courses/:courseId" element={<Placeholder name="course" />} />

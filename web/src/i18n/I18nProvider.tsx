@@ -1,12 +1,17 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import desk from './desk.json';
+import auth from './auth.json';
 
 export type Lang = 'tr' | 'en' | 'fa' | 'ar';
 export const LANGS: Lang[] = ['tr', 'en', 'fa', 'ar'];
+export const LANG_NAMES: Record<Lang, string> = { tr: 'Türkçe', en: 'English', fa: 'فارسی', ar: 'العربية' };
 
-// Texts copied from design/DeskApp.dc.html; keys are the design's own (k0, k1, …).
+// desk.json: texts from design/DeskApp.dc.html (keys k0, k1, … as in the design).
+// auth.json: sign-up / login texts from design/NewSignup.dc.html.
 type Dict = Record<string, string>;
-const dicts = desk as Record<Lang, Dict>;
+const dicts = Object.fromEntries(
+  LANGS.map((l) => [l, { ...(desk as Record<Lang, Dict>)[l], ...(auth as Record<Lang, Dict>)[l] }]),
+) as Record<Lang, Dict>;
 
 type I18n = {
   lang: Lang;
