@@ -11,9 +11,9 @@ export const EXAM_TOPICS: ExamTopic[] = [
     },
     "tag": {
       "tr": "zayıf konun · %38",
-      "en": "weak topic · %38",
+      "en": "weak topic · 38%",
       "fa": "مبحث ضعیف · %38",
-      "ar": "موضوع ضعيف · %38"
+      "ar": "موضوع ضعيف · 38%"
     },
     "kind": "weak",
     "src": {
@@ -52,9 +52,9 @@ export const EXAM_TOPICS: ExamTopic[] = [
     },
     "tag": {
       "tr": "zayıf konun · %54",
-      "en": "weak topic · %54",
+      "en": "weak topic · 54%",
       "fa": "مبحث ضعیف · %54",
-      "ar": "موضوع ضعيف · %54"
+      "ar": "موضوع ضعيف · 54%"
     },
     "kind": "weak",
     "src": {
@@ -511,7 +511,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
         "tr": "Doğru cevap yarıdan az ama %10'dan fazla.",
         "en": "Fewer than half correct, but more than 10%.",
         "fa": "پاسخ درست کمتر از نصف اما بیشتر از %10 است.",
-        "ar": "الإجابات الصحيحة أقل من النصف لكن أكثر من %10."
+        "ar": "الإجابات الصحيحة أقل من النصف لكن أكثر من 10%."
       },
       {
         "tr": "Bir çeyrek kadar düşün.",

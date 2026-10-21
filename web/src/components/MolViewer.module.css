@@ -1,0 +1,173 @@
+.wrap {
+  --mol-canvas: #fffdf8;
+  --mol-bond: #2a2420;
+  --mol-s: #8a6a08;
+  --mol-hl: #f8db8e;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: var(--font-ui);
+  color: var(--text);
+}
+
+:global([data-theme='dark']) .wrap {
+  --mol-canvas: #1d1915;
+  --mol-bond: #e6ddcf;
+  --mol-s: #f2c66d;
+  --mol-hl: #5a4518;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.head b {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.head span {
+  font-size: 11px;
+  color: var(--text2);
+}
+
+.body {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.canvas {
+  position: relative;
+  flex: none;
+  border-radius: 18px;
+  background: var(--mol-canvas);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.canvas svg {
+  position: absolute;
+  inset: 0;
+}
+
+.bond {
+  stroke: var(--mol-bond);
+}
+
+.label,
+.ball {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  border-radius: 99px;
+}
+
+.label {
+  padding: 0 2px;
+  background: var(--mol-canvas);
+}
+
+.labelOn {
+  background: var(--mol-hl);
+}
+
+.ball {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+.tools {
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.seg {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  border-radius: 18px;
+  background: var(--seg);
+}
+
+.seg button {
+  flex: 1;
+  height: 32px;
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+  color: var(--text);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.seg button.segOn {
+  background: var(--pill);
+  font-weight: 600;
+}
+
+.rotate {
+  height: 34px;
+  border-radius: 17px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.hint {
+  font-size: 11px;
+  color: var(--text2);
+}
+
+.groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.groups button {
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 15px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.groups button.groupOn {
+  border: 1.5px solid var(--amb);
+  background: var(--amb-soft);
+}
+
+.note {
+  border-radius: 14px;
+  background: var(--amb-soft);
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.note b {
+  font-weight: 600;
+}

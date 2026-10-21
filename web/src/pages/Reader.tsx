@@ -217,7 +217,7 @@ export default function Reader() {
                 <b>{t('checkTitle')}</b>
                 <span>{t(section.end)}</span>
               </span>
-              <button className={s.checkGo} onClick={() => navigate(`/quiz?course=${courseId}`)}>
+              <button className={s.checkGo} onClick={() => navigate(`/quiz?from=reader&course=${courseId}`)}>
                 {t('start')}
               </button>
               <button className={s.checkNext} onClick={nextSection}>

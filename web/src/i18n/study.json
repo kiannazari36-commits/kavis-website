@@ -156,7 +156,8 @@
   "molRotate": "Döndür",
   "molTap": "Gruba dokun, ne işe yaradığını gör:",
   "molAria": " molekül yapısı",
-  "addMenu": "Ekle: PDF, soru, ses kaydı"
+  "addMenu": "Ekle: PDF, soru, ses kaydı",
+  "retryB1": " soru"
  },
  "en": {
   "heroA": "How can I",
@@ -289,7 +290,7 @@
   "tomorrowA": "Tomorrow ",
   "tomorrowB": " · notified 1 hour before and on time",
   "noteA": ":00: \"Studying in 1 hour\", ",
-  "noteB": "you'll get a \"Let's start!\" notification.",
+  "noteB": " you'll get a \"Let's start!\" notification.",
   "notQuite": "Not quite. ",
   "oneMoreHint": "You can get one more hint.",
   "orShow": "Show the answer if you want.",
@@ -315,7 +316,8 @@
   "molRotate": "Rotate",
   "molTap": "Tap a group to see what it does:",
   "molAria": " molecule structure",
-  "addMenu": "Add: PDF, question, audio recording"
+  "addMenu": "Add: PDF, question, audio recording",
+  "retryB1": " question"
  },
  "fa": {
   "heroA": "امروز چطور",
@@ -448,7 +450,7 @@
   "tomorrowA": "فردا ",
   "tomorrowB": " · 1 ساعت قبل و سر ساعت اعلان می‌آید",
   "noteA": ":00: «1 ساعت دیگر درس می‌خوانیم»، ",
-  "noteB": "اعلان «بیا شروع کنیم!» می‌آید.",
+  "noteB": " اعلان «بیا شروع کنیم!» می‌آید.",
   "notQuite": "کاملاً درست نیست. ",
   "oneMoreHint": "می‌توانی یک راهنمایی دیگر بگیری.",
   "orShow": "اگر خواستی جواب را ببین.",
@@ -474,7 +476,8 @@
   "molRotate": "چرخاندن",
   "molTap": "روی یک گروه بزن تا نقشش را ببینی:",
   "molAria": " ساختار مولکول",
-  "addMenu": "افزودن: PDF، سؤال، ضبط صدا"
+  "addMenu": "افزودن: PDF، سؤال، ضبط صدا",
+  "retryB1": " سؤال"
  },
  "ar": {
   "heroA": "كيف يمكنني اليوم",
@@ -607,7 +610,7 @@
   "tomorrowA": "غدًا ",
   "tomorrowB": " · سيصلك إشعار قبل ساعة وفي الموعد",
   "noteA": ":00: «سندرس بعد 1 ساعة»، ",
-  "noteB": "يصلك إشعار «هيا نبدأ!».",
+  "noteB": " يصلك إشعار «هيا نبدأ!».",
   "notQuite": "ليس تمامًا. ",
   "oneMoreHint": "يمكنك الحصول على تلميح آخر.",
   "orShow": "اعرض الإجابة إن شئت.",
@@ -633,6 +636,7 @@
   "molRotate": "تدوير",
   "molTap": "المس مجموعة لترى وظيفتها:",
   "molAria": " بنية الجزيء",
-  "addMenu": "إضافة: PDF، سؤال، تسجيل صوتي"
+  "addMenu": "إضافة: PDF، سؤال، تسجيل صوتي",
+  "retryB1": " سؤال"
  }
 }

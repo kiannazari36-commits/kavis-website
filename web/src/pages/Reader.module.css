@@ -644,13 +644,13 @@
   gap: 4px;
 }
 
-.source .mono {
+.source :global(.mono) {
   font-size: 10px;
   letter-spacing: 0.08em;
   color: var(--text2);
 }
 
-.source .reading {
+.source :global(.reading) {
   font-size: 15px;
   line-height: 1.55;
   text-align: start;
