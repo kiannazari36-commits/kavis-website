@@ -1,0 +1,3 @@
+# Test deploy: keep all search engines out until the public launch (see TODO.md).
+User-agent: *
+Disallow: /

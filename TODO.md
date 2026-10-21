@@ -44,5 +44,17 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Legal check of all texts: terms of use, KVKK / privacy notice, Premium and trial texts, delete-account texts
 - [ ] Native-speaker check of the English, Persian and Arabic translations (some design translations were wrong and were fixed)
 
-## Release (steps 5–6 of CLAUDE.md, not started)
-- [ ] Deploy-ready static build and publishing (Vercel or Netlify)
+## Release
+- [x] Static build ready for Vercel (`web/vercel.json`: page routing + noindex header)
+- [ ] Test deploy on Vercel (free), no custom domain, search engines blocked — connect the GitHub repo in Vercel (Root Directory: `web`)
+- [ ] Split the JavaScript into smaller parts per page (now one ~190 KB gzip file)
+
+## Public launch checklist (do all of these before opening the site to everyone)
+- [ ] Real accounts and a real server (login, email verification, data per account) — replace `web/src/api/` mock functions
+- [ ] PDF processing and AI (reading page, questions, cards, summaries, assistant) with a cost limit per user and per month
+- [ ] Trial limits on the server (3 days, 2 PDFs, 60 assistant questions, 100 pages per PDF)
+- [ ] 2-device limit on the server (the web counts as one)
+- [ ] KVKK texts and privacy policy (and terms of use) written and checked by a lawyer; link them from sign-up and the site
+- [ ] Remove sample data: mock courses, PDFs, sample answers, `?trial=` / `?devices=` / `?lang=` test switches, the sample lesson in the reader
+- [ ] Then remove noindex: `web/public/robots.txt`, the robots meta tag in `web/index.html` and the `X-Robots-Tag` header in `web/vercel.json`
+- [ ] Custom domain (e.g. kavis.study) in Vercel
