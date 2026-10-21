@@ -11,6 +11,7 @@ import ContentLangPicker from '../components/ContentLangPicker';
 import { useContentLang, useSettings } from '../settings/SettingsProvider';
 import { currentUser } from '../api/auth';
 import { deleteAccount, requestMyData, saveProfile } from '../api/account';
+import { useTrial } from '../trial/TrialProvider';
 import s from './Settings.module.css';
 
 // Design: design/DeskApp.dc.html screen "settings" (web layout: section menu + cards),
@@ -59,6 +60,7 @@ export default function Settings() {
   const toast = useToast();
   const navigate = useNavigate();
   const { settings, patch, setContentLang } = useSettings();
+  const { trial } = useTrial();
   const contentLang = useContentLang({ id: '', language: 'tr' });
   const user = currentUser() ?? { name: 'Elif Yıldız', email: 'elif@ogrenci.edu.tr' };
   const [active, setActive] = useState<Section>('look');
@@ -108,7 +110,13 @@ export default function Settings() {
             <span className={s.profileText}>
               <b>{profile.name}</b>
               <span>{t('profileSub')}</span>
-              <span className={s.planTag}>{t('planFree')}</span>
+              <span className={s.planTag}>
+                {trial.premium
+                  ? 'Premium'
+                  : trial.ended
+                    ? t('trialEnded')
+                    : `${t('trialTitle')} · ${t('trialDaysLeft').replace('{n}', num(trial.daysLeft, lang))}`}
+              </span>
             </span>
             <button className={s.ghost} onClick={() => setEditing(!editing)}>
               {t('edit')}

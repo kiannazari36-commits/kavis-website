@@ -11,6 +11,7 @@ import { useAsync } from '../hooks/useAsync';
 import { dirOf, useContentLang } from '../settings/SettingsProvider';
 import type { Lang } from '../i18n/I18nProvider';
 import type { QuizQuestion } from '../api/types';
+import { useTrial } from '../trial/TrialProvider';
 import s from './Quiz.module.css';
 
 // Design: design/NewIPad.dc.html, screen "exam" ("Sınava özel"): summary by importance,
@@ -31,6 +32,7 @@ const EXAM_COURSES = ['pharmacotherapy', 'toxicology', 'pharm-tech-3'];
 export default function Quiz() {
   const { t, lang } = useI18n();
   const toast = useToast();
+  const { guard } = useTrial();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const fromReader = params.get('from') === 'reader';
@@ -287,7 +289,7 @@ export default function Quiz() {
               {t(fromReader ? 'continueNext' : 'continueLesson')}
               <Icon name="send" size={16} className="flip-rtl" />
             </button>
-            <button className={s.heroGhost} onClick={() => startQuiz(wrongs.length ? wrongs : undefined)}>
+            <button className={s.heroGhost} onClick={() => (wrongs.length ? startQuiz(wrongs) : guard('generate', () => startQuiz()))}>
               {wrongs.length
                 ? t('retryA') + num(wrongs.length, lang) + t(wrongs.length === 1 ? 'retryB1' : 'retryB')
                 : t('newA') + num(qs.length, lang) + t('retryB')}

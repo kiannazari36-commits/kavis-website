@@ -8,7 +8,9 @@ import { currentUser, logOut } from '../api/auth';
 import { useAsync } from '../hooks/useAsync';
 import { COURSE_COLOR } from './courseColors';
 import Wordmark from './Wordmark';
+import TrialCard from '../trial/TrialCard';
 import Icon, { type IconName } from './Icon';
+import { useTrial } from '../trial/TrialProvider';
 import s from './AppShell.module.css';
 
 /** Shared with pages inside the shell (read with useOutletContext). */
@@ -31,6 +33,7 @@ export default function AppShell() {
   const { t, lang } = useI18n();
   const { toggle } = useTheme();
   const toast = useToast();
+  const { guard } = useTrial();
   const navigate = useNavigate();
   const location = useLocation();
   const courses = useAsync(listCourses, []);
@@ -66,7 +69,7 @@ export default function AppShell() {
             <Icon name="close" />
           </button>
         </div>
-        <button className={s.upload} onClick={() => toast(t('k165'))}>
+        <button className={s.upload} onClick={() => guard('pdf', () => toast(t('k165')))}>
           <Icon name="upload" size={18} />
           {t('k33')}
         </button>
@@ -84,11 +87,7 @@ export default function AppShell() {
           </NavLink>
         ))}
         <span className={s.grow} />
-        <div className={s.premium}>
-          <b>{t('k57')}</b>
-          <span>{t('k58')}</span>
-          <button onClick={() => navigate('/premium')}>{t('k59')}</button>
-        </div>
+        <TrialCard />
         <div className={s.profile}>
           <button
             className={s.profileMain}

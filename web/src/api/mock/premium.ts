@@ -1,4 +1,5 @@
-// Premium (paywall) mock data from design/NewIPad.dc.html: free vs Premium table and the three plans.
+// Premium (paywall) mock data from design/NewIPad.dc.html: 3-day trial vs Premium table and the three plans.
+// There is no monthly free plan: the left column is the trial (CLAUDE.md).
 // No prices here: Apple sets the local price per country (CLAUDE.md).
 import type { L10n, PremiumPlan } from '../types';
 
@@ -11,10 +12,10 @@ export const COMPARE_ROWS: [L10n, L10n, L10n][] = [
       "ar": "رفع الدرس"
     },
     {
-      "tr": "Ayda 2",
-      "en": "2 a month",
-      "fa": "ماهی 2",
-      "ar": "2 شهريًا"
+      "tr": "2 PDF",
+      "en": "2 PDFs",
+      "fa": "۲ PDF",
+      "ar": "ملفا PDF"
     },
     {
       "tr": "Sınırsız*",
@@ -31,10 +32,10 @@ export const COMPARE_ROWS: [L10n, L10n, L10n][] = [
       "ar": "أسئلة المساعد"
     },
     {
-      "tr": "Ayda 20",
-      "en": "20 a month",
-      "fa": "ماهی 20",
-      "ar": "20 شهريًا"
+      "tr": "60 soru",
+      "en": "60 questions",
+      "fa": "۶۰ سؤال",
+      "ar": "60 سؤالًا"
     },
     {
       "tr": "Sınırsız*",
@@ -71,10 +72,10 @@ export const COMPARE_ROWS: [L10n, L10n, L10n][] = [
       "ar": "ملخص وأسئلة خاصة بالامتحان"
     },
     {
-      "tr": "—",
-      "en": "—",
-      "fa": "—",
-      "ar": "—"
+      "tr": "✓",
+      "en": "✓",
+      "fa": "✓",
+      "ar": "✓"
     },
     {
       "tr": "✓",

@@ -6,6 +6,7 @@ import Icon, { type IconName } from '../components/Icon';
 import { askAssistant, listAssistantTopics, uploadForAssistant, type SourceMode } from '../api/assistant';
 import { useAsync } from '../hooks/useAsync';
 import type { AssistantTopic, Attachment, AttachmentKind } from '../api/types';
+import { useTrial } from '../trial/TrialProvider';
 import s from './Assistant.module.css';
 
 // Design: design/NewIPad.dc.html, screens "ai" (start + message box) and "aichat" (answer view).
@@ -19,6 +20,7 @@ export default function Assistant() {
   const toast = useToast();
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
+  const { guard } = useTrial();
   const topics = useAsync(listAssistantTopics, []);
 
   const [course, setCourse] = useState(params.get('q') ? 'hypertension' : '');
@@ -61,16 +63,18 @@ export default function Assistant() {
       toast(t('needCourse'));
       return;
     }
-    setChat({ topic: sel.id, q: draft.trim() });
-    setDraft('');
-    setPanel('');
+    guard('question', () => {
+      setChat({ topic: sel.id, q: draft.trim() });
+      setDraft('');
+      setPanel('');
+    });
   };
-  const addFile = async (kind: AttachmentKind | 'solve') => {
+  const addFile = (kind: AttachmentKind | 'solve') => {
     setPanel('');
-    if (kind === 'solve') {
-      toast(t('k165'));
-      return;
-    }
+    if (kind === 'solve') toast(t('k165'));
+    else guard('pdf', () => doUpload(kind));
+  };
+  const doUpload = async (kind: AttachmentKind) => {
     const data = await uploadForAssistant(kind);
     setUpload({ kind, data, topic: data.topic, chosen: false, done: false });
     toast(data.name[lang] + t('attUploaded'));
@@ -304,16 +308,17 @@ function Chat({ topic, question, mode, onBack }: { topic: AssistantTopic; questi
   const toast = useToast();
   const navigate = useNavigate();
   const [draft, setDraft] = useState('');
+  const { guard } = useTrial();
   const answer = useAsync(() => askAssistant(topic.id, question, mode), [topic.id, question, mode]);
   const all = topic.id === 'all';
   const name = topic.name[lang];
   const tag = all ? t('tagAll') : t('tagCourse') + name.toLocaleUpperCase(lang === 'tr' ? 'tr' : 'en');
   const hello = all ? t('helloAll') : t('helloA') + name + t('helloB') + (mode === 'ai' ? t('helloAi') : '');
 
-  const follow: [string, string][] = [
-    ['followEasy', t('followEasyT')],
-    ['followQuiz', name + t('followQuizT')],
-    ['followCard', t('followCardA') + name + t('followCardB')],
+  const follow: [string, string, 'question' | 'generate'][] = [
+    ['followEasy', t('followEasyT'), 'question'],
+    ['followQuiz', name + t('followQuizT'), 'generate'],
+    ['followCard', t('followCardA') + name + t('followCardB'), 'generate'],
   ];
 
   return (
@@ -356,8 +361,8 @@ function Chat({ topic, question, mode, onBack }: { topic: AssistantTopic; questi
               </div>
               {question && <span className={s.protoNote}>{t('protoNote')}</span>}
               <div className={s.follow}>
-                {follow.map(([k, msg]) => (
-                  <button key={k} onClick={() => toast(msg)}>
+                {follow.map(([k, msg, action]) => (
+                  <button key={k} onClick={() => guard(action, () => toast(msg))}>
                     {t(k)}
                   </button>
                 ))}
@@ -381,8 +386,10 @@ function Chat({ topic, question, mode, onBack }: { topic: AssistantTopic; questi
             toast(t('writeQ'));
             return;
           }
-          setDraft('');
-          toast(t('searchingA') + name + t('searchingB'));
+          guard('question', () => {
+            setDraft('');
+            toast(t('searchingA') + name + t('searchingB'));
+          });
         }}
       >
         <div className={s.row}>

@@ -19,7 +19,8 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Server check of the Apple subscription so Premium also unlocks the web
 - [ ] Prices come from the App Store (never hardcoded) — web shows "Price in the App Store"
 - [ ] Android payment later (Google Play or a web payment) — no Android app yet
-- [ ] Trial limits enforced on the server (3 days, 2 PDFs, 60 questions, 100 pages per PDF)
+- [ ] Trial limits enforced on the server (3 days, 2 PDFs, 60 questions, 100 pages per PDF). The web shows the limits and locks Premium-only actions with mock data (`web/src/api/trial.ts`; try `?trial=active|full|ended`)
+- [ ] Check the 100-page limit when a PDF is uploaded (upload screen not built yet)
 
 ## Devices
 - [ ] Device limit on the server (max 2 devices, the web counts as one); real device list and sign-out

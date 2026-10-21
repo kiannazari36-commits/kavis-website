@@ -9,6 +9,7 @@ import { useAsync } from '../hooks/useAsync';
 import type { Pdf } from '../api/types';
 import ContentLangPicker from '../components/ContentLangPicker';
 import { useContentLang, useSettings } from '../settings/SettingsProvider';
+import { useTrial } from '../trial/TrialProvider';
 import s from './CourseFolder.module.css';
 
 // Design: design/NewCourses.dc.html, variant "detail" (one course folder with its PDFs), laid out for the web.
@@ -23,6 +24,7 @@ export default function CourseFolder() {
   const { courseId = '' } = useParams();
   const { t, lang } = useI18n();
   const toast = useToast();
+  const { guard } = useTrial();
   const navigate = useNavigate();
   const course = useAsync(() => getCourse(courseId), [courseId]);
   const { settings, setCourseContentLang } = useSettings();
@@ -42,7 +44,7 @@ export default function CourseFolder() {
   const col = COURSE_COLOR[course.color];
   const st = courseStats(course);
   const maxMin = Math.max(1, ...course.pdfs.map((p) => p.minutes));
-  const addPdf = () => toast(t('k165'));
+  const addPdf = () => guard('pdf', () => toast(t('k165')));
 
   return (
     <main className={s.main}>

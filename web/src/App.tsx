@@ -3,6 +3,7 @@ import { I18nProvider } from './i18n/I18nProvider';
 import { ThemeProvider } from './theme/ThemeProvider';
 import { ToastProvider } from './components/Toast';
 import { SettingsProvider } from './settings/SettingsProvider';
+import { TrialProvider } from './trial/TrialProvider';
 import AppShell from './components/AppShell';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
@@ -25,25 +26,27 @@ export default function App() {
         <SettingsProvider>
           <ToastProvider>
             <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Landing />} />
-                <Route path="/login" element={<Login />} />
-                {/* Pages with the sidebar */}
-                <Route element={<AppShell />}>
-                  <Route path="/home" element={<Home />} />
-                  <Route path="/courses" element={<Courses />} />
-                  <Route path="/courses/:courseId" element={<CourseFolder />} />
-                  <Route path="/reader" element={<Reader />} />
-                  <Route path="/assistant" element={<Assistant />} />
-                  <Route path="/quiz" element={<Quiz />} />
-                  <Route path="/cards" element={<Cards />} />
-                  <Route path="/plan" element={<Plan />} />
-                  <Route path="/progress" element={<Progress />} />
-                  <Route path="/settings" element={<Settings />} />
-                </Route>
-                <Route path="/premium" element={<Paywall />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
+              <TrialProvider>
+                <Routes>
+                  <Route path="/" element={<Landing />} />
+                  <Route path="/login" element={<Login />} />
+                  {/* Pages with the sidebar */}
+                  <Route element={<AppShell />}>
+                    <Route path="/home" element={<Home />} />
+                    <Route path="/courses" element={<Courses />} />
+                    <Route path="/courses/:courseId" element={<CourseFolder />} />
+                    <Route path="/reader" element={<Reader />} />
+                    <Route path="/assistant" element={<Assistant />} />
+                    <Route path="/quiz" element={<Quiz />} />
+                    <Route path="/cards" element={<Cards />} />
+                    <Route path="/plan" element={<Plan />} />
+                    <Route path="/progress" element={<Progress />} />
+                    <Route path="/settings" element={<Settings />} />
+                  </Route>
+                  <Route path="/premium" element={<Paywall />} />
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </TrialProvider>
             </BrowserRouter>
           </ToastProvider>
         </SettingsProvider>

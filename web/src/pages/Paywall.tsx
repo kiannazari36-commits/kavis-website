@@ -48,7 +48,7 @@ export default function Paywall() {
             <div className={s.table} role="table">
               <div className={s.tHead} role="row">
                 <span />
-                <span>{t('pwFree')}</span>
+                <span>{t('trialFree')}</span>
                 <span className={s.prem}>PREMIUM</span>
               </div>
               {offer.rows.map(([name, free, prem]) => (

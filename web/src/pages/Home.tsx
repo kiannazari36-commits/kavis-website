@@ -6,6 +6,7 @@ import TopBar from '../components/TopBar';
 import Icon, { type IconName } from '../components/Icon';
 import { COURSE_COLOR } from '../components/courseColors';
 import type { CourseColor } from '../api/types';
+import { useTrial } from '../trial/TrialProvider';
 import s from './Home.module.css';
 
 // Design: design/DeskApp.dc.html, screen "home" (web).
@@ -26,8 +27,9 @@ const PLAN = [
 export default function Home() {
   const { t } = useI18n();
   const toast = useToast();
+  const { guard } = useTrial();
   const navigate = useNavigate();
-  const soon = () => toast(t('k165'));
+  const upload = () => guard('pdf', () => toast(t('k165')));
   const [showReview, setShowReview] = useState(true);
   const [done, setDone] = useState<boolean[]>([true, false, false]);
   const [ask, setAsk] = useState('');
@@ -46,6 +48,7 @@ export default function Home() {
 
   const sendAsk = (e: FormEvent) => {
     e.preventDefault();
+    if (ask.trim()) return guard('question', () => navigate(`/assistant?q=${encodeURIComponent(ask.trim())}`));
     navigate(ask.trim() ? `/assistant?q=${encodeURIComponent(ask.trim())}` : '/assistant');
   };
 
@@ -82,7 +85,7 @@ export default function Home() {
 
         <div className={s.uploads}>
           {uploads.map(([icon, key, primary]) => (
-            <button key={key} className={primary ? `${s.upload} ${s.uploadPri}` : s.upload} onClick={soon}>
+            <button key={key} className={primary ? `${s.upload} ${s.uploadPri}` : s.upload} onClick={upload}>
               <Icon name={icon} size={20} />
               {t(key)}
             </button>
@@ -177,7 +180,12 @@ export default function Home() {
           </div>
           <div className={s.chips}>
             {['k97', 'k98', 'k99'].map((k) => (
-              <button key={k} onClick={() => navigate(k === 'k98' ? '/quiz' : k === 'k99' ? '/cards' : `/assistant?q=${encodeURIComponent(t(k))}`)}>
+              <button
+                key={k}
+                onClick={() =>
+                  k === 'k97' ? guard('question', () => navigate(`/assistant?q=${encodeURIComponent(t(k))}`)) : guard('generate', () => navigate(k === 'k98' ? '/quiz' : '/cards'))
+                }
+              >
                 {t(k)}
               </button>
             ))}

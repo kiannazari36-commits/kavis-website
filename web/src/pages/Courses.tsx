@@ -9,6 +9,7 @@ import { COURSE_COLOR } from '../components/courseColors';
 import { courseStats, daysUntil, listCourses } from '../api/courses';
 import { useAsync } from '../hooks/useAsync';
 import type { Course } from '../api/types';
+import { useTrial } from '../trial/TrialProvider';
 import s from './Courses.module.css';
 
 // Design: design/DeskApp.dc.html, screen "courses" (web) — the "My Courses" folder.
@@ -30,6 +31,7 @@ const matches: Record<Filter, (c: Course) => boolean> = {
 export default function Courses() {
   const { t, lang } = useI18n();
   const toast = useToast();
+  const { guard } = useTrial();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const q = (params.get('q') ?? '').toLocaleLowerCase(lang);
@@ -48,7 +50,7 @@ export default function Courses() {
   const onDrop = (e: DragEvent) => {
     e.preventDefault();
     setDragOver(false);
-    toast(t('k165'));
+    guard('pdf', () => toast(t('k165')));
   };
 
   return (

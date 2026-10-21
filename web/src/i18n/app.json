@@ -41,7 +41,20 @@
   "expSent": "Hesap bilgilerin hazırlanıyor · e-postana gönderilecek",
   "pwIphone": "Premium'a Kavis Study iPhone uygulamasından geç",
   "pwIphoneSub": "iPhone'da aldığın Premium, aynı hesapla web'de de açılır.",
-  "pwPriceStore": "Fiyat App Store'da"
+  "pwPriceStore": "Fiyat App Store'da",
+  "trialLocked": "Deneme süren doldu. Çalıştığın PDF'ler seninle kalıyor; yeni PDF yüklemek için Premium'a geç.",
+  "trialPdfFull": "Denemede en fazla 2 PDF yükleyebilirsin. Daha fazlası için Premium'a geç.",
+  "trialQFull": "Denemedeki 60 asistan sorusunu kullandın. Daha fazlası için Premium'a geç.",
+  "trialTitle": "Ücretsiz deneme",
+  "trialDaysLeft": "{n} gün kaldı",
+  "trialQuestions": "Asistan sorusu",
+  "trialPages": "Her PDF en fazla 100 sayfa",
+  "trialEnded": "Deneme bitti",
+  "trialKeep": "Eski PDF'lerin, notların, vurguların, kartların, özetlerin ve çevrimdışı kullanım seninle kalır.",
+  "premiumOnly": "Premium'a özel",
+  "trialFree": "DENEME · 3 GÜN",
+  "trialPdfs2": "2 PDF",
+  "trialQ60": "60 soru"
  },
  "en": {
   "pdfs": "PDFs",
@@ -85,7 +98,20 @@
   "expSent": "Preparing your data · it will be emailed to you",
   "pwIphone": "Upgrade to Premium in the Kavis Study iPhone app",
   "pwIphoneSub": "Premium bought on iPhone also works on the web with the same account.",
-  "pwPriceStore": "Price in the App Store"
+  "pwPriceStore": "Price in the App Store",
+  "trialLocked": "Your trial has ended. The PDFs you studied stay with you; upgrade to Premium to upload new PDFs.",
+  "trialPdfFull": "During the trial you can upload up to 2 PDFs. Upgrade to Premium for more.",
+  "trialQFull": "You have used the 60 assistant questions of the trial. Upgrade to Premium for more.",
+  "trialTitle": "Free trial",
+  "trialDaysLeft": "{n} days left",
+  "trialQuestions": "Assistant questions",
+  "trialPages": "Each PDF up to 100 pages",
+  "trialEnded": "Trial ended",
+  "trialKeep": "Your old PDFs, notes, highlights, cards, summaries and offline use stay with you.",
+  "premiumOnly": "Premium only",
+  "trialFree": "TRIAL · 3 DAYS",
+  "trialPdfs2": "2 PDFs",
+  "trialQ60": "60 questions"
  },
  "fa": {
   "pdfs": "PDFها",
@@ -129,7 +155,20 @@
   "expSent": "اطلاعات حسابت آماده می‌شود · به ایمیلت فرستاده می‌شود",
   "pwIphone": "از اپلیکیشن آیفون Kavis Study به پریمیوم ارتقا بده",
   "pwIphoneSub": "پریمیومی که در آیفون بخری، با همان حساب در وب هم فعال است.",
-  "pwPriceStore": "قیمت در App Store"
+  "pwPriceStore": "قیمت در App Store",
+  "trialLocked": "مهلت آزمایشی‌ات تمام شد. PDFهایی که با آن‌ها درس خواندی پیش تو می‌مانند؛ برای آپلود PDF جدید به پریمیوم ارتقا بده.",
+  "trialPdfFull": "در دورهٔ آزمایشی حداکثر ۲ PDF می‌توانی آپلود کنی. برای بیشتر به پریمیوم ارتقا بده.",
+  "trialQFull": "۶۰ سؤال دستیار در دورهٔ آزمایشی را استفاده کردی. برای بیشتر به پریمیوم ارتقا بده.",
+  "trialTitle": "دورهٔ آزمایشی رایگان",
+  "trialDaysLeft": "{n} روز مانده",
+  "trialQuestions": "سؤال از دستیار",
+  "trialPages": "هر PDF حداکثر ۱۰۰ صفحه",
+  "trialEnded": "دورهٔ آزمایشی تمام شد",
+  "trialKeep": "PDFهای قبلی، یادداشت‌ها، هایلایت‌ها، کارت‌ها، خلاصه‌ها و استفادهٔ آفلاین برایت می‌ماند.",
+  "premiumOnly": "ویژهٔ پریمیوم",
+  "trialFree": "آزمایشی · ۳ روز",
+  "trialPdfs2": "۲ PDF",
+  "trialQ60": "۶۰ سؤال"
  },
  "ar": {
   "pdfs": "ملفات PDF",
@@ -173,6 +212,19 @@
   "expSent": "جارٍ تجهيز بياناتك · ستُرسل إلى بريدك",
   "pwIphone": "رقِّ إلى بريميوم من تطبيق Kavis Study على iPhone",
   "pwIphoneSub": "بريميوم الذي تشتريه على iPhone يعمل أيضًا على الويب بالحساب نفسه.",
-  "pwPriceStore": "السعر في App Store"
+  "pwPriceStore": "السعر في App Store",
+  "trialLocked": "انتهت فترتك التجريبية. تبقى معك ملفات PDF التي درستها؛ لرفع ملفات PDF جديدة رقِّ إلى بريميوم.",
+  "trialPdfFull": "خلال التجربة يمكنك رفع ملفَّي PDF كحد أقصى. للمزيد رقِّ إلى بريميوم.",
+  "trialQFull": "استخدمت أسئلة المساعد الستين في التجربة. للمزيد رقِّ إلى بريميوم.",
+  "trialTitle": "التجربة المجانية",
+  "trialDaysLeft": "متبقٍ {n} أيام",
+  "trialQuestions": "أسئلة المساعد",
+  "trialPages": "كل ملف PDF حتى 100 صفحة",
+  "trialEnded": "انتهت التجربة",
+  "trialKeep": "تبقى معك ملفات PDF القديمة وملاحظاتك وتظليلاتك وبطاقاتك وملخصاتك والاستخدام دون اتصال.",
+  "premiumOnly": "خاص ببريميوم",
+  "trialFree": "تجربة · 3 أيام",
+  "trialPdfs2": "ملفا PDF",
+  "trialQ60": "60 سؤالًا"
  }
 }

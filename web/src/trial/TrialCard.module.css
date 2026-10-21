@@ -1,0 +1,92 @@
+.card {
+  flex: none;
+  border-radius: 18px;
+  background: var(--amb-soft);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ended {
+  background: var(--pri-soft);
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.head b {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.head span {
+  font-size: 11px;
+  color: var(--amb-t);
+  font-weight: 600;
+}
+
+.meter {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.meterTop {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text2);
+}
+
+.meterTop b {
+  font-size: 11px;
+  color: var(--text);
+}
+
+.bar {
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(42, 36, 32, 0.1);
+  display: flex;
+  overflow: hidden;
+}
+
+:global([data-theme='dark']) .bar {
+  background: rgba(255, 240, 210, 0.12);
+}
+
+.bar span {
+  background: var(--amb);
+  border-radius: 3px;
+}
+
+.bar span.full {
+  background: var(--pri);
+}
+
+.text {
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--text2);
+}
+
+.card button {
+  height: 34px;
+  border-radius: 17px;
+  border: 0;
+  background: var(--amb);
+  color: #2a2420;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ended button {
+  background: var(--pri);
+  color: #fffcf6;
+}

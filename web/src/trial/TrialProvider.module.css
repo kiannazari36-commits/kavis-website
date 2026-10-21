@@ -1,0 +1,88 @@
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(42, 36, 32, 0.4);
+}
+
+.dialog {
+  position: relative;
+  width: 460px;
+  max-width: 100%;
+  border-radius: 30px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: 0 30px 70px rgba(42, 36, 32, 0.3);
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  background: var(--amb-soft);
+  color: var(--amb-t);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dialog b {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.dialog p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.keep {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text2);
+  background: var(--sub);
+  border-radius: 16px;
+  padding: 10px 14px;
+}
+
+.btns {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.ghost,
+.pri {
+  flex: 1;
+  height: 50px;
+  border-radius: 25px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ghost {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+}
+
+.pri {
+  border: 0;
+  background: var(--pri);
+  color: #fffcf6;
+}

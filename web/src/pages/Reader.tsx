@@ -12,6 +12,7 @@ import { enterFullscreen, exitFullscreen, fullscreenElement, onFullscreenChange 
 import type { ShellContext } from '../components/AppShell';
 import { useSettings } from '../settings/SettingsProvider';
 import type { ReaderBlock, ReaderDoc, Segment } from '../api/types';
+import { useTrial } from '../trial/TrialProvider';
 import s from './Reader.module.css';
 
 // Design: design/NewIPad.dc.html, screen "reader" (also used by DeskApp for the web app).
@@ -53,6 +54,7 @@ export default function Reader() {
   const [paused, setPaused] = useState(false);
   const [seconds, setSeconds] = useState(START_SECONDS);
   const scroller = useRef<HTMLDivElement>(null);
+  const { guard } = useTrial();
   const { focus, setFocus } = useOutletContext<ShellContext>();
 
   // Study timer
@@ -206,7 +208,7 @@ export default function Reader() {
                     },
                   ],
                   [t('actHighlight'), () => (setSelected(false), setHighlighted(true), toast(t('highlighted')))],
-                  [t('actAsk'), () => (setSelected(false), setPanel(true), toast(t('askedExplain')))],
+                  [t('actAsk'), () => (setSelected(false), guard('question', () => (setPanel(true), toast(t('askedExplain')))))],
                 ]}
                 onTranslate={() => setTrSource(sec === 1 ? doc.sampleSentence : flatText(b))}
               />
@@ -264,7 +266,7 @@ export default function Reader() {
             onClose={() => setTerm(null)}
             onAsk={(name) => {
               setTerm(null);
-              askAssistant(name + t('askedSuffix'));
+              guard('question', () => askAssistant(name + t('askedSuffix')));
             }}
             onCard={(name) => toast(name + t('addedToCards'))}
             onListen={(name) => toast(t('readingAloud') + name)}
@@ -493,6 +495,7 @@ function AssistantPanel({ onClose }: { onClose: () => void }) {
   const [draft, setDraft] = useState('');
   const [mine, setMine] = useState<Msg[]>([]);
   const [quick, setQuick] = useState(false);
+  const { guard } = useTrial();
   const end = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -505,10 +508,12 @@ function AssistantPanel({ onClose }: { onClose: () => void }) {
       toast(t('writeFirst'));
       return;
     }
-    setMine((m) => [...m, { from: 'me', text: q }]);
-    setDraft('');
-    setQuick(false);
-    toast(t('writing'));
+    guard('question', () => {
+      setMine((m) => [...m, { from: 'me', text: q }]);
+      setDraft('');
+      setQuick(false);
+      toast(t('writing'));
+    });
   };
   const submit = (e: FormEvent) => {
     e.preventDefault();
