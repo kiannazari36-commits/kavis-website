@@ -46,7 +46,7 @@ Everything that is not finished yet. Updated after every step.
 
 ## Release
 - [x] Static build ready for Vercel (`web/vercel.json`: page routing + noindex header)
-- [ ] Test deploy on Vercel (free), no custom domain, search engines blocked — connect the GitHub repo in Vercel (Root Directory: `web`)
+- [x] Test deploy on Vercel (free): https://kavis-website.vercel.app — no custom domain, search engines blocked; every push to `main` updates it
 - [ ] Split the JavaScript into smaller parts per page (now one ~190 KB gzip file)
 
 ## Public launch checklist (do all of these before opening the site to everyone)
