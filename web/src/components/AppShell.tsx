@@ -6,6 +6,7 @@ import { useToast } from './Toast';
 import { listCourses } from '../api/courses';
 import { currentUser, logOut } from '../api/auth';
 import { useAsync } from '../hooks/useAsync';
+import { usePanelPref } from '../hooks/usePanelPref';
 import { COURSE_COLOR } from './courseColors';
 import Wordmark from './Wordmark';
 import TrialCard from '../trial/TrialCard';
@@ -46,6 +47,8 @@ export default function AppShell() {
     .toUpperCase();
   const [open, setOpen] = useState(false);
   const [focus, setFocus] = useState(false);
+  // Desktop: wide menu (open) or the narrow icon rail of the iPad design (closed). Remembered.
+  const [wide, setWide] = usePanelPref('kavis.sideOpen', 1280);
 
   // Close the mobile menu after navigating.
   useEffect(() => setOpen(false), [location.pathname, location.search]);
@@ -62,32 +65,48 @@ export default function AppShell() {
       </div>
       {open && <div className={s.scrim} onClick={() => setOpen(false)} />}
 
-      <aside className={open ? `${s.side} ${s.sideOpen}` : s.side}>
+      <aside aria-label={t('mainNav')} className={[s.side, open ? s.sideOpen : '', wide ? '' : s.rail].join(' ')}>
         <div className={s.logo}>
-          <Wordmark size={24} />
+          <span className={s.logoWide}>
+            <Wordmark size={24} />
+          </span>
+          <span className={s.logoRail}>
+            <Wordmark size={18} />
+          </span>
+          <button
+            className={s.toggle}
+            aria-label={t(wide ? 'sideCollapse' : 'sideExpand')}
+            title={t(wide ? 'sideCollapse' : 'sideExpand')}
+            aria-expanded={wide}
+            onClick={() => setWide(!wide)}
+          >
+            <Icon name="panel" size={18} className={wide ? '' : 'flip-rtl'} />
+          </button>
           <button className={`${s.iconBtn} ${s.closeBtn}`} aria-label={t('menu')} onClick={() => setOpen(false)}>
             <Icon name="close" />
           </button>
         </div>
-        <button className={s.upload} onClick={() => guard('pdf', () => toast(t('k165')))}>
+        <button className={s.upload} title={t('k33')} onClick={() => guard('pdf', () => toast(t('k165')))}>
           <Icon name="upload" size={18} />
-          {t('k33')}
+          <span className={s.label}>{t('k33')}</span>
         </button>
         {NAV.map(([to, icon, key]) => (
-          <NavLink key={to} to={to} className={({ isActive }) => (isActive ? `${s.nav} ${s.navOn}` : s.nav)}>
+          <NavLink key={to} to={to} title={t(key)} className={({ isActive }) => (isActive ? `${s.nav} ${s.navOn}` : s.nav)}>
             <Icon name={icon} size={19} />
-            {t(key)}
+            <span className={s.label}>{t(key)}</span>
           </NavLink>
         ))}
-        <div className={`mono ${s.section}`}>{t('k52')}</div>
+        <div className={`mono ${s.section} ${s.wideOnly}`}>{t('k52')}</div>
         {courses?.slice(0, 4).map((c) => (
-          <NavLink key={c.id} to={`/courses/${c.id}`} className={({ isActive }) => (isActive ? `${s.course} ${s.courseOn}` : s.course)}>
+          <NavLink key={c.id} to={`/courses/${c.id}`} className={({ isActive }) => `${s.course} ${s.wideOnly} ${isActive ? s.courseOn : ''}`}>
             <span className={s.dot} style={{ background: COURSE_COLOR[c.color].main }} />
             <span className={s.ellipsis}>{(c.short ?? c.name)[lang]}</span>
           </NavLink>
         ))}
         <span className={s.grow} />
-        <TrialCard />
+        <div className={s.wideOnly}>
+          <TrialCard />
+        </div>
         <div className={s.profile}>
           <button
             className={s.profileMain}
@@ -98,7 +117,7 @@ export default function AppShell() {
             }}
           >
             <span className={s.avatar}>{initials}</span>
-            <span className={s.profileText}>
+            <span className={`${s.profileText} ${s.label}`}>
               <b>{user.name}</b>
               <span>{t('k60')}</span>
             </span>

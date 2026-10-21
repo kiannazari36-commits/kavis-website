@@ -17,12 +17,45 @@
   flex-direction: column;
   padding: 22px 16px;
   gap: 6px;
+  transition:
+    width 0.2s ease,
+    padding 0.2s ease;
 }
 
 .logo {
-  padding: 4px 10px 18px;
+  padding: 4px 4px 18px 10px;
   display: flex;
   align-items: center;
+  gap: 8px;
+}
+
+.logoWide {
+  flex: 1;
+  display: flex;
+}
+
+.logoRail {
+  display: none;
+}
+
+/* Opens / closes the wide menu (desktop) */
+.toggle {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 17px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.toggle:hover {
+  background: var(--card);
+  color: var(--text);
 }
 
 .closeBtn {
@@ -303,4 +336,71 @@
 .focus .mobileBar,
 .focus .scrim {
   display: none !important;
+}
+
+/* Closed menu = the narrow icon rail of the iPad design (88px, 56px round buttons). Desktop only. */
+@media (min-width: 901px) {
+  .rail {
+    width: 88px;
+    padding: 24px 0;
+    align-items: center;
+    gap: 10px;
+  }
+  .rail .logo {
+    flex-direction: column;
+    padding: 16px 0 14px;
+    gap: 14px;
+  }
+  .rail .logoWide,
+  .rail .label,
+  .rail .wideOnly {
+    display: none;
+  }
+  .rail .logoRail {
+    display: inline-flex;
+  }
+  /* Amber so it does not look like the selected page */
+  .rail .upload {
+    width: 56px;
+    height: 56px;
+    border-radius: 28px;
+    padding: 0;
+    margin-bottom: 4px;
+    background: var(--amb);
+    color: #2a2420;
+    box-shadow: 0 8px 20px rgba(242, 179, 61, 0.3);
+  }
+  .rail .nav {
+    width: 56px;
+    height: 56px;
+    border-radius: 28px;
+    padding: 0;
+    justify-content: center;
+    border: 1px solid var(--line);
+    background: var(--card);
+    box-shadow: none;
+  }
+  .rail .navOn,
+  .rail .navOn:hover {
+    border: 0;
+    background: var(--pri);
+    color: #fffcf6;
+  }
+  .rail .navOn svg {
+    color: inherit;
+  }
+  .rail .profile {
+    flex-direction: column;
+    gap: 8px;
+    padding: 0;
+  }
+  .rail .profileMain {
+    flex: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .toggle {
+    display: none;
+  }
 }

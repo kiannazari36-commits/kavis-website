@@ -275,6 +275,7 @@
 .right {
   width: 330px;
   flex: none;
+  animation: panelIn 0.2s ease;
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -300,6 +301,7 @@
 
 .panelHead h2 {
   margin: 0;
+  white-space: nowrap;
   font-size: 18px;
   font-weight: 600;
 }
@@ -496,30 +498,9 @@
   letter-spacing: 0;
 }
 
-/* Narrower screens */
-@media (max-width: 1240px) {
-  .main {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .right {
-    width: auto;
-    position: static;
-    min-height: 0;
-    flex-direction: row;
-    align-items: stretch;
-  }
-  .right > * {
-    flex: 1;
-  }
-}
-
 @media (max-width: 900px) {
   .main {
     padding: 20px 16px 32px;
-  }
-  .right {
-    flex-direction: column;
   }
   .uploads {
     grid-template-columns: repeat(2, 1fr);
@@ -544,5 +525,137 @@
   .upload {
     height: 56px;
     font-size: 14px;
+  }
+}
+
+/* Right panel closed: content uses the free space, the panel waits as a tab on the edge (iPad design) */
+.mainWide {
+  padding-inline-end: 76px;
+}
+
+.planTab {
+  position: fixed;
+  inset-inline-end: 0;
+  top: 250px;
+  z-index: 30;
+  width: 58px;
+  padding: 16px 0 18px;
+  border-start-start-radius: 22px;
+  border-end-start-radius: 22px;
+  border: 1px solid var(--amb-line);
+  border-inline-end: 0;
+  background: var(--amb-soft);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  box-shadow: -8px 10px 24px rgba(42, 36, 32, 0.1);
+  animation: tabIn 0.2s ease;
+}
+
+.tabCount {
+  width: 34px;
+  height: 34px;
+  border-radius: 17px;
+  background: var(--pri);
+  color: #fffcf6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.tabTitle,
+.tabTimes {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.tabTitle {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.tabTimes {
+  font-size: 10px;
+  color: var(--amb-t);
+}
+
+/* Points toward the content: "open to this side" */
+.tabChev {
+  transform: scaleX(-1);
+}
+
+:global([dir='rtl']) .tabChev {
+  transform: none;
+}
+
+.weekly {
+  margin-inline-start: auto;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--pri-t);
+  white-space: nowrap;
+}
+
+.panelClose {
+  width: 32px;
+  height: 32px;
+  flex: none;
+  margin-inline-start: 8px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+}
+
+@keyframes tabIn {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Not enough room for three columns: the open panel slides over the content from the side */
+@media (max-width: 1240px) {
+  .right {
+    position: fixed;
+    inset-block: 0;
+    inset-inline-end: 0;
+    z-index: 40;
+    width: min(360px, 100vw);
+    min-height: 0;
+    padding: 16px;
+    overflow-y: auto;
+    background: var(--bg);
+    border-inline-start: 1px solid var(--line);
+    box-shadow: -20px 0 50px rgba(42, 36, 32, 0.18);
+  }
+  .assistant {
+    min-height: 360px;
+  }
+}
+
+@media (max-width: 900px) {
+  .mainWide {
+    padding-inline-end: 16px;
+  }
+  .planTab {
+    top: auto;
+    bottom: 96px;
   }
 }

@@ -7,6 +7,7 @@ import Icon, { type IconName } from '../components/Icon';
 import { COURSE_COLOR } from '../components/courseColors';
 import type { CourseColor } from '../api/types';
 import { useTrial } from '../trial/TrialProvider';
+import { usePanelPref } from '../hooks/usePanelPref';
 import s from './Home.module.css';
 
 // Design: design/DeskApp.dc.html, screen "home" (web).
@@ -33,6 +34,8 @@ export default function Home() {
   const [showReview, setShowReview] = useState(true);
   const [done, setDone] = useState<boolean[]>([true, false, false]);
   const [ask, setAsk] = useState('');
+  // Right panel (today's plan + assistant): closed by default like the iPad design, opens wide screens only. Remembered.
+  const [panelOpen, setPanelOpen] = usePanelPref('kavis.planOpen', 1440);
 
   const uploads: [IconName, string, boolean][] = [
     ['upload', 'k33', true],
@@ -53,7 +56,7 @@ export default function Home() {
   };
 
   return (
-    <main className={s.main}>
+    <main className={panelOpen ? s.main : `${s.main} ${s.mainWide}`}>
       <div className={s.left}>
         <div className={s.head}>
           <TopBar />
@@ -136,69 +139,85 @@ export default function Home() {
         </div>
       </div>
 
-      <aside className={s.right}>
-        <section className={s.panel}>
-          <div className={s.panelHead}>
-            <h2>{t('k84')}</h2>
-            <span className={s.badge}>{PLAN.length}</span>
-          </div>
-          {PLAN.map((p, i) => (
-            <div key={p.time} className={s.planRow}>
-              <span className={`mono ${s.time}`}>{p.time}</span>
-              <span className={s.planText}>
-                <b>{t(p.title)}</b>
-                <span>{t(p.sub)}</span>
-              </span>
-              <button
-                role="checkbox"
-                aria-checked={done[i]}
-                aria-label={t(p.title)}
-                className={done[i] ? `${s.check} ${s.checkOn}` : s.check}
-                onClick={() => setDone(done.map((d, j) => (j === i ? !d : d)))}
-              >
-                {done[i] && <Icon name="check" size={13} width={2.4} />}
+      {!panelOpen && (
+        <button className={s.planTab} aria-label={t('planOpen')} aria-expanded={false} onClick={() => setPanelOpen(true)}>
+          <span className={s.tabCount}>{PLAN.length}</span>
+          <span className={s.tabTitle}>{t('planTab')}</span>
+          <span className={`mono ${s.tabTimes}`}>{PLAN.map((p) => p.time).join(' · ')}</span>
+          <Icon name="chevron" size={16} width={2.2} className={s.tabChev} />
+        </button>
+      )}
+
+      {panelOpen && (
+        <aside className={s.right}>
+          <section className={s.panel}>
+            <div className={s.panelHead}>
+              <h2>{t('k84')}</h2>
+              <Link to="/plan" className={s.weekly}>
+                {t('weeklyPlan')}
+              </Link>
+              <button className={s.panelClose} aria-label={t('planClose')} aria-expanded onClick={() => setPanelOpen(false)}>
+                <Icon name="close" size={14} width={2.2} />
               </button>
             </div>
-          ))}
-          <Link to="/plan" className={s.countdown}>
-            <b>7</b>
-            {t('k91')}
-          </Link>
-        </section>
-
-        <section className={`${s.panel} ${s.assistant}`}>
-          <div className={s.asstHead}>
-            <span className="star-btn" style={{ width: 36, height: 36 }} aria-hidden="true" />
-            <span className={s.asstTitle}>
-              <b>{t('k92')}</b>
-              <span>{t('k93')}</span>
-            </span>
-          </div>
-          <div className={s.bubble}>
-            {t('k94')} <b>{t('k95')}</b>
-            {t('k96')}
-          </div>
-          <div className={s.chips}>
-            {['k97', 'k98', 'k99'].map((k) => (
-              <button
-                key={k}
-                onClick={() =>
-                  k === 'k97' ? guard('question', () => navigate(`/assistant?q=${encodeURIComponent(t(k))}`)) : guard('generate', () => navigate(k === 'k98' ? '/quiz' : '/cards'))
-                }
-              >
-                {t(k)}
-              </button>
+            {PLAN.map((p, i) => (
+              <div key={p.time} className={s.planRow}>
+                <span className={`mono ${s.time}`}>{p.time}</span>
+                <span className={s.planText}>
+                  <b>{t(p.title)}</b>
+                  <span>{t(p.sub)}</span>
+                </span>
+                <button
+                  role="checkbox"
+                  aria-checked={done[i]}
+                  aria-label={t(p.title)}
+                  className={done[i] ? `${s.check} ${s.checkOn}` : s.check}
+                  onClick={() => setDone(done.map((d, j) => (j === i ? !d : d)))}
+                >
+                  {done[i] && <Icon name="check" size={13} width={2.4} />}
+                </button>
+              </div>
             ))}
-          </div>
-          <span className={s.grow} />
-          <form className={s.ask} onSubmit={sendAsk}>
-            <input value={ask} onChange={(e) => setAsk(e.target.value)} placeholder={t('k100')} aria-label={t('k100')} />
-            <button type="submit" aria-label={t('k100')}>
-              <Icon name="send" size={16} className="flip-rtl" />
-            </button>
-          </form>
-        </section>
-      </aside>
+            <Link to="/plan" className={s.countdown}>
+              <b>7</b>
+              {t('k91')}
+            </Link>
+          </section>
+  
+          <section className={`${s.panel} ${s.assistant}`}>
+            <div className={s.asstHead}>
+              <span className="star-btn" style={{ width: 36, height: 36 }} aria-hidden="true" />
+              <span className={s.asstTitle}>
+                <b>{t('k92')}</b>
+                <span>{t('k93')}</span>
+              </span>
+            </div>
+            <div className={s.bubble}>
+              {t('k94')} <b>{t('k95')}</b>
+              {t('k96')}
+            </div>
+            <div className={s.chips}>
+              {['k97', 'k98', 'k99'].map((k) => (
+                <button
+                  key={k}
+                  onClick={() =>
+                    k === 'k97' ? guard('question', () => navigate(`/assistant?q=${encodeURIComponent(t(k))}`)) : guard('generate', () => navigate(k === 'k98' ? '/quiz' : '/cards'))
+                  }
+                >
+                  {t(k)}
+                </button>
+              ))}
+            </div>
+            <span className={s.grow} />
+            <form className={s.ask} onSubmit={sendAsk}>
+              <input value={ask} onChange={(e) => setAsk(e.target.value)} placeholder={t('k100')} aria-label={t('k100')} />
+              <button type="submit" aria-label={t('k100')}>
+                <Icon name="send" size={16} className="flip-rtl" />
+              </button>
+            </form>
+          </section>
+        </aside>
+      )}
     </main>
   );
 }

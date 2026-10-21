@@ -8,6 +8,7 @@ import Wordmark from '../components/Wordmark';
 import { getPdf } from '../api/courses';
 import { getReaderDoc, translate, type TranslationStyle } from '../api/reader';
 import { useAsync } from '../hooks/useAsync';
+import { usePanelPref } from '../hooks/usePanelPref';
 import { enterFullscreen, exitFullscreen, fullscreenElement, onFullscreenChange } from '../hooks/fullscreen';
 import type { ShellContext } from '../components/AppShell';
 import { useSettings } from '../settings/SettingsProvider';
@@ -47,7 +48,8 @@ export default function Reader() {
   const paperNow: Paper = paper ?? (theme === 'dark' ? 'dark' : settings.readerPaper);
   const [sec, setSec] = useState(1);
   const [fontI, setFontI] = useState(0);
-  const [panel, setPanel] = useState(() => window.innerWidth > 1200);
+  // Assistant panel: remembered; without a saved choice open only on wide screens.
+  const [panel, setPanel] = usePanelPref('kavis.readerPanel', 1200);
   const [term, setTerm] = useState<string | null>(null);
   const [selected, setSelected] = useState(false);
   const [highlighted, setHighlighted] = useState(false);
