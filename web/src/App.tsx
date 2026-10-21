@@ -14,6 +14,7 @@ import Reader from './pages/Reader';
 import Assistant from './pages/Assistant';
 import Quiz from './pages/Quiz';
 import Cards from './pages/Cards';
+import Plan from './pages/Plan';
 
 export default function App() {
   return (
@@ -34,7 +35,7 @@ export default function App() {
                   <Route path="/assistant" element={<Assistant />} />
                   <Route path="/quiz" element={<Quiz />} />
                   <Route path="/cards" element={<Cards />} />
-                  <Route path="/plan" element={<Placeholder name="plan" />} />
+                  <Route path="/plan" element={<Plan />} />
                   <Route path="/progress" element={<Placeholder name="progress" />} />
                   <Route path="/settings" element={<Placeholder name="settings" />} />
                 </Route>

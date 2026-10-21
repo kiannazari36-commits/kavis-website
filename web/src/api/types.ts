@@ -113,3 +113,31 @@ export type QuizQuestion = {
 
 export type FlashCard = { q: L10n; a: L10n; note: L10n; page: number };
 export type CardRating = 'again' | 'hard' | 'good';
+
+export type PlanItem = {
+  /** Course id, or "review" / "exam" for review and exam-prep tasks. */
+  kind: string;
+  label: L10n;
+  title: L10n;
+  /** Minutes for a 1.5 h study day; scaled to the student's hours. */
+  minutes: number;
+  why: L10n;
+  to: 'reader' | 'quiz';
+};
+
+export type CourseRank = {
+  courseId: string;
+  name: L10n;
+  badge: L10n;
+  icon: 'star' | 'trend' | 'alert';
+  level: 'good' | 'mid' | 'low';
+  scores: number[];
+  note: L10n;
+  growth: { from: number; to: number; days: number };
+  cta: L10n;
+  toast?: L10n;
+};
+
+export type WeakTopic = { title: L10n; pdf: L10n; mastery: number; color: string };
+
+export type PremiumPlan = { id: 'year' | 'term' | 'month'; title: L10n; price: string; old: string; sub: L10n; tag?: L10n };

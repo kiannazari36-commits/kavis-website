@@ -56,3 +56,9 @@ export function termSummary(courses: number, pdfs: number, hours: number, lang: 
       return `${term} · ${courses} دروس · ${pdfs} ملف PDF · ${hours} ساعة دراسة`;
   }
 }
+
+/** 1.5 → "1,5 sa" (tr) / "1.5 h" (en). */
+export function hoursLabel(h: number, lang: Lang, t: (k: string) => string) {
+  const v = h % 1 && (lang === 'tr' || lang === 'fa') ? String(h).replace('.', ',') : String(h);
+  return num(v, lang) + t('hour');
+}

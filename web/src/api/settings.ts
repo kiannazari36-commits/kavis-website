@@ -8,10 +8,14 @@ export type Settings = {
   contentLang: ContentLangChoice;
   /** Per-course override; missing = use the general setting. */
   courseContentLang: Record<string, ContentLangChoice>;
+  planMode: 'aim' | 'own' | 'none';
+  /** Study days per week and hours per day (chosen at sign-up, editable in Settings). */
+  studyDays: number;
+  studyHours: number;
 };
 
 const KEY = 'kavis.settings';
-export const DEFAULT_SETTINGS: Settings = { contentLang: 'pdf', courseContentLang: {} };
+export const DEFAULT_SETTINGS: Settings = { contentLang: 'pdf', courseContentLang: {}, planMode: 'aim', studyDays: 4, studyHours: 1.5 };
 
 // The mock keeps settings in the browser; a real server will store them in the account.
 export function loadSettingsNow(): Settings {

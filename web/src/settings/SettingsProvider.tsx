@@ -5,6 +5,7 @@ import type { Course } from '../api/types';
 
 type Ctx = {
   settings: Settings;
+  patch: (p: Partial<Settings>) => void;
   setContentLang: (c: ContentLangChoice) => void;
   /** null removes the course override. */
   setCourseContentLang: (courseId: string, c: ContentLangChoice | null) => void;
@@ -20,6 +21,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     saveSettings(next);
   }, []);
 
+  const patch = useCallback((p: Partial<Settings>) => update({ ...settings, ...p }), [settings, update]);
+
   const setContentLang = useCallback((c: ContentLangChoice) => update({ ...settings, contentLang: c }), [settings, update]);
 
   const setCourseContentLang = useCallback(
@@ -32,7 +35,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     [settings, update],
   );
 
-  return <SettingsContext.Provider value={{ settings, setContentLang, setCourseContentLang }}>{children}</SettingsContext.Provider>;
+  return <SettingsContext.Provider value={{ settings, patch, setContentLang, setCourseContentLang }}>{children}</SettingsContext.Provider>;
 }
 
 export function useSettings() {
