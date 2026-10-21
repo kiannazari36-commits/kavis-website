@@ -297,3 +297,10 @@
     background: rgba(42, 36, 32, 0.4);
   }
 }
+
+/* Focus mode (full-screen reading): only the page content stays */
+.focus .side,
+.focus .mobileBar,
+.focus .scrim {
+  display: none !important;
+}

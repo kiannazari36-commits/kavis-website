@@ -108,7 +108,8 @@
   "t7def": "Yüksek tansiyonun beyin, kalp, böbrek veya gözde yaptığı akut hasar (ör. inme, kalp yetmezliği, böbrek yetmezliği).",
   "demoTranslation": "Bu bölümün çevirisi sunucu bağlanınca gelecek. Örnek çeviri için sayfa 12'deki ilk cümleyi seç.",
   "sampleNote": "Örnek ders",
-  "fullScreen": "Tam ekran"
+  "fullScreen": "Tam ekran",
+  "exitFullScreen": "Tam ekrandan çık"
  },
  "en": {
   "pageInfo": "PHARMACOTHERAPY · PAGE 12/48 · 25%",
@@ -219,7 +220,8 @@
   "t7def": "Acute damage high blood pressure causes to the brain, heart, kidneys or eyes (e.g. stroke, heart failure, kidney failure).",
   "demoTranslation": "The translation of this part will come once the server is connected. For a sample, pick the first sentence on page 12.",
   "sampleNote": "Sample lesson",
-  "fullScreen": "Full screen"
+  "fullScreen": "Full screen",
+  "exitFullScreen": "Exit full screen"
  },
  "fa": {
   "pageInfo": "دارودرمانی · صفحه 12/48 · 25%",
@@ -330,7 +332,8 @@
   "t7def": "آسیب حادی که فشار خون بالا به مغز، قلب، کلیه یا چشم می‌زند (مثلاً سکته مغزی، نارسایی قلبی، نارسایی کلیه).",
   "demoTranslation": "ترجمهٔ این بخش بعد از اتصال سرور می‌آید. برای نمونه، اولین جملهٔ صفحهٔ ۱۲ را انتخاب کن.",
   "sampleNote": "درس نمونه",
-  "fullScreen": "تمام‌صفحه"
+  "fullScreen": "تمام‌صفحه",
+  "exitFullScreen": "خروج از تمام‌صفحه"
  },
  "ar": {
   "pageInfo": "العلاج الدوائي · الصفحة 12/48 · 25%",
@@ -441,6 +444,7 @@
   "t7def": "الضرر الحاد الذي يسببه ارتفاع ضغط الدم للدماغ أو القلب أو الكلى أو العين (مثل السكتة الدماغية، قصور القلب، الفشل الكلوي).",
   "demoTranslation": "ستصل ترجمة هذا الجزء بعد ربط الخادم. للتجربة، اختر الجملة الأولى في الصفحة 12.",
   "sampleNote": "درس تجريبي",
-  "fullScreen": "ملء الشاشة"
+  "fullScreen": "ملء الشاشة",
+  "exitFullScreen": "الخروج من ملء الشاشة"
  }
 }

@@ -40,6 +40,7 @@ const PATHS = {
   pen: 'M4 20l1-4L16 5l3 3L8 19z M14 7l3 3',
   speaker: 'M4 9h4l5-4v14l-5-4H4z M16.5 8.5a5 5 0 0 1 0 7',
   expand: 'M4 9V4h5 M20 9V4h-5 M4 15v5h5 M20 15v5h-5',
+  shrink: 'M9 4v5H4 M15 4v5h5 M9 20v-5H4 M15 20v-5h5',
   pause: 'M8 5v14 M16 5v14',
 };
 

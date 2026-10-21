@@ -11,6 +11,13 @@ import Wordmark from './Wordmark';
 import Icon, { type IconName } from './Icon';
 import s from './AppShell.module.css';
 
+/** Shared with pages inside the shell (read with useOutletContext). */
+export type ShellContext = {
+  /** Focus mode: hides the menu and top bar, e.g. for full-screen reading. */
+  focus: boolean;
+  setFocus: (on: boolean) => void;
+};
+
 // Sidebar from design/DeskApp.dc.html (home / courses / settings screens).
 const NAV: [string, IconName, string][] = [
   ['/home', 'home', 'k47'],
@@ -35,12 +42,13 @@ export default function AppShell() {
     .join('')
     .toUpperCase();
   const [open, setOpen] = useState(false);
+  const [focus, setFocus] = useState(false);
 
   // Close the mobile menu after navigating.
   useEffect(() => setOpen(false), [location.pathname, location.search]);
 
   return (
-    <div className={s.shell}>
+    <div className={focus ? `${s.shell} ${s.focus}` : s.shell}>
       <div className={s.mobileBar}>
         <button className={s.iconBtn} aria-label={t('menu')} aria-expanded={open} onClick={() => setOpen(true)}>
           <Icon name="menu" />
@@ -103,7 +111,7 @@ export default function AppShell() {
       </aside>
 
       <div className={s.content}>
-        <Outlet />
+        <Outlet context={{ focus, setFocus } satisfies ShellContext} />
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useOutletContext, useSearchParams } from 'react-router-dom';
 import { useI18n } from '../i18n/I18nProvider';
 import { useTheme } from '../theme/ThemeProvider';
 import { useToast } from '../components/Toast';
@@ -8,6 +8,8 @@ import Wordmark from '../components/Wordmark';
 import { getPdf } from '../api/courses';
 import { getReaderDoc, translate, type TranslationStyle } from '../api/reader';
 import { useAsync } from '../hooks/useAsync';
+import { enterFullscreen, exitFullscreen, fullscreenElement, onFullscreenChange } from '../hooks/fullscreen';
+import type { ShellContext } from '../components/AppShell';
 import type { ReaderBlock, ReaderDoc, Segment } from '../api/types';
 import s from './Reader.module.css';
 
@@ -48,6 +50,7 @@ export default function Reader() {
   const [paused, setPaused] = useState(false);
   const [seconds, setSeconds] = useState(START_SECONDS);
   const scroller = useRef<HTMLDivElement>(null);
+  const { focus, setFocus } = useOutletContext<ShellContext>();
 
   // Study timer
   useEffect(() => {
@@ -56,17 +59,37 @@ export default function Reader() {
     return () => clearInterval(id);
   }, [paused]);
 
-  // Escape closes popups
+  // Escape closes popups and leaves focus mode
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
       setTerm(null);
       setSelected(false);
       setTrSource(null);
+      setFocus(false);
+      exitFullscreen();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, []);
+  }, [setFocus]);
+
+  // Leaving browser fullscreen (Esc, browser button) also leaves focus mode.
+  useEffect(
+    () =>
+      onFullscreenChange(() => {
+        if (!fullscreenElement()) setFocus(false);
+      }),
+    [setFocus],
+  );
+
+  // Back to normal when leaving the reader.
+  useEffect(
+    () => () => {
+      setFocus(false);
+      exitFullscreen();
+    },
+    [setFocus],
+  );
 
   if (!doc) return <main className={s.loading} />;
 
@@ -99,13 +122,20 @@ export default function Reader() {
     setPanel(true);
     toast(t('askedPrefix') + q);
   };
-  const fullScreen = () => {
-    if (document.fullscreenElement) document.exitFullscreen();
-    else document.documentElement.requestFullscreen?.().catch(() => toast(t('k165')));
+  const toggleFocus = () => {
+    if (focus) {
+      setFocus(false);
+      exitFullscreen();
+    } else {
+      setTerm(null);
+      setSelected(false);
+      setFocus(true);
+      enterFullscreen();
+    }
   };
 
   return (
-    <div className={s.wrap} data-paper={paperNow}>
+    <div className={s.wrap} data-paper={paperNow} data-focus={focus || undefined}>
       <main className={s.main}>
         <header className={s.header}>
           <button className={s.round} aria-label={t('back')} onClick={() => navigate(`/courses/${courseId}`)}>
@@ -213,8 +243,14 @@ export default function Reader() {
           <button aria-label={t('cardsLabel')} title={t('cardsLabel')} onClick={() => navigate('/cards')}>
             <Icon name="cards" size={20} />
           </button>
-          <button aria-label={t('fullScreen')} title={t('fullScreen')} onClick={fullScreen}>
-            <Icon name="expand" size={20} />
+          <button
+            aria-label={focus ? t('exitFullScreen') : t('fullScreen')}
+            title={focus ? t('exitFullScreen') : t('fullScreen')}
+            aria-pressed={focus}
+            className={focus ? s.dockOn : undefined}
+            onClick={toggleFocus}
+          >
+            <Icon name={focus ? 'shrink' : 'expand'} size={20} />
           </button>
         </div>
 
@@ -233,7 +269,7 @@ export default function Reader() {
         )}
       </main>
 
-      {panel && <AssistantPanel onClose={() => setPanel(false)} />}
+      {panel && !focus && <AssistantPanel onClose={() => setPanel(false)} />}
 
       {trSource && <TranslateDialog doc={doc} source={trSource} onClose={() => setTrSource(null)} />}
     </div>

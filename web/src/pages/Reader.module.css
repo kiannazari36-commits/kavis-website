@@ -923,3 +923,26 @@
     display: none;
   }
 }
+
+/* Focus mode: only the reading text and the tool dock */
+.wrap[data-focus] {
+  height: 100vh;
+}
+
+.wrap[data-focus] .header,
+.wrap[data-focus] .tabs {
+  display: none;
+}
+
+.wrap[data-focus] .scroll {
+  padding-top: 32px;
+}
+
+.wrap[data-focus] .column {
+  max-width: 720px;
+}
+
+.dock > button.dockOn {
+  background: var(--pri);
+  color: #fffcf6;
+}
