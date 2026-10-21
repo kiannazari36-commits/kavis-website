@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Sınav sonucu</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+<style>[dir=rtl] .dc-back{transform:scaleX(-1)}[dir=rtl],[dir=rtl] *{letter-spacing:0 !important}</style>
+</helmet>
+<div dir="{{dir}}" lang="{{lang}}" style="width: {{W}}px; height: {{H}}px; box-sizing: border-box; display: flex; flex-direction: column; position: relative; overflow: hidden; background: {{c.bg}}; color: {{c.text}}; font-family: Poppins, Vazirmatn, system-ui, sans-serif">
+
+<div aria-hidden="true" style="position: absolute; left: 0; right: 0; top: 0; height: 330px; pointer-events: none">
+<sc-for list="{{confetti}}" as="k" hint-placeholder-count="18">
+<span style="position: absolute; left: {{k.x}}px; top: {{k.y}}px; width: {{k.w}}px; height: {{k.h}}px; border-radius: 2px; background: {{k.c}}; transform: rotate({{k.r}}deg); opacity: 0.9"></span>
+</sc-for>
+</div>
+
+<div style="height: {{topH}}px; flex: none"></div>
+<div style="flex: none; display: flex; align-items: center; height: 44px; padding: 0 8px; position: relative">
+<button onClick="{{done}}" aria-label="{{s.close}}" style="width: 44px; height: 44px; border: 0; background: transparent; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12 M18 6L6 18"></path></svg></button>
+<span style="flex: 1; text-align: center; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; letter-spacing: 0.1em; color: {{c.text2}}">{{s.kind}} {{_t.k2452}}</span>
+<span style="width: 44px"></span>
+</div>
+
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 4px 16px 24px; display: flex; flex-direction: column; gap: 14px; position: relative">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 6px 0 4px">
+<div role="img" aria-label="84 / 100" style="position: relative; width: 176px; height: 176px">
+<svg width="176" height="176" viewBox="0 0 176 176" aria-hidden="true"><circle cx="88" cy="88" r="76" fill="none" stroke="{{c.line}}" stroke-width="14"></circle><circle cx="88" cy="88" r="76" fill="none" stroke="{{c.pri}}" stroke-width="14" stroke-linecap="round" stroke-dasharray="401 478" transform="rotate(-90 88 88)"></circle></svg>
+<div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px">
+<span style="font-size: 54px; font-weight: 700; line-height: 1; letter-spacing: -0.03em">84</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px; color: {{c.text3}}">/ 100</span>
+</div>
+</div>
+<span style="font-size: 14px; font-weight: 700; color: {{c.ambText}}; background: {{c.ambSoft}}; padding: 7px 14px; border-radius: 8px; transform: rotate(-3deg)">{{s.gain}}</span>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding-top: 4px">
+<span style="font-size: 20px; font-weight: 700">{{s.newLvl}}</span>
+<div aria-hidden="true" style="display: flex; gap: 4px">
+<sc-for list="{{lvls}}" as="l" hint-placeholder-count="5"><span style="width: 44px; height: 6px; border-radius: 3px; background: {{l.bg}}"></span></sc-for>
+</div>
+</div>
+</div>
+
+<section style="border-radius: 18px; background: {{c.card}}; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: baseline; justify-content: space-between">
+<h2 style="margin: 0; font-size: 15px; font-weight: 700">{{s.history}}</h2>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}">52 → 84</span>
+</div>
+<svg dir="ltr" width="100%" height="128" viewBox="0 0 326 128" role="img" aria-label="{{s.history}}">
+<path d="M0 30 H326 M0 70 H326 M0 110 H326" stroke="{{c.line}}" stroke-width="1" stroke-dasharray="3 4"></path>
+<path d="M16 90 L89.5 75 L163 66.7 L236.5 58.3 L310 36.7 L310 112 L16 112 Z" fill="{{c.pri}}" fill-opacity="0.08"></path>
+<path d="M16 90 L89.5 75 L163 66.7 L236.5 58.3 L310 36.7" fill="none" stroke="{{c.pri}}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+<circle cx="16" cy="90" r="4" fill="{{c.card}}" stroke="{{c.pri}}" stroke-width="2"></circle>
+<circle cx="89.5" cy="75" r="4" fill="{{c.card}}" stroke="{{c.pri}}" stroke-width="2"></circle>
+<circle cx="163" cy="66.7" r="4" fill="{{c.card}}" stroke="{{c.pri}}" stroke-width="2"></circle>
+<circle cx="236.5" cy="58.3" r="4" fill="{{c.card}}" stroke="{{c.pri}}" stroke-width="2"></circle>
+<circle cx="310" cy="36.7" r="6" fill="{{c.pri}}"></circle>
+<text x="310" y="22" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600" fill="{{c.text}}">84</text>
+<text x="16" y="126" font-family="JetBrains Mono, monospace" font-size="10" fill="{{c.text3}}">{{s.d1}}</text>
+<text x="163" y="126" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="{{c.text3}}">{{s.d3}}</text>
+<text x="310" y="126" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="{{c.text3}}">{{s.d5}}</text>
+</svg>
+</section>
+
+<section style="border-radius: 18px; background: {{c.card}}; padding: 14px 16px; display: flex; align-items: center; gap: 12px">
+<span style="width: 42px; height: 42px; border-radius: 12px; background: {{c.priSoft}}; color: {{c.priText}}; display: flex; align-items: center; justify-content: center; transform: rotate(-7deg); flex: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a1.5 1.5 0 0 1 1.5 1.5v12A1.5 1.5 0 0 1 19 20H5a1.5 1.5 0 0 1-1.5-1.5v-12A1.5 1.5 0 0 1 5 5z M3.5 10h17 M8 3v4 M16 3v4"></path></svg></span>
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.08em; color: {{c.text3}}">{{s.nextL}}</span>
+<span style="font-size: 15px; font-weight: 700">{{s.nextD}}</span>
+</div>
+<button onClick="{{addCal}}" style="height: 40px; padding: 0 12px; border-radius: {{btnR}}px; border: 1px solid {{c.line}}; background: transparent; color: {{c.text}}; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; flex: none">{{s.addCal}}</button>
+</section>
+
+<section style="border-radius: 18px; background: {{c.card}}; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; gap: 8px">
+<span style="width: 26px; height: 26px; border-radius: 8px; background: {{c.bad}}; color: {{c.onBad}}; display: flex; align-items: center; justify-content: center; transform: rotate(-8deg)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l9 16H3z M12 10v4 M12 17h.01"></path></svg></span>
+<h2 style="margin: 0; font-size: 15px; font-weight: 700">{{s.danger}}</h2>
+</div>
+<div style="border-radius: 12px; background: {{c.badSoft}}; padding: 10px 12px; display: flex; flex-direction: column; gap: 3px">
+<span dir="ltr" lang="tr" style="font-size: 14px; line-height: 1.45; text-align: start">{{_t.k348}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.bad}}">{{s.sure}} · {{s.pg}} 13</span>
+</div>
+<div style="border-radius: 12px; background: {{c.badSoft}}; padding: 10px 12px; display: flex; flex-direction: column; gap: 3px">
+<span dir="ltr" lang="tr" style="font-size: 14px; line-height: 1.45; text-align: start">{{_t.k315}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.bad}}">{{s.sure}} · {{s.pg}} 14</span>
+</div>
+<button onClick="{{toReview}}" style="height: 46px; border-radius: {{btnR}}px; border: 0; background: {{c.pri}}; color: #FFFCF6; font-family: inherit; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer">{{s.review}} <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX({{flip}})"><path d="M5 12h14 M13 6l6 6-6 6"></path></svg></button>
+</section>
+
+<section style="border-radius: 18px; background: {{c.card}}; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 15px; font-weight: 700">{{s.pages}}</h2>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<button onClick="{{toReader}}" style="height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid {{c.line}}; background: {{c.sub}}; color: {{c.text}}; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px; cursor: pointer">{{s.pg}} {{_t.k154}}</button>
+<button onClick="{{toReader}}" style="height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid {{c.line}}; background: {{c.sub}}; color: {{c.text}}; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px; cursor: pointer">{{s.pg}} {{_t.k158}}</button>
+<button onClick="{{toReader}}" style="height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid {{c.line}}; background: {{c.sub}}; color: {{c.text}}; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px; cursor: pointer">{{s.pg}} {{_t.k189}}</button>
+</div>
+</section>
+</div>
+
+<div style="flex: none; padding: 12px 16px {{bottomPad}}px; border-top: 1px solid {{c.line}}; display: flex; gap: 10px">
+<button onClick="{{toCards}}" style="flex: 1; height: {{btnH}}px; border: 1px solid {{c.line}}; border-radius: {{btnR}}px; background: {{c.card}}; color: {{c.text}}; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer">{{s.toCards}}</button>
+<button onClick="{{toReader}}" style="flex: 1.4; height: {{btnH}}px; border: 0; border-radius: {{btnR}}px; background: {{c.pri}}; color: #FFFCF6; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">{{s.cont}}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14 M13 6l6 6-6 6"></path></svg></button>
+</div>
+<sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div role="status" aria-live="polite" style="position: absolute; left: 50%; bottom: {{toastBottom}}px; transform: translateX(-50%); z-index: 50; max-width: 86%; box-sizing: border-box; padding: 12px 18px; border-radius: 22px; background: #2E2721; color: #FBEFD6; font-family: Poppins, Vazirmatn, system-ui, sans-serif; font-size: 14px; line-height: 1.4; text-align: center; box-shadow: 0 12px 30px rgba(42,36,32,.28); pointer-events: none">{{toastMsg}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"platform":{"editor":"enum","options":["ios","android"],"default":"ios"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"variant":{"editor":null},"go":{"editor":null},"live":{"editor":null},"$preview":{"width":390,"height":844}}'>
+const _I18N = {k: ["+13 puan ilerlediniz", "1 EKİ", "13 · Yan etki", "14 · Kontrendikasyon", "15 Ekim Perşembe · 5 dk", "17 EYL", "21 · Hipertansif kriz", "ARB'lerin gebelikte kullanılabileceğini düşündün.", "Alfa-1 blokerlerin ilk doz etkisini “kuru öksürük” sandın.", "BUGÜN", "Bitti", "DERS SONU SINAVI", "Ders özeti: zayıf konular ve kelimeler", "Derse devam et", "EMİNDİN", "Hataları kartlara ekle", "Kapat", "Puan geçmişi", "S.", "SONRAKİ TEKRAR", "Takvime ekle", "Tehlikeli hatalar", "Tekrar edilecek sayfalar", "Tekrar tarihi takvimine eklendi", "Yeni seviye: Çok iyi", "· HİPERTANSİYON"], en: ["+13 points up", "1 OCT", "13 · Side effect", "14 · Contraindication", "Thursday, 15 October · 5 min", "17 SEP", "21 · Hypertensive crisis", "You thought ARBs could be used in pregnancy.", "You mistook the alpha-1 blocker first-dose effect for “dry cough”.", "TODAY", "Done", "END-OF-LESSON EXAM", "Lesson summary: weak topics and words", "Continue lesson", "YOU WERE SURE", "Add mistakes to cards", "Close", "Score history", "p.", "NEXT REVIEW", "Add to calendar", "Dangerous mistakes", "Pages to review", "Review date added to your calendar", "New level: Very good", "· HYPERTENSION"], fa: ["+13 امتیاز پیشرفت", "1 اکتبر", "13 · عارضه جانبی", "14 · منع مصرف", "پنجشنبه 15 اکتبر · 5 دقیقه", "17 سپتامبر", "21 · بحران فشار خون", "فکر کردی ARBها در بارداری قابل مصرف‌اند.", "اثر دوز اول مسدودکننده‌های آلفا-1 را «سرفهٔ خشک» فرض کردی.", "امروز", "تمام شد", "آزمون پایان درس", "خلاصه درس: مباحث و واژه‌های ضعیف", "ادامه درس", "مطمئن بودی", "اشتباه‌ها را به کارت‌ها اضافه کن", "بستن", "تاریخچه امتیاز", "ص.", "مرور بعدی", "افزودن به تقویم", "اشتباهات خطرناک", "صفحه‌های مرور", "تاریخ مرور به تقویمت اضافه شد", "سطح جدید: خیلی خوب", "· فشار خون بالا"], ar: ["+13 نقطة تقدّم", "1 أكتوبر", "13 · الأثر الجانبي", "14 · موانع الاستعمال", "الخميس 15 أكتوبر · 5 د", "17 سبتمبر", "21 · أزمة ارتفاع ضغط الدم", "ظننت أن ARBs يمكن استخدامها أثناء الحمل.", "ظننت أن تأثير الجرعة الأولى لحاصرات ألفا-1 هو “السعال الجاف”.", "اليوم", "تم", "امتحان نهاية الدرس", "ملخص الدرس: المواضيع والكلمات الضعيفة", "تابع الدرس", "كنت واثقًا", "أضف الأخطاء إلى البطاقات", "إغلاق", "سجل الدرجات", "ص.", "المراجعة التالية", "أضف إلى التقويم", "أخطاء خطيرة", "صفحات للمراجعة", "أُضيف موعد المراجعة إلى تقويمك", "مستوى جديد: جيد جدًا", "· ارتفاع ضغط الدم"]};
+let _lang = 'tr', _M = null; const _TC = {};
+const _x = (s) => { if (_lang === 'tr' || !_I18N[_lang]) return s; if (!_M) { _M = {}; _I18N.k.forEach((k, i) => { _M[k] = i; }); } const i = _M[s]; return i == null ? s : _I18N[_lang][i]; };
+const _TK = {"k154": "13 · Yan etki", "k158": "14 · Kontrendikasyon", "k189": "21 · Hipertansif kriz", "k315": "ARB'lerin gebelikte kullanılabileceğini düşündün.", "k348": "Alfa-1 blokerlerin ilk doz etkisini “kuru öksürük” sandın.", "k2452": "· HİPERTANSİYON"};
+const _PT = {};
+const _tt = () => { if (!_TC[_lang]) { const o = {}; Object.keys(_TK).forEach((k) => { o[k] = (_PT[k] && _lang !== 'tr') ? (_PT[k][_lang] || _x(_TK[k])) : _x(_TK[k]); }); _TC[_lang] = o; } return _TC[_lang]; };
+
+class Component extends DCLogic {
+  renderVals() { const _p = this.props || {}, _s = this.state || {}; _lang = _s.lang || _p.lang || 'tr'; const r = this._rv0(); if (r && typeof r === 'object') { r._t = _tt(); r._dir = (_lang === 'fa' || _lang === 'ar') ? 'rtl' : 'ltr'; r._ai = this._aiDark ? { bg: '#F2B33D', fg: '#241C14', tx: '#EFE8DC' } : { bg: '#9C2F3A', fg: '#FFF6E6', tx: '#2A2420' }; } return r; }
+  _rv0() {
+    const __st = this.state || {};
+    const say = (m, after) => { this.setState({ toast: m }); clearTimeout(this._tt); this._tt = setTimeout(() => { this.setState({ toast: '' }); if (after) after(); }, 1700); };
+    const p = this.props;
+    const ios = (p.platform || 'ios') === 'ios';
+    const dark = p.theme === 'dark';
+    const lang = p.lang || 'tr';
+    const rtl = lang === 'fa' || lang === 'ar';
+    const c = dark
+      ? { bg: '#15120F', card: '#211C18', sub: '#2B2520', text: '#EFE8DC', text2: '#BDB2A4', text3: '#9A8F82', line: '#3A322B', pri: '#C24453', priText: '#F09AA3', priSoft: '#3A2027', amb: '#F2B33D', ambText: '#F2C46E', ambSoft: '#3A2F1A', bad: '#F27A70', onBad: '#2A0F0D', badSoft: '#3D1F1F' }
+      : { bg: '#F4EFE6', card: '#FFFCF6', sub: '#F1EBE0', text: '#2A2420', text2: '#6E645A', text3: '#776C60', line: '#E6DDCF', pri: '#9C2F3A', priText: '#9C2F3A', priSoft: '#F7E7E9', amb: '#F2B33D', ambText: '#83560A', ambSoft: '#FDF1D6', bad: '#C0352B', onBad: '#FFFCF6', badSoft: '#FCE8E6' };
+    const T = {
+      tr: { close: _x('Kapat'), kind: _x('DERS SONU SINAVI'), gain: _x('+13 puan ilerlediniz'), newLvl: _x('Yeni seviye: Çok iyi'), history: _x('Puan geçmişi'), d1: _x('17 EYL'), d3: _x('1 EKİ'), d5: _x('BUGÜN'), nextL: _x('SONRAKİ TEKRAR'), nextD: _x('15 Ekim Perşembe · 5 dk'), addCal: _x('Takvime ekle'), danger: _x('Tehlikeli hatalar'), sure: _x('EMİNDİN'), pg: _x('S.'), pages: _x('Tekrar edilecek sayfalar'), toCards: _x('Hataları kartlara ekle'), done: _x('Bitti'), cont: _x('Derse devam et') },
+      en: { close: 'Close', kind: 'END-OF-LESSON EXAM', gain: '+13 points up', newLvl: 'New level: Very good', history: 'Score history', d1: 'SEP 17', d3: 'OCT 1', d5: 'TODAY', nextL: 'NEXT REVIEW', nextD: 'Thursday, Oct 15 · 5 min', addCal: 'Add to calendar', danger: 'Dangerous mistakes', sure: 'YOU WERE SURE', pg: 'P.', pages: 'Pages to review', toCards: 'Add mistakes to cards', done: 'Done', cont: 'Continue lesson' },
+      fa: { close: 'بستن', kind: 'آزمون پایان درس', gain: '۱۳ امتیاز پیشرفت کردی', newLvl: 'سطح جدید: خیلی خوب', history: 'روند نمره', d1: '۱۷ سپتامبر', d3: '۱ اکتبر', d5: 'امروز', nextL: 'مرور بعدی', nextD: 'پنجشنبه ۱۵ اکتبر · ۵ دقیقه', addCal: 'افزودن به تقویم', danger: 'اشتباه‌های خطرناک', sure: 'مطمئن بودی', pg: 'ص.', pages: 'صفحه‌هایی برای مرور', toCards: 'افزودن اشتباه‌ها به کارت', done: 'تمام', cont: 'ادامهٔ درس' },
+      ar: { close: 'إغلاق', kind: 'اختبار نهاية الدرس', gain: 'تقدّمت 13 نقطة', newLvl: 'المستوى الجديد: جيد جدًا', history: 'سجل الدرجات', d1: '17 سبتمبر', d3: '1 أكتوبر', d5: 'اليوم', nextL: 'المراجعة التالية', nextD: 'الخميس 15 أكتوبر · 5 دقائق', addCal: 'أضف إلى التقويم', danger: 'أخطاء خطِرة', sure: 'كنت متأكدًا', pg: 'ص.', pages: 'صفحات للمراجعة', toCards: 'أضف الأخطاء إلى البطاقات', done: 'تم', cont: 'تابع الدرس' }
+    };
+    const s = Object.assign({}, T[lang] || T.tr, { review: { tr: _x('Ders özeti: zayıf konular ve kelimeler'), en: 'Lesson summary: weak topics and words', fa: 'خلاصهٔ درس: مبحث‌های ضعیف و واژه‌ها', ar: 'ملخص الدرس: نقاط الضعف والكلمات' }[lang] || _x('Ders özeti: zayıf konular ve kelimeler') });
+    const cols = [c.amb, c.pri, dark ? '#8DB4F5' : '#2A2420', c.amb, c.pri];
+    const seed = [[24, 70, 8, 14, 20], [64, 40, 6, 12, -30], [110, 96, 9, 9, 45], [300, 60, 8, 14, 25], [340, 110, 6, 12, -40], [270, 140, 9, 9, 10], [40, 150, 7, 7, 60], [82, 200, 6, 12, 15], [318, 190, 8, 13, -20], [356, 240, 6, 10, 35], [20, 240, 8, 8, -10], [150, 70, 6, 10, -55], [240, 92, 7, 12, 70], [190, 50, 6, 6, 0], [360, 30, 8, 12, 20], [8, 120, 6, 10, 50], [292, 270, 7, 7, -15], [60, 300, 6, 12, 30]];
+    const confetti = seed.map((k, i) => ({ x: k[0], y: k[1], w: k[2], h: k[3], r: k[4], c: cols[i % 5] }));
+    const lvls = [0, 1, 2, 3, 4].map((i) => ({ bg: i <= 3 ? (i === 3 ? c.amb : c.pri) : c.line }));
+    const go = (a, b, k) => () => { if (p.go) p.go(a, b, k); };
+    return { toastOn: !!__st.toast, toastMsg: __st.toast || '', toastBottom: 130,
+      addCal: () => say(_x('Tekrar tarihi takvimine eklendi')),
+      c, s, lang, confetti, lvls,
+      dir: rtl ? 'rtl' : 'ltr',
+      W: ios ? 390 : 412, H: ios ? 844 : 915, topH: ios ? 54 : 36, bottomPad: ios ? 34 : 20,
+      btnR: ios ? 14 : 100, btnH: ios ? 52 : 48,
+      flip: rtl ? -1 : 1,
+      done: go('plan', 'tomorrow'), toCards: go('cards'), toReader: go('reader'), toReview: go('review', 'lesson')
+    };
+  }
+}
+</script>
+</body>
+</html>

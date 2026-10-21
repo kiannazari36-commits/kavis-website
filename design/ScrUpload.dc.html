@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>PDF yükleme</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+<style>[dir=rtl] .dc-back{transform:scaleX(-1)}[dir=rtl],[dir=rtl] *{letter-spacing:0 !important}</style>
+</helmet>
+<div dir="{{dir}}" lang="{{lang}}" style="width: {{W}}px; height: {{H}}px; box-sizing: border-box; display: flex; flex-direction: column; position: relative; overflow: hidden; background: {{c.bg}}; color: {{c.text}}; font-family: Poppins, Vazirmatn, system-ui, sans-serif">
+<div style="height: {{topH}}px; flex: none"></div>
+<div style="height: 52px; display: flex; align-items: center; gap: 4px; padding: 0 8px; flex: none; position: relative">
+<button onClick="{{back}}" aria-label="{{s.back}}" style="width: 44px; height: 44px; border: 0; background: transparent; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX({{flip}})"><path d="M6 6l12 12 M18 6L6 18"></path></svg>
+</button>
+<span style="position: {{titlePos}}; left: 0; right: 0; text-align: {{titleAlign}}; font-size: {{titleFs}}px; font-weight: 600; pointer-events: none">{{s.title}}</span>
+</div>
+
+<sc-if value="{{v.pick}}" hint-placeholder-val="{{ true }}">
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 8px 20px 20px; display: flex; flex-direction: column; gap: 16px">
+<div style="border-radius: 20px; border: 1.5px dashed {{c.text3}}; background: {{c.card}}; padding: 26px 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center">
+<span style="width: 54px; height: 54px; border-radius: 14px; background: {{c.priSoft}}; color: {{c.priText}}; display: flex; align-items: center; justify-content: center; transform: rotate(-7deg)">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h8l5 5v13H6z M14 3v5h5 M12 18v-6 M9.5 14.5L12 12l2.5 2.5"></path></svg>
+</span>
+<span style="font-size: 18px; font-weight: 700">{{s.dropT}}</span>
+<span style="font-size: 13px; color: {{c.text3}}">{{sources}}</span>
+<button onClick="{{start}}" style="margin-top: 6px; height: 44px; padding: 0 22px; border: 1px solid {{c.line}}; border-radius: {{btnR}}px; background: {{c.sub}}; color: {{c.text}}; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">{{s.choose}}</button>
+</div>
+
+<button onClick="{{toPhoto}}" style="border: 0; border-radius: 16px; background: {{c.card}}; color: {{c.text}}; padding: 14px; display: flex; align-items: center; gap: 12px; font-family: inherit; text-align: start; cursor: pointer">
+<span style="width: 40px; height: 40px; border-radius: 11px; background: {{c.ambSoft}}; color: {{c.ambText}}; display: flex; align-items: center; justify-content: center; transform: rotate(-7deg); flex: none"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z M12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path></svg></span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 700">{{s.noPdf}}</span><span style="font-size: 12px; color: {{c.text3}}">{{s.noPdfS}}</span></span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg>
+</button>
+
+<button onClick="{{toAudio}}" style="border: 0; border-radius: 16px; background: {{c.card}}; color: {{c.text}}; padding: 14px; display: flex; align-items: center; gap: 12px; font-family: inherit; text-align: start; cursor: pointer">
+<span style="width: 40px; height: 40px; border-radius: 11px; background: {{c.priSoft}}; color: {{c.priText}}; display: flex; align-items: center; justify-content: center; transform: rotate(-7deg); flex: none"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z M5 11a7 7 0 0 0 14 0 M12 18v3"></path></svg></span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 700">{{s.au.opt}}</span><span style="font-size: 12px; color: {{c.text3}}">{{s.au.optS}}</span></span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg>
+</button>
+
+<button onClick="{{toQuestions}}" style="border: 0; border-radius: 16px; background: {{c.card}}; color: {{c.text}}; padding: 14px; display: flex; align-items: center; gap: 12px; font-family: inherit; text-align: start; cursor: pointer">
+<span style="width: 40px; height: 40px; border-radius: 11px; background: {{c.sub}}; color: {{c.text}}; display: flex; align-items: center; justify-content: center; transform: rotate(-7deg); flex: none"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6 M12 17h.01"></path></svg></span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 700">{{qOpt}}</span><span style="font-size: 12px; color: {{c.text3}}">{{qOptS}}</span></span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg>
+</button>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; letter-spacing: 0.1em; color: {{c.text3}}">{{s.recent}}</span>
+<div style="border-radius: 16px; background: {{c.card}}; overflow: hidden">
+<button onClick="{{openRecent}}" style="width: 100%; min-height: 64px; border: 0; border-bottom: 1px solid {{c.line}}; background: {{c.priSoft}}; color: {{c.text}}; display: flex; align-items: center; gap: 12px; padding: 0 14px; font-family: inherit; text-align: start; cursor: pointer">
+<span style="width: 34px; height: 40px; border-radius: 6px; background: {{c.card}}; border: 1px solid {{c.line}}; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 9px; font-weight: 600; color: {{c.priText}}; flex: none">PDF</span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<span dir="ltr" style="font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: start">{{_t.k990}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}">{{s.f1}}</span>
+</span>
+<span style="width: 24px; height: 24px; border-radius: 12px; background: {{c.pri}}; color: #FFFCF6; display: flex; align-items: center; justify-content: center; flex: none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></span>
+</button>
+<button onClick="{{openRecent}}" style="width: 100%; min-height: 64px; border: 0; background: transparent; color: {{c.text}}; display: flex; align-items: center; gap: 12px; padding: 0 14px; font-family: inherit; text-align: start; cursor: pointer">
+<span style="width: 34px; height: 40px; border-radius: 6px; background: {{c.sub}}; border: 1px solid {{c.line}}; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 9px; font-weight: 600; color: {{c.text3}}; flex: none">PDF</span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<span dir="ltr" style="font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: start">{{_t.k836}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}">{{s.f2}}</span>
+</span>
+</button>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 12px">
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 13px; font-weight: 500; color: {{c.text2}}">{{s.name}}</span>
+<input value="Hipertansiyon" style="height: 48px; border-radius: 12px; border: 1px solid {{c.line}}; background: {{c.card}}; color: {{c.text}}; padding: 0 14px; font-family: inherit; font-size: 15px; outline: none">
+</label>
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 13px; font-weight: 500; color: {{c.text2}}">{{s.course}}</span>
+<input value="Farmakoterapi" style="height: 48px; border-radius: 12px; border: 1px solid {{c.line}}; background: {{c.card}}; color: {{c.text}}; padding: 0 14px; font-family: inherit; font-size: 15px; outline: none">
+</label>
+</div>
+
+<div style="display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 14px; background: {{c.sub}}; color: {{c.text2}}">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z M9 12l2 2 4-4"></path></svg>
+<span style="font-size: 13px; line-height: 1.45">{{s.note}}</span>
+</div>
+</div>
+<div style="flex: none; padding: 12px 20px {{bottomPad}}px; display: flex; flex-direction: column; gap: 10px; align-items: center; background: {{c.bg}}; border-top: 1px solid {{c.line}}">
+<button onClick="{{start}}" style="width: 100%; height: {{btnH}}px; border: 0; border-radius: {{btnR}}px; background: {{c.pri}}; color: #FFFCF6; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{s.prepare}}</button>
+<sc-if value="{{fairQ}}" hint-placeholder-val="{{ true }}"><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}">{{s.quota}}</span></sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{v.photo}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 4px 20px 16px; display: flex; flex-direction: column; gap: 12px">
+<div role="tablist" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 12px; background: {{c.sub}}">
+<button role="tab" aria-selected="false" onClick="{{toPick}}" style="height: 36px; border: 0; border-radius: 9px; background: transparent; color: {{c.text2}}; font-family: inherit; font-size: 13px; cursor: pointer">PDF</button>
+<button onClick="{{uPhotoTab}}" role="tab" aria-selected="true" style="height: 36px; border: 0; border-radius: 9px; background: {{c.card}}; color: {{c.text}}; font-family: inherit; font-size: 13px; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,.12); cursor: pointer">{{s.photoTab}}</button>
+</div>
+<div style="position: relative; height: 290px; border-radius: 20px; background: #0E1218; overflow: hidden; display: flex; align-items: center; justify-content: center; flex: none">
+<div aria-hidden="true" style="width: 200px; height: 236px; transform: rotate(-3deg); background: #F4F1EA; border-radius: 4px; padding: 18px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 10px 30px rgba(0,0,0,.4)">
+<span style="font-family: Lora, Vazirmatn, Georgia, serif; font-size: 11px; font-weight: 600; color: #2A2420">{{_t.k379}}</span>
+<span style="height: 4px; width: 92%; border-radius: 2px; background: #B3A898"></span><span style="height: 4px; width: 80%; border-radius: 2px; background: #B3A898"></span><span style="height: 4px; width: 88%; border-radius: 2px; background: #B3A898"></span><span style="height: 4px; width: 60%; border-radius: 2px; background: #B3A898"></span><span style="height: 4px; width: 84%; border-radius: 2px; background: #B3A898"></span><span style="height: 4px; width: 70%; border-radius: 2px; background: #B3A898"></span>
+</div>
+<span aria-hidden="true" style="position: absolute; left: 70px; top: 22px; width: 26px; height: 26px; border-left: 3px solid #F2B33D; border-top: 3px solid #F2B33D"></span>
+<span aria-hidden="true" style="position: absolute; right: 70px; top: 22px; width: 26px; height: 26px; border-right: 3px solid #F2B33D; border-top: 3px solid #F2B33D"></span>
+<span aria-hidden="true" style="position: absolute; left: 70px; bottom: 22px; width: 26px; height: 26px; border-left: 3px solid #F2B33D; border-bottom: 3px solid #F2B33D"></span>
+<span aria-hidden="true" style="position: absolute; right: 70px; bottom: 22px; width: 26px; height: 26px; border-right: 3px solid #F2B33D; border-bottom: 3px solid #F2B33D"></span>
+<span style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.08em; color: #F2B33D; background: rgba(0,0,0,.55); padding: 4px 8px; border-radius: 6px; white-space: nowrap">{{s.frame}}</span>
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between; padding: 0 24px">
+<button onClick="{{uGallery}}" aria-label="{{s.gallery}}" style="width: 48px; height: 48px; border-radius: 12px; border: 1px solid {{c.line}}; background: {{c.card}}; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v14H4z M4 16l5-5 4 4 3-3 4 4 M15.5 9.5h.01"></path></svg></button>
+<button onClick="{{addShot}}" aria-label="{{s.shoot}}" style="width: 72px; height: 72px; border-radius: 36px; border: 4px solid {{c.pri}}; background: {{c.card}}; display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer"><span style="width: 54px; height: 54px; border-radius: 27px; background: {{c.pri}}"></span></button>
+<span style="width: 48px; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px; font-weight: 600; color: {{c.text2}}; text-align: center">{{shots}}/30</span>
+</div>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; color: {{c.text3}}">{{s.pagesTaken}}</span>
+<div style="display: flex; gap: 8px; overflow-x: auto">
+<sc-for list="{{thumbs}}" as="t" hint-placeholder-count="4">
+<span style="position: relative; width: 58px; height: 74px; border-radius: 8px; background: #F4F1EA; border: 1px solid {{c.line}}; padding: 8px 6px; box-sizing: border-box; display: flex; flex-direction: column; gap: 5px; flex: none">
+<span style="height: 3px; width: 90%; border-radius: 2px; background: #B7BEC8"></span><span style="height: 3px; width: 70%; border-radius: 2px; background: #B7BEC8"></span><span style="height: 3px; width: 85%; border-radius: 2px; background: #B7BEC8"></span><span style="height: 3px; width: 60%; border-radius: 2px; background: #B7BEC8"></span>
+<span style="position: absolute; bottom: 4px; inset-inline-end: 4px; width: 18px; height: 18px; border-radius: 9px; background: {{c.pri}}; color: #FFFCF6; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; display: flex; align-items: center; justify-content: center">{{t}}</span>
+</span>
+</sc-for>
+</div>
+<div style="display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 14px; background: {{c.sub}}; color: {{c.text2}}">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z M9 12l2 2 4-4"></path></svg>
+<span style="font-size: 12px; line-height: 1.5">{{s.photoNote}}</span>
+</div>
+</div>
+<div style="flex: none; padding: 12px 20px {{bottomPad}}px; border-top: 1px solid {{c.line}}; background: {{c.bg}}">
+<button onClick="{{start}}" style="width: 100%; height: {{btnH}}px; border: 0; border-radius: {{btnR}}px; background: {{c.pri}}; color: #FFFCF6; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{photoCta}}</button>
+</div>
+</sc-if>
+
+<sc-if value="{{v.audio}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 4px 20px 16px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-size: 24px; line-height: 1.2; font-weight: 700">{{s.au.t}}</h1>
+<p style="margin: 0; font-size: 14px; line-height: 1.5; color: {{c.text2}}">{{s.au.s}}</p>
+</div>
+<label style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 13px; font-weight: 500; color: {{c.text2}}">{{s.au.which}}</span>
+<span style="height: 52px; border-radius: 12px; border: 1px solid {{c.line}}; background: {{c.card}}; display: flex; align-items: center; gap: 10px; padding: 0 14px"><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 9px; font-weight: 600; color: {{c.priText}}; padding: 3px 5px; border-radius: 4px; background: {{c.priSoft}}">PDF</span><span style="flex: 1; font-size: 15px; font-weight: 600">{{_t.k1187}}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span>
+</label>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<button onClick="{{uFile}}" style="min-height: 104px; border-radius: 16px; border: 2px solid {{c.pri}}; background: {{c.priSoft}}; color: {{c.text}}; padding: 12px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; font-family: inherit; text-align: start; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{{c.priText}}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h8l5 5v13H6z M14 3v5h5 M10 17v-4l5-1v4 M10 17a1.5 1.5 0 1 1-1.5-1.5 M15 16a1.5 1.5 0 1 1-1.5-1.5"></path></svg>
+<span style="font-size: 14px; font-weight: 700">{{s.au.file}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.text3}}">M4A · MP3 · WAV</span>
+</button>
+<button onClick="{{uLive}}" style="min-height: 104px; border-radius: 16px; border: 1px solid {{c.line}}; background: {{c.card}}; color: {{c.text}}; padding: 12px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; font-family: inherit; text-align: start; cursor: pointer">
+<span style="width: 22px; height: 22px; border-radius: 11px; border: 2px solid {{c.bad}}; display: flex; align-items: center; justify-content: center; box-sizing: border-box"><span style="width: 10px; height: 10px; border-radius: 5px; background: {{c.bad}}"></span></span>
+<span style="font-size: 14px; font-weight: 700">{{s.au.live}}</span><span style="font-size: 11px; color: {{c.text3}}">{{s.au.liveS}}</span>
+</button>
+</div>
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: {{c.card}}">
+<span style="width: 36px; height: 36px; border-radius: 10px; background: {{c.priSoft}}; color: {{c.priText}}; display: flex; align-items: center; justify-content: center; flex: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 12h2 M8 8v8 M12 5v14 M16 9v6 M20 11v2"></path></svg></span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span dir="ltr" style="font-size: 14px; font-weight: 600; text-align: start">{{_t.k989}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}">52:18 · 48 MB</span></span>
+<span style="width: 24px; height: 24px; border-radius: 12px; background: {{c.pri}}; color: #FFFCF6; display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></span>
+</div>
+<div style="border-radius: 14px; background: {{c.card}}; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; color: {{c.text3}}">{{s.au.what}}</span>
+<sc-for list="{{auSteps}}" as="x" hint-placeholder-count="4"><span style="display: flex; gap: 8px; font-size: 13px; line-height: 1.4"><span style="color: {{c.priText}}; font-weight: 700">✓</span>{{x}}</span></sc-for>
+</div>
+<div style="display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 14px; background: {{c.sub}}; color: {{c.text2}}">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z M9 12l2 2 4-4"></path></svg>
+<span style="font-size: 12px; line-height: 1.5">{{s.au.privacy}}</span>
+</div>
+</div>
+<div style="flex: none; padding: 12px 20px {{bottomPad}}px; border-top: 1px solid {{c.line}}; background: {{c.bg}}">
+<button onClick="{{toAudioScreen}}" style="width: 100%; height: {{btnH}}px; border: 0; border-radius: {{btnR}}px; background: {{c.pri}}; color: #FFFCF6; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{s.au.cta}}</button>
+</div>
+</sc-if>
+
+<sc-if value="{{v.processing}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; min-height: 0; padding: 8px 20px 20px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: {{c.card}}">
+<span style="width: 34px; height: 40px; border-radius: 6px; background: {{c.priSoft}}; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 9px; font-weight: 600; color: {{c.priText}}">PDF</span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 15px; font-weight: 600">{{_t.k1187}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}">{{_t.k985}} {{s.f1}}</span>
+</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px; padding-top: 6px">
+<h1 style="margin: 0; font-size: 28px; line-height: 1.15; font-weight: 700; letter-spacing: -0.02em">{{s.procT}}</h1>
+<p style="margin: 0; font-size: 14px; line-height: 1.5; color: {{c.text2}}">{{s.procS}}</p>
+</div>
+<ol aria-live="polite" style="list-style: none; margin: 0; padding: 6px 16px; border-radius: 18px; background: {{c.card}}; display: flex; flex-direction: column">
+<sc-for list="{{steps}}" as="x" hint-placeholder-count="5">
+<li style="display: flex; align-items: center; gap: 14px; min-height: 62px; border-bottom: {{x.border}}">
+<span style="width: 28px; height: 28px; flex: none; position: relative; display: flex; align-items: center; justify-content: center">
+<sc-if value="{{x.done}}" hint-placeholder-val="{{ false }}"><span style="width: 28px; height: 28px; border-radius: 14px; background: {{c.ok}}; color: {{c.onOk}}; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></span></sc-if>
+<sc-if value="{{x.active}}" hint-placeholder-val="{{ false }}"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="11" fill="none" stroke="{{c.line}}" stroke-width="3"></circle><circle cx="14" cy="14" r="11" fill="none" stroke="{{c.pri}}" stroke-width="3" stroke-linecap="round" stroke-dasharray="40 70" transform="rotate(-90 14 14)"></circle></svg></sc-if>
+<sc-if value="{{x.pending}}" hint-placeholder-val="{{ true }}"><span style="width: 24px; height: 24px; border-radius: 12px; border: 2px dashed {{c.line}}; box-sizing: border-box"></span></sc-if>
+</span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 15px; font-weight: 600; color: {{x.color}}">{{x.t}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}">{{x.d}}</span>
+</span>
+</li>
+</sc-for>
+</ol>
+<div style="display: flex; align-items: center; gap: 10px">
+<span style="flex: 1; height: 8px; border-radius: 4px; background: {{c.line}}; overflow: hidden; display: flex"><span style="width: {{pct}}%; background: {{c.pri}}; border-radius: 4px"></span></span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px; color: {{c.text2}}">%{{pct}}</span>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{v.error}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; min-height: 0; padding: 30px 24px 20px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px">
+<span style="width: 72px; height: 72px; border-radius: 20px; background: {{c.badSoft}}; color: {{c.bad}}; display: flex; align-items: center; justify-content: center; transform: rotate(-7deg)">
+<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h8l5 5v13H6z M14 3v5h5 M10 12l4 4 M14 12l-4 4"></path></svg>
+</span>
+<h1 style="margin: 10px 0 0; font-size: 24px; line-height: 1.2; font-weight: 700">{{s.errT}}</h1>
+<p style="margin: 0; font-size: 15px; line-height: 1.55; color: {{c.text2}}">{{s.errS}}</p>
+<div style="width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: {{c.card}}; text-align: start; margin-top: 8px">
+<span style="width: 34px; height: 40px; border-radius: 6px; background: {{c.badSoft}}; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 9px; font-weight: 600; color: {{c.bad}}">PDF</span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<span dir="ltr" style="font-size: 14px; font-weight: 600; text-align: start">{{_t.k536}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.bad}}">{{s.errTag}}</span>
+</span>
+</div>
+<span style="flex: 1"></span>
+<button onClick="{{retry}}" style="width: 100%; height: {{btnH}}px; border: 0; border-radius: {{btnR}}px; background: {{c.pri}}; color: #FFFCF6; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{s.other}}</button>
+<button onClick="{{start}}" style="width: 100%; height: {{btnH}}px; border: 1px solid {{c.line}}; border-radius: {{btnR}}px; background: {{c.card}}; color: {{c.text}}; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{s.ocr}}</button>
+<span style="font-size: 12px; color: {{c.text3}}; padding-bottom: {{bottomPadS}}px">{{s.errNote}}</span>
+</div>
+</sc-if>
+<sc-if value="{{lng.on}}" hint-placeholder-val="{{ false }}"><div style="position: absolute; inset: 0; z-index: 40; display: flex; flex-direction: column; justify-content: flex-end"><div onClick="{{lng.close}}" style="position: absolute; inset: 0; background: rgba(20,14,10,.45)"></div>
+<div role="dialog" aria-modal="true" aria-label="{{lng.t.t}}" style="position: relative; background: {{fair.bg}}; color: {{c.text}}; border-radius: 28px 28px 0 0; padding: 12px 22px {{bottomPad}}px; display: flex; flex-direction: column; box-shadow: 0 -10px 40px rgba(0,0,0,.25)"><span style="width: 40px; height: 5px; border-radius: 3px; background: {{fair.grab}}; align-self: center; margin-bottom: 18px"></span>
+<div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px"><span style="width: 44px; height: 52px; border-radius: 8px; background: {{lng.sub}}; border: 1px solid {{c.line}}; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; font-weight: 600; color: #9C2F3A; flex: none">PDF</span><span style="min-width: 0; display: flex; flex-direction: column; gap: 2px"><span dir="ltr" style="font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: start">Farmakoloji_Tum_Notlar.pdf</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text2}}">{{lng.t.meta}}</span></span></div>
+<span style="font-size: 21px; font-weight: 700; line-height: 1.25; margin-bottom: 6px">{{lng.t.t}}</span>
+<span style="font-size: 14.5px; line-height: 1.5; color: {{c.text2}}; margin-bottom: 14px">{{lng.t.d}}</span>
+<button onClick="{{lng.pickSplit}}" aria-pressed="{{lng.isSplit}}" style="display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 16px; border: {{lng.splitBorder}}; background: {{lng.splitBg}}; color: {{c.text}}; font-family: inherit; text-align: start; cursor: pointer; margin-bottom: 10px"><span style="width: 22px; height: 22px; border-radius: 11px; border: 2px solid {{lng.ringOff}}; box-sizing: border-box; display: flex; align-items: center; justify-content: center; flex: none"><span style="width: 10px; height: 10px; border-radius: 5px; background: {{lng.ringOn}}; opacity: {{lng.splitDot}}"></span></span><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 700">{{lng.t.split}}</span><span style="font-size: 12.5px; color: {{c.text2}}">{{lng.t.splitS}}</span></span></button>
+<div style="display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 16px; border: {{lng.rangeBorder}}; background: {{lng.rangeBg}}; margin-bottom: 8px"><button onClick="{{lng.pickRange}}" aria-pressed="{{lng.isRange}}" style="display: flex; align-items: center; gap: 12px; padding: 0; border: 0; background: transparent; color: {{c.text}}; font-family: inherit; text-align: start; cursor: pointer"><span style="width: 22px; height: 22px; border-radius: 11px; border: 2px solid {{lng.ringOff}}; box-sizing: border-box; display: flex; align-items: center; justify-content: center; flex: none"><span style="width: 10px; height: 10px; border-radius: 5px; background: {{lng.ringOn}}; opacity: {{lng.rangeDot}}"></span></span><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 700">{{lng.t.range}}</span><span style="font-size: 12.5px; color: {{c.text2}}">{{lng.t.rangeS}}</span></span></button>
+<sc-if value="{{lng.isRange}}" hint-placeholder-val="{{ false }}"><div dir="ltr" style="display: flex; align-items: center; gap: 8px; padding-inline-start: 34px"><input inputmode="numeric" value="{{lng.from}}" onChange="{{lng.setFrom}}" aria-label="from" style="width: 64px; height: 40px; border-radius: 12px; border: 1px solid {{c.line}}; background: transparent; color: {{c.text}}; font-family: inherit; font-size: 15px; text-align: center; box-sizing: border-box"><span style="color: {{c.text2}}">–</span><input inputmode="numeric" value="{{lng.to}}" onChange="{{lng.setTo}}" aria-label="to" style="width: 64px; height: 40px; border-radius: 12px; border: 1px solid {{c.line}}; background: transparent; color: {{c.text}}; font-family: inherit; font-size: 15px; text-align: center; box-sizing: border-box"><span style="font-size: 13px; color: {{lng.countFg}}; margin-inline-start: 6px">{{lng.count}}</span></div></sc-if></div>
+<button onClick="{{lng.cont}}" style="height: 52px; border: 0; border-radius: 26px; background: #9C2F3A; color: #FFF6E6; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 8px; opacity: {{lng.contOp}}">{{lng.t.cont}}</button>
+<button onClick="{{lng.close}}" style="height: 46px; border: 0; background: transparent; color: {{c.text}}; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 4px">{{lng.t.other}}</button>
+</div></div></sc-if>
+<sc-if value="{{trl.on}}" hint-placeholder-val="{{ false }}"><div style="position: absolute; inset: 0; z-index: 40; display: flex; flex-direction: column; justify-content: flex-end"><div onClick="{{trl.later}}" style="position: absolute; inset: 0; background: rgba(20,14,10,.45)"></div>
+<div role="dialog" aria-modal="true" aria-label="{{trl.t.t}}" style="position: relative; background: {{fair.bg}}; color: {{c.text}}; border-radius: 28px 28px 0 0; padding: 12px 24px {{bottomPad}}px; display: flex; flex-direction: column; box-shadow: 0 -10px 40px rgba(0,0,0,.25)">
+<span style="width: 40px; height: 5px; border-radius: 3px; background: {{fair.grab}}; align-self: center; margin-bottom: 20px"></span>
+<span style="width: 52px; height: 52px; border-radius: 16px; background: {{fair.iconBg}}; color: {{fair.iconFg}}; display: flex; align-items: center; justify-content: center; margin-bottom: 14px"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 L14.6 9.4 L22 12 L14.6 14.6 L12 22 L9.4 14.6 L2 12 L9.4 9.4Z" fill="currentColor"></path></svg></span>
+<span style="font-size: 21px; font-weight: 700; line-height: 1.25; margin-bottom: 8px">{{trl.t.t}}</span>
+<span style="font-size: 15px; line-height: 1.5; color: {{c.text2}}; margin-bottom: 22px">{{trl.t.d}}</span>
+<button onClick="{{trl.go}}" style="height: 52px; border: 0; border-radius: 26px; background: {{c.pri}}; color: #FFF6E6; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{trl.t.go}}</button>
+<button onClick="{{trl.later}}" style="height: 48px; border: 0; background: transparent; color: {{c.text}}; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 4px">{{trl.t.later}}</button>
+</div></div></sc-if>
+<sc-if value="{{fair.on}}" hint-placeholder-val="{{ false }}"><div style="position: absolute; inset: 0; z-index: 40; display: flex; flex-direction: column; justify-content: flex-end"><div style="position: absolute; inset: 0; background: rgba(20,14,10,.45)"></div>
+<div role="dialog" aria-modal="true" aria-label="{{fair.t.t}}" style="position: relative; background: {{fair.bg}}; color: {{c.text}}; border-radius: 28px 28px 0 0; padding: 12px 24px {{bottomPad}}px; display: flex; flex-direction: column; box-shadow: 0 -10px 40px rgba(0,0,0,.25)">
+<span style="width: 40px; height: 5px; border-radius: 3px; background: {{fair.grab}}; align-self: center; margin-bottom: 20px"></span>
+<span style="width: 52px; height: 52px; border-radius: 16px; background: {{fair.iconBg}}; color: {{fair.iconFg}}; display: flex; align-items: center; justify-content: center; margin-bottom: 14px"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h10 M7 21h10 M8 3c0 5 8 5 8 9s-8 4-8 9 M16 3c0 5-8 5-8 9s8 4 8 9"></path></svg></span>
+<span style="font-size: 21px; font-weight: 700; line-height: 1.25; margin-bottom: 8px">{{fair.t.t}}</span>
+<span style="font-size: 15px; line-height: 1.5; color: {{c.text2}}; margin-bottom: 14px">{{fair.t.d}}</span>
+<sc-if value="{{fair.info}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; line-height: 1.5; color: {{c.text}}; background: {{c.sub}}; border-radius: 16px; padding: 12px 14px; margin-bottom: 14px">{{fair.t.info}}</span></sc-if>
+<button onClick="{{fair.ok}}" style="height: 52px; border: 0; border-radius: 26px; background: {{c.pri}}; color: #FFF6E6; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 8px">{{fair.t.ok}}</button>
+<sc-if value="{{fair.noInfo}}" hint-placeholder-val="{{ true }}"><button onClick="{{fair.what}}" style="height: 48px; border: 0; background: transparent; color: {{c.text}}; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 4px">{{fair.t.what}}</button></sc-if>
+</div></div></sc-if>
+<sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div role="status" aria-live="polite" style="position: absolute; left: 50%; bottom: {{toastBottom}}px; transform: translateX(-50%); z-index: 50; max-width: 86%; box-sizing: border-box; padding: 12px 18px; border-radius: 22px; background: #2E2721; color: #FBEFD6; font-family: Poppins, Vazirmatn, system-ui, sans-serif; font-size: 14px; line-height: 1.4; text-align: center; box-shadow: 0 12px 30px rgba(42,36,32,.28); pointer-events: none">{{toastMsg}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"platform":{"editor":"enum","options":["ios","android"],"default":"ios"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"variant":{"editor":"enum","options":["pick","photo","audio","processing","error"],"default":"pick"},"go":{"editor":null},"live":{"editor":null},"$preview":{"width":390,"height":844}}'>
+const _I18N = {k: [" sayfa", "126 terim", "36 sayfa · 4,1 MB", "40 kart", "48 sayfa · 6,2 MB", "48 sayfa · metin aynen korunur", "64 soru", "Antidotlar", "BU AY 1/2 ÜCRETSİZ DERS", "Başka dosya seç", "Biyofarmasotik_tarama.pdf", "Bu PDF'ten metin okunamadı", "Bu deneme ücretsiz ders hakkından düşmez.", "Ders", "Ders PDF'ini seç", "Ders adı", "Ders hazırlanıyor…", "Ders ses kaydı ekle", "Ders_kaydi_14Ekim.m4a seçildi · 48 dk", "Derse ses kaydı ekle", "Dersi hazırla", "Dersi hazırla · ", "Derste canlı kaydet", "Devam et", "Diyabet_Ders_Notu.pdf", "Dosya seç", "Dosya taranmış sayfalardan oluşuyor gibi görünüyor. Metni seçilebilir bir PDF dene ya da metin tanıma (OCR) ile devam et.", "Dosyalar · Google Drive · İndirilenler", "Dosyalar · iCloud Drive · Google Drive", "Ekran kapalıyken de kaydeder", "Elinde soru var mı?", "Eski sınav ya da örnek sorular: o tarzda soru hazırlarız", "Farmakoterapi ·", "Farmakoterapi_08Ekim.m4a", "Farmakoterapi_Hipertansiyon.pdf", "Fotoğraf", "Fotoğraf çek", "Galeriden 3 fotoğraf eklendi", "Galeriden seç", "HATA · METİN BULUNAMADI", "HAZIRLAYACAKLARIMIZ", "Hangi derse ait?", "Her bölümün PDF sayfasıyla eşleşmesi", "Hipertansiyon", "Hocanın anlattıklarını metne çevirir, vurgularını bulur", "Hocanın metni hiç değiştirilmez. Asistan istersen sadece bu PDF'le, istersen yapay zekâ araştırmasıyla da cevap verir.", "Hocanın uzun durduğu ve tekrar ettiği konular", "Kapat", "Kartlar", "Kaydı metne çevirip PDF sayfalarıyla eşleştiririz. Hocanın çok durduğu konulara özetinde ve sınavlarında daha çok ağırlık veririz.", "Kayıt başladı · telefonu masaya koy", "Kayıt dosyası seç", "Kayıt yalnızca senin hesabında saklanır. Derse kayıt almadan önce hocandan izin almayı unutma.", "Konuşmanın tam metni, zaman damgalarıyla", "Metin tanıma (OCR) ile her fotoğrafı okunabilir karta çeviririz; hocanın yazısı aynen korunur. El yazısı da olur. Sayfalar net, düz ve gölgesiz olsun.", "Metin tanıma ile dene", "Metne çevir ve PDF ile eşleştir", "PDF yok mu? Fotoğraf çek", "PDF yükle", "Premium'a geç", "SAYFAYI ÇERÇEVEYE AL", "SON DOSYALAR", "Slayt, ders notu ya da el yazısı sayfaların fotoğrafı", "Sınav soruları", "Tam metin", "Terim açıklamaları", "Yaklaşık 2 dakika sürer. Uygulamayı kapatabilirsin; hazır olunca bildirim göndeririz.", "sırada", "ÇEKİLEN SAYFALAR · SIRALAMAK İÇİN SÜRÜKLE", "Çeviri", "“Sınavda çıkar” gibi ipuçları"], en: [" pages", "126 terms", "36 pages · 4.1 MB", "40 cards", "48 pages · 6.2 MB", "48 pages · text kept verbatim", "64 questions", "Antidotes", "THIS MONTH 1/2 FREE COURSES", "Choose another file", "Biopharmaceutics_scan.pdf", "Couldn't read text from this PDF", "This trial doesn't use up your free course credit.", "Course", "Choose the lecture PDF", "Course name", "Preparing lesson…", "Add lecture audio recording", "Lecture_recording_14Oct.m4a selected · 48 min", "Add audio recording to lesson", "Prepare lesson", "Prepare lesson · ", "Record live in class", "Continue", "Diabetes_Lecture_Notes.pdf", "Choose file", "The file seems to be made of scanned pages. Try a PDF with selectable text or continue with text recognition (OCR).", "Files · Google Drive · Downloads", "Files · iCloud Drive · Google Drive", "Records even with the screen off", "Have any questions?", "Past exams or sample questions: we'll make questions in that style", "Pharmacotherapy ·", "Pharmacotherapy_08Oct.m4a", "Pharmacotherapy_Hypertension.pdf", "Photo", "Take photo", "3 photos added from gallery", "Choose from gallery", "ERROR · TEXT NOT FOUND", "WHAT WE'LL PREPARE", "Which course is it for?", "Each section matched to its PDF page", "Hypertension", "Turns the lecture into text and finds what was stressed", "The lecturer's text is never changed. The assistant answers only from this PDF — or, if you choose, with AI research too.", "Topics the lecturer spent long on and repeated", "Close", "Cards", "We turn the recording into text and match it with PDF pages. Topics the lecturer spent long on get more weight in your summary and exams.", "Recording started · put the phone on the desk", "Choose recording file", "The recording is stored only in your account. Don't forget to ask your lecturer before recording a class.", "Full transcript, with timestamps", "With text recognition (OCR) we turn each photo into a readable card; your lecturer's writing is kept as is. Handwriting works too. Keep pages clear, flat and shadow-free.", "Try with text recognition", "Convert to text and match with PDF", "No PDF? Take a photo", "Upload PDF", "Go Premium", "FIT THE PAGE IN THE FRAME", "RECENT FILES", "Photos of slides, lecture notes or handwritten pages", "Exam questions", "Full text", "Term explanations", "Takes about 2 minutes. You can close the app; we'll notify you when it's ready.", "queued", "CAPTURED PAGES · DRAG TO REORDER", "Translation", "Hints like “It'll be on the exam”"], fa: [" صفحه", "126 اصطلاح", "36 صفحه · 4.1 MB", "40 کارت", "48 صفحه · 6.2 MB", "48 صفحه · متن عیناً حفظ می‌شود", "64 سؤال", "پادزهرها", "این ماه 1/2 درس رایگان", "انتخاب فایل دیگر", "اسکن_بیوفارماسی.pdf", "متن این PDF خوانده نشد", "این آزمایشی از سهم درس رایگانت کم نمی‌شود.", "درس", "PDF درس را انتخاب کن", "نام درس", "در حال آماده‌سازی درس…", "افزودن ضبط صوتی کلاس", "ضبط_کلاس_14اکتبر.m4a انتخاب شد · 48 دقیقه", "افزودن ضبط صوتی به درس", "آماده‌سازی درس", "آماده‌سازی درس · ", "ضبط زنده سر کلاس", "ادامه بده", "دیابت_جزوه_درس.pdf", "انتخاب فایل", "به نظر می‌رسد فایل از صفحات اسکن‌شده تشکیل شده. یک PDF با متن قابل انتخاب امتحان کن یا با تشخیص متن (OCR) ادامه بده.", "فایل‌ها · Google Drive · دانلودها", "فایل‌ها · iCloud Drive · Google Drive", "حتی با صفحه خاموش هم ضبط می‌کند", "سؤالی داری؟", "امتحان‌های قبلی یا سؤال‌های نمونه: به همان سبک سؤال می‌سازیم", "دارودرمانی ·", "دارودرمانی_08اکتبر.m4a", "دارودرمانی_فشار_خون.pdf", "عکس", "عکس بگیر", "3 عکس از گالری اضافه شد", "انتخاب از گالری", "خطا · متن پیدا نشد", "آنچه آماده می‌کنیم", "مربوط به کدام درس است؟", "تطبیق هر بخش با صفحه PDF", "فشار خون بالا", "گفته‌های استاد را به متن تبدیل می‌کند و تأکیدهایش را پیدا می‌کند", "متن استاد هرگز تغییر نمی‌کند. دستیار اگر بخواهی فقط با همین PDF جواب می‌دهد و اگر بخواهی با جستجوی هوش مصنوعی هم.", "مباحثی که استاد زیاد رویشان ماند و تکرارشان کرد", "بستن", "کارت‌ها", "ضبط را به متن تبدیل می‌کنیم و با صفحات PDF تطبیق می‌دهیم. مباحثی که استاد زیاد رویشان ماند در خلاصه و امتحان‌هایت وزن بیشتری می‌گیرند.", "ضبط شروع شد · گوشی را روی میز بگذار", "فایل ضبط را انتخاب کن", "ضبط فقط در حساب خودت نگه داشته می‌شود. یادت نرود قبل از ضبط کلاس از استادت اجازه بگیری.", "متن کامل گفتار، با زمان‌بندی", "با تشخیص متن (OCR) هر عکس را به کارتی خوانا تبدیل می‌کنیم؛ نوشتهٔ استاد دقیقاً حفظ می‌شود. دست‌خط هم قابل خواندن است. صفحه‌ها واضح، صاف و بدون سایه باشند.", "با تشخیص متن امتحان کن", "به متن تبدیل کن و با PDF تطبیق بده", "PDF نداری؟ عکس بگیر", "آپلود PDF", "ارتقا به Premium", "صفحه را داخل کادر بگذار", "فایل‌های اخیر", "عکس اسلایدها، جزوه یا صفحه‌های دست‌نویس", "سؤال‌های امتحان", "متن کامل", "توضیح اصطلاحات", "حدود 2 دقیقه طول می‌کشد. می‌توانی برنامه را ببندی؛ وقتی آماده شد خبرت می‌کنیم.", "در صف", "صفحه‌های گرفته‌شده · برای مرتب‌سازی بکش", "ترجمه", "نکته‌هایی مثل «در امتحان می‌آید»"], ar: [" صفحات", "126 مصطلحًا", "36 صفحة · 4.1 MB", "40 بطاقة", "48 صفحة · 6.2 MB", "48 صفحة · يُحفظ النص كما هو", "64 سؤالًا", "الترياقات", "هذا الشهر 1/2 مادة مجانية", "اختر ملفاً آخر", "مسح_الصيدلانيات_الحيوية.pdf", "تعذّرت قراءة النص من ملف PDF هذا", "هذه التجربة لا تُخصم من رصيد موادك المجانية.", "المادة", "اختر ملف PDF للدرس", "اسم المادة", "جارٍ تجهيز الدرس…", "إضافة تسجيل صوتي للمحاضرة", "تم اختيار تسجيل_المحاضرة_14أكتوبر.m4a · 48 د", "أضف تسجيلًا صوتيًا للدرس", "جهّز الدرس", "جهّز الدرس · ", "سجّل مباشرة في المحاضرة", "تابع", "السكري_ملاحظات_الدرس.pdf", "اختر ملفًا", "يبدو أن الملف مكوّن من صفحات ممسوحة ضوئيًا. جرّب PDF بنص قابل للتحديد أو تابع بالتعرّف على النص (OCR).", "الملفات · Google Drive · التنزيلات", "الملفات · iCloud Drive · Google Drive", "يسجّل حتى والشاشة مطفأة", "هل لديك أسئلة؟", "امتحانات سابقة أو أسئلة نموذجية: نعدّ أسئلة بنفس الأسلوب", "العلاج الدوائي ·", "العلاج_الدوائي_08أكتوبر.m4a", "العلاج_الدوائي_ارتفاع_الضغط.pdf", "صورة", "التقط صورة", "تمت إضافة 3 صور من المعرض", "اختر من المعرض", "خطأ · لم يُعثر على النص", "ما سنُعدّه", "لأي مادة؟", "مطابقة كل قسم مع صفحة PDF", "ارتفاع ضغط الدم", "يحوّل شرح الأستاذ إلى نص ويجد ما ركّز عليه", "لا يُغيَّر نص الأستاذ أبدًا. يجيب المساعد إن شئت من هذا الـ PDF فقط، وإن شئت يستعين أيضًا ببحث الذكاء الاصطناعي.", "المواضيع التي أطال فيها الأستاذ وكرّرها", "إغلاق", "البطاقات", "نحوّل التسجيل إلى نص ونطابقه مع صفحات PDF. المواضيع التي أطال فيها الأستاذ تأخذ وزنًا أكبر في ملخصك وامتحاناتك.", "بدأ التسجيل · ضع الهاتف على الطاولة", "اختر ملف التسجيل", "يُحفظ التسجيل في حسابك فقط. لا تنسَ أخذ إذن أستاذك قبل تسجيل المحاضرة.", "النص الكامل للحديث، مع الطوابع الزمنية", "بالتعرف على النص (OCR) نحوّل كل صورة إلى بطاقة مقروءة؛ ويبقى نص أستاذك كما هو. خط اليد ممكن أيضًا. اجعل الصفحات واضحة ومستوية وبلا ظلال.", "جرّب بالتعرف على النص", "حوّل إلى نص وطابقه مع PDF", "لا يوجد PDF؟ التقط صورة", "رفع PDF", "انتقل إلى Premium", "ضع الصفحة داخل الإطار", "الملفات الأخيرة", "صور الشرائح أو ملاحظات المحاضرة أو الصفحات المكتوبة بخط اليد", "أسئلة الامتحان", "النص الكامل", "شرح المصطلحات", "يستغرق نحو 2 دقيقة. يمكنك إغلاق التطبيق؛ سنرسل لك إشعارًا عند الجاهزية.", "في الانتظار", "الصفحات الملتقطة · اسحب لإعادة الترتيب", "الترجمة", "تلميحات مثل “سيأتي في الامتحان”"]};
+let _lang = 'tr', _M = null; const _TC = {};
+const _x = (s) => { if (_lang === 'tr' || !_I18N[_lang]) return s; if (!_M) { _M = {}; _I18N.k.forEach((k, i) => { _M[k] = i; }); } const i = _M[s]; return i == null ? s : _I18N[_lang][i]; };
+const _TK = {"k379": "Antidotlar", "k536": "Biyofarmasotik_tarama.pdf", "k836": "Diyabet_Ders_Notu.pdf", "k985": "Farmakoterapi ·", "k989": "Farmakoterapi_08Ekim.m4a", "k990": "Farmakoterapi_Hipertansiyon.pdf", "k1187": "Hipertansiyon"};
+const _PT = {};
+const _tt = () => { if (!_TC[_lang]) { const o = {}; Object.keys(_TK).forEach((k) => { o[k] = (_PT[k] && _lang !== 'tr') ? (_PT[k][_lang] || _x(_TK[k])) : _x(_TK[k]); }); _TC[_lang] = o; } return _TC[_lang]; };
+
+class Component extends DCLogic {
+  renderVals() { const _p = this.props || {}, _s = this.state || {}; _lang = _s.lang || _p.lang || 'tr'; const r = this._rv0(); if (r && typeof r === 'object') { r._t = _tt(); r._dir = (_lang === 'fa' || _lang === 'ar') ? 'rtl' : 'ltr'; r._ai = this._aiDark ? { bg: '#F2B33D', fg: '#241C14', tx: '#EFE8DC' } : { bg: '#9C2F3A', fg: '#FFF6E6', tx: '#2A2420' }; } return r; }
+  componentWillUnmount() { if (this.timer) clearInterval(this.timer); }
+  _rv0() {
+    const __st = this.state || {};
+    const say = (m, after) => { this.setState({ toast: m }); clearTimeout(this._tt); this._tt = setTimeout(() => { this.setState({ toast: '' }); if (after) after(); }, 1700); };
+    const p = this.props, st = this.state || {};
+    const ios = (p.platform || 'ios') === 'ios';
+    const dark = p.theme === 'dark';
+    const lang = p.lang || 'tr';
+    const rtl = lang === 'fa' || lang === 'ar';
+    const _fairTxt = (lang, subDay, plan, renew) => { const sd = Math.min(28, Math.max(1, Number(subDay) || 18)); const nx = new Date(); let y = nx.getFullYear(), m = nx.getMonth(); if (nx.getDate() >= sd) { m += 1; if (m > 11) { m = 0; y += 1; } } const L = lang || 'tr';
+      const pk = plan === 'year' ? 'year' : plan === 'term' ? 'term' : 'month';
+      let rd = sd, rm = m, ry = y;
+      if (pk !== 'month') { const rr = String(renew || '').match(/^(\d{4})-(\d{2})-(\d{2})$/); if (rr) { ry = +rr[1]; rm = +rr[2] - 1; rd = +rr[3]; } else { rm = m + (pk === 'year' ? 7 : 2); ry = y + Math.floor(rm / 12); rm = rm % 12; } }
+      const faN = (v) => String(v).replace(/[0-9]/g, (x) => '۰۱۲۳۴۵۶۷۸۹'[x]);
+      const dd = L === 'fa' ? faN(sd) : String(sd);
+      const MO = { tr: ["Ocak'ta", "Şubat'ta", "Mart'ta", "Nisan'da", "Mayıs'ta", "Haziran'da", "Temmuz'da", "Ağustos'ta", "Eylül'de", "Ekim'de", "Kasım'da", "Aralık'ta"], en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], fa: ['ژانویه', 'فوریه', 'مارس', 'آوریل', 'مه', 'ژوئن', 'ژوئیه', 'اوت', 'سپتامبر', 'اکتبر', 'نوامبر', 'دسامبر'], ar: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'] };
+      const TRB = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+      const mo = (MO[L] || MO.tr)[m];
+      const full = L === 'tr' ? rd + ' ' + TRB[rm] + ' ' + ry : L === 'en' ? MO.en[rm] + ' ' + rd + ', ' + ry : L === 'fa' ? faN(rd) + ' ' + MO.fa[rm] + ' ' + faN(ry) : rd + ' ' + MO.ar[rm] + ' ' + ry;
+      const nL = pk === 'year' ? 480 : 200; const nLs = L === 'fa' ? faN(nL) : String(nL);
+      const F = {
+        tr: { t: 'Bu ay 40 dersi geçtin', d: 'Yeni dersin yine hazırlanıyor. Adil kullanım nedeniyle yeni abonelik ayın başlayana kadar biraz daha uzun sürebilir. ' + dd + ' ' + mo + ' hız normale döner.', ok: 'Tamam', what: 'Adil kullanım nedir?', info: 'Premium\'da ayda 40 ders ve 1.000 soruya kadar en hızlı hizmeti alırsın. Sonrasında da kullanmaya devam edersin; yalnızca biraz daha yavaş olur. Sayaç, Premium\'a geçtiğin gün her ay yeniden başlar.',
+          tP: 'Paketindeki ' + nLs + ' ders hakkını doldurdun', dP: 'Yeni dersin yine hazırlanıyor. Adil kullanım nedeniyle paketin yenilenene kadar biraz daha uzun sürebilir. Paketin ' + full + ' tarihinde yenilenince hız normale döner.', infoP: 'Dönemlik pakette toplam 200 ders ve 5.000 soru, yıllık pakette toplam 480 ders ve 12.000 soru en hızlı hizmetle gelir. Hakkını istediğin ay kullanabilirsin; bitince de devam edersin, yalnızca biraz daha yavaş olur. Paket yenilenince hakların yeniden dolar.' },
+        en: { t: 'You\'ve passed 40 lessons this month', d: 'Your new lesson is still being prepared. Under fair use, it may take a little longer until your next subscription month starts. Full speed returns on ' + mo + ' ' + dd + '.', ok: 'OK', what: 'What is fair use?', info: 'Premium gives you the fastest service for up to 40 lessons and 1,000 questions a month. After that you can keep going; it is just a little slower. The count restarts every month on the day you joined Premium.',
+          tP: 'You\'ve used the ' + nLs + ' lessons in your plan', dP: 'Your new lesson is still being prepared. Under fair use, it may take a little longer until your plan renews. Full speed returns when your plan renews on ' + full + '.', infoP: 'The Term plan includes 200 lessons and 5,000 questions in total, and the Yearly plan 480 lessons and 12,000 questions in total, at the fastest speed. Use them in any month you like; after that you can keep going, just a little slower. Your allowance refills when the plan renews.' },
+        fa: { t: 'این ماه از ۴۰ درس گذشتی', d: 'درس جدیدت همچنان آماده می‌شود. به دلیل استفادهٔ منصفانه، تا شروع ماه بعدی اشتراکت ممکن است کمی بیشتر طول بکشد. از ' + dd + ' ' + mo + ' سرعت به حالت عادی برمی‌گردد.', ok: 'باشه', what: 'استفادهٔ منصفانه چیست؟', info: 'با پریمیوم تا ۴۰ درس و ۱۰۰۰ سؤال در ماه سریع‌ترین سرویس را داری. بعد از آن هم ادامه می‌دهی؛ فقط کمی کندتر است. شمارش هر ماه در روزی که پریمیوم گرفتی از نو شروع می‌شود.',
+          tP: 'ظرفیت ' + nLs + ' درس بسته‌ات تمام شد', dP: 'درس جدیدت همچنان آماده می‌شود. به دلیل استفادهٔ منصفانه، تا تمدید بسته‌ات ممکن است کمی بیشتر طول بکشد. با تمدید بسته در ' + full + ' سرعت به حالت عادی برمی‌گردد.', infoP: 'بستهٔ ترمی در مجموع ۲۰۰ درس و ۵۰۰۰ سؤال و بستهٔ سالانه در مجموع ۴۸۰ درس و ۱۲۰۰۰ سؤال با سریع‌ترین سرویس دارد. هر ماه که بخواهی استفاده کن؛ بعد از تمام شدن هم ادامه می‌دهی، فقط کمی کندتر. با تمدید بسته سهمت دوباره پر می‌شود.' },
+        ar: { t: 'تجاوزت 40 درسًا هذا الشهر', d: 'ما زال درسك الجديد قيد التجهيز. بسبب الاستخدام العادل قد يستغرق وقتًا أطول قليلًا حتى يبدأ شهر اشتراكك التالي. تعود السرعة إلى طبيعتها في ' + dd + ' ' + mo + '.', ok: 'حسنًا', what: 'ما هو الاستخدام العادل؟', info: 'مع بريميوم تحصل على أسرع خدمة حتى 40 درسًا و1000 سؤال شهريًا. بعدها تستمر في الاستخدام لكن أبطأ قليلًا. يبدأ العدّ من جديد كل شهر في يوم اشتراكك في بريميوم.',
+          tP: 'استنفدت ' + nLs + ' درس في باقتك', dP: 'ما زال درسك الجديد قيد التجهيز. بسبب الاستخدام العادل قد يستغرق وقتًا أطول قليلًا حتى تتجدد باقتك. تعود السرعة إلى طبيعتها عند تجديد باقتك في ' + full + '.', infoP: 'تتضمن باقة الفصل 200 درس و5000 سؤال إجمالًا، والباقة السنوية 480 درسًا و12000 سؤال إجمالًا بأسرع خدمة. استخدمها في أي شهر تشاء؛ وبعد نفادها تستمر لكن أبطأ قليلًا. يُعاد ملء رصيدك عند تجديد الباقة.' }
+      };
+      const R = F[L] || F.tr; if (pk === 'month') return R; return Object.assign({}, R, { t: R.tP, d: R.dP, info: R.infoP }); };
+    const c = dark
+      ? { bg: '#15120F', card: '#211C18', sub: '#2B2520', text: '#EFE8DC', text2: '#BDB2A4', text3: '#9A8F82', line: '#3A322B', pri: '#B23A47', priText: '#F09AA3', priSoft: '#3A2027', ok: '#5BC893', onOk: '#0E2A1D', okSoft: '#173328', bad: '#F27A70', badSoft: '#3D1F1F' }
+      : { bg: '#F4EFE6', card: '#FFFCF6', sub: '#F1EBE0', text: '#2A2420', text2: '#6E645A', text3: '#776C60', line: '#E6DDCF', pri: '#9C2F3A', priText: '#9C2F3A', priSoft: '#F7E7E9', ok: '#1E7A4C', onOk: '#FFFCF6', okSoft: '#E2F3E9', bad: '#C0352B', badSoft: '#FCE8E6' };
+    const T = {
+      tr: { title: _x('PDF yükle'), back: _x('Kapat'), dropT: _x('Ders PDF\'ini seç'), choose: _x('Dosya seç'), srcI: _x('Dosyalar · iCloud Drive · Google Drive'), srcA: _x('Dosyalar · Google Drive · İndirilenler'), recent: _x('SON DOSYALAR'), f1: _x('48 sayfa · 6,2 MB'), f2: _x('36 sayfa · 4,1 MB'), name: _x('Ders adı'), course: _x('Ders'), note: _x("Hocanın metni hiç değiştirilmez. Asistan istersen sadece bu PDF'le, istersen yapay zekâ araştırmasıyla da cevap verir."), prepare: _x('Dersi hazırla'), quota: _x('BU AY 1/2 ÜCRETSİZ DERS'), procT: _x('Ders hazırlanıyor…'), procS: _x('Yaklaşık 2 dakika sürer. Uygulamayı kapatabilirsin; hazır olunca bildirim göndeririz.'), steps: [_x('Tam metin'), _x('Terim açıklamaları'), _x('Çeviri'), _x('Sınav soruları'), _x('Kartlar')], details: [_x('48 sayfa · metin aynen korunur'), _x('126 terim'), 'English · فارسی · العربية', _x('64 soru'), _x('40 kart')], wait: _x('sırada'), errT: _x("Bu PDF'ten metin okunamadı"), errS: _x('Dosya taranmış sayfalardan oluşuyor gibi görünüyor. Metni seçilebilir bir PDF dene ya da metin tanıma (OCR) ile devam et.'), errTag: _x('HATA · METİN BULUNAMADI'), other: _x('Başka dosya seç'), ocr: _x('Metin tanıma ile dene'), errNote: _x('Bu deneme ücretsiz ders hakkından düşmez.') },
+      en: { title: 'Upload PDF', back: 'Close', dropT: 'Choose the lecture PDF', choose: 'Choose file', srcI: 'Files · iCloud Drive · Google Drive', srcA: 'Files · Google Drive · Downloads', recent: 'RECENT FILES', f1: '48 pages · 6.2 MB', f2: '36 pages · 4.1 MB', name: 'Lesson name', course: 'Course', note: 'Your lecturer\'s text is never changed. The assistant answers only with what is in this PDF.', prepare: 'Prepare lesson', quota: '1/2 FREE LESSONS THIS MONTH', procT: 'Preparing your lesson…', procS: 'Takes about 2 minutes. You can close the app; we will notify you when it is ready.', steps: ['Full text', 'Term explanations', 'Translation', 'Exam questions', 'Flashcards'], details: ['48 pages · text kept verbatim', '126 terms', 'English · فارسی · العربية', '64 questions', '40 cards'], wait: 'queued', errT: 'No text found in this PDF', errS: 'It looks like scanned pages. Try a PDF with selectable text, or continue with text recognition (OCR).', errTag: 'ERROR · NO TEXT FOUND', other: 'Choose another file', ocr: 'Try text recognition', errNote: 'This attempt does not use a free lesson.' },
+      fa: { title: 'بارگذاری PDF', back: 'بستن', dropT: 'PDF درس را انتخاب کن', choose: 'انتخاب فایل', srcI: 'Files · iCloud Drive · Google Drive', srcA: 'Files · Google Drive · دانلودها', recent: 'فایل‌های اخیر', f1: '۴۸ صفحه · ۶٫۲ مگابایت', f2: '۳۶ صفحه · ۴٫۱ مگابایت', name: 'نام درس', course: 'واحد درسی', note: 'متن استاد هرگز تغییر نمی‌کند. دستیار فقط با اطلاعات همین PDF پاسخ می‌دهد.', prepare: 'آماده‌سازی درس', quota: 'این ماه ۱ از ۲ درس رایگان', procT: 'در حال آماده‌سازی درس…', procS: 'حدود ۲ دقیقه طول می‌کشد. می‌توانی برنامه را ببندی؛ وقتی آماده شد خبرت می‌کنیم.', steps: ['متن کامل', 'توضیح اصطلاحات', 'ترجمه', 'سؤال‌های آزمون', 'کارت‌ها'], details: ['۴۸ صفحه · متن بدون تغییر', '۱۲۶ اصطلاح', 'English · فارسی · العربية', '۶۴ سؤال', '۴۰ کارت'], wait: 'در صف', errT: 'از این PDF متنی خوانده نشد', errS: 'به نظر می‌رسد فایل از صفحه‌های اسکن‌شده است. PDF با متن قابل انتخاب را امتحان کن یا با متن‌خوانی (OCR) ادامه بده.', errTag: 'خطا · متنی پیدا نشد', other: 'انتخاب فایل دیگر', ocr: 'امتحان با متن‌خوانی', errNote: 'این تلاش از سهم درس رایگانت کم نمی‌شود.' },
+      ar: { title: 'رفع PDF', back: 'إغلاق', dropT: 'اختر ملف PDF للدرس', choose: 'اختيار ملف', srcI: 'Files · iCloud Drive · Google Drive', srcA: 'Files · Google Drive · التنزيلات', recent: 'الملفات الأخيرة', f1: '48 صفحة · 6.2 ميغابايت', f2: '36 صفحة · 4.1 ميغابايت', name: 'اسم الدرس', course: 'المقرر', note: 'لا يتغير نص أستاذك أبدًا. يجيب المساعد فقط بما في هذا الملف.', prepare: 'تجهيز الدرس', quota: '1 من 2 دروس مجانية هذا الشهر', procT: 'جارٍ تجهيز الدرس…', procS: 'يستغرق نحو دقيقتين. يمكنك إغلاق التطبيق وسنرسل إشعارًا عند الجاهزية.', steps: ['النص الكامل', 'شرح المصطلحات', 'الترجمة', 'أسئلة الاختبار', 'البطاقات'], details: ['48 صفحة · النص كما هو', '126 مصطلحًا', 'English · فارسی · العربية', '64 سؤالًا', '40 بطاقة'], wait: 'في الانتظار', errT: 'تعذّرت قراءة نص من هذا الملف', errS: 'يبدو أن الملف صفحات ممسوحة ضوئيًا. جرّب ملفًا بنص قابل للتحديد أو تابع بالتعرف على النص (OCR).', errTag: 'خطأ · لم يُعثر على نص', other: 'اختيار ملف آخر', ocr: 'جرّب التعرف على النص', errNote: 'لا تُحتسب هذه المحاولة من دروسك المجانية.' }
+    };
+    const PH = {
+      tr: { noPdf: _x('PDF yok mu? Fotoğraf çek'), noPdfS: _x('Slayt, ders notu ya da el yazısı sayfaların fotoğrafı'), photoTab: _x('Fotoğraf'), frame: _x('SAYFAYI ÇERÇEVEYE AL'), gallery: _x('Galeriden seç'), shoot: _x('Fotoğraf çek'), pagesTaken: _x('ÇEKİLEN SAYFALAR · SIRALAMAK İÇİN SÜRÜKLE'), photoNote: _x('Metin tanıma (OCR) ile her fotoğrafı okunabilir karta çeviririz; hocanın yazısı aynen korunur. El yazısı da olur. Sayfalar net, düz ve gölgesiz olsun.'), cta: (n) => _x('Dersi hazırla · ') + n + _x(' sayfa') },
+      en: { noPdf: 'No PDF? Take photos', noPdfS: 'Photos of slides, lecture notes or handwritten pages', photoTab: 'Photo', frame: 'FIT THE PAGE IN THE FRAME', gallery: 'Choose from gallery', shoot: 'Take photo', pagesTaken: 'PAGES TAKEN · DRAG TO REORDER', photoNote: 'Text recognition (OCR) turns every photo into a readable card; the lecturer\'s words stay as they are. Handwriting works too. Keep pages sharp, flat and shadow-free.', cta: (n) => 'Prepare lesson · ' + n + ' pages' },
+      fa: { noPdf: 'PDF نداری؟ عکس بگیر', noPdfS: 'عکس اسلاید، جزوه یا صفحه‌های دست‌نویس', photoTab: 'عکس', frame: 'صفحه را داخل کادر بگذار', gallery: 'انتخاب از گالری', shoot: 'گرفتن عکس', pagesTaken: 'صفحه‌های گرفته‌شده · برای ترتیب بکش', photoNote: 'با متن‌خوانی (OCR) هر عکس را به کارت خواندنی تبدیل می‌کنیم؛ متن استاد همان‌طور می‌ماند. دست‌خط هم قابل خواندن است. صفحه‌ها واضح، صاف و بدون سایه باشند.', cta: (n) => 'آماده‌سازی درس · ' + n + ' صفحه' },
+      ar: { noPdf: 'لا يوجد PDF؟ التقط صورًا', noPdfS: 'صور الشرائح أو الملاحظات أو الصفحات المكتوبة بخط اليد', photoTab: 'صورة', frame: 'ضع الصفحة داخل الإطار', gallery: 'اختر من المعرض', shoot: 'التقط صورة', pagesTaken: 'الصفحات الملتقطة · اسحب للترتيب', photoNote: 'نحوّل كل صورة إلى بطاقة مقروءة بالتعرف على النص (OCR)؛ يبقى كلام الأستاذ كما هو. خط اليد مقبول أيضًا. اجعل الصفحات واضحة ومستوية وبلا ظل.', cta: (n) => 'تجهيز الدرس · ' + n + ' صفحات' }
+    };
+    const s = Object.assign({}, T[lang] || T.tr, PH[lang] || PH.tr);
+    c.ambSoft = dark ? '#3A2F1A' : '#FDF1D6'; c.ambText = dark ? '#F2C46E' : '#83560A';
+    s.au = {
+      tr: { opt: _x('Derse ses kaydı ekle'), optS: _x('Hocanın anlattıklarını metne çevirir, vurgularını bulur'), t: _x('Ders ses kaydı ekle'), s: _x('Kaydı metne çevirip PDF sayfalarıyla eşleştiririz. Hocanın çok durduğu konulara özetinde ve sınavlarında daha çok ağırlık veririz.'), which: _x('Hangi derse ait?'), file: _x('Kayıt dosyası seç'), live: _x('Derste canlı kaydet'), liveS: _x('Ekran kapalıyken de kaydeder'), what: _x('HAZIRLAYACAKLARIMIZ'), steps: [_x('Konuşmanın tam metni, zaman damgalarıyla'), _x('Her bölümün PDF sayfasıyla eşleşmesi'), _x('Hocanın uzun durduğu ve tekrar ettiği konular'), _x('“Sınavda çıkar” gibi ipuçları')], privacy: _x('Kayıt yalnızca senin hesabında saklanır. Derse kayıt almadan önce hocandan izin almayı unutma.'), cta: _x('Metne çevir ve PDF ile eşleştir') },
+      en: { opt: 'Add a lecture recording', optS: "Transcribes the lecture and finds what the lecturer stressed", t: 'Add a lecture recording', s: 'We transcribe it and match it to PDF pages. Topics the lecturer dwelt on get more weight in your summary and exams.', which: 'Which lesson is it for?', file: 'Choose audio file', live: 'Record live in class', liveS: 'Keeps recording with the screen off', what: 'WHAT WE PREPARE', steps: ['Full transcript with timestamps', 'Each part matched to a PDF page', 'Topics the lecturer dwelt on or repeated', 'Hints like “this will be on the exam”'], privacy: 'The recording stays in your account only. Ask your lecturer for permission before recording.', cta: 'Transcribe and match to PDF' },
+      fa: { opt: 'افزودن صدای ضبط‌شدهٔ کلاس', optS: 'گفته‌های استاد را به متن تبدیل می‌کند و تأکیدهایش را پیدا می‌کند', t: 'افزودن صدای کلاس', s: 'صدا را به متن تبدیل و با صفحه‌های PDF تطبیق می‌دهیم. مبحث‌هایی که استاد رویشان ماند در خلاصه و آزمون وزن بیشتری می‌گیرند.', which: 'مربوط به کدام درس است؟', file: 'انتخاب فایل صوتی', live: 'ضبط زنده سر کلاس', liveS: 'با صفحهٔ خاموش هم ضبط می‌کند', what: 'آنچه آماده می‌کنیم', steps: ['متن کامل با زمان‌بندی', 'تطبیق هر بخش با صفحهٔ PDF', 'مبحث‌هایی که استاد رویشان ماند یا تکرار کرد', 'اشاره‌هایی مثل «در امتحان می‌آید»'], privacy: 'صدا فقط در حساب تو ذخیره می‌شود. پیش از ضبط از استادت اجازه بگیر.', cta: 'تبدیل به متن و تطبیق با PDF' },
+      ar: { opt: 'أضف تسجيل المحاضرة', optS: 'يحوّل شرح الأستاذ إلى نص ويجد ما ركّز عليه', t: 'أضف تسجيل المحاضرة', s: 'نحوّل التسجيل إلى نص ونربطه بصفحات الملف. المواضيع التي أطال فيها الأستاذ تأخذ وزنًا أكبر في ملخصك واختباراتك.', which: 'لأي درس؟', file: 'اختر ملفًا صوتيًا', live: 'سجّل مباشرة في المحاضرة', liveS: 'يستمر التسجيل والشاشة مطفأة', what: 'ما سنجهّزه', steps: ['النص الكامل مع التوقيت', 'ربط كل جزء بصفحة الملف', 'المواضيع التي أطال فيها الأستاذ أو كررها', 'تلميحات مثل «ستأتي في الامتحان»'], privacy: 'يُحفظ التسجيل في حسابك فقط. استأذن أستاذك قبل التسجيل.', cta: 'حوّل إلى نص واربطه بالملف' }
+    }[lang] || {};
+    const mode = st.mode || p.variant || 'pick';
+    const v = { pick: mode === 'pick', photo: mode === 'photo', audio: mode === 'audio', processing: mode === 'processing', error: mode === 'error' };
+    const shots = st.shots || 4;
+    const thumbs = []; for (let i = 1; i <= shots; i++) thumbs.push(i);
+    const done = st.done != null ? st.done : 2;
+    const steps = s.steps.map((t, i) => {
+      const isDone = i < done, active = i === done;
+      return { t, d: s.details[i], done: isDone, active, pending: !isDone && !active, color: (isDone || active) ? c.text : c.text3, border: i < 4 ? '1px solid ' + c.line : '0' };
+    });
+    const go = (a, b, k) => { if (p.go) p.go(a, b, k); };
+    this._run = () => {
+        if (!p.live) { this.setState({ mode: 'processing', done: 0 }); return; }
+        this.setState({ mode: 'processing', done: 0 });
+        if (this.timer) clearInterval(this.timer);
+        this.timer = setInterval(() => {
+          const d = ((this.state && this.state.done) || 0) + 1;
+          this.setState({ done: d });
+          if (d >= 5) { clearInterval(this.timer); this.timer = null; setTimeout(() => go('placement', 'ask'), 700); }
+        }, 850);
+    };
+    const _trialTxt = (lang) => ({
+      tr: { t: 'Deneme süresinde 2 ders hakkın doldu', d: 'Yüklediğin 2 dersle çalışmaya devam edebilirsin. Yeni ders eklemek için Premium\'a geç.', go: _x('Premium\'a geç'), later: 'Şimdilik değil' },
+      en: { t: 'You\'ve used your 2 trial lessons', d: 'You can keep studying with the 2 lessons you uploaded. Go Premium to add new lessons.', go: 'Go Premium', later: 'Not now' },
+      fa: { t: 'سهم ۲ درس دورهٔ آزمایشی‌ات تمام شد', d: 'می‌توانی با ۲ درسی که بارگذاری کردی ادامه بدهی. برای افزودن درس جدید پریمیوم بگیر.', go: 'گرفتن پریمیوم', later: 'فعلاً نه' },
+      ar: { t: 'استنفدت درسَي الفترة التجريبية', d: 'يمكنك مواصلة الدراسة بالدرسين اللذين رفعتهما. لإضافة دروس جديدة اشترك في بريميوم.', go: 'اشترك في بريميوم', later: 'ليس الآن' }
+    })[lang] || null;
+    const TT = _trialTxt(lang) || _trialTxt('tr');
+    const trlOpen = st.trlSheet != null ? st.trlSheet : p.trialOpen === true;
+    const trl = { on: trlOpen, t: TT, later: () => this.setState({ trlSheet: false }), go: () => { this.setState({ trlSheet: false }); go('paywall'); } };
+    const _longTxt = (lang) => ({
+      tr: { t: 'Bu PDF çok uzun', d: 'Bir derste en fazla 100 sayfa hazırlayabiliyoruz. Hangi kısmı çalışmak istediğini seç.', meta: '164 SAYFA · 31 MB', split: 'Bölümlere ayır', splitS: "İçindekiler'e göre 4 ayrı ders: 38 · 44 · 41 · 41 sayfa", range: 'Sayfa aralığı seç', rangeS: 'En fazla 100 sayfa', pages: (n) => n + _x(' sayfa'), tooMany: 'En fazla 100 sayfa seçebilirsin', cont: _x('Devam et'), other: _x('Başka dosya seç'), splitToast: '4 ders hazırlanıyor · bitince bildirim göndereceğiz' },
+      en: { t: 'This PDF is too long', d: 'We can prepare up to 100 pages per lesson. Choose the part you want to study.', meta: '164 PAGES · 31 MB', split: 'Split into chapters', splitS: 'By table of contents, 4 lessons: 38 · 44 · 41 · 41 pages', range: 'Choose a page range', rangeS: 'Up to 100 pages', pages: (n) => n + ' pages', tooMany: 'You can choose up to 100 pages', cont: 'Continue', other: 'Choose another file', splitToast: 'Preparing 4 lessons · we will notify you when ready' },
+      fa: { t: 'این PDF خیلی طولانی است', d: 'در هر درس حداکثر ۱۰۰ صفحه آماده می‌کنیم. بخشی را که می‌خواهی بخوانی انتخاب کن.', meta: '۱۶۴ صفحه · ۳۱ مگابایت', split: 'تقسیم به فصل‌ها', splitS: 'بر اساس فهرست، ۴ درس جدا: ۳۸ · ۴۴ · ۴۱ · ۴۱ صفحه', range: 'انتخاب بازهٔ صفحه', rangeS: 'حداکثر ۱۰۰ صفحه', pages: (n) => String(n).replace(/[0-9]/g, (x) => '۰۱۲۳۴۵۶۷۸۹'[x]) + ' صفحه', tooMany: 'حداکثر ۱۰۰ صفحه می‌توانی انتخاب کنی', cont: 'ادامه', other: 'انتخاب فایل دیگر', splitToast: '۴ درس در حال آماده‌سازی · وقتی آماده شد خبرت می‌کنیم' },
+      ar: { t: 'ملف PDF هذا طويل جدًا', d: 'يمكننا تجهيز 100 صفحة كحد أقصى لكل درس. اختر الجزء الذي تريد دراسته.', meta: '164 صفحة · 31 ميغابايت', split: 'قسّمه إلى فصول', splitS: 'حسب الفهرس، 4 دروس منفصلة: 38 · 44 · 41 · 41 صفحة', range: 'اختر نطاق الصفحات', rangeS: '100 صفحة كحد أقصى', pages: (n) => n + ' صفحة', tooMany: 'يمكنك اختيار 100 صفحة كحد أقصى', cont: 'متابعة', other: 'اختيار ملف آخر', splitToast: 'جارٍ تجهيز 4 دروس · سنرسل إشعارًا عند الجاهزية' }
+    })[lang] || null;
+    const LT = _longTxt(lang) || _longTxt('tr');
+    const lgFrom = st.lgFrom != null ? st.lgFrom : 1, lgTo = st.lgTo != null ? st.lgTo : 100, lgMode = st.lgMode || 'split';
+    const lgN = Math.max(0, Math.min(164, lgTo) - Math.max(1, lgFrom) + 1); const lgBad = lgMode === 'range' && (lgN < 1 || lgN > 100 || lgFrom < 1 || lgTo > 164 || lgFrom > lgTo);
+    const lgOpen = st.lgSheet != null ? st.lgSheet : (p).longOpen === true;
+    const lng = { on: lgOpen, t: LT, isSplit: lgMode === 'split', isRange: lgMode === 'range', from: String(lgFrom), to: String(lgTo), count: lgBad ? LT.tooMany : LT.pages(lgN), countFg: lgBad ? c.bad : c.text2, contOp: lgBad ? 0.45 : 1,
+      pickSplit: () => this.setState({ lgMode: 'split' }), pickRange: () => this.setState({ lgMode: 'range' }),
+      setFrom: (e) => { const v = parseInt(e && e.target ? e.target.value : '', 10); this.setState({ lgFrom: isNaN(v) ? 0 : v, lgMode: 'range' }); },
+      setTo: (e) => { const v = parseInt(e && e.target ? e.target.value : '', 10); this.setState({ lgTo: isNaN(v) ? 0 : v, lgMode: 'range' }); },
+      close: () => this.setState({ lgSheet: false }),
+      cont: () => { if (lgBad) return; this.setState({ lgSheet: false, lgDone: true }); if (lgMode === 'split') say(LT.splitToast); this._run(); },
+      splitBorder: lgMode === 'split' ? '1.5px solid ' + c.pri : '1px solid ' + c.line, splitBg: lgMode === 'split' ? c.priSoft : 'transparent', splitDot: lgMode === 'split' ? 1 : 0,
+      rangeBorder: lgMode === 'range' ? '1.5px solid ' + c.pri : '1px solid ' + c.line, rangeBg: lgMode === 'range' ? c.priSoft : 'transparent', rangeDot: lgMode === 'range' ? 1 : 0,
+      ringOn: c.pri, ringOff: c.line, sub: c.sub };
+    const FT = _fairTxt(lang, (this.props || {}).subDay, (this.props || {}).plan, (this.props || {}).renew);
+    const fairOpen = st.fairSheet != null ? st.fairSheet : p.fairOpen === true;
+    const fair = { on: fairOpen, t: FT, info: !!st.fairInfo, noInfo: !st.fairInfo,
+      ok: () => { this.setState({ fairSheet: false, fairSeen: true, fairInfo: false }); this._run(); },
+      what: () => this.setState({ fairInfo: true }),
+      iconBg: dark ? '#3A2E18' : '#FBEBD0', iconFg: dark ? '#F2B33D' : '#B07A12', grab: dark ? '#4A403A' : '#E2D7C6', bg: dark ? '#221C18' : '#FFFBF4' };
+    return { lng, trl, fair, fairQ: !p.fair && !p.trial, toastOn: !!__st.toast, toastMsg: __st.toast || '', toastBottom: 140,
+      openRecent: () => go('reader'), uPhotoTab: () => this.setState({ mode: 'photo' }), uGallery: () => say(_x('Galeriden 3 fotoğraf eklendi')), uFile: () => say(_x('Ders_kaydi_14Ekim.m4a seçildi · 48 dk')), uLive: () => say(_x('Kayıt başladı · telefonu masaya koy')),
+      c, s, v, lang, steps, dir: rtl ? 'rtl' : 'ltr', flip: 1,
+      W: ios ? 390 : 412, H: ios ? 844 : 915, topH: ios ? 54 : 36,
+      bottomPad: ios ? 34 : 20, bottomPadS: ios ? 30 : 16,
+      titlePos: ios ? 'absolute' : 'static', titleAlign: ios ? 'center' : 'start', titleFs: ios ? 17 : 22,
+      btnR: ios ? 14 : 100, btnH: ios ? 52 : 48,
+      sources: ios ? s.srcI : s.srcA,
+      pct: Math.min(100, Math.round(done / 5 * 100 + (done < 5 ? 8 : 0))),
+      shots, thumbs, photoCta: s.cta(shots),
+      toPhoto: () => this.setState({ mode: 'photo' }),
+      toAudio: () => this.setState({ mode: 'audio' }),
+      toQuestions: () => go('questions'),
+      qOpt: ({ tr: _x('Elinde soru var mı?'), en: 'Have sample questions?', fa: 'نمونه سؤال داری؟', ar: 'لديك أسئلة نموذجية؟' })[p.lang || 'tr'] || _x('Elinde soru var mı?'),
+      qOptS: ({ tr: _x('Eski sınav ya da örnek sorular: o tarzda soru hazırlarız'), en: 'Past exams or samples: we write more in that style', fa: 'سؤال‌های امتحان قبلی: به همان سبک سؤال می‌سازیم', ar: 'امتحانات سابقة: نكتب أسئلة بنفس الأسلوب' })[p.lang || 'tr'] || '',
+      toAudioScreen: () => go('audio'),
+      auSteps: s.au.steps || [],
+      toPick: () => this.setState({ mode: 'pick' }),
+      addShot: () => this.setState({ shots: Math.min(30, shots + 1) }),
+      back: () => go('home'),
+      retry: () => this.setState({ mode: 'pick' }),
+      start: () => {
+        if (p.long && !st.lgDone) { this.setState({ lgSheet: true }); return; }
+        if (p.trial) { this.setState({ trlSheet: true }); return; }
+        if (p.fair && !st.fairSeen) { this.setState({ fairSheet: true }); return; }
+        this._run();
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

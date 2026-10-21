@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Okuma ekranı</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+<style>[dir=rtl] .dc-back{transform:scaleX(-1)}[dir=rtl],[dir=rtl] *{letter-spacing:0 !important}</style>
+</helmet>
+<div dir="{{dir}}" lang="{{lang}}" style="width: {{W}}px; height: {{H}}px; box-sizing: border-box; display: flex; flex-direction: column; position: relative; overflow: hidden; background: {{c.bg}}; color: {{c.text}}; font-family: Poppins, Vazirmatn, system-ui, sans-serif">
+<div style="height: {{topH}}px; flex: none"></div>
+
+<header style="flex: none; display: flex; flex-direction: column; gap: 8px; padding-bottom: 8px; border-bottom: 1px solid {{c.line}}">
+<div style="display: flex; align-items: center; gap: 6px; padding: 0 12px 0 6px; height: 48px">
+<button onClick="{{back}}" aria-label="{{s.back}}" style="width: 44px; height: 44px; border: 0; background: transparent; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX({{flip}})"><path d="M15 5l-7 7 7 7"></path></svg>
+</button>
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+<span style="font-size: 17px; font-weight: 700; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{_t.k1187}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.06em; color: {{c.text3}}">{{_t.k962}} {{s.pg}} {{curPage}}/48</span>
+</div>
+<button onClick="{{toShare}}" aria-label="{{_t.k1622}}" style="width: 38px; height: 38px; border-radius: 19px; border: 1px solid {{c.line}}; background: {{c.card}}; color: {{c.text}}; display: flex; align-items: center; justify-content: center; flex: none; cursor: pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12 M8 7l4-4 4 4 M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"></path></svg></button>
+<div role="group" aria-label="{{s.size}}" style="display: flex; align-items: center; border-radius: 10px; background: {{c.card}}; border: 1px solid {{c.line}}; flex: none">
+<button onClick="{{smaller}}" aria-label="{{s.smaller}}" style="width: 40px; height: 36px; border: 0; background: transparent; color: {{c.text}}; font-family: Lora, Vazirmatn, Georgia, serif; font-size: 13px; font-weight: 600; cursor: pointer">A−</button>
+<span style="width: 1px; height: 18px; background: {{c.line}}"></span>
+<button onClick="{{bigger}}" aria-label="{{s.bigger}}" style="width: 40px; height: 36px; border: 0; background: transparent; color: {{c.text}}; font-family: Lora, Vazirmatn, Georgia, serif; font-size: 17px; font-weight: 600; cursor: pointer">A+</button>
+</div>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; font-weight: 600; padding: 5px 8px; border-radius: 6px; background: {{c.ambSoft}}; color: {{c.ambText}}; transform: skewX(-8deg); flex: none">{{s.lvl}}</span>
+</div>
+<div style="display: flex; gap: 8px; overflow-x: auto; padding: 0 16px; scrollbar-width: none">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="4">
+<button onClick="{{t.tap}}" aria-pressed="{{t.on}}" style="flex: none; height: 34px; padding: 0 14px; border-radius: {{chipR}}px; border: {{t.border}}; background: {{t.bg}}; color: {{t.fg}}; font-family: inherit; font-size: 13px; font-weight: {{t.fw}}; white-space: nowrap; cursor: pointer; display: flex; align-items: center; gap: 6px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; opacity: 0.8">{{t.n}}</span>{{t.label}}
+</button>
+</sc-for>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; padding: 0 16px">
+<span role="progressbar" aria-valuenow="{{readPct}}" aria-valuemin="0" aria-valuemax="100" style="flex: 1; height: 4px; border-radius: 2px; background: {{c.line}}; overflow: hidden; display: flex"><span style="width: {{readPct}}%; background: {{c.pri}}; border-radius: 2px"></span></span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.text3}}">%{{readPct}}</span>
+<button role="timer" onClick="{{togglePause}}" aria-label="{{pauseLabel}}" style="height: 34px; padding: 0 5px 0 10px; border-radius: 17px; border: {{sw.border}}; background: {{sw.bg}}; color: {{sw.fg}}; display: flex; align-items: center; gap: 7px; font-family: inherit; cursor: pointer; flex: none">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21a8 8 0 1 0 0-16 8 8 0 0 0 0 16z M12 9v4l2.5 1.5 M10 2h4 M18.5 5.5l1.5-1.5"></path></svg>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 13px; font-weight: 600; min-width: 46px">{{clock}}</span>
+<span style="width: 24px; height: 24px; border-radius: 12px; background: {{sw.btn}}; color: {{sw.btnFg}}; display: flex; align-items: center; justify-content: center"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="{{pauseIcon}}"></path></svg></span>
+</button>
+</div>
+</header>
+
+<sc-if value="{{paused}}" hint-placeholder-val="{{ false }}">
+<button onClick="{{togglePause}}" style="flex: none; height: 40px; border: 0; display: flex; align-items: center; justify-content: center; gap: 8px; background: {{c.ambSoft}}; color: {{c.ambText}}; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; letter-spacing: 0.08em; cursor: pointer">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7z M13.5 5H17v14h-3.5z"></path></svg>{{s.breakBanner}}
+</button>
+</sc-if>
+
+<sc-if value="{{v.notes}}" hint-placeholder-val="{{ false }}">
+<div style="flex: none; display: flex; align-items: center; justify-content: center; gap: 8px; height: 30px; background: {{c.ambSoft}}; color: {{c.ambText}}; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; letter-spacing: 0.08em">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 11h12v9H6z M8.5 11V8a3.5 3.5 0 0 1 7 0v3"></path></svg>{{s.noteBanner}}
+</div>
+</sc-if>
+
+<main style="flex: 1; min-height: 0; overflow-y: {{scrollY}}; padding: 16px 16px 160px; display: flex; flex-direction: column; gap: 14px">
+
+<sc-if value="{{v.loading}}" hint-placeholder-val="{{ false }}">
+<div aria-busy="true" style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: center; gap: 10px"><span style="width: 28px; height: 28px; border-radius: 8px; background: {{c.skel}}"></span><span style="width: 180px; height: 16px; border-radius: 8px; background: {{c.skel}}"></span></div>
+<sc-for list="{{two}}" as="x" hint-placeholder-count="2">
+<div style="border-radius: 18px; background: {{c.card}}; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between"><span style="width: 60px; height: 12px; border-radius: 6px; background: {{c.skel}}"></span><span style="width: 56px; height: 24px; border-radius: 8px; background: {{c.skel}}"></span></div>
+<span style="height: 14px; width: 96%; border-radius: 7px; background: {{c.skel}}"></span><span style="height: 14px; width: 88%; border-radius: 7px; background: {{c.skel}}"></span><span style="height: 14px; width: 92%; border-radius: 7px; background: {{c.skel}}"></span><span style="height: 14px; width: 60%; border-radius: 7px; background: {{c.skel}}"></span>
+</div>
+</sc-for>
+<span style="text-align: center; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}">{{s.loading}}</span>
+</div>
+</sc-if>
+
+<sc-if value="{{showSec1}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; align-items: center; gap: 10px; padding: 4px 2px 0">
+<span style="width: 30px; height: 30px; border-radius: 9px; background: {{c.priSoft}}; color: {{c.priText}}; display: flex; align-items: center; justify-content: center; transform: rotate(-8deg); flex: none">
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z M7.5 12h2.5l1.2-2.5 2 5 1.3-2.5h2"></path></svg>
+</span>
+<div style="display: flex; flex-direction: column; gap: 1px"><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; color: {{c.text3}}">{{s.sec}} 1</span><h2 style="margin: 0; font-size: 18px; font-weight: 700; line-height: 1.2">{{_t.k2028}}</h2></div>
+</div>
+
+<article style="position: relative; border-radius: 18px; background: {{c.card}}; padding: 14px 16px 18px; display: flex; flex-direction: column; gap: 10px; box-shadow: {{c.shadow}}">
+<div style="display: flex; align-items: center; gap: 8px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; letter-spacing: 0.06em; color: {{c.text3}}">{{s.pg}} 5</span>
+<span style="font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 5px; background: {{c.ambSoft}}; color: {{c.ambText}}; transform: skewX(-10deg)">{{s.tagCaution}}</span>
+<span style="flex: 1"></span>
+<button onClick="{{openTranslate}}" style="height: 30px; padding: 0 10px; border-radius: 8px; border: 1px solid {{c.line}}; background: transparent; color: {{c.text2}}; display: flex; align-items: center; gap: 6px; font-family: inherit; font-size: 12px; font-weight: 500; cursor: pointer">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h9 M8.5 3v2 M6 5c.5 3 2.5 5.5 5 7 M11 5c-.8 3.5-3 6.5-6.5 8 M13 21l4-9 4 9 M14.5 18h5"></path></svg>{{s.translate}}
+</button>
+</div>
+<div dir="ltr" lang="tr" style="font-family: Lora, Vazirmatn, Georgia, serif; font-size: {{fs}}px; line-height: 1.65; color: {{c.text}}; text-align: left; position: relative">
+<p style="margin: 0 0 10px"><span onClick="{{selectSentence}}" style="background: {{selBg}}; border-radius: 3px; box-shadow: {{selShadow}}; cursor: text">{{_t.k1862}} <span style="border-bottom: 1.5px dotted {{c.priText}}">{{_t.k2353}}</span> {{_t.k2653}}</span></p>
+<p style="margin: 0">{{_t.k2026}}</p>
+<sc-if value="{{v.notes}}" hint-placeholder-val="{{ false }}">
+<svg width="100%" height="100%" viewBox="0 0 326 190" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; overflow: visible">
+<path d="M14 116 L 312 116" stroke="#F2B33D" stroke-opacity="0.42" stroke-width="20" fill="none"></path>
+<path d="M14 144 L 210 144" stroke="#F2B33D" stroke-opacity="0.42" stroke-width="20" fill="none"></path>
+<path d="M98 6 C 120 -6, 196 -4, 214 10 C 230 24, 196 38, 150 36 C 108 34, 84 24, 96 8" stroke="{{c.penRed}}" stroke-width="2.4" fill="none" stroke-linecap="round"></path>
+<path d="M232 196 C 250 170, 240 60, 214 30" stroke="{{c.penRed}}" stroke-width="2" fill="none" stroke-linecap="round"></path>
+<path d="M206 40 L 214 28 L 222 40" stroke="{{c.penRed}}" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</sc-if>
+</div>
+<sc-if value="{{v.notes}}" hint-placeholder-val="{{ false }}">
+<span dir="ltr" style="align-self: flex-end; font-family: Lora, Vazirmatn, Georgia, serif; font-style: italic; font-size: 17px; color: {{c.penRed}}; transform: rotate(-4deg); padding-right: 6px">{{_t.k2360}}</span>
+</sc-if>
+
+<sc-if value="{{v.select}}" hint-placeholder-val="{{ false }}">
+<div role="toolbar" aria-label="{{s.selection}}" style="position: absolute; top: 4px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; border-radius: 12px; background: {{c.menuBg}}; color: {{c.menuFg}}; box-shadow: 0 10px 30px rgba(0,0,0,.25); overflow: hidden; z-index: 4; white-space: nowrap">
+<button onClick="{{openTranslate}}" style="height: 40px; padding: 0 12px; border: 0; background: transparent; color: inherit; font-family: inherit; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h9 M8.5 3v2 M6 5c.5 3 2.5 5.5 5 7 M11 5c-.8 3.5-3 6.5-6.5 8 M13 21l4-9 4 9 M14.5 18h5"></path></svg>{{s.translate}}</button>
+<span style="width: 1px; height: 22px; background: rgba(255,255,255,.2)"></span>
+<button onClick="{{rCopy}}" style="height: 40px; padding: 0 11px; border: 0; background: transparent; color: inherit; font-family: inherit; font-size: 13px; cursor: pointer">{{s.copy}}</button>
+<span style="width: 1px; height: 22px; background: rgba(255,255,255,.2)"></span>
+<button onClick="{{rHl}}" style="height: 40px; padding: 0 11px; border: 0; background: transparent; color: inherit; font-family: inherit; font-size: 13px; cursor: pointer">{{s.highlight}}</button>
+<span style="width: 1px; height: 22px; background: rgba(255,255,255,.2)"></span>
+<button onClick="{{toAssistant}}" style="height: 40px; padding: 0 11px; border: 0; background: transparent; color: inherit; font-family: inherit; font-size: 13px; cursor: pointer">{{s.askAi}}</button>
+</div>
+</sc-if>
+</article>
+
+<article style="border-radius: 18px; background: {{c.card}}; padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: {{c.shadow}}">
+<div style="display: flex; align-items: center; gap: 8px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; letter-spacing: 0.06em; color: {{c.text3}}">{{s.pg}} 6</span>
+<span style="flex: 1"></span>
+<button onClick="{{openTranslate}}" style="height: 30px; padding: 0 10px; border-radius: 8px; border: 1px solid {{c.line}}; background: transparent; color: {{c.text2}}; display: flex; align-items: center; gap: 6px; font-family: inherit; font-size: 12px; font-weight: 500; cursor: pointer"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h9 M8.5 3v2 M6 5c.5 3 2.5 5.5 5 7 M11 5c-.8 3.5-3 6.5-6.5 8 M13 21l4-9 4 9 M14.5 18h5"></path></svg>{{s.translate}}</button>
+</div>
+<div dir="ltr" lang="tr" style="display: flex; flex-direction: column; text-align: left">
+<span style="font-family: Lora, Vazirmatn, Georgia, serif; font-size: {{fs}}px; font-weight: 600; padding-bottom: 8px">{{_t.k1309}}</span>
+<sc-for list="{{bpRows}}" as="r" hint-placeholder-count="6">
+<div style="display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr); gap: 8px; padding: 7px 0; border-top: 1px solid {{c.line}}; color: {{r.fg}}; font-weight: {{r.fw}}">
+<span style="font-family: Lora, Vazirmatn, Georgia, serif; font-size: 14px">{{r.k}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px">{{r.s}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px">{{r.d}}</span>
+</div>
+</sc-for>
+</div>
+</article>
+</sc-if>
+
+<sc-if value="{{showSec2}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; align-items: center; gap: 10px; padding: 8px 2px 0">
+<span style="width: 30px; height: 30px; border-radius: 9px; background: {{c.ambSoft}}; color: {{c.ambText}}; display: flex; align-items: center; justify-content: center; transform: rotate(-8deg); flex: none">
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.5 3.5a5 5 0 0 1 7 7l-7 7a5 5 0 0 1-7-7z M7 7l7 7"></path></svg>
+</span>
+<div style="display: flex; flex-direction: column; gap: 1px"><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; color: {{c.text3}}">{{s.sec}} 2</span><h2 style="margin: 0; font-size: 18px; font-weight: 700; line-height: 1.2">{{_t.k2570}}</h2></div>
+</div>
+<article style="position: relative; border-radius: 18px; background: {{c.card}}; padding: 14px 16px 18px; display: flex; flex-direction: column; gap: 10px; box-shadow: {{c.shadow}}">
+<div style="display: flex; align-items: center; gap: 8px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; letter-spacing: 0.06em; color: {{c.text3}}">{{s.pg}} 12</span>
+<span style="font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 5px; background: {{c.blueSoft}}; color: {{c.blue}}; transform: skewX(-10deg)">{{s.tagDose}}</span>
+<span style="flex: 1"></span>
+<button onClick="{{openTranslate}}" style="height: 30px; padding: 0 10px; border-radius: 8px; border: 1px solid {{c.line}}; background: transparent; color: {{c.text2}}; display: flex; align-items: center; gap: 6px; font-family: inherit; font-size: 12px; font-weight: 500; cursor: pointer"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h9 M8.5 3v2 M6 5c.5 3 2.5 5.5 5 7 M11 5c-.8 3.5-3 6.5-6.5 8 M13 21l4-9 4 9 M14.5 18h5"></path></svg>{{s.translate}}</button>
+</div>
+<div dir="ltr" lang="tr" style="font-family: Lora, Vazirmatn, Georgia, serif; font-size: {{fs}}px; line-height: 1.65; text-align: left">
+<p style="margin: 0 0 10px">{{_t.k2580}} <button onClick="{{openTerm}}" style="border: 0; border-bottom: 1.5px dotted {{c.priText}}; background: transparent; padding: 0; font: inherit; color: inherit; cursor: pointer">{{_t.k839}}</button>, <button onClick="{{openTerm}}" style="border: 0; border-bottom: 1.5px dotted {{c.priText}}; background: {{termBg}}; border-radius: 3px; padding: 0 2px; font: inherit; color: inherit; cursor: pointer">{{_t.k282}}</button>{{_t.k108}}</p>
+<p style="margin: 0">{{_t.k293}}</p>
+</div>
+
+<sc-if value="{{v.term}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="{{_t.k282}}" style="position: absolute; left: 10px; right: 10px; top: 112px; z-index: 6; border-radius: 18px; background: {{c.pop}}; border: 1px solid {{c.line}}; box-shadow: 0 18px 50px rgba(18,23,30,.28); padding: 16px; display: flex; flex-direction: column; gap: 10px">
+<span aria-hidden="true" style="position: absolute; top: -7px; left: 150px; width: 14px; height: 14px; background: {{c.pop}}; border-left: 1px solid {{c.line}}; border-top: 1px solid {{c.line}}; transform: rotate(45deg)"></span>
+<div style="display: flex; align-items: flex-start; gap: 10px">
+<div style="flex: 1; display: flex; flex-direction: column; gap: 6px">
+<span dir="ltr" style="font-size: 19px; font-weight: 700; line-height: 1.2; text-align: start">{{_t.k282}}</span>
+<div style="display: flex; gap: 6px; flex-wrap: wrap">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.06em; padding: 3px 7px; border-radius: 5px; background: {{c.priSoft}}; color: {{c.priText}}">{{s.cat}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.06em; padding: 3px 7px; border-radius: 5px; background: {{c.sub}}; color: {{c.text2}}">PDF · {{s.pg}} 12</span>
+</div>
+</div>
+<button onClick="{{closeAll}}" aria-label="{{s.close}}" style="width: 36px; height: 36px; border-radius: 18px; border: 0; background: {{c.sub}}; color: {{c.text2}}; display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12 M18 6L6 18"></path></svg></button>
+</div>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: {{c.text2}}">{{s.def}}</p>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding-top: 2px">
+<button onClick="{{rListen}}" style="height: 44px; border-radius: 12px; border: 0; background: {{c.sub}}; color: {{c.text}}; display: flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z M16.5 8.5a5 5 0 0 1 0 7 M19 6a8.5 8.5 0 0 1 0 12"></path></svg>{{s.listen}}</button>
+<button onClick="{{rAdd}}" style="height: 44px; border-radius: 12px; border: 0; background: {{c.sub}}; color: {{c.text}}; display: flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z M12 7v6 M9 10h6"></path></svg>{{s.addList}}</button>
+<button onClick="{{openTranslate}}" style="height: 44px; border-radius: 12px; border: 0; background: {{c.sub}}; color: {{c.text}}; display: flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h9 M8.5 3v2 M6 5c.5 3 2.5 5.5 5 7 M11 5c-.8 3.5-3 6.5-6.5 8 M13 21l4-9 4 9 M14.5 18h5"></path></svg>{{s.translate}}</button>
+</div>
+</div>
+</sc-if>
+</article>
+</sc-if>
+
+<sc-if value="{{showSec3}}" hint-placeholder-val="{{ true }}">
+<article style="border-radius: 18px; background: {{c.card}}; padding: 14px 16px 18px; display: flex; flex-direction: column; gap: 10px; box-shadow: {{c.shadow}}">
+<div style="display: flex; align-items: center; gap: 8px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; letter-spacing: 0.06em; color: {{c.text3}}">{{s.pg}} 13</span>
+<span style="font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 5px; background: {{c.priSoft}}; color: {{c.priText}}; transform: skewX(-10deg)">{{s.tagSide}}</span>
+<span style="flex: 1"></span>
+<button onClick="{{openTranslate}}" style="height: 30px; padding: 0 10px; border-radius: 8px; border: 1px solid {{c.line}}; background: transparent; color: {{c.text2}}; display: flex; align-items: center; gap: 6px; font-family: inherit; font-size: 12px; font-weight: 500; cursor: pointer"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h9 M8.5 3v2 M6 5c.5 3 2.5 5.5 5 7 M11 5c-.8 3.5-3 6.5-6.5 8 M13 21l4-9 4 9 M14.5 18h5"></path></svg>{{s.translate}}</button>
+</div>
+<div dir="ltr" lang="tr" style="font-family: Lora, Vazirmatn, Georgia, serif; font-size: {{fs}}px; line-height: 1.65; text-align: left">
+<p style="margin: 0 0 10px">{{_t.k347}} <button onClick="{{openTerm}}" style="border: 0; border-bottom: 1.5px dotted {{c.priText}}; background: transparent; padding: 0; font: inherit; color: inherit; cursor: pointer">{{_t.k1567}}</button> {{_t.k2363}}</p>
+<p style="margin: 0">{{_t.k284}} <button onClick="{{openTerm}}" style="border: 0; border-bottom: 1.5px dotted {{c.priText}}; background: transparent; padding: 0; font: inherit; color: inherit; cursor: pointer">{{_t.k2344}}</button> {{_t.k2440}}</p>
+</div>
+</article>
+
+<article style="border-radius: 18px; background: {{c.card}}; padding: 14px 16px 18px; display: flex; flex-direction: column; gap: 10px; box-shadow: {{c.shadow}}">
+<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; letter-spacing: 0.06em; color: {{c.text3}}">{{s.pg}} 14</span>
+<span style="font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 5px; background: {{c.ambSoft}}; color: {{c.ambText}}; transform: skewX(-10deg)">{{s.tagCaution}}</span>
+<span style="font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 5px; background: {{c.badSoft}}; color: {{c.bad}}; transform: skewX(-10deg)">{{s.tagContra}}</span>
+<span style="flex: 1"></span>
+<button onClick="{{openTranslate}}" aria-label="{{s.translate}}" style="width: 34px; height: 30px; border-radius: 8px; border: 1px solid {{c.line}}; background: transparent; color: {{c.text2}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h9 M8.5 3v2 M6 5c.5 3 2.5 5.5 5 7 M11 5c-.8 3.5-3 6.5-6.5 8 M13 21l4-9 4 9 M14.5 18h5"></path></svg></button>
+</div>
+<div dir="ltr" lang="tr" style="font-family: Lora, Vazirmatn, Georgia, serif; font-size: {{fs}}px; line-height: 1.65; text-align: left">
+<p style="margin: 0 0 10px">{{_t.k2099}}</p>
+<p style="margin: 0">{{_t.k290}}</p>
+</div>
+<button onClick="{{molOpen}}" style="align-self: flex-start; height: 36px; padding: 0 12px 0 5px; border-radius: 18px; border: 1px solid {{c.line}}; background: transparent; color: {{c.text}}; display: flex; align-items: center; gap: 8px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer"><span style="width: 26px; height: 26px; border-radius: 13px; background: {{c.priSoft}}; color: {{c.priText}}; display: flex; align-items: center; justify-content: center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7.8 4.5v9L12 21l-7.8-4.5v-9z M12 8l3.5 2v4L12 16l-3.5-2v-4z"></path></svg></span>{{_t.k1466}}</button>
+<button onClick="{{toAudio}}" style="border: 0; border-radius: 12px; background: {{c.ambSoft}}; color: {{c.text}}; min-height: 44px; padding: 8px 12px; display: flex; align-items: center; gap: 10px; font-family: inherit; text-align: start; cursor: pointer">
+<span style="width: 28px; height: 28px; border-radius: 14px; background: {{c.amb}}; color: #2A2420; display: flex; align-items: center; justify-content: center; flex: none"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg></span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 1px"><span style="font-size: 13px; font-weight: 700">{{s.audioT}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.ambText}}">{{s.audioS}}</span></span>
+</button>
+<button onClick="{{toQuestions}}" style="align-self: flex-start; border: 0; background: transparent; padding: 2px 4px; margin-top: -2px; display: flex; align-items: center; gap: 5px; font-family: inherit; font-size: 11px; color: {{c.text3}}; text-align: start; cursor: pointer"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3 M12 17h.01 M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"></path></svg>{{s.qT}}</button>
+</article>
+
+<div style="border-radius: 18px; border: 2px dashed {{c.dash}}; padding: 16px; display: flex; align-items: center; gap: 14px">
+<span style="width: 40px; height: 40px; border-radius: 11px; background: {{c.okSoft}}; color: {{c.ok}}; display: flex; align-items: center; justify-content: center; transform: rotate(-8deg); flex: none">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5h10 M9 12h10 M9 19h10 M4 5l1 1 2-2 M4 12l1 1 2-2 M4 19h.01"></path></svg>
+</span>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 15px; font-weight: 700">{{s.checkT}}</span>
+<span style="font-size: 13px; color: {{c.text3}}; line-height: 1.4">{{s.checkS}}</span>
+</div>
+<button onClick="{{toCheck}}" style="height: 40px; padding: 0 16px; border-radius: {{btnR}}px; border: 0; background: #9C2F3A; color: #FFFCF6; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; flex: none">{{s.start}}</button>
+</div>
+
+<div style="border-radius: 22px; background: {{c.card}}; padding: 22px 18px 18px; display: flex; flex-direction: column; gap: 12px; position: relative; overflow: hidden; box-shadow: {{c.shadow}}">
+<span aria-hidden="true" style="position: absolute; right: -36px; top: -36px; width: 120px; height: 120px; border-radius: 60px; background: {{c.ambSoft}}"></span>
+<span style="width: 40px; height: 40px; border-radius: 11px; background: {{c.amb}}; color: #2A2420; display: flex; align-items: center; justify-content: center; transform: rotate(-8deg); position: relative">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4 M5 4h11l-2 4 2 4H5"></path></svg>
+</span>
+<h3 style="margin: 0; font-size: 21px; font-weight: 700; position: relative">{{s.endT}}</h3>
+<p style="margin: 0; font-size: 14px; line-height: 1.5; color: {{c.text2}}; position: relative">{{s.endS}}</p>
+<span style="display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px; color: {{c.text}}; position: relative"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21a8 8 0 1 0 0-16 8 8 0 0 0 0 16z M12 9v4l2.5 1.5 M10 2h4"></path></svg>{{s.totalT}}</span>
+<button onClick="{{toExam}}" style="height: {{btnH}}px; border: 0; border-radius: {{btnR}}px; background: {{c.pri}}; color: #FFFCF6; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{s.exam}}</button>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<button onClick="{{toCards}}" style="height: 48px; border: 1px solid {{c.line}}; border-radius: {{btnR}}px; background: transparent; color: {{c.text}}; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer">{{s.cards}}</button>
+<button onClick="{{toAssistant}}" style="height: 48px; border: 1px solid {{c.line}}; border-radius: {{btnR}}px; background: transparent; color: {{c.text}}; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer">{{s.askQa}}</button>
+</div>
+</div>
+</sc-if>
+</main>
+
+<sc-if value="{{showBar}}" hint-placeholder-val="{{ true }}">
+<div style="position: absolute; left: 0; right: 0; bottom: 0; padding: 10px 14px {{bottomPad}}px; background: {{c.bar}}; border-top: 1px solid {{c.line}}; display: flex; align-items: center; gap: 4px; backdrop-filter: blur(18px)">
+<button onClick="{{toNotes}}" style="width: 54px; height: 50px; border: 0; background: transparent; color: {{c.text2}}; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-family: inherit; font-size: 11px; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1-4L16 5l3 3L8 19z M14 7l3 3"></path></svg>{{s.note}}</button>
+<button onClick="{{rListen}}" style="width: 54px; height: 50px; border: 0; background: transparent; color: {{c.text2}}; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-family: inherit; font-size: 11px; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z M16.5 8.5a5 5 0 0 1 0 7 M19 6a8.5 8.5 0 0 1 0 12"></path></svg>{{s.listen}}</button>
+<button onClick="{{toCards}}" style="width: 54px; height: 50px; border: 0; background: transparent; color: {{c.text2}}; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-family: inherit; font-size: 11px; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7h11a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z M7 3.5h12a2 2 0 0 1 2 2V17"></path></svg>{{s.cards}}</button>
+<button onClick="{{pdf.open}}" style="width: 54px; height: 50px; border: 0; background: transparent; color: {{c.text2}}; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-family: inherit; font-size: 11px; white-space: nowrap; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5 M20 9V4h-5 M4 15v5h5 M20 15v5h-5"></path></svg>{{pdf.t.full}}</button>
+<span style="flex: 1"></span>
+<button onClick="{{toAssistant}}" style="height: {{fabH}}px; padding: 0 20px 0 16px; border: 0; border-radius: {{fabR}}px; background: {{c.pri}}; color: #FFFCF6; display: flex; align-items: center; gap: 8px; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 14px rgba(156,47,58,.3)"><img src="./star_btn.png" alt="" style="width: 24px; height: 24px">{{s.assistant}}</button>
+</div>
+</sc-if>
+
+<sc-if value="{{pdf.on}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-modal="true" aria-label="{{pdf.t.full}}" style="position: absolute; inset: 0; z-index: 30; background: {{pdf.bg}}; display: flex; flex-direction: column">
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: {{pdf.top}}px 10px 130px; padding-inline-end: {{pdf.padE}}px; display: flex; flex-direction: column; align-items: center; gap: 14px">
+<sc-for list="{{pdf.pages}}" as="pg" hint-placeholder-count="2"><div dir="ltr" lang="tr" style="width: {{pdf.pw}}px; flex: none; background: #FFFFFF; color: #1A1A1A; box-shadow: 0 6px 24px rgba(0,0,0,.28); padding: {{pdf.pp}}px; box-sizing: border-box; font-family: Arial, Helvetica, sans-serif; display: flex; flex-direction: column; gap: {{pdf.gap}}px; text-align: left; min-height: {{pdf.ph}}px">
+<div style="display: flex; justify-content: space-between; font-size: {{pdf.fsS}}px; color: #777777; border-bottom: 2px solid #9C2F3A; padding-bottom: 4px"><span>FARMAKOTERAPİ · Kardiyovasküler sistem</span><span>2026–2027 Güz</span></div>
+<div style="font-size: {{pdf.fsH}}px; font-weight: 700; color: #7A1F2B; line-height: 1.15">Hipertansiyon (HT)</div>
+<div style="font-size: {{pdf.fsH2}}px; font-weight: 700; line-height: 1.2">{{pg.sec}}</div>
+<div style="display: flex; flex-direction: column; gap: 6px; font-size: {{pdf.fsB}}px; line-height: 1.55"><sc-for list="{{pg.b}}" as="ln" hint-placeholder-count="3"><div style="display: flex; gap: 8px"><span style="color: #9C2F3A; flex: none">■</span><span><sc-for list="{{ln}}" as="sg" hint-placeholder-count="3"><sc-if value="{{sg.plain}}" hint-placeholder-val="{{ true }}">{{sg.x}}</sc-if><sc-if value="{{sg.term}}" hint-placeholder-val="{{ false }}"><button onClick="{{sg.tap}}" style="display: inline; border: 0; border-bottom: 1.5px dotted #9C2F3A; border-radius: 3px; background: {{sg.bg}}; padding: 0 1px; margin: 0; font: inherit; color: inherit; line-height: inherit; cursor: pointer">{{sg.x}}</button></sc-if></sc-for></span></div></sc-for></div>
+<sc-if value="{{pg.tbl}}" hint-placeholder-val="{{ true }}"><div style="display: flex; flex-direction: column; border: 1px solid #BBBBBB; font-size: {{pdf.fsT}}px"><sc-for list="{{pdf.rows}}" as="r" hint-placeholder-count="7"><div style="display: grid; grid-template-columns: 1.5fr 1fr 1fr; background: {{r.bg}}; font-weight: {{r.fw}}; border-top: 1px solid #DDDDDD"><span style="padding: 4px 6px">{{r.k}}</span><span style="padding: 4px 6px; border-left: 1px solid #DDDDDD">{{r.s}}</span><span style="padding: 4px 6px; border-left: 1px solid #DDDDDD">{{r.d}}</span></div></sc-for></div><span style="font-size: {{pdf.fsS}}px; color: #777777">Kaynak: ESC/ESH 2023 kılavuzu</span></sc-if>
+<span style="flex: 1"></span>
+<div style="display: flex; justify-content: space-between; font-size: {{pdf.fsS}}px; color: #999999; border-top: 1px solid #EEEEEE; padding-top: 4px"><span>Farmakoterapi ders notları</span><span>{{pg.n}}</span></div>
+</div></sc-for></div>
+<span style="position: absolute; top: {{pdf.pgTop}}px; inset-inline-start: 14px; height: 34px; padding: 0 14px; border-radius: 17px; background: rgba(20,16,13,.78); color: #FFFCF6; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px; display: flex; align-items: center">{{pdf.pgL}}</span>
+<button onClick="{{pdf.close}}" aria-label="{{pdf.t.exit}}" style="position: absolute; top: {{pdf.btnTop}}px; inset-inline-end: 14px; width: 46px; height: 46px; border-radius: 23px; border: 0; background: rgba(20,16,13,.78); color: #FFFCF6; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 6px 16px rgba(0,0,0,.25)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4v5H4 M15 4v5h5 M9 20v-5H4 M15 20v-5h5"></path></svg></button>
+<sc-if value="{{pdf.barOpen}}" hint-placeholder-val="{{ false }}"><button onClick="{{pdf.collapse}}" aria-label="{{pdf.t.close}}" tabindex="-1" style="position: absolute; inset: 0; border: 0; background: transparent; z-index: 1; cursor: default"></button></sc-if><div onPointerDown="{{pdf.bDown}}" style="position: absolute; left: {{pdf.bx}}px; bottom: {{pdf.bb}}px; z-index: 2; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; touch-action: none"><sc-if value="{{pdf.colorsOn}}" hint-placeholder-val="{{ false }}"><div role="group" aria-label="{{pdf.t.colors}}" style="display: flex; align-items: center; gap: 6px; padding: 8px 10px; border-radius: 26px; background: rgba(20,16,13,.78); box-shadow: 0 10px 26px rgba(0,0,0,.3)"><sc-for list="{{pdf.inks}}" as="ik" hint-placeholder-count="6"><button onClick="{{ik.pick}}" aria-label="{{ik.label}}" aria-pressed="{{ik.on}}" style="width: 36px; height: 36px; border-radius: 18px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0"><sc-if value="{{ik.dot}}" hint-placeholder-val="{{ true }}"><span style="width: 26px; height: 26px; border-radius: 13px; background: {{ik.col}}; box-shadow: {{ik.ring}}; border: 2px solid rgba(255,255,255,.35)"></span></sc-if><sc-if value="{{ik.eraser}}" hint-placeholder-val="{{ false }}"><span style="width: 30px; height: 30px; border-radius: 15px; color: #FFFCF6; display: flex; align-items: center; justify-content: center; box-shadow: {{ik.ring}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 21h10 M5.5 14.5l7-7a2 2 0 0 1 2.8 0l2.2 2.2a2 2 0 0 1 0 2.8L13 17H8.5z"></path></svg></span></sc-if></button></sc-for></div></sc-if><sc-if value="{{pdf.barMini}}" hint-placeholder-val="{{ true }}"><button onClick="{{pdf.penTap}}" aria-label="{{pdf.t.pen}}" aria-pressed="{{pdf.penOn}}" title="{{pdf.t.move}}" style="width: 56px; height: 56px; border-radius: 28px; border: 0; background: rgba(20,16,13,.78); color: #FFFCF6; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 26px rgba(0,0,0,.3)"><span style="width: 44px; height: 44px; border-radius: 22px; background: {{pdf.penBg}}; color: {{pdf.penFg}}; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z M14 6l4 4"></path></svg></span></button></sc-if><sc-if value="{{pdf.barOpen}}" hint-placeholder-val="{{ false }}"><div role="toolbar" aria-label="{{pdf.t.full}}" style="display: flex; align-items: center; gap: 4px; padding: 5px; border-radius: 30px; background: rgba(20,16,13,.78); box-shadow: 0 10px 26px rgba(0,0,0,.3)"><button onClick="{{togglePause}}" aria-label="{{pauseLabel}}" style="height: 46px; padding: 0 5px 0 14px; border-radius: 23px; border: 0; background: rgba(255,252,246,.12); color: #FFFCF6; display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 14px; font-weight: 600; cursor: pointer">{{clock}}<span style="width: 36px; height: 36px; border-radius: 18px; background: {{pdf.pBg}}; color: {{pdf.pFg}}; display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="{{pauseIcon}}"></path></svg></span></button><button onClick="{{pdf.penTap}}" aria-label="{{pdf.t.colors}}" aria-pressed="{{pdf.penOn}}" style="width: 46px; height: 46px; border-radius: 23px; border: 0; background: {{pdf.penBg}}; color: {{pdf.penFg}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z M14 6l4 4"></path></svg></button><button onClick="{{pdf.listen}}" aria-label="{{pdf.t.listen}}" style="width: 46px; height: 46px; border-radius: 23px; border: 0; background: transparent; color: #FFFCF6; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z M16 9a4 4 0 0 1 0 6 M18.5 6.5a7.5 7.5 0 0 1 0 11"></path></svg></button></div></sc-if></div>
+<div onPointerDown="{{pdf.sDown}}" style="position: absolute; left: {{pdf.sx}}px; bottom: {{pdf.sb}}px; z-index: 2; touch-action: none"><button onClick="{{pdf.ask}}" aria-label="{{pdf.t.ask}}" title="{{pdf.t.move}}" style="display: block; width: 64px; height: 64px; border-radius: 32px; border: 0; background: url(./star_btn.png) center/88% no-repeat, radial-gradient(circle at 50% 30%, #B8404D 0%, #9C2F3A 45%, #7A2230 100%); box-shadow: 0 10px 26px rgba(122,31,43,.45), 0 0 0 4px rgba(242,179,61,.25); cursor: pointer"></button></div>
+<sc-if value="{{pdf.termOn}}" hint-placeholder-val="{{ false }}"><div role="dialog" aria-label="{{pdf.termW}}" style="position: absolute; left: 12px; right: 12px; bottom: {{pdf.termBot}}px; border-radius: 22px; background: {{c.sheet}}; color: {{c.text}}; padding: 14px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 14px 34px rgba(0,0,0,.3); z-index: 3"><div style="display: flex; align-items: center; gap: 10px"><span dir="ltr" lang="tr" style="flex: 1; font-size: 17px; font-weight: 700; color: {{c.priText}}">{{pdf.termW}}</span><button onClick="{{pdf.termClose}}" aria-label="{{pdf.t.close}}" style="width: 34px; height: 34px; border-radius: 17px; border: 1px solid {{c.line}}; background: transparent; color: {{c.text}}; display: flex; align-items: center; justify-content: center; flex: none; cursor: pointer"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12 M18 6L6 18"></path></svg></button></div><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: .08em; color: {{c.text3}}">{{pdf.t.mean}}</span><span dir="{{pdf.termDir}}" style="font-size: 14px; line-height: 1.55">{{pdf.termM}}</span><div style="display: flex; gap: 8px; margin-top: 4px"><button onClick="{{pdf.addCard}}" style="flex: 1; height: 42px; border-radius: 21px; border: 1px solid {{c.line}}; background: {{c.card}}; color: {{c.text}}; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer">{{pdf.t.addCard}}</button><button onClick="{{pdf.termAsk}}" style="flex: 1; height: 42px; border-radius: 21px; border: 0; background: #9C2F3A; color: #FFFCF6; font-family: inherit; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer"><span aria-hidden="true" style="width: 20px; height: 20px; background: url(./star_btn.png) center/contain no-repeat"></span>{{pdf.t.ask}}</button></div></div></sc-if>
+<sc-if value="{{pdf.sheet}}" hint-placeholder-val="{{ false }}"><button onClick="{{pdf.hide}}" aria-label="{{pdf.t.close}}" style="position: absolute; inset: 0; border: 0; background: rgba(0,0,0,.28); cursor: pointer; z-index: 3"></button><div role="dialog" aria-label="{{pdf.t.ask}}" style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; border-radius: 26px 26px 0 0; background: {{c.sheet}}; color: {{c.text}}; padding: 10px 16px {{bottomPad}}px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 -12px 30px rgba(0,0,0,.22)"><span aria-hidden="true" style="align-self: center; width: 36px; height: 5px; border-radius: 3px; background: {{c.line}}"></span><div style="display: flex; align-items: center; gap: 10px"><span aria-hidden="true" style="width: 36px; height: 36px; border-radius: 18px; flex: none; background: url(./star_btn.png) center/88% no-repeat, radial-gradient(circle at 50% 30%, #B8404D 0%, #9C2F3A 45%, #7A2230 100%)"></span><span style="flex: 1; font-size: 15px; font-weight: 600; line-height: 1.35">{{pdf.t.askT}}</span><button onClick="{{pdf.hide}}" aria-label="{{pdf.t.close}}" style="width: 36px; height: 36px; border-radius: 18px; border: 1px solid {{c.line}}; background: transparent; color: {{c.text}}; display: flex; align-items: center; justify-content: center; flex: none; cursor: pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12 M18 6L6 18"></path></svg></button></div><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: .08em; color: {{c.text3}}">HIPERTANSIYON.PDF · {{pdf.pgL}}</span><div style="display: flex; flex-wrap: wrap; gap: 8px"><sc-for list="{{pdf.chips}}" as="ch" hint-placeholder-count="3"><button onClick="{{pdf.go}}" style="height: 40px; padding: 0 14px; border-radius: 20px; border: 1px solid {{c.line}}; background: {{c.card}}; color: {{c.text}}; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer">{{ch}}</button></sc-for></div><div style="display: flex; align-items: center; gap: 8px; border-radius: 26px; border: 1px solid {{c.line}}; background: {{c.card}}; padding: 6px 6px 6px 16px"><input placeholder="{{pdf.t.ph}}" aria-label="{{pdf.t.ph}}" style="flex: 1; min-width: 0; border: 0; background: transparent; color: {{c.text}}; font-family: inherit; font-size: 14px; outline: none"><button onClick="{{pdf.go}}" aria-label="{{pdf.t.send}}" style="width: 40px; height: 40px; border-radius: 20px; border: 0; background: #9C2F3A; color: #FFFCF6; display: flex; align-items: center; justify-content: center; flex: none; cursor: pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14 M13 6l6 6-6 6"></path></svg></button></div><button onClick="{{pdf.go}}" style="align-self: center; height: 40px; padding: 0 12px; border: 0; background: transparent; color: {{c.priText}}; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer">{{pdf.t.open}}</button></div></sc-if>
+<sc-if value="{{pdf.msgOn}}" hint-placeholder-val="{{ false }}"><div role="status" aria-live="polite" style="position: absolute; left: 50%; top: {{pdf.msgTop}}px; transform: translateX(-50%); z-index: 5; max-width: 86%; padding: 10px 16px; border-radius: 20px; background: #2E2721; color: #FBEFD6; font-size: 13px; text-align: center; pointer-events: none; box-shadow: 0 8px 20px rgba(0,0,0,.25)">{{pdf.msg}}</div></sc-if>
+</div>
+</sc-if>
+<sc-if value="{{v.notes}}" hint-placeholder-val="{{ false }}">
+<div role="toolbar" aria-label="{{s.noteTools}}" style="position: absolute; left: 0; right: 0; bottom: 0; padding: 10px 14px {{bottomPad}}px; background: {{c.card}}; border-top: 1px solid {{c.line}}; box-shadow: 0 -8px 24px rgba(18,23,30,.08); display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; gap: 8px">
+<span style="font-size: 13px; font-weight: 600">{{s.pen}}</span>
+<span style="font-size: 12px; color: {{c.text3}}; flex: 1">{{s.penHint}}</span>
+<button onClick="{{rUndo}}" aria-label="{{s.undo}}" style="width: 40px; height: 40px; border-radius: 20px; border: 0; background: {{c.sub}}; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX({{flip}})"><path d="M9 6L4 11l5 5 M4 11h11a5 5 0 0 1 0 10h-3"></path></svg></button>
+<button onClick="{{closeAll}}" style="height: 40px; padding: 0 18px; border-radius: {{btnR}}px; border: 0; background: {{c.pri}}; color: #FFFCF6; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer">{{s.done}}</button>
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between">
+<sc-for list="{{pens}}" as="t" hint-placeholder-count="3">
+<button onClick="{{t.pick}}" aria-label="{{t.label}}" aria-pressed="{{t.on}}" style="width: 40px; height: 40px; border-radius: 20px; border: {{t.ring}}; background: transparent; display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer"><span style="width: 24px; height: 24px; border-radius: 12px; background: {{t.color}}"></span></button>
+</sc-for>
+<span style="width: 1px; height: 24px; background: {{c.line}}"></span>
+<sc-for list="{{markers}}" as="t" hint-placeholder-count="2">
+<button onClick="{{t.pick}}" aria-label="{{t.label}}" aria-pressed="{{t.on}}" style="width: 40px; height: 40px; border-radius: 10px; border: {{t.ring}}; background: transparent; display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer"><span style="width: 14px; height: 26px; border-radius: 3px; background: {{t.color}}; transform: rotate(20deg)"></span></button>
+</sc-for>
+<span style="width: 1px; height: 24px; background: {{c.line}}"></span>
+<button onClick="{{rText}}" aria-label="{{s.textTool}}" style="width: 40px; height: 40px; border-radius: 10px; border: 0; background: transparent; color: {{c.text}}; font-family: Lora, Vazirmatn, Georgia, serif; font-size: 20px; font-weight: 600; cursor: pointer">T</button>
+<button onClick="{{rErase}}" aria-label="{{s.eraser}}" style="width: 40px; height: 40px; border-radius: 10px; border: 0; background: transparent; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 20h12 M4 15l9-9 6 6-7 7H8z M9 10l6 6"></path></svg></button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{v.translate}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{closeAll}}" style="position: absolute; inset: 0; background: {{c.scrim}}"></div>
+<section role="dialog" aria-label="{{s.trTitle}}" style="position: absolute; left: 0; right: 0; bottom: 0; border-radius: {{sheetR}}px {{sheetR}}px 0 0; background: {{c.sheet}}; padding: 8px 20px {{bottomPad}}px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 -10px 40px rgba(0,0,0,.18)">
+<span aria-hidden="true" style="align-self: center; width: {{grabW}}px; height: 5px; border-radius: 3px; background: {{c.line}}"></span>
+<div style="display: flex; align-items: center; gap: 10px">
+<span style="width: 30px; height: 30px; border-radius: 9px; background: {{c.priSoft}}; color: {{c.priText}}; display: flex; align-items: center; justify-content: center; transform: rotate(-8deg)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h9 M8.5 3v2 M6 5c.5 3 2.5 5.5 5 7 M11 5c-.8 3.5-3 6.5-6.5 8 M13 21l4-9 4 9 M14.5 18h5"></path></svg></span>
+<h2 style="margin: 0; font-size: 19px; font-weight: 700; flex: 1">{{s.trTitle}}</h2>
+<button onClick="{{closeAll}}" aria-label="{{s.close}}" style="width: 36px; height: 36px; border-radius: 18px; border: 0; background: {{c.sub}}; color: {{c.text2}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12 M18 6L6 18"></path></svg></button>
+</div>
+<div dir="ltr" style="display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: 12px; background: {{c.sub}}; text-align: left">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.08em; color: {{c.text3}}">{{_t.k2142}} {{s.pg}} 5</span>
+<span lang="tr" style="font-family: Lora, Vazirmatn, Georgia, serif; font-size: 15px; line-height: 1.55; color: {{c.text2}}">{{_t.k1864}}</span>
+</div>
+<div role="tablist" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: {{segR}}px; background: {{c.sub}}">
+<sc-for list="{{trTabs}}" as="t" hint-placeholder-count="3">
+<button role="tab" aria-selected="{{t.on}}" onClick="{{t.pick}}" style="height: 38px; border: 0; border-radius: {{segIR}}px; background: {{t.bg}}; color: {{t.fg}}; font-family: inherit; font-size: 14px; font-weight: {{t.fw}}; box-shadow: {{t.shadow}}; cursor: pointer">{{t.label}}</button>
+</sc-for>
+</div>
+<div style="display: flex; align-items: center; gap: 8px"><span style="font-size: 12px; color: {{c.text3}}">{{_t.k2486}}</span><div role="radiogroup" aria-label="{{_t.k2486}}" style="flex: 1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 3px; border-radius: {{segR}}px; background: {{c.sub}}"><sc-for list="{{trStyles}}" as="t" hint-placeholder-count="2"><button role="radio" aria-checked="{{t.on}}" onClick="{{t.pick}}" style="height: 32px; border: 0; border-radius: {{segIR}}px; background: {{t.bg}}; color: {{t.fg}}; font-family: inherit; font-size: 12px; font-weight: {{t.fw}}; box-shadow: {{t.shadow}}; cursor: pointer">{{t.label}}</button></sc-for></div></div>
+<p dir="{{trDir}}" lang="{{trLang}}" style="margin: 0; min-height: 96px; font-family: Lora, Vazirmatn, Georgia, serif; font-size: {{trFs}}px; line-height: {{trLh}}; color: {{c.text}}; text-align: start">{{trText}}</p>
+<div style="display: flex; gap: 8px">
+<button onClick="{{rListen}}" style="flex: 1; height: 44px; border-radius: 12px; border: 1px solid {{c.line}}; background: transparent; color: {{c.text}}; display: flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z M16.5 8.5a5 5 0 0 1 0 7"></path></svg>{{s.listen}}</button>
+<button onClick="{{rCopy}}" style="flex: 1; height: 44px; border-radius: 12px; border: 1px solid {{c.line}}; background: transparent; color: {{c.text}}; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer">{{s.copy}}</button>
+<button onClick="{{rNote}}" style="flex: 1; height: 44px; border-radius: 12px; border: 1px solid {{c.line}}; background: transparent; color: {{c.text}}; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer">{{s.addNote}}</button>
+</div>
+<span style="font-size: 12px; color: {{c.text3}}; text-align: center">{{s.aiNote}}</span>
+</section>
+</sc-if>
+<sc-if value="{{molOn}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{molClose}}" style="position: absolute; inset: 0; background: {{c.scrim}}; z-index: 30"></div>
+<section role="dialog" aria-label="{{_t.k1465}}" style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 31; max-height: 86%; overflow-y: auto; border-radius: {{sheetR}}px {{sheetR}}px 0 0; background: {{c.sheet}}; padding: 8px 20px {{bottomPad}}px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 -10px 40px rgba(0,0,0,.18)">
+<span aria-hidden="true" style="align-self: center; width: {{grabW}}px; height: 5px; border-radius: 3px; background: {{c.line}}"></span>
+<div style="display: flex; align-items: center; gap: 10px"><span style="flex: 1; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.08em; color: {{c.text3}}">{{_t.k1426}}</span><button onClick="{{molClose}}" aria-label="{{s.close}}" style="width: 36px; height: 36px; border-radius: 18px; border: 0; background: {{c.sub}}; color: {{c.text2}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12 M18 6L6 18"></path></svg></button></div>
+<dc-import name="MolViewer" mol="captopril" theme="{{molTh}}" size="full" mark="" hint-size="100%,460px"></dc-import>
+</section>
+</sc-if>
+<sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div role="status" aria-live="polite" style="position: absolute; left: 50%; bottom: {{toastBottom}}px; transform: translateX(-50%); z-index: 50; max-width: 86%; box-sizing: border-box; padding: 12px 18px; border-radius: 22px; background: #2E2721; color: #FBEFD6; font-family: Poppins, Vazirmatn, system-ui, sans-serif; font-size: 14px; line-height: 1.4; text-align: center; box-shadow: 0 12px 30px rgba(42,36,32,.28); pointer-events: none">{{toastMsg}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"offline":{"editor":"boolean","default":false},"premium":{"editor":"boolean","default":false},"platform":{"editor":"enum","options":["ios","android"],"default":"ios"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"variant":{"editor":"enum","options":["default","paused","term","select","translate","translateFa","translateAr","notes","end","loading"],"default":"default"},"go":{"editor":null},"live":{"editor":null},"trStyle":{"editor":null},"$preview":{"width":390,"height":844}}'>
+const _I18N = {k: [", anjiyotensin reseptör blokerleri (ARB) ve kalsiyum kanal blokerleri kullanılır.", "48 sayfanın hepsini okudun. Şimdi bildiklerini sınayalım.", "ACE inhibitörleri", "ACE inhibitörleri bradikinin birikimine bağlı kuru öksürük ve nadiren", "ACE inhibitörleri ve ARB'ler gebelikte kontrendikedir.", "ACE inhibitörlerine düşük dozla başlanır (ör. ramipril 2,5 mg/gün) ve doz 2–4 haftada bir titre edilir.", "Alfa-1 blokerlerin (prazosin, doksazosin) ilk dozundan sonra", "Anjiyotensin dönüştürücü enzimi inhibe ederek anjiyotensin II oluşumunu azaltan antihipertansif ilaç grubu. Örnek: ramipril, enalapril.", "Asistan", "Asistana sor", "Asistanla soru-cevap", "Başla", "Bitti", "Bu PDF'e toplam 3 sa 37 dk ayırdın", "Bu dersin sonuna geldiniz", "Bu sayfayı anlat", "BÖLÜM", "Bölüm 2 bitti. 1 dakikada pekiştir.", "Bölüm kontrolü · 2 soru", "Cümle kopyalandı", "Derslerim", "Devam et — kronometreyi başlat", "Dikkat", "Dinle", "Diüretikler", "Doz", "Doğal anlatım", "Düz çeviri", "Evre 1 HT", "Evre 2 HT", "Evre 3 HT", "FARMAKOTERAPİ ·", "Geri al", "Gönder", "Gönderdiğin sorularda bu konudan 5 soru çıkmış", "Hipertansif kriz", "Hipertansiyon", "Hoca derste bu konuda 9 dk durdu", "Kalem", "Kan basıncı sınıflaması (mmHg)", "Kapat", "Kartlar", "Kartlara ekle", "Kelime listene eklendi · kartlarda çıkacak", "Kontrendikasyon", "Kopyala", "Kırmızı kalem", "Lacivert kalem", "Listeme ekle", "MOLA · KRONOMETRE DURDU · DEVAM ETMEK İÇİN DOKUN", "MOLEKÜL YAPISI · SAYFA 14'TE GEÇEN İLAÇ", "Mavi kalem", "Mola ver — kronometreyi durdur", "Molekül yapısı", "Molekül yapısı · Kaptopril", "NOT MODU · SAYFA SABİT", "Not al", "Not araçları", "Nota ekle", "Optimal", "Ortostatik hipotansiyon", "Parmakla ya da kalemle çiz", "Paylaş", "SAYFA", "SES KAYDI · 12:40 · “SINAVDA SORUYORUM”", "Sarı fosforlu", "Sarı ile vurgulandı", "Sayfa 12 hazırlanıyor…", "Sayfa sesli okunuyor…", "Sesli okunuyor…", "Seçim", "Silgi", "Silgi seçildi", "Sistolik KB ≥140 mmHg ve/veya", "Sistolik KB ≥140 mmHg ve/veya diyastolik KB ≥90 mmHg olması hipertansiyon olarak tanımlanır.", "Son çizim geri alındı", "Sınava başla", "Tanı için ölçümler en az iki farklı vizitte, hasta oturur pozisyonda ve 5 dakika dinlendikten sonra yapılmalıdır.", "Tanım", "Tanım ve sınıflama", "Tiyazid diüretikler serum ürik asit düzeyini artırır; gut, tiyazidler için zorunlu kontrendikasyondur. Gebelik, metabolik sendrom ve glukoz intoleransı göreceli kontrendikasyonlardır.", "TÜRKÇE ·", "Vurgula", "Yan etki", "Yazı", "Yazı aracı · sayfaya dokun ve yaz", "Yazı boyutu", "Yazıyı büyüt", "Yazıyı küçült", "Yeşil fosforlu", "Yüksek normal", "anjiyoödem", "diyastolik KB", "evre 1 = 140–159 !", "görülebilir; ilk dozun yatmadan önce alınması önerilir.", "yapabilir.", "Çevir", "Çeviri", "Çeviri tarzı", "Çeviri yapay zekâ ile yapılır; hocanın metni değişmez.", "Özel durumlar", "İLAÇ SINIFI", "İYİ", "İlaç tedavisi", "İlk basamak tedavide", "≥90 mmHg olması hipertansiyon olarak tanımlanır."], en: [", angiotensin receptor blockers (ARBs) and calcium channel blockers are used.", "You've read all 48 pages. Now let's test what you know.", "ACE inhibitors", "ACE inhibitors cause dry cough due to bradykinin buildup and, rarely,", "ACE inhibitors and ARBs are contraindicated in pregnancy.", "ACE inhibitors are started at a low dose (e.g. ramipril 2.5 mg/day) and titrated every 2–4 weeks.", "After the first dose of alpha-1 blockers (prazosin, doxazosin)", "Antihypertensive drugs that inhibit angiotensin-converting enzyme and reduce angiotensin II formation. Examples: ramipril, enalapril.", "Assistant", "Ask the assistant", "Q&A with the assistant", "Start", "Done", "You've spent 3 h 37 min on this PDF in total", "You've reached the end of this course", "Explain this page", "SECTION", "Section 2 done. Reinforce it in 1 minute.", "Section check · 2 questions", "Sentence copied", "My Courses", "Continue — start the stopwatch", "Caution", "Listen", "Diuretics", "Dose", "Natural wording", "Literal translation", "Stage 1 HTN", "Stage 2 HTN", "Stage 3 HTN", "PHARMACOTHERAPY ·", "Undo", "Send", "5 questions on this topic appeared in the questions you sent", "Hypertensive crisis", "Hypertension", "Lecturer spent 9 min on this in class", "Pen", "BP classification (mmHg)", "Close", "Cards", "Add to cards", "Added to your word list · will show up in cards", "Contraindication", "Copy", "Red pen", "Navy pen", "Add to my list", "BREAK · STOPWATCH PAUSED · TAP TO CONTINUE", "MOLECULAR STRUCTURE · DRUG ON PAGE 14", "Blue pen", "Take a break — pause the stopwatch", "Molecular structure", "Molecular structure · Captopril", "NOTE MODE · PAGE LOCKED", "Take notes", "Note tools", "Add to note", "Optimal", "Orthostatic hypotension", "Draw with finger or pen", "Share", "PAGE", "RECORDING · 12:40 · “I ASK THIS IN EXAMS”", "Yellow highlighter", "Highlighted in yellow", "Preparing page 12…", "Reading page aloud…", "Reading aloud…", "Selection", "Eraser", "Eraser selected", "Systolic BP ≥140 mmHg and/or", "Systolic BP ≥140 mmHg and/or diastolic BP ≥90 mmHg is defined as hypertension.", "Last drawing undone", "Start exam", "For diagnosis, measurements must be taken on at least two separate visits, with the patient seated and after 5 minutes of rest.", "Definition", "Definition and classification", "Thiazide diuretics raise serum uric acid; gout is a compelling contraindication for thiazides. Pregnancy, metabolic syndrome and glucose intolerance are relative contraindications.", "TURKISH ·", "Highlight", "Side effect", "Text", "Text tool · tap the page and type", "Text size", "Larger text", "Smaller text", "Green highlighter", "High normal", "angioedema", "diastolic BP", "stage 1 = 140–159 !", "may occur; taking the first dose at bedtime is advised.", "may occur.", "Translate", "Translation", "Translation style", "Translation is done by AI; the lecturer's text stays unchanged.", "Special cases", "DRUG CLASS", "GOOD", "Drug therapy", "In first-line treatment", "≥90 mmHg is defined as hypertension."], fa: ["، مسدودکننده‌های گیرنده آنژیوتانسین (ARB) و مسدودکننده‌های کانال کلسیم استفاده می‌شوند.", "هر 48 صفحه را خواندی. حالا بیا دانسته‌هایت را بسنجیم.", "مهارکننده‌های ACE", "مهارکننده‌های ACE به‌علت تجمع برادی‌کینین سرفهٔ خشک و به‌ندرت", "مهارکننده‌های ACE و ARBها در بارداری منع مصرف دارند.", "مهارکننده‌های ACE با دوز پایین شروع می‌شوند (مثلاً رامی‌پریل 2.5 mg/روز) و هر 2–4 هفته دوز تیتره می‌شود.", "پس از دوز اول مسدودکننده‌های آلفا-1 (پرازوسین، دوکسازوسین)", "گروه داروهای ضد فشار خون که با مهار آنزیم مبدل آنژیوتانسین، تولید آنژیوتانسین II را کاهش می‌دهند. مثال: رامی‌پریل، انالاپریل.", "دستیار", "از دستیار بپرس", "پرسش و پاسخ با دستیار", "شروع", "تمام شد", "در مجموع 3 ساعت 37 دقیقه برای این PDF وقت گذاشتی", "به پایان این درس رسیدی", "این صفحه را توضیح بده", "بخش", "بخش 2 تمام شد. در 1 دقیقه تثبیتش کن.", "بررسی بخش · 2 سؤال", "جمله کپی شد", "درس‌های من", "ادامه بده — کرنومتر را شروع کن", "احتیاط", "گوش بده", "دیورتیک‌ها", "دوز", "بیان طبیعی", "ترجمه تحت‌اللفظی", "فشار خون مرحله 1", "فشار خون مرحله 2", "فشار خون مرحله 3", "دارودرمانی ·", "واگرد", "ارسال", "در سؤال‌هایی که فرستادی 5 سؤال از این مبحث آمده", "بحران فشار خون بالا", "فشار خون بالا", "استاد سر کلاس 9 دقیقه روی این مبحث ماند", "قلم", "طبقه‌بندی فشار خون (mmHg)", "بستن", "کارت‌ها", "به کارت‌ها اضافه کن", "به فهرست واژه‌هایت اضافه شد · در کارت‌ها می‌آید", "منع مصرف", "کپی", "خودکار قرمز", "خودکار سرمه‌ای", "به فهرستم اضافه کن", "استراحت · کرنومتر متوقف شد · برای ادامه بزن", "ساختار مولکولی · دارویی که در صفحهٔ 14 آمده", "خودکار آبی", "استراحت کن — کرنومتر را متوقف کن", "ساختار مولکولی", "ساختار مولکولی · کاپتوپریل", "حالت یادداشت · صفحه ثابت", "یادداشت بردار", "ابزارهای یادداشت", "به یادداشت اضافه کن", "بهینه", "افت فشار خون وضعیتی", "با انگشت یا قلم بکش", "اشتراک‌گذاری", "صفحه", "ضبط صدا · 12:40 · «این را در امتحان می‌پرسم»", "هایلایت زرد", "با زرد هایلایت شد", "در حال آماده‌سازی صفحه 12…", "در حال خواندن صفحه با صدا…", "در حال خواندن با صدا…", "انتخاب", "پاک‌کن", "پاک‌کن انتخاب شد", "فشار سیستولیک ≥140 mmHg و/یا", "فشار سیستولیک ≥140 mmHg و/یا فشار دیاستولیک ≥90 mmHg به‌عنوان فشار خون بالا تعریف می‌شود.", "آخرین طراحی برگشت داده شد", "شروع امتحان", "برای تشخیص، اندازه‌گیری‌ها باید حداقل در دو ویزیت جداگانه، در حالت نشسته و پس از 5 دقیقه استراحت انجام شوند.", "تعریف", "تعریف و طبقه‌بندی", "دیورتیک‌های تیازیدی سطح اسید اوریک سرم را بالا می‌برند؛ نقرس منع مصرف قطعی تیازیدهاست. بارداری، سندرم متابولیک و عدم تحمل گلوکز منع مصرف نسبی‌اند.", "ترکی ·", "برجسته کن", "عارضه جانبی", "متن", "ابزار متن · روی صفحه بزن و بنویس", "اندازه متن", "بزرگ کردن متن", "کوچک کردن متن", "ماژیک فسفری سبز", "نرمال بالا", "آنژیوادم", "فشار دیاستولیک", "مرحله 1 = 140–159 !", "ممکن است دیده شود؛ توصیه می‌شود دوز اول قبل از خواب مصرف شود.", "ممکن است ایجاد کند.", "ترجمه کن", "ترجمه", "سبک ترجمه", "ترجمه با هوش مصنوعی انجام می‌شود؛ متن استاد تغییر نمی‌کند.", "حالت‌های خاص", "دسته دارویی", "خوب", "درمان دارویی", "در درمان خط اول", "≥90 mmHg به عنوان فشار خون بالا تعریف می‌شود."], ar: ["، وحاصرات مستقبلات الأنجيوتنسين (ARB) وحاصرات قنوات الكالسيوم.", "قرأت الصفحات الـ48 كلها. لنختبر الآن ما تعرفه.", "مثبطات ACE", "تسبب مثبطات ACE سعالًا جافًا بسبب تراكم البراديكينين، ونادرًا", "مثبطات ACE وARBs ممنوعة أثناء الحمل.", "تُبدأ مثبطات ACE بجرعة منخفضة (مثل راميبريل 2.5 mg/يوم) وتُعاير الجرعة كل 2–4 أسابيع.", "بعد الجرعة الأولى من حاصرات ألفا-1 (برازوسين، دوكسازوسين)", "مجموعة خافضات ضغط تثبط الإنزيم المحوّل للأنجيوتنسين فتقلل تكوين الأنجيوتنسين II. أمثلة: راميبريل، إنالابريل.", "المساعد", "اسأل المساعد", "أسئلة وأجوبة مع المساعد", "ابدأ", "تم", "خصصت لهذا الملف 3 س 37 د إجمالاً", "وصلت إلى نهاية هذه المادة", "اشرح هذه الصفحة", "القسم", "انتهى القسم 2. ثبّته في دقيقة واحدة.", "مراجعة القسم · سؤالان", "تم نسخ الجملة", "موادي", "تابع — شغّل المؤقت", "تنبيه", "استمع", "مدرات البول", "الجرعة", "صياغة طبيعية", "ترجمة حرفية", "ارتفاع الضغط المرحلة 1", "ارتفاع الضغط المرحلة 2", "ارتفاع الضغط المرحلة 3", "العلاج الدوائي ·", "تراجع", "إرسال", "ظهرت 5 أسئلة من هذا الموضوع في الأسئلة التي أرسلتها", "أزمة ارتفاع ضغط الدم", "ارتفاع ضغط الدم", "توقف الأستاذ 9 د عند هذا في الدرس", "قلم", "تصنيف ضغط الدم (mmHg)", "إغلاق", "البطاقات", "أضف إلى البطاقات", "أُضيفت إلى قائمة كلماتك · ستظهر في البطاقات", "مضاد استطباب", "نسخ", "قلم أحمر", "قلم كحلي", "أضف إلى قائمتي", "استراحة · توقفت ساعة الإيقاف · اضغط للمتابعة", "البنية الجزيئية · الدواء المذكور في الصفحة 14", "قلم أزرق", "خذ استراحة — أوقف ساعة الإيقاف", "البنية الجزيئية", "البنية الجزيئية · كابتوبريل", "وضع الملاحظات · الصفحة مثبتة", "دوّن ملاحظات", "أدوات الملاحظات", "أضف إلى الملاحظة", "مثالي", "هبوط الضغط الانتصابي", "ارسم بإصبعك أو بالقلم", "مشاركة", "صفحة", "تسجيل صوتي · 12:40 · “أسأل عن هذا في الامتحان”", "قلم تمييز أصفر", "تم التمييز بالأصفر", "جارٍ تجهيز الصفحة 12…", "جارٍ قراءة الصفحة بصوت عالٍ…", "جارٍ القراءة بصوت عالٍ…", "التحديد", "ممحاة", "تم اختيار الممحاة", "الضغط الانقباضي ≥140 mmHg و/أو", "يُعرَّف ارتفاع ضغط الدم بأنه ضغط انقباضي ≥140 mmHg و/أو ضغط انبساطي ≥90 mmHg.", "تم التراجع عن آخر رسم", "ابدأ الامتحان", "للتشخيص، يجب إجراء القياسات في زيارتين مختلفتين على الأقل، والمريض جالس وبعد 5 دقائق من الراحة.", "التعريف", "التعريف والتصنيف", "ترفع مدرات البول الثيازيدية مستوى حمض اليوريك في المصل؛ النقرس مضاد استطباب مطلق للثيازيدات. الحمل والمتلازمة الاستقلابية وعدم تحمل الغلوكوز مضادات استطباب نسبية.", "التركية ·", "تمييز", "أثر جانبي", "نص", "أداة النص · المس الصفحة واكتب", "حجم الخط", "تكبير الخط", "تصغير الخط", "قلم تظليل أخضر", "طبيعي مرتفع", "وذمة وعائية", "الضغط الانبساطي", "المرحلة 1 = 140–159 !", "قد يحدث؛ يُنصح بتناول الجرعة الأولى قبل النوم.", "قد تحدث.", "ترجم", "الترجمة", "أسلوب الترجمة", "تتم الترجمة بالذكاء الاصطناعي؛ ولا يتغير نص المحاضر.", "حالات خاصة", "الفئة الدوائية", "جيد", "العلاج الدوائي", "في علاج الخط الأول", "يُعرَّف ≥90 mmHg بأنه ارتفاع ضغط الدم."]};
+let _lang = 'tr', _M = null; const _TC = {};
+const _x = (s) => { if (_lang === 'tr' || !_I18N[_lang]) return s; if (!_M) { _M = {}; _I18N.k.forEach((k, i) => { _M[k] = i; }); } const i = _M[s]; return i == null ? s : _I18N[_lang][i]; };
+const _TK = {"k108": ", anjiyotensin reseptör blokerleri (ARB) ve kalsiyum kanal blokerleri kullanılır.", "k282": "ACE inhibitörleri", "k284": "ACE inhibitörleri bradikinin birikimine bağlı kuru öksürük ve nadiren", "k290": "ACE inhibitörleri ve ARB'ler gebelikte kontrendikedir.", "k293": "ACE inhibitörlerine düşük dozla başlanır (ör. ramipril 2,5 mg/gün) ve doz 2–4 haftada bir titre edilir.", "k347": "Alfa-1 blokerlerin (prazosin, doksazosin) ilk dozundan sonra", "k839": "Diüretikler", "k962": "FARMAKOTERAPİ ·", "k1187": "Hipertansiyon", "k1309": "Kan basıncı sınıflaması (mmHg)", "k1426": "MOLEKÜL YAPISI · SAYFA 14'TE GEÇEN İLAÇ", "k1465": "Molekül yapısı", "k1466": "Molekül yapısı · Kaptopril", "k1567": "Ortostatik hipotansiyon", "k1622": "Paylaş", "k1862": "Sistolik KB ≥140 mmHg ve/veya", "k1864": "Sistolik KB ≥140 mmHg ve/veya diyastolik KB ≥90 mmHg olması hipertansiyon olarak tanımlanır.", "k2026": "Tanı için ölçümler en az iki farklı vizitte, hasta oturur pozisyonda ve 5 dakika dinlendikten sonra yapılmalıdır.", "k2028": "Tanım ve sınıflama", "k2099": "Tiyazid diüretikler serum ürik asit düzeyini artırır; gut, tiyazidler için zorunlu kontrendikasyondur. Gebelik, metabolik sendrom ve glukoz intoleransı göreceli kontrendikasyonlardır.", "k2142": "TÜRKÇE ·", "k2344": "anjiyoödem", "k2353": "diyastolik KB", "k2360": "evre 1 = 140–159 !", "k2363": "görülebilir; ilk dozun yatmadan önce alınması önerilir.", "k2440": "yapabilir.", "k2486": "Çeviri tarzı", "k2570": "İlaç tedavisi", "k2580": "İlk basamak tedavide", "k2653": "≥90 mmHg olması hipertansiyon olarak tanımlanır."};
+const _PT = {};
+const _tt = () => { if (!_TC[_lang]) { const o = {}; Object.keys(_TK).forEach((k) => { o[k] = (_PT[k] && _lang !== 'tr') ? (_PT[k][_lang] || _x(_TK[k])) : _x(_TK[k]); }); _TC[_lang] = o; } return _TC[_lang]; };
+
+class Component extends DCLogic {
+  renderVals() { const _p = this.props || {}, _s = this.state || {}; _lang = _s.lang || _p.lang || 'tr'; const r = this._rv0(); if (r && typeof r === 'object') { r._t = _tt(); r._dir = (_lang === 'fa' || _lang === 'ar') ? 'rtl' : 'ltr'; r._ai = this._aiDark ? { bg: '#F2B33D', fg: '#241C14', tx: '#EFE8DC' } : { bg: '#9C2F3A', fg: '#FFF6E6', tx: '#2A2420' }; } return r; }
+  componentDidMount() {
+    if (!this.props.live) return;
+    this.tick = setInterval(() => {
+      const st = this.state || {};
+      const paused = st.paused != null ? st.paused : this.props.variant === 'paused';
+      if (!paused) this.setState({ sec: (st.sec != null ? st.sec : 1394) + 1 });
+    }, 1000);
+  }
+  componentWillUnmount() { if (this.tick) clearInterval(this.tick); }
+  _rv0() {
+    const __st = this.state || {};
+    const say = (m, after) => { this.setState({ toast: m }); clearTimeout(this._tt); this._tt = setTimeout(() => { this.setState({ toast: '' }); if (after) after(); }, 1700); };
+    const p = this.props, st = this.state || {};
+    const ios = (p.platform || 'ios') === 'ios';
+    const dark = p.theme === 'dark';
+    const lang = p.lang || 'tr';
+    const rtl = lang === 'fa' || lang === 'ar';
+    const c = dark
+      ? { bg: '#15120F', card: '#211C18', pop: '#28221D', sheet: '#211C18', sub: '#2B2520', skel: '#2B2520', text: '#EFE8DC', text2: '#BDB2A4', text3: '#9A8F82', line: '#3A322B', dash: '#6A5F54', pri: '#B23A47', priText: '#F09AA3', priSoft: '#3A2027', amb: '#F2B33D', ambText: '#F2C46E', ambSoft: '#3A2F1A', ok: '#5BC893', okSoft: '#173328', bad: '#F27A70', badSoft: '#3D1F1F', blue: '#8DB4F5', blueSoft: '#1E2C45', bar: 'rgba(33,28,24,.94)', menuBg: '#EFE8DC', menuFg: '#15120F', scrim: 'rgba(0,0,0,.6)', penRed: '#F27A70', shadow: 'none' }
+      : { bg: '#F4EFE6', card: '#FFFCF6', pop: '#FFFCF6', sheet: '#FFFCF6', sub: '#F1EBE0', skel: '#EAE1D2', text: '#2A2420', text2: '#6E645A', text3: '#776C60', line: '#E6DDCF', dash: '#B3A898', pri: '#9C2F3A', priText: '#9C2F3A', priSoft: '#F7E7E9', amb: '#F2B33D', ambText: '#83560A', ambSoft: '#FDF1D6', ok: '#1E7A4C', okSoft: '#E2F3E9', bad: '#C0352B', badSoft: '#FCE8E6', blue: '#2557A8', blueSoft: '#E5EEFB', bar: 'rgba(255,252,246,.94)', menuBg: '#2A2420', menuFg: '#FFFCF6', scrim: 'rgba(18,23,30,.45)', penRed: '#C0352B', shadow: '0 1px 2px rgba(27,36,48,.05)' };
+    const T = {
+      tr: { back: _x('Derslerim'), pg: _x('SAYFA'), size: _x('Yazı boyutu'), smaller: _x('Yazıyı küçült'), bigger: _x('Yazıyı büyüt'), lvl: _x('İYİ'), sec: _x('BÖLÜM'), translate: _x('Çevir'), tagCaution: _x('Dikkat'), tagDose: _x('Doz'), tagSide: _x('Yan etki'), tagContra: _x('Kontrendikasyon'), cat: _x('İLAÇ SINIFI'), listen: _x('Dinle'), addList: _x('Listeme ekle'), close: _x('Kapat'), def: _x('Anjiyotensin dönüştürücü enzimi inhibe ederek anjiyotensin II oluşumunu azaltan antihipertansif ilaç grubu. Örnek: ramipril, enalapril.'), selection: _x('Seçim'), copy: _x('Kopyala'), highlight: _x('Vurgula'), askAi: _x('Asistana sor'), trTitle: _x('Çeviri'), addNote: _x('Nota ekle'), aiNote: _x('Çeviri yapay zekâ ile yapılır; hocanın metni değişmez.'), noteBanner: _x('NOT MODU · SAYFA SABİT'), noteTools: _x('Not araçları'), pen: _x('Kalem'), penHint: _x('Parmakla ya da kalemle çiz'), undo: _x('Geri al'), done: _x('Bitti'), textTool: _x('Yazı'), eraser: _x('Silgi'), checkT: _x('Bölüm kontrolü · 2 soru'), checkS: _x('Bölüm 2 bitti. 1 dakikada pekiştir.'), start: _x('Başla'), endT: _x('Bu dersin sonuna geldiniz'), endS: _x('48 sayfanın hepsini okudun. Şimdi bildiklerini sınayalım.'), exam: _x('Sınava başla'), cards: _x('Kartlar'), askQa: _x('Asistanla soru-cevap'), note: _x('Not al'), assistant: _x('Asistan'), loading: _x('Sayfa 12 hazırlanıyor…'), pens: [_x('Lacivert kalem'), _x('Kırmızı kalem'), _x('Mavi kalem'), _x('Sarı fosforlu'), _x('Yeşil fosforlu')] },
+      en: { back: 'My courses', pg: 'PAGE', size: 'Text size', smaller: 'Smaller text', bigger: 'Larger text', lvl: 'GOOD', sec: 'SECTION', translate: 'Translate', tagCaution: 'Caution', tagDose: 'Dose', tagSide: 'Side effect', tagContra: 'Contraindication', cat: 'DRUG CLASS', listen: 'Listen', addList: 'Save word', close: 'Close', def: 'Antihypertensive drugs that inhibit angiotensin-converting enzyme and reduce angiotensin II formation. Examples: ramipril, enalapril.', selection: 'Selection', copy: 'Copy', highlight: 'Highlight', askAi: 'Ask assistant', trTitle: 'Translation', addNote: 'Add to notes', aiNote: "AI translation. Your lecturer's text is not changed.", noteBanner: 'NOTE MODE · PAGE LOCKED', noteTools: 'Note tools', pen: 'Pen', penHint: 'Draw with finger or pencil', undo: 'Undo', done: 'Done', textTool: 'Text', eraser: 'Eraser', checkT: 'Section check · 2 questions', checkS: 'Section 2 done. Lock it in in a minute.', start: 'Start', endT: 'You reached the end of this lesson', endS: 'You read all 48 pages. Now let us test what you know.', exam: 'Start the exam', cards: 'Cards', askQa: 'Q&A with assistant', note: 'Notes', assistant: 'Assistant', loading: 'Preparing page 12…', pens: ['Navy pen', 'Red pen', 'Blue pen', 'Yellow highlighter', 'Green highlighter'] },
+      fa: { back: 'درس‌های من', pg: 'صفحه', size: 'اندازهٔ متن', smaller: 'کوچک‌تر', bigger: 'بزرگ‌تر', lvl: 'خوب', sec: 'بخش', translate: 'ترجمه', tagCaution: 'احتیاط', tagDose: 'دوز', tagSide: 'عارضهٔ جانبی', tagContra: 'منع مصرف', cat: 'گروه دارویی', listen: 'شنیدن', addList: 'افزودن به فهرست', close: 'بستن', def: 'گروهی از داروهای ضدفشار خون که با مهار آنزیم مبدل آنژیوتانسین، ساخت آنژیوتانسین II را کاهش می‌دهند. مثال: رامیپریل، انالاپریل.', selection: 'انتخاب', copy: 'کپی', highlight: 'برجسته', askAi: 'پرسش از دستیار', trTitle: 'ترجمه', addNote: 'افزودن به یادداشت', aiNote: 'ترجمه با هوش مصنوعی است؛ متن استاد تغییر نمی‌کند.', noteBanner: 'حالت یادداشت · صفحه ثابت', noteTools: 'ابزار یادداشت', pen: 'قلم', penHint: 'با انگشت یا قلم بکش', undo: 'واگرد', done: 'تمام', textTool: 'متن', eraser: 'پاک‌کن', checkT: 'آزمونک بخش · ۲ سؤال', checkS: 'بخش ۲ تمام شد. در یک دقیقه تثبیتش کن.', start: 'شروع', endT: 'به پایان این درس رسیدی', endS: 'هر ۴۸ صفحه را خواندی. حالا دانسته‌هایت را بسنجیم.', exam: 'شروع آزمون', cards: 'کارت‌ها', askQa: 'پرسش و پاسخ با دستیار', note: 'یادداشت', assistant: 'دستیار', loading: 'در حال آماده‌سازی صفحهٔ ۱۲…', pens: ['قلم سرمه‌ای', 'قلم قرمز', 'قلم آبی', 'ماژیک زرد', 'ماژیک سبز'] },
+      ar: { back: 'دروسي', pg: 'صفحة', size: 'حجم النص', smaller: 'تصغير', bigger: 'تكبير', lvl: 'جيد', sec: 'القسم', translate: 'ترجمة', tagCaution: 'تنبيه', tagDose: 'الجرعة', tagSide: 'أثر جانبي', tagContra: 'مانع استعمال', cat: 'فئة دوائية', listen: 'استماع', addList: 'أضف لقائمتي', close: 'إغلاق', def: 'مجموعة أدوية خافضة للضغط تثبّط الإنزيم المحوّل للأنجيوتنسين فتقلّل تكوين الأنجيوتنسين II. مثل: راميبريل، إينالابريل.', selection: 'التحديد', copy: 'نسخ', highlight: 'تظليل', askAi: 'اسأل المساعد', trTitle: 'الترجمة', addNote: 'أضف إلى الملاحظات', aiNote: 'الترجمة بالذكاء الاصطناعي؛ نص الأستاذ لا يتغير.', noteBanner: 'وضع الملاحظات · الصفحة مثبّتة', noteTools: 'أدوات الملاحظات', pen: 'قلم', penHint: 'ارسم بإصبعك أو بالقلم', undo: 'تراجع', done: 'تم', textTool: 'نص', eraser: 'ممحاة', checkT: 'اختبار القسم · سؤالان', checkS: 'انتهى القسم 2. ثبّته في دقيقة.', start: 'ابدأ', endT: 'وصلت إلى نهاية هذا الدرس', endS: 'قرأت الصفحات الـ48 كلها. لنختبر ما تعرفه الآن.', exam: 'ابدأ الاختبار', cards: 'البطاقات', askQa: 'سؤال وجواب مع المساعد', note: 'ملاحظة', assistant: 'المساعد', loading: 'جارٍ تجهيز الصفحة 12…', pens: ['قلم كحلي', 'قلم أحمر', 'قلم أزرق', 'مظلل أصفر', 'مظلل أخضر'] }
+    };
+    const K = {
+      tr: { pause: _x('Mola ver — kronometreyi durdur'), resume: _x('Devam et — kronometreyi başlat'), breakBanner: _x('MOLA · KRONOMETRE DURDU · DEVAM ETMEK İÇİN DOKUN'), totalT: _x("Bu PDF'e toplam 3 sa 37 dk ayırdın") },
+      en: { pause: 'Take a break — pause timer', resume: 'Resume — start timer', breakBanner: 'BREAK · TIMER PAUSED · TAP TO RESUME', totalT: 'You spent 3 h 37 min on this PDF' },
+      fa: { pause: 'استراحت — توقف زمان‌سنج', resume: 'ادامه — شروع زمان‌سنج', breakBanner: 'استراحت · زمان‌سنج متوقف شد · برای ادامه بزن', totalT: 'روی این PDF در مجموع ۳ ساعت و ۳۷ دقیقه وقت گذاشتی' },
+      ar: { pause: 'استراحة — أوقف المؤقّت', resume: 'متابعة — شغّل المؤقّت', breakBanner: 'استراحة · المؤقّت متوقف · المس للمتابعة', totalT: 'قضيت 3 ساعات و37 دقيقة مع هذا الملف' }
+    };
+    const s = Object.assign({}, T[lang] || T.tr, K[lang] || K.tr, {
+      tr: { audioT: _x('Hoca derste bu konuda 9 dk durdu'), audioS: _x('SES KAYDI · 12:40 · “SINAVDA SORUYORUM”'), qT: _x('Gönderdiğin sorularda bu konudan 5 soru çıkmış') },
+      en: { audioT: 'The lecturer spent 9 min on this in class', audioS: 'RECORDING · 12:40 · “I ASK THIS IN EXAMS”', qT: '5 of the questions you sent were on this topic' },
+      fa: { audioT: 'استاد سر کلاس ۹ دقیقه روی این ماند', audioS: 'صدای کلاس · ۱۲:۴۰ · «در امتحان می‌پرسم»', qT: 'در سؤال‌هایی که فرستادی ۵ سؤال از این مبحث آمده' },
+      ar: { audioT: 'توقف الأستاذ 9 دقائق عند هذا في المحاضرة', audioS: 'التسجيل · 12:40 · «أسأل عنه في الامتحان»', qT: 'من الأسئلة التي أرسلتها جاءت 5 أسئلة من هذا الموضوع' }
+    }[lang] || {});
+    const raw0 = st.mode || p.variant || 'default';
+    const paused = st.paused != null ? st.paused : p.variant === 'paused';
+    const raw = raw0 === 'paused' ? 'default' : raw0;
+    const sec = st.sec != null ? st.sec : 1394;
+    const pad2 = (n) => (n < 10 ? '0' : '') + n;
+    const clock = sec >= 3600 ? Math.floor(sec / 3600) + ':' + pad2(Math.floor(sec % 3600 / 60)) + ':' + pad2(sec % 60) : pad2(Math.floor(sec / 60)) + ':' + pad2(sec % 60);
+    const isTr = raw.indexOf('translate') === 0;
+    const v = { default: raw === 'default', term: raw === 'term', select: raw === 'select', translate: isTr, notes: raw === 'notes', end: raw === 'end', loading: raw === 'loading' };
+    const live = !!p.live;
+    const go = (a, b, k) => () => { if (p.go) p.go(a, b, k); };
+    const fs = st.fs || 17;
+    const trTab = st.trTab || (raw === 'translateFa' ? 'fa' : raw === 'translateAr' ? 'ar' : (lang === 'fa' ? 'fa' : lang === 'ar' ? 'ar' : 'en'));
+    const TR = {
+      en: { label: 'English', text: 'Hypertension is defined as a systolic BP ≥140 mmHg and/or a diastolic BP ≥90 mmHg.', dir: 'ltr' },
+      fa: { label: 'فارسی', text: 'فشار خون بالا به صورت فشار سیستولیک ≥۱۴۰ میلی‌متر جیوه و/یا فشار دیاستولیک ≥۹۰ میلی‌متر جیوه تعریف می‌شود.', dir: 'rtl' },
+      ar: { label: 'العربية', text: 'يُعرَّف ارتفاع ضغط الدم بأنه ضغط انقباضي ≥140 ملم زئبق و/أو ضغط انبساطي ≥90 ملم زئبق.', dir: 'rtl' }
+    };
+    const trStyle = st.trStyle || p.trStyle || 'natural';
+    const TRL = { en: 'Systolic BP being ≥140 mmHg and/or diastolic BP being ≥90 mmHg is defined as hypertension.', fa: 'سیستولیک ≥۱۴۰ میلی‌متر جیوه و/یا دیاستولیک ≥۹۰ میلی‌متر جیوه بودن فشار خون، هایپرتانسیون تعریف می‌شود.', ar: 'يُعرَّف كون الضغط الانقباضي ≥140 ملم زئبق و/أو الانبساطي ≥90 ملم زئبق بأنه ارتفاع ضغط الدم.' };
+    const TRN = { en: 'You have high blood pressure when the top number (systolic) is 140 mmHg or more, the bottom number (diastolic) is 90 mmHg or more, or both.', fa: 'وقتی فشار سیستولیک ۱۴۰ یا بیشتر، یا فشار دیاستولیک ۹۰ یا بیشتر باشد (یا هر دو)، می‌گوییم فرد فشار خون بالا دارد.', ar: 'نقول إن لدى الشخص ارتفاعًا في ضغط الدم عندما يكون الضغط الانقباضي 140 أو أكثر، أو الانبساطي 90 أو أكثر، أو كلاهما.' };
+    const trStyles = [['literal', _x('Düz çeviri')], ['natural', _x('Doğal anlatım')]].map((t) => { const on = t[0] === trStyle; return { label: t[1], on: on ? 'true' : 'false', bg: on ? c.card : 'transparent', fg: on ? c.text : c.text2, fw: on ? 600 : 500, shadow: on ? '0 1px 3px rgba(0,0,0,.12)' : 'none', pick: () => this.setState({ trStyle: t[0] }) }; });
+    const trTabs = ['en', 'fa', 'ar'].map((k) => {
+      const on = k === trTab;
+      return { label: TR[k].label, on: on ? 'true' : 'false', bg: on ? c.card : 'transparent', fg: on ? c.text : c.text2, fw: on ? 600 : 500, shadow: on ? '0 1px 3px rgba(0,0,0,.12)' : 'none', pick: () => this.setState({ trTab: k }) };
+    });
+    const secNames = [_x('Tanım'), _x('İlaç tedavisi'), _x('Özel durumlar'), _x('Hipertansif kriz')];
+    const activeSec = st.sec != null ? st.sec : (v.term ? 1 : v.end ? 2 : 0);
+    const tabs = secNames.map((label, i) => {
+      const on = i === activeSec;
+      return { n: i + 1, label, on: on ? 'true' : 'false', bg: on ? '#9C2F3A' : c.card, fg: on ? '#FFFCF6' : c.text2, border: on ? '1px solid #9C2F3A' : '1px solid ' + c.line, fw: on ? 600 : 500, tap: () => this.setState({ sec: i, mode: i >= 2 ? 'end' : 'default' }) };
+    });
+    const bpRows = [
+      [_x('Optimal'), '<120', '<80'], ['Normal', '120–129', '80–84'], [_x('Yüksek normal'), '130–139', '85–89'],
+      [_x('Evre 1 HT'), '140–159', '90–99'], [_x('Evre 2 HT'), '160–179', '100–109'], [_x('Evre 3 HT'), '≥180', '≥110']
+    ].map((r, i) => ({ k: r[0], s: r[1], d: r[2], fg: i >= 3 ? c.priText : c.text, fw: i >= 3 ? 600 : 400 }));
+    const penSel = st.pen != null ? st.pen : 1;
+    const penCols = [dark ? '#EFE8DC' : '#2A2420', c.penRed, dark ? '#8DB4F5' : '#2557A8'];
+    const pens = penCols.map((color, i) => ({ color, label: s.pens[i], on: i === penSel ? 'true' : 'false', ring: i === penSel ? '2px solid ' + c.text : '2px solid transparent', pick: () => this.setState({ pen: i }) }));
+    const markers = ['#F2B33D', '#7CCB8F'].map((color, i) => ({ color, label: s.pens[3 + i], on: (penSel === 3 + i) ? 'true' : 'false', ring: (penSel === 3 + i) ? '2px solid ' + c.text : '2px solid transparent', pick: () => this.setState({ pen: 3 + i }) }));
+    const setMode = (m) => () => this.setState({ mode: m });
+
+    const PT = {
+      tr: { full: 'Tam ekran', exit: 'Tam ekrandan çık', ask: _x('Asistana sor'), askT: 'Bu sayfa hakkında ne sormak istersin?', c1: _x('Bu sayfayı anlat'), c2: 'Bu sayfadan soru sor', c3: 'Önemli yerleri göster', ph: 'Bu sayfa hakkında sor…', open: 'Asistanı tam aç', close: _x('Kapat'), pg: 'Sayfa', send: _x('Gönder'), pen: _x('Not al'), listen: _x('Dinle'), addCard: _x('Kartlara ekle'), added: 'Kartlarına eklendi', penOn: 'Kalem açık · sayfaya yazabilirsin', penOff: 'Kalem kapandı', reading: _x('Sayfa sesli okunuyor…'), mean: 'ANLAMI', colors: 'Kalem renkleri', move: 'Taşımak için basılı tut ve sürükle', inks: ['Siyah', 'Kırmızı', 'Mavi', _x('Sarı fosforlu'), _x('Yeşil fosforlu'), _x('Silgi')] },
+      en: { full: 'Full screen', exit: 'Exit full screen', ask: 'Ask the assistant', askT: 'What would you like to ask about this page?', c1: 'Explain this page', c2: 'Quiz me on this page', c3: 'Show the key points', ph: 'Ask about this page…', open: 'Open full assistant', close: 'Close', pg: 'Page', send: 'Send', pen: 'Take notes', listen: 'Listen', addCard: 'Add to cards', added: 'Added to your cards', penOn: 'Pen on · you can write on the page', penOff: 'Pen off', reading: 'Reading the page aloud…', mean: 'MEANING', colors: 'Pen colors', move: 'Press and drag to move', inks: ['Black', 'Red', 'Blue', 'Yellow highlighter', 'Green highlighter', 'Eraser'] },
+      fa: { full: 'تمام‌صفحه', exit: 'خروج از تمام‌صفحه', ask: 'از دستیار بپرس', askT: 'دربارهٔ این صفحه چه می‌خواهی بپرسی؟', c1: 'این صفحه را توضیح بده', c2: 'از این صفحه سؤال بپرس', c3: 'نکته‌های مهم را نشان بده', ph: 'دربارهٔ این صفحه بپرس…', open: 'باز کردن کامل دستیار', close: 'بستن', pg: 'صفحه', send: 'ارسال', pen: 'یادداشت', listen: 'گوش بده', addCard: 'افزودن به کارت‌ها', added: 'به کارت‌هایت اضافه شد', penOn: 'قلم روشن است · می‌توانی روی صفحه بنویسی', penOff: 'قلم خاموش شد', reading: 'صفحه با صدا خوانده می‌شود…', mean: 'معنی', colors: 'رنگ‌های قلم', move: 'برای جابه‌جایی نگه دار و بکش', inks: ['مشکی', 'قرمز', 'آبی', 'ماژیک زرد', 'ماژیک سبز', 'پاک‌کن'] },
+      ar: { full: 'ملء الشاشة', exit: 'الخروج من ملء الشاشة', ask: 'اسأل المساعد', askT: 'ماذا تريد أن تسأل عن هذه الصفحة؟', c1: 'اشرح هذه الصفحة', c2: 'اسألني عن هذه الصفحة', c3: 'اعرض النقاط المهمة', ph: 'اسأل عن هذه الصفحة…', open: 'افتح المساعد كاملًا', close: 'إغلاق', pg: 'صفحة', send: 'إرسال', pen: 'دوّن', listen: 'استمع', addCard: 'أضف إلى البطاقات', added: 'أُضيفت إلى بطاقاتك', penOn: 'القلم مفعّل · يمكنك الكتابة على الصفحة', penOff: 'أُطفئ القلم', reading: 'تُقرأ الصفحة بصوت عالٍ…', mean: 'المعنى', colors: 'ألوان القلم', move: 'اضغط واسحب للتحريك', inks: ['أسود', 'أحمر', 'أزرق', 'قلم تمييز أصفر', 'قلم تمييز أخضر', 'ممحاة'] }
+    };
+    const PM = {
+      dia: { w: 'diyastolik', tr: 'Kalp gevşerken damarlardaki basınç; "küçük tansiyon".', en: 'The pressure in the arteries while the heart relaxes; the "lower number".', fa: 'فشار درون رگ‌ها هنگام استراحت قلب؛ «فشار پایین».', ar: 'الضغط في الشرايين أثناء ارتخاء القلب؛ «الرقم السفلي».' },
+      viz: { w: 'vizit', tr: 'Hastanın doktora yaptığı kontrol ziyareti.', en: 'A check-up visit the patient makes to the doctor.', fa: 'مراجعهٔ بیمار به پزشک برای معاینه.', ar: 'زيارة المريض للطبيب للفحص.' },
+      amb: { w: 'ambulatuvar ölçüm', tr: 'Cihazla 24 saat boyunca, günlük hayatta düzenli aralıklarla tansiyon ölçümü.', en: 'Blood pressure measured by a device at regular intervals for 24 hours during normal daily life.', fa: 'اندازه‌گیری فشار خون با دستگاه در طول ۲۴ ساعت، در فواصل منظم و در زندگی روزمره.', ar: 'قياس ضغط الدم بجهاز على فترات منتظمة لمدة 24 ساعة أثناء الحياة اليومية.' },
+      bey: { w: 'beyaz önlük hipertansiyonu', tr: 'Tansiyonun sadece doktor muayenesinde (heyecan yüzünden) yüksek, evde normal çıkması.', en: 'Blood pressure that is high only at the doctor\'s office (from stress) but normal at home.', fa: 'فشار خونی که فقط در مطب پزشک (به‌خاطر استرس) بالاست و در خانه طبیعی است.', ar: 'ضغط دم مرتفع فقط في عيادة الطبيب (بسبب التوتر) وطبيعي في المنزل.' },
+      kvr: { w: 'kardiyovasküler risk', tr: 'Kalp krizi, inme gibi kalp-damar hastalığı geçirme olasılığı.', en: 'The chance of having a heart or blood vessel disease such as a heart attack or stroke.', fa: 'احتمال ابتلا به بیماری قلب و عروق مانند حملهٔ قلبی یا سکته.', ar: 'احتمال الإصابة بمرض قلبي وعائي مثل النوبة القلبية أو السكتة.' }
+    };
+    const PDFP = [
+      { n: 5, sec: '1. Tanım ve sınıflama', tbl: true, b: [[['Sistolik kan basıncı ≥140 mmHg ve/veya '], ['diyastolik', 'dia'], [' kan basıncı ≥90 mmHg ise hipertansiyon tanısı konur.']], [['Tanı: en az iki farklı '], ['vizitte', 'viz'], [', oturur pozisyonda ve 5 dk dinlendikten sonra ölçüm.']], [['Ev ve 24 saatlik '], ['ambulatuvar ölçüm', 'amb'], [', '], ['beyaz önlük hipertansiyonunu', 'bey'], [' ayırt etmede kullanılır.']]] },
+      { n: 6, sec: '2. Ölçüm ve tedavi hedefleri', tbl: false, b: [[['Hedef kan basıncı çoğu hastada <130/80 mmHg (tolere edilirse).']], [['65 yaş üstünde sistolik hedef 130–139 mmHg.']], [['Yaşam tarzı değişiklikleri: tuz <5 g/gün, kilo kontrolü, düzenli egzersiz, alkolün azaltılması.']], [['İlaç tedavisi kararı, toplam '], ['kardiyovasküler risk', 'kvr'], [' ile birlikte verilir.']]] }
+    ];
+    const PDFR = [['Kategori', 'Sistolik', 'Diyastolik'], ['Optimal KB', '<120', '<80'], ['Normal KB', '120–129', '80–84'], ['Yüksek normal KB', '130–139', '85–89'], ['Evre 1 (hafif)', '140–159', '90–99'], ['Evre 2 (orta)', '160–179', '100–109'], ['Evre 3 (ağır)', '≥180', '≥110']].map((r, i) => ({ k: r[0], s: r[1], d: r[2], fw: i === 0 ? 700 : 400, bg: i === 0 ? '#F3E3E5' : (i >= 4 ? '#FFF7F7' : '#FFFFFF') }));
+    const pdfT = PT[lang] || PT.tr;
+    const pTerm = st.pdfTerm || '';
+    const pSay = (m) => { this.setState({ pdfMsg: m }); clearTimeout(this._pdfT); this._pdfT = setTimeout(() => this.setState({ pdfMsg: '' }), 1800); };
+    const pages = PDFP.map((pg) => Object.assign({}, pg, { b: pg.b.map((line) => line.map((sg) => ({ x: sg[0], plain: !sg[1], term: !!sg[1], bg: sg[1] && sg[1] === pTerm ? 'rgba(242,179,61,.45)' : 'transparent', tap: () => this.setState({ pdfTerm: sg[1], pdfAsk: false }) }))) }));
+    const tm = PM[pTerm];
+    const PW = (ios ? 390 : 412), PH = (ios ? 844 : 915);
+    const barM = st.pdfBar || 'mini';
+    const INK = [['#2A2420'], ['#C0392B'], ['#2557A8'], ['#F2B33D'], ['#7CCB8F'], ['x']];
+    const inkSel = st.pdfInk != null ? st.pdfInk : 1;
+    let mem = {}; try { mem = JSON.parse(localStorage.getItem('aim.pdfPos') || '{}') || {}; } catch (e) { mem = {}; }
+    const barDef = { x: 14, b: ((ios ? 30 : 18) + 12) }, starDef = { x: PW - 16 - 64, b: ((ios ? 30 : 18) + 12) };
+    const barP = st.pdfBarP || mem.pdfBarP || barDef, starP0 = st.pdfStarP || mem.pdfStarP || starDef;
+    const barW = barM === 'mini' ? 56 : (barM === 'colors' ? 290 : 240);
+    const clampV = (v, a, z) => Math.max(a, Math.min(z, v));
+    const bx = clampV(barP.x, 8, PW - barW - 8), bb = clampV(barP.b, 8, PH - 160);
+    const starP = { x: clampV(starP0.x, 8, PW - 72), b: clampV(starP0.b, 8, PH - 120) };
+    const dg = (key, def, wdt) => ({
+      down: (e) => { const cur = (this.state || {})[key] || mem[key] || def; const el = e.currentTarget; const r = el.getBoundingClientRect(); const sc = (r.width / (el.offsetWidth || r.width)) || 1;
+        const d = { sx: e.clientX, sy: e.clientY, ox: cur.x, ob: cur.b, moved: false, last: null };
+        const mv = (ev) => { const dx = (ev.clientX - d.sx) / sc, dy = (ev.clientY - d.sy) / sc; if (!d.moved && Math.hypot(dx, dy) < 6) return; d.moved = true; d.last = { x: clampV(d.ox + dx, 8, PW - wdt - 8), b: clampV(d.ob - dy, 8, PH - 120) }; this.setState({ [key]: d.last }); };
+        const up = () => { window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up); if (d.moved) { this._pdfSup = Date.now(); try { const m2 = JSON.parse(localStorage.getItem('aim.pdfPos') || '{}') || {}; m2[key] = d.last; localStorage.setItem('aim.pdfPos', JSON.stringify(m2)); } catch (er) {} } };
+        window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up); }
+    });
+    const pdf = { on: !!st.pdfOn, sheet: !!st.pdfAsk, t: pdfT, chips: [pdfT.c1, pdfT.c2, pdfT.c3], pages, rows: PDFR,
+      termOn: !!tm, termW: tm ? tm.w : '', termM: tm ? (tm[lang] || tm.tr) : '', termDir: (lang === 'fa' || lang === 'ar') ? 'rtl' : 'ltr',
+      msgOn: !!st.pdfMsg, msg: st.pdfMsg || '', penBg: st.pdfPen ? '#F2B33D' : 'transparent', penFg: st.pdfPen ? '#2A2420' : '#FFFCF6', penOn: st.pdfPen ? 'true' : 'false',
+      pen: () => { const on = !st.pdfPen; this.setState({ pdfPen: on }); pSay(on ? pdfT.penOn : pdfT.penOff); },
+      listen: () => pSay(pdfT.reading), addCard: () => { this.setState({ pdfTerm: '' }); pSay(pdfT.added); }, termClose: () => this.setState({ pdfTerm: '' }), termAsk: () => this.setState({ pdfTerm: '', pdfAsk: true }),
+      pgL: pdfT.pg + ' 5 / 48', pw: (ios ? 390 : 412) - 20, pp: 18, gap: 10, ph: 540, fsS: 9, fsH: 22, fsH2: 15, fsB: 13, fsT: 11, bg: dark ? '#0E0C0A' : '#D9D0C2', top: (ios ? 54 : 36) + 64, btnTop: (ios ? 54 : 36) + 8, pgTop: (ios ? 54 : 36) + 14, msgTop: (ios ? 54 : 36) + 66, bot: (ios ? 30 : 18) + 12, termBot: (ios ? 30 : 18) + 84, padE: 10, pBg: paused ? '#F2B33D' : '#9C2F3A', pFg: paused ? '#2A2420' : '#FFFCF6',
+      barMini: barM === 'mini', barOpen: barM !== 'mini', colorsOn: barM === 'colors', bx, bb, sx: starP.x, sb: starP.b,
+      inks: INK.map((k, i) => ({ col: k[0], ring: i === inkSel ? '0 0 0 3px #FFFCF6' : '0 0 0 0 transparent', on: i === inkSel ? 'true' : 'false', label: pdfT.inks[i], eraser: k[0] === 'x', dot: k[0] !== 'x', pick: () => { this.setState({ pdfInk: i, pdfPen: true }); pSay(pdfT.inks[i]); } })),
+      penTap: () => { if (Date.now() - (this._pdfSup || 0) < 350) return; if (barM === 'mini') this.setState({ pdfBar: 'open' }); else if (barM === 'open') this.setState({ pdfBar: 'colors', pdfPen: true }); else this.setState({ pdfBar: 'open' }); },
+      collapse: () => this.setState({ pdfBar: 'mini' }),
+      bDown: dg('pdfBarP', barDef, barW).down,
+      sDown: dg('pdfStarP', starDef, 64).down,
+      open: () => this.setState({ pdfOn: true, pdfAsk: false, pdfTerm: '' }), close: () => this.setState({ pdfOn: false, pdfAsk: false, pdfTerm: '', pdfPen: false, pdfBar: 'mini' }),
+      ask: () => { if (Date.now() - (this._pdfSup || 0) < 350) return; this.setState({ pdfAsk: true, pdfTerm: '', pdfBar: 'mini' }); }, hide: () => this.setState({ pdfAsk: false }),
+      go: () => { this.setState({ pdfOn: false, pdfAsk: false }); (p.offline ? go('assistant', 'offline') : go('assistant'))(); } };
+
+    return { pdf, toastOn: !!__st.toast, toastMsg: __st.toast || '', toastBottom: 130,
+      rCopy: () => say(_x('Cümle kopyalandı')), rHl: () => say(_x('Sarı ile vurgulandı')), rListen: () => say(_x('Sesli okunuyor…')), rAdd: () => say(_x('Kelime listene eklendi · kartlarda çıkacak')), rUndo: () => say(_x('Son çizim geri alındı')), rText: () => say(_x('Yazı aracı · sayfaya dokun ve yaz')), rErase: () => say(_x('Silgi seçildi')), rNote: () => this.setState({ mode: 'notes' }),
+      c, s, v, lang, fs, tabs, bpRows, trTabs, pens, markers, two: [1, 2],
+      clock, paused,
+      pauseLabel: paused ? s.resume : s.pause,
+      pauseIcon: paused ? 'M8 5v14l11-7z' : 'M7 5h3.5v14H7z M13.5 5H17v14h-3.5z',
+      sw: paused
+        ? { bg: c.ambSoft, fg: c.ambText, border: '1px solid ' + c.amb, btn: c.amb, btnFg: '#2A2420' }
+        : { bg: c.card, fg: c.text, border: '1px solid ' + c.line, btn: c.pri, btnFg: '#FFFCF6' },
+      togglePause: () => this.setState({ paused: !paused }),
+      dir: rtl ? 'rtl' : 'ltr', flip: rtl ? -1 : 1,
+      W: ios ? 390 : 412, H: ios ? 844 : 915, topH: ios ? 54 : 36, bottomPad: ios ? 30 : 18,
+      btnR: ios ? 12 : 100, btnH: ios ? 50 : 48, chipR: ios ? 10 : 8, fabH: ios ? 48 : 56, fabR: ios ? 24 : 16,
+      sheetR: ios ? 14 : 28, grabW: ios ? 36 : 32, segR: ios ? 10 : 100, segIR: ios ? 8 : 100,
+      showSec1: !v.end && !v.loading && !(v.term && !live),
+      showSec2: !v.end && !v.loading,
+      showSec3: !v.loading,
+      showBar: !v.notes,
+      scrollY: v.notes ? 'hidden' : 'auto',
+      curPage: v.end ? 14 : (v.term ? 12 : 5),
+      readPct: v.end ? 100 : (v.term ? 25 : 38),
+      selBg: (v.select || v.translate) ? 'rgba(242,179,61,.38)' : 'transparent',
+      selShadow: (v.select || v.translate) ? '0 0 0 2px rgba(242,179,61,.38)' : 'none',
+      termBg: v.term ? c.priSoft : 'transparent',
+      trStyles, molOn: !!st.molOn, molTh: dark ? 'dark' : 'light', molOpen: () => this.setState({ molOn: true }), molClose: () => this.setState({ molOn: false }),
+      trText: (trStyle === 'literal' ? TRL : TRN)[trTab] || TR[trTab].text, trDir: TR[trTab].dir, trLang: trTab,
+      trFs: trTab === 'en' ? 18 : 19, trLh: trTab === 'en' ? 1.6 : 1.9,
+      back: go('home'), toAssistant: p.offline ? go('assistant', 'offline') : go('assistant'), toShare: p.premium ? go('share') : go('paywall', 'share'), toAudio: go('audio'), toQuestions: go('questions', 'style'), toCards: go('cards'),
+      toCheck: go('quiz', 'question', 'check'), toExam: go('quiz', 'question', 'final'),
+      openTerm: setMode('term'), openTranslate: setMode('translate'), selectSentence: setMode('select'),
+      toNotes: setMode('notes'), closeAll: setMode('default'),
+      smaller: () => this.setState({ fs: Math.max(14, fs - 1) }),
+      bigger: () => this.setState({ fs: Math.min(22, fs + 1) })
+    };
+  }
+}
+</script>
+</body>
+</html>

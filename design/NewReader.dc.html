@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Yeni stil · Okuma</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+<style>[dir=rtl] .dc-back{transform:scaleX(-1)}[dir=rtl],[dir=rtl] *{letter-spacing:0 !important}</style>
+</helmet>
+<div dir="{{_dir}}" style="width: 390px; height: 844px; box-sizing: border-box; position: relative; overflow: hidden; background: {{c.bg}}; color: {{c.text}}; font-family: Poppins, Vazirmatn, system-ui, sans-serif; display: flex; flex-direction: column">
+<div style="height: 54px; flex: none"></div>
+<div style="flex: none; display: flex; align-items: center; gap: 8px; padding: 6px 16px">
+<button onClick="{{nrBack}}" aria-label="{{_t.k1052}}" style="width: 44px; height: 44px; border-radius: 22px; border: 1px solid {{c.line}}; background: {{c.chrome}}; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg class="dc-back" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5 M11 6l-6 6 6 6"></path></svg></button>
+<div style="flex: 1; height: 44px; border-radius: 22px; border: 1px solid {{c.line}}; background: {{c.chrome}}; display: flex; flex-direction: column; align-items: center; justify-content: center">
+<span style="font-size: 14px; font-weight: 600; line-height: 1.1">{{_t.k1187}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 9px; letter-spacing: 0.06em; color: {{c.text2}}">{{_t.k1757}}</span>
+</div>
+<button onClick="{{nrAa}}" aria-label="{{_t.k1544}}" style="width: 44px; height: 44px; border-radius: 22px; border: 1px solid {{c.line}}; background: {{c.chrome}}; color: {{c.text}}; font-family: Lora, Vazirmatn, Georgia, serif; font-size: 16px; font-weight: 600; cursor: pointer">Aa</button>
+</div>
+
+<div role="radiogroup" aria-label="{{_t.k1548}}" style="flex: none; margin: 4px 16px 10px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 22px; background: {{c.seg}}">
+<sc-for list="{{themes}}" as="t" hint-placeholder-count="3"><button onClick="{{nrTheme}}" role="radio" aria-checked="{{t.on}}" style="height: 36px; border: 0; border-radius: 18px; background: {{t.bg}}; color: {{t.fg}}; display: flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; font-size: 13px; font-weight: {{t.fw}}; box-shadow: {{t.shadow}}; cursor: pointer"><span style="width: 12px; height: 12px; border-radius: 6px; background: {{t.sw}}; border: 1px solid rgba(0,0,0,.15)"></span>{{t.l}}</button></sc-for>
+</div>
+
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 0 16px 130px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: center; gap: 10px; padding-top: 4px">
+<span style="width: 34px; height: 34px; border-radius: 17px; background: {{c.chip}}; color: {{c.chipFg}}; display: flex; align-items: center; justify-content: center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.5 3.5a5 5 0 0 1 7 7l-7 7a5 5 0 0 1-7-7z M7 7l7 7"></path></svg></span>
+<h2 style="margin: 0; font-size: 19px; font-weight: 500; letter-spacing: -0.01em"><span style="color: {{c.text2}}; font-weight: 400">{{_t.k628}}</span> {{_t.k2570}}</h2>
+</div>
+
+<article style="position: relative; border-radius: 24px; background: {{c.paper}}; border: 1px solid {{c.paperLine}}; padding: 18px 20px 22px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: center; gap: 8px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.08em; color: {{c.text2}}">{{_t.k1756}}</span>
+<span style="font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 12px; background: {{c.tag}}; color: {{c.tagFg}}">{{_t.k855}}</span>
+<span style="flex: 1"></span>
+<button onClick="{{nrTr}}" style="height: 30px; padding: 0 12px; border-radius: 15px; border: 1px solid {{c.paperLine}}; background: transparent; color: {{c.text2}}; font-family: inherit; font-size: 12px; cursor: pointer">{{_t.k2483}}</button>
+</div>
+<div style="font-family: Lora, Vazirmatn, Georgia, serif; font-size: 18px; line-height: 1.75; color: {{c.ink}}">
+<p style="margin: 0 0 12px">{{_t.k2580}} <span style="border-bottom: 1.5px dotted {{c.term}}">{{_t.k839}}</span>, <span style="border-bottom: 1.5px dotted {{c.term}}; background: {{c.termBg}}; border-radius: 4px; padding: 0 3px">{{_t.k282}}</span>{{_t.k108}}</p>
+<p style="margin: 0">{{_t.k293}}</p>
+</div>
+<div style="position: absolute; left: 20px; right: 20px; top: 128px; border-radius: 20px; background: {{c.pop}}; color: {{c.popFg}}; border: 1px solid {{c.popBorder}}; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 20px 40px rgba(42,36,32,.25)">
+<div style="display: flex; align-items: center; gap: 8px"><span style="font-size: 16px; font-weight: 600; flex: 1">{{_t.k282}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 9px; letter-spacing: 0.08em; padding: 3px 8px; border-radius: 10px; background: {{c.popChip}}">{{_t.k2565}}</span></div>
+<span style="font-size: 13px; line-height: 1.5; opacity: .85">{{_t.k365}}</span>
+<div style="display: flex; gap: 6px">
+<span style="height: 34px; padding: 0 12px; border-radius: 17px; background: {{c.popChip}}; display: flex; align-items: center; font-size: 12px">{{_t.k2654}}</span>
+<span style="height: 34px; padding: 0 12px; border-radius: 17px; background: {{c.popChip}}; display: flex; align-items: center; font-size: 12px">{{_t.k1413}}</span>
+<span style="height: 34px; padding: 0 12px; border-radius: 17px; background: #F2B33D; color: #2A2420; display: flex; align-items: center; font-size: 12px; font-weight: 600">{{_t.k2483}}</span>
+</div>
+</div>
+</article>
+
+<article style="border-radius: 24px; background: {{c.paper}}; border: 1px solid {{c.paperLine}}; padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: center; gap: 8px"><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.08em; color: {{c.text2}}">{{_t.k1758}}</span><span style="font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 12px; background: {{c.tag2}}; color: {{c.tag2Fg}}">{{_t.k2240}}</span></div>
+<p style="margin: 0; font-family: Lora, Vazirmatn, Georgia, serif; font-size: 18px; line-height: 1.75; color: {{c.ink}}">{{_t.k349}} <span style="border-bottom: 1.5px dotted {{c.term}}">{{_t.k1567}}</span> {{_t.k2362}}</p>
+</article>
+</div>
+
+<div style="position: absolute; left: 16px; right: 16px; bottom: 30px; display: flex; align-items: center; gap: 8px; padding: 6px; border-radius: 34px; background: {{c.bar}}; box-shadow: 0 12px 30px rgba(42,36,32,.22)">
+<button onClick="{{nrPause}}" aria-label="{{_t.k1462}}" style="height: 52px; padding: 0 6px 0 16px; border-radius: 26px; border: 0; background: {{c.barChip}}; color: {{c.barChipFg}}; display: flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 15px; font-weight: 600; cursor: pointer">23:14<span style="width: 40px; height: 40px; border-radius: 20px; background: #F2B33D; color: #2A2420; display: flex; align-items: center; justify-content: center"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7z M13.5 5H17v14h-3.5z"></path></svg></span></button>
+<button onClick="{{nrNote}}" aria-label="{{_t.k1503}}" style="width: 52px; height: 52px; border-radius: 26px; border: 0; background: transparent; color: {{c.barFg}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1-4L16 5l3 3L8 19z M14 7l3 3"></path></svg></button>
+<button onClick="{{nrListen}}" aria-label="{{_t.k816}}" style="width: 52px; height: 52px; border-radius: 26px; border: 0; background: transparent; color: {{c.barFg}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z M16.5 8.5a5 5 0 0 1 0 7"></path></svg></button>
+<span style="flex: 1"></span>
+<button onClick="{{nrAsk}}" aria-label="{{_t.k390}}" style="width: 52px; height: 52px; border-radius: 26px; border: 0; background: url(./star_btn.png) center/88% no-repeat, radial-gradient(circle at 50% 30%, #B8404D 0%, #9C2F3A 45%, #7A2230 100%); color: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"></path></svg></button>
+</div>
+<sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div role="status" aria-live="polite" style="position: absolute; left: 50%; bottom: {{toastBottom}}px; transform: translateX(-50%); z-index: 50; max-width: 86%; box-sizing: border-box; padding: 12px 18px; border-radius: 22px; background: #2E2721; color: #FBEFD6; font-family: Poppins, Vazirmatn, system-ui, sans-serif; font-size: 14px; line-height: 1.4; text-align: center; box-shadow: 0 12px 30px rgba(42,36,32,.28); pointer-events: none">{{toastMsg}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"$preview":{"width":390,"height":844}}'>
+const _I18N = {k: [", anjiyotensin reseptör blokerleri (ARB) ve kalsiyum kanal blokerleri kullanılır.", "ACE inhibitörleri", "ACE inhibitörlerine düşük dozla başlanır (ör. ramipril 2,5 mg/gün) ve doz 2–4 haftada bir titre edilir.", "Alfa-1 blokerlerin ilk dozundan sonra", "Anjiyotensin II oluşumunu azaltan antihipertansif ilaç grubu. Örnek: ramipril, enalapril.", "Asistan", "Asistan açılıyor", "Açık", "Bölüm 2 ·", "Cümle çevrildi · English", "Derslerim'e dönülüyor", "Dinle", "Diüretikler", "Doz", "Geri", "Hipertansiyon", "Koyu", "Listeme ekle", "Mola ver", "Mola · kronometre durdu", "Not al", "Not modu açıldı", "Okuma görünümü", "Okuma teması", "Okuma teması değişti", "Ortostatik hipotansiyon", "SAYFA 12", "SAYFA 12 / 48 · %25", "SAYFA 13", "Sepya", "Sesli okunuyor…", "Yan etki", "Yazı boyutu büyütüldü", "görülebilir.", "Çevir", "İLAÇ SINIFI", "İlaç tedavisi", "İlk basamak tedavide", "▶ Dinle"], en: [", angiotensin receptor blockers (ARBs) and calcium channel blockers are used.", "ACE inhibitors", "ACE inhibitors are started at a low dose (e.g. ramipril 2.5 mg/day) and titrated every 2–4 weeks.", "After the first dose of alpha-1 blockers", "Antihypertensive drug group that reduces angiotensin II formation. Examples: ramipril, enalapril.", "Assistant", "Opening assistant", "Light", "Section 2 ·", "Sentence translated · English", "Going back to My Courses", "Listen", "Diuretics", "Dose", "Back", "Hypertension", "Dark", "Add to my list", "Take a break", "Break · stopwatch paused", "Take notes", "Note mode on", "Reading view", "Reading theme", "Reading theme changed", "Orthostatic hypotension", "PAGE 12", "PAGE 12 / 48 · %25", "PAGE 13", "Sepia", "Reading aloud…", "Side effect", "Text size increased", "may occur.", "Translate", "DRUG CLASS", "Drug therapy", "In first-line treatment", "▶ Listen"], fa: ["، مسدودکننده‌های گیرنده آنژیوتانسین (ARB) و مسدودکننده‌های کانال کلسیم استفاده می‌شوند.", "مهارکننده‌های ACE", "مهارکننده‌های ACE با دوز پایین شروع می‌شوند (مثلاً رامی‌پریل 2.5 mg/روز) و هر 2–4 هفته دوز تیتره می‌شود.", "پس از دوز اول مسدودکننده‌های آلفا-1", "گروه داروهای ضد فشار خون که تولید آنژیوتانسین II را کاهش می‌دهند. مثال: رامی‌پریل، انالاپریل.", "دستیار", "دستیار باز می‌شود", "روشن", "بخش 2 ·", "جمله ترجمه شد · English", "بازگشت به «درس‌های من»", "گوش بده", "دیورتیک‌ها", "دوز", "بازگشت", "فشار خون بالا", "تیره", "به فهرستم اضافه کن", "استراحت کن", "استراحت · کرنومتر متوقف شد", "یادداشت بردار", "حالت یادداشت روشن شد", "نمای خواندن", "تم خواندن", "تم خواندن تغییر کرد", "افت فشار خون وضعیتی", "صفحه 12", "صفحه 12 / 48 · %25", "صفحه 13", "سپیا", "در حال خواندن با صدا…", "عارضه جانبی", "اندازه متن بزرگ‌تر شد", "ممکن است دیده شود.", "ترجمه کن", "دسته دارویی", "درمان دارویی", "در درمان خط اول", "▶ گوش کن"], ar: ["، وحاصرات مستقبلات الأنجيوتنسين (ARB) وحاصرات قنوات الكالسيوم.", "مثبطات ACE", "تُبدأ مثبطات ACE بجرعة منخفضة (مثل راميبريل 2.5 mg/يوم) وتُعاير الجرعة كل 2–4 أسابيع.", "بعد الجرعة الأولى من حاصرات ألفا-1", "مجموعة خافضات ضغط تقلل تكوين الأنجيوتنسين II. أمثلة: راميبريل، إنالابريل.", "المساعد", "جارٍ فتح المساعد", "فاتح", "القسم 2 ·", "تمت ترجمة الجملة · English", "جارٍ العودة إلى «موادي»", "استمع", "مدرات البول", "الجرعة", "رجوع", "ارتفاع ضغط الدم", "داكن", "أضف إلى قائمتي", "خذ استراحة", "استراحة · توقفت ساعة الإيقاف", "دوّن ملاحظات", "تم تفعيل وضع الملاحظات", "عرض القراءة", "سمة القراءة", "تغيّرت سمة القراءة", "هبوط الضغط الانتصابي", "صفحة 12", "صفحة 12 / 48 · %25", "صفحة 13", "بني داكن", "جارٍ القراءة بصوت عالٍ…", "أثر جانبي", "تم تكبير حجم الخط", "قد يحدث.", "ترجم", "الفئة الدوائية", "العلاج الدوائي", "في علاج الخط الأول", "▶ استمع"]};
+let _lang = 'tr', _M = null; const _TC = {};
+const _x = (s) => { if (_lang === 'tr' || !_I18N[_lang]) return s; if (!_M) { _M = {}; _I18N.k.forEach((k, i) => { _M[k] = i; }); } const i = _M[s]; return i == null ? s : _I18N[_lang][i]; };
+const _TK = {"k108": ", anjiyotensin reseptör blokerleri (ARB) ve kalsiyum kanal blokerleri kullanılır.", "k282": "ACE inhibitörleri", "k293": "ACE inhibitörlerine düşük dozla başlanır (ör. ramipril 2,5 mg/gün) ve doz 2–4 haftada bir titre edilir.", "k349": "Alfa-1 blokerlerin ilk dozundan sonra", "k365": "Anjiyotensin II oluşumunu azaltan antihipertansif ilaç grubu. Örnek: ramipril, enalapril.", "k390": "Asistan", "k628": "Bölüm 2 ·", "k816": "Dinle", "k839": "Diüretikler", "k855": "Doz", "k1052": "Geri", "k1187": "Hipertansiyon", "k1413": "Listeme ekle", "k1462": "Mola ver", "k1503": "Not al", "k1544": "Okuma görünümü", "k1548": "Okuma teması", "k1567": "Ortostatik hipotansiyon", "k1756": "SAYFA 12", "k1757": "SAYFA 12 / 48 · %25", "k1758": "SAYFA 13", "k2240": "Yan etki", "k2362": "görülebilir.", "k2483": "Çevir", "k2565": "İLAÇ SINIFI", "k2570": "İlaç tedavisi", "k2580": "İlk basamak tedavide", "k2654": "▶ Dinle"};
+const _PT = {};
+const _tt = () => { if (!_TC[_lang]) { const o = {}; Object.keys(_TK).forEach((k) => { o[k] = (_PT[k] && _lang !== 'tr') ? (_PT[k][_lang] || _x(_TK[k])) : _x(_TK[k]); }); _TC[_lang] = o; } return _TC[_lang]; };
+
+class Component extends DCLogic {
+  renderVals() { const _p = this.props || {}, _s = this.state || {}; _lang = _s.lang || _p.lang || 'tr'; const r = this._rv0(); if (r && typeof r === 'object') { r._t = _tt(); r._dir = (_lang === 'fa' || _lang === 'ar') ? 'rtl' : 'ltr'; r._ai = this._aiDark ? { bg: '#F2B33D', fg: '#241C14', tx: '#EFE8DC' } : { bg: '#9C2F3A', fg: '#FFF6E6', tx: '#2A2420' }; } return r; }
+  _rv0() {
+    const __st = this.state || {};
+    const say = (m, after) => { this.setState({ toast: m }); clearTimeout(this._tt); this._tt = setTimeout(() => { this.setState({ toast: '' }); if (after) after(); }, 1700); };
+    const dark = this.props.theme === 'dark';
+    const c = dark
+      ? { bg: '#15120F', chrome: '#211C18', seg: '#211C18', text: '#EFE8DC', text2: '#A89D90', line: '#3A322B', chip: '#3A2E18', chipFg: '#F2C46E', paper: '#1D1915', paperLine: '#332B24', ink: '#E6DDCF', term: '#E8925A', termBg: 'rgba(242,179,61,.16)', tag: '#2C2A3A', tagFg: '#B9B4F0', tag2: '#3A2224', tag2Fg: '#F09AA3', pop: '#EFE8DC', popFg: '#15120F', popChip: '#DDD2C1', popBorder: 'transparent', bar: '#EFE8DC', barChip: '#15120F', barFg: '#15120F' }
+      : { bg: '#F1E9DA', chrome: '#FBF6EC', seg: '#E8DEC9', text: '#2A2420', text2: '#6E645A', line: '#E0D4BE', chip: '#FBEBC8', chipFg: '#7A5208', paper: '#FBF5E8', paperLine: '#EADFC9', ink: '#3B3226', term: '#9C2F3A', termBg: 'rgba(242,179,61,.28)', tag: '#E8E6F6', tagFg: '#4A3F9A', tag2: '#F5E3E2', tag2Fg: '#9C2F3A', pop: '#FFFCF6', popFg: '#2A2420', popChip: '#F1EBE0', popBorder: '#E6DDCF', bar: '#FFFCF6', barChip: '#F5E3E2', barFg: '#6E645A' };
+    c.barChipFg = dark ? '#EFE8DC' : '#9C2F3A';
+    const sel = dark ? 2 : 1;
+    const themes = [[_x('Açık'), '#FFFCF6'], [_x('Sepya'), '#F4E6CC'], [_x('Koyu'), '#1D1915']].map((t, i) => ({
+      l: t[0], sw: t[1], on: i === sel ? 'true' : 'false', bg: i === sel ? c.chrome : 'transparent', fg: i === sel ? c.text : c.text2, fw: i === sel ? 600 : 400, shadow: i === sel ? '0 1px 4px rgba(0,0,0,.12)' : 'none'
+    }));
+    return { toastOn: !!__st.toast, toastMsg: __st.toast || '', toastBottom: 130,
+      nrBack: () => say(_x('Derslerim\'e dönülüyor')), nrAa: () => say(_x('Yazı boyutu büyütüldü')), nrTheme: () => say(_x('Okuma teması değişti')), nrTr: () => say(_x('Cümle çevrildi · English')), nrPause: () => say(_x('Mola · kronometre durdu')), nrNote: () => say(_x('Not modu açıldı')), nrListen: () => say(_x('Sesli okunuyor…')), nrAsk: () => say(_x('Asistan açılıyor')), c, themes };
+  }
+}
+</script>
+</body>
+</html>

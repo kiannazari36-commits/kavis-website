@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Sınav</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+<style>[dir=rtl] .dc-back{transform:scaleX(-1)}[dir=rtl],[dir=rtl] *{letter-spacing:0 !important}</style>
+</helmet>
+<div dir="{{dir}}" lang="{{lang}}" style="width: {{W}}px; height: {{H}}px; box-sizing: border-box; display: flex; flex-direction: column; position: relative; overflow: hidden; background: {{c.bg}}; color: {{c.text}}; font-family: Poppins, Vazirmatn, system-ui, sans-serif">
+<div style="height: {{topH}}px; flex: none"></div>
+
+<div style="flex: none; display: flex; flex-direction: column; gap: 10px; padding: 0 16px 12px">
+<div style="display: flex; align-items: center; gap: 8px; height: 44px">
+<button onClick="{{close}}" aria-label="{{s.close}}" style="width: 44px; height: 44px; margin-inline-start: -10px; border: 0; background: transparent; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12 M18 6L6 18"></path></svg></button>
+<span style="flex: 1; text-align: center; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; letter-spacing: 0.1em; color: {{c.text2}}">{{kindLabel}} · {{num}}/{{total}}</span>
+<span style="width: 34px"></span>
+</div>
+<div aria-hidden="true" style="display: flex; gap: 4px">
+<sc-for list="{{segs}}" as="g" hint-placeholder-count="8"><span style="flex: 1; height: 5px; border-radius: 3px; background: {{g.bg}}"></span></sc-for>
+</div>
+</div>
+
+<sc-if value="{{isOffline}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; padding: 40px 24px {{bottomPad}}px">
+<span style="width: 76px; height: 76px; border-radius: 22px; background: {{c.ambSoft}}; color: {{c.ambText}}; display: flex; align-items: center; justify-content: center; transform: rotate(-7deg)">
+<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18 M5 9.5a14 14 0 0 1 4-2.6 M19 9.5a14 14 0 0 0-6.5-3.2 M8.5 13a7 7 0 0 1 3-1.5 M12 18h.01"></path></svg>
+</span>
+<h1 style="margin: 10px 0 0; font-size: 24px; font-weight: 700; line-height: 1.2">{{s.offT}}</h1>
+<p style="margin: 0; font-size: 15px; line-height: 1.55; color: {{c.text2}}">{{s.offS}}</p>
+<div style="display: flex; gap: 10px; margin-top: 8px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; padding: 6px 10px; border-radius: 8px; background: {{c.okSoft}}; color: {{c.ok}}">✓ 24 {{s.ready}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; padding: 6px 10px; border-radius: 8px; background: {{c.sub}}; color: {{c.text3}}">— {{s.waiting}}</span>
+</div>
+<span style="flex: 1"></span>
+<button onClick="{{resume}}" style="width: 100%; height: {{btnH}}px; border: 0; border-radius: {{btnR}}px; background: {{c.pri}}; color: #FFFCF6; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{s.offCta}}</button>
+<button onClick="{{qRetry}}" style="width: 100%; height: {{btnH}}px; border: 1px solid {{c.line}}; border-radius: {{btnR}}px; background: transparent; color: {{c.text}}; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{s.retry}}</button>
+</div>
+</sc-if>
+
+<sc-if value="{{isMc}}" hint-placeholder-val="{{ true }}">
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 4px 16px 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="align-self: flex-start; display: flex; gap: 6px; align-items: center; flex-wrap: wrap"><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; padding: 4px 8px; border-radius: 5px; background: {{c.sub}}; color: {{c.text2}}">{{s.mc}}</span><span style="display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; line-height: 1; padding: 4px 8px; border-radius: 10px; background: rgba(242,179,61,.2); color: {{c.text2}}; white-space: nowrap"><svg width="9" height="9" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z" fill="#E39A26"></path></svg>{{_t.k2761}}</span></div>
+<h1 dir="ltr" lang="tr" style="margin: 0 0 6px; font-size: 21px; line-height: 1.35; font-weight: 600; text-align: start; text-wrap: pretty">{{q.text}}</h1>
+<div role="radiogroup" style="display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{opts}}" as="o" hint-placeholder-count="4">
+<button role="radio" aria-checked="{{o.checked}}" onClick="{{o.pick}}" style="min-height: 58px; border-radius: 14px; border: {{o.border}}; background: {{o.bg}}; color: {{c.text}}; display: flex; align-items: center; gap: 12px; padding: 10px 14px; font-family: inherit; font-size: 16px; text-align: start; cursor: pointer">
+<span style="width: 30px; height: 30px; border-radius: 15px; background: {{o.chipBg}}; color: {{o.chipFg}}; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 13px; font-weight: 600; flex: none">{{o.mark}}</span>
+<span dir="ltr" lang="tr" style="flex: 1; text-align: start">{{o.text}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.06em; color: {{o.noteFg}}">{{o.note}}</span>
+</button>
+</sc-for>
+</div>
+<sc-if value="{{qh.show}}" hint-placeholder-val="{{ true }}"><div style="display: flex; flex-direction: column; gap: 6px">
+<sc-for list="{{qh.list}}" as="h" hint-placeholder-count="0"><div style="border-radius: 14px; background: {{c.ambSoft}}; padding: 10px 12px; font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.06em; color: {{c.ambText}}">{{h.tag}}</span><span>{{h.t}}</span></div></sc-for>
+<button onClick="{{qh.tap}}" style="align-self: flex-start; height: 38px; padding: 0 14px; border-radius: 19px; border: 1px solid {{c.line}}; background: {{qh.bg}}; color: {{c.text}}; display: flex; align-items: center; gap: 6px; font-family: inherit; font-size: 13px; cursor: pointer"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6 M10 21h4 M12 3a6 6 0 0 0-4 10.5c.8.8 1 1.5 1 2.5h6c0-1 .2-1.7 1-2.5A6 6 0 0 0 12 3z"></path></svg>{{qh.label}}</button>
+</div></sc-if>
+
+<sc-if value="{{showDanger}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="border-radius: 16px; background: {{c.badSoft}}; border: 2px solid {{c.bad}}; padding: 14px; display: flex; gap: 12px">
+<span style="width: 34px; height: 34px; border-radius: 10px; background: {{c.bad}}; color: {{c.onBad}}; display: flex; align-items: center; justify-content: center; transform: rotate(-8deg); flex: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l9 16H3z M12 10v4 M12 17h.01"></path></svg></span>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 15px; font-weight: 700; color: {{c.bad}}">{{s.dangerT}}</span>
+<span style="font-size: 13px; line-height: 1.5; color: {{c.text}}">{{s.dangerS}}</span>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{showResultBanner}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 14px; background: {{bannerBg}}; color: {{bannerFg}}">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{bannerIcon}}"></path></svg>
+<span style="font-size: 15px; font-weight: 700; flex: 1">{{bannerText}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.06em; padding: 4px 8px; border-radius: 5px; background: {{c.card}}; color: {{c.text2}}">{{confLabel}}</span>
+</div>
+</sc-if>
+
+<sc-if value="{{isReveal}}" hint-placeholder-val="{{ false }}">
+<div style="border-radius: 16px; background: {{c.card}}; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; color: {{c.text3}}">{{s.expl}}</span>
+<p dir="ltr" lang="tr" style="margin: 0; font-family: Lora, Vazirmatn, Georgia, serif; font-size: 15px; line-height: 1.6; text-align: start">{{q.expl}}</p>
+<button onClick="{{toReader}}" style="align-self: flex-start; min-height: 40px; border: 0; background: transparent; padding: 0; color: {{c.priText}}; font-family: inherit; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer">{{lookLabel}} <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX({{flip}})"><path d="M5 12h14 M13 6l6 6-6 6"></path></svg></button>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{isWritten}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 4px 16px 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="align-self: flex-start; display: flex; gap: 6px; align-items: center; flex-wrap: wrap"><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; padding: 4px 8px; border-radius: 5px; background: {{c.ambSoft}}; color: {{c.ambText}}">{{s.written}}</span><span style="display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; line-height: 1; padding: 4px 8px; border-radius: 10px; background: rgba(242,179,61,.2); color: {{c.text2}}; white-space: nowrap"><svg width="9" height="9" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z" fill="#E39A26"></path></svg>{{_t.k2761}}</span></div>
+<h1 dir="ltr" lang="tr" style="margin: 0; font-size: 20px; line-height: 1.4; font-weight: 600; text-align: start">{{_t.k297}}</h1>
+<sc-if value="{{isWriting}}" hint-placeholder-val="{{ true }}">
+<label style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{s.ph}}</span>
+<textarea dir="ltr" lang="tr" placeholder="{{s.ph}}" style="height: 250px; resize: none; border-radius: 16px; border: 2px solid {{c.pri}}; background: {{c.card}}; color: {{c.text}}; padding: 14px; font-family: Lora, Vazirmatn, Georgia, serif; font-size: 17px; line-height: 1.6; outline: none; box-sizing: border-box" defaultValue="{{_t.k286}}"></textarea>
+</label>
+<div style="display: flex; align-items: center; gap: 10px">
+<button onClick="{{qVoice}}" style="height: 44px; padding: 0 14px; border-radius: 22px; border: 1px solid {{c.line}}; background: {{c.card}}; color: {{c.text}}; display: flex; align-items: center; gap: 8px; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z M5 11a7 7 0 0 0 14 0 M12 18v3"></path></svg>{{s.voice}}</button>
+<span style="flex: 1"></span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}">104 / 800</span>
+</div>
+</sc-if>
+<sc-if value="{{isEval}}" hint-placeholder-val="{{ false }}">
+<div dir="ltr" lang="tr" style="border-radius: 14px; background: {{c.sub}}; padding: 12px 14px; font-family: Lora, Vazirmatn, Georgia, serif; font-size: 14px; line-height: 1.55; color: {{c.text2}}; text-align: start; font-style: italic">{{_t.k2637}}</div>
+<div style="border-radius: 18px; background: {{c.card}}; padding: 16px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: center; gap: 14px">
+<span style="position: relative; width: 60px; height: 60px; flex: none">
+<svg width="60" height="60" viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="25" fill="none" stroke="{{c.sub}}" stroke-width="6"></circle><circle cx="30" cy="30" r="25" fill="none" stroke="{{c.amb}}" stroke-width="6" stroke-linecap="round" stroke-dasharray="94 157" transform="rotate(-90 30 30)"></circle></svg>
+<span style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700">6<span style="font-size: 11px; color: {{c.text3}}">/10</span></span>
+</span>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 16px; font-weight: 700">{{s.evalT}}</span>
+<span style="font-size: 12px; color: {{c.text3}}">{{s.evalS}}</span>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.08em; color: {{c.ok}}">✓ {{s.right}}</span>
+<div dir="ltr" style="display: flex; gap: 8px; font-size: 14px; line-height: 1.5; text-align: start"><span style="color: {{c.ok}}">✓</span><span>{{_t.k1375}}</span></div>
+<div dir="ltr" style="display: flex; gap: 8px; font-size: 14px; line-height: 1.5; text-align: start"><span style="color: {{c.ok}}">✓</span><span>{{_t.k543}}</span></div>
+</div>
+<div style="height: 1px; background: {{c.line}}"></div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.08em; color: {{c.ambText}}">○ {{s.missing}}</span>
+<div dir="ltr" style="display: flex; gap: 8px; font-size: 14px; line-height: 1.5; text-align: start"><span style="color: {{c.ambText}}">○</span><span>{{_t.k2568}} <span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.priText}}">{{_t.k99}}</span>.</span></div>
+<div dir="ltr" style="display: flex; gap: 8px; font-size: 14px; line-height: 1.5; text-align: start"><span style="color: {{c.ambText}}">○</span><span>{{_t.k2643}}</span></div>
+</div>
+<div style="border-radius: 12px; background: {{c.sub}}; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.08em; color: {{c.text3}}">{{s.model}}</span>
+<span dir="ltr" lang="tr" style="font-family: Lora, Vazirmatn, Georgia, serif; font-size: 14px; line-height: 1.55; text-align: start">{{_t.k1377}} <span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.priText}}">{{_t.k99}}</span>.</span>
+</div>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{showFooter}}" hint-placeholder-val="{{ true }}">
+<div style="flex: none; padding: 12px 16px {{bottomPad}}px; border-top: 1px solid {{c.line}}; background: {{c.bg}}">
+<button onClick="{{primary}}" disabled="{{primaryDisabled}}" style="width: 100%; height: {{btnH}}px; border: 0; border-radius: {{btnR}}px; background: {{primaryBg}}; color: {{primaryFg}}; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{primaryLabel}}</button>
+</div>
+</sc-if>
+
+<sc-if value="{{isConf}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{closeConf}}" style="position: absolute; inset: 0; background: {{c.scrim}}"></div>
+<section role="dialog" aria-label="{{s.confQ}}" style="position: absolute; left: 0; right: 0; bottom: 0; border-radius: {{sheetR}}px {{sheetR}}px 0 0; background: {{c.card}}; padding: 10px 20px {{bottomPad}}px; display: flex; flex-direction: column; gap: 14px">
+<span aria-hidden="true" style="align-self: center; width: 36px; height: 5px; border-radius: 3px; background: {{c.line}}"></span>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 style="margin: 0; font-size: 20px; font-weight: 700">{{s.confQ}}</h2>
+<span style="font-size: 13px; color: {{c.text3}}">{{s.confS}}</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{confs}}" as="k" hint-placeholder-count="3">
+<button onClick="{{k.pick}}" style="height: 56px; border-radius: 14px; border: 1px solid {{c.line}}; background: {{c.bg}}; color: {{c.text}}; display: flex; align-items: center; gap: 12px; padding: 0 16px; font-family: inherit; font-size: 16px; font-weight: 600; text-align: start; cursor: pointer">
+<span style="width: 30px; height: 30px; border-radius: 9px; background: {{k.bg}}; color: {{k.fg}}; display: flex; align-items: center; justify-content: center; transform: rotate(-7deg)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{k.d}}"></path></svg></span>
+{{k.label}}
+</button>
+</sc-for>
+</div>
+</section>
+</sc-if>
+<sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div role="status" aria-live="polite" style="position: absolute; left: 50%; bottom: {{toastBottom}}px; transform: translateX(-50%); z-index: 50; max-width: 86%; box-sizing: border-box; padding: 12px 18px; border-radius: 22px; background: #2E2721; color: #FBEFD6; font-family: Poppins, Vazirmatn, system-ui, sans-serif; font-size: 14px; line-height: 1.4; text-align: center; box-shadow: 0 12px 30px rgba(42,36,32,.28); pointer-events: none">{{toastMsg}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"platform":{"editor":"enum","options":["ios","android"],"default":"ios"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"variant":{"editor":"enum","options":["question","confidence","correct","wrongConfident","written","writtenEval","offline"],"default":"question"},"kind":{"editor":"enum","options":["final","check","guess","review"],"default":"final"},"go":{"editor":null},"live":{"editor":null},"$preview":{"width":390,"height":844}}'>
+const _I18N = {k: [" / 3 · yarım puan", " bak", "(s. 13)", "3 ipucunun hepsini gördün", "ACE inhibitörleri kuru öksürük yapar. Bunun nedeni bradikinin birikimidir. Ayrıca tansiyonu çok düşürebilir.", "ACE inhibitörlerinin iki önemli yan etkisini yazınız ve birinin mekanizmasını açıklayınız.", "Alfa-1 blokerler (prazosin, doksazosin) ilk dozda ortostatik hipotansiyon yapabilir; bu yüzden ilk doz yatmadan önce alınır. Kuru öksürük ve anjiyoödem ACE inhibitörlerine aittir.", "Alfa-1 blokerlerin ilk dozundan sonra görülebilen istenmeyen etki hangisidir?", "Alfa-1 reseptörleri damarları daraltır; bloke edilince damarlar gevşer. (s. 13)", "Anjiyoödem", "AÇIKLAMA", "Bağlantı tekrar deneniyor…", "Bağlantı yok", "Bağlantı yok, hazır sorularla devam et. Yazılı sorular ve yapay zekâ değerlendirmesi bağlantı gelince açılır.", "Bir ipucu daha (", "Bradikinin birikimi mekanizması doğru.", "Bu bilgi tekrar takvimini ayarlamamıza yardım eder.", "Bu soru cevaplandı · devam etmek için alttaki düğmeye bas", "BÖLÜM KONTROLÜ", "Cevabından ne kadar eminsin?", "Cevabını yaz ya da sesle anlat…", "Cevapla", "DERS SONU SINAVI", "DOĞRU CEVAP", "DOĞRU YAZDIKLARIN", "Dikkat: emin olduğunuz bir hata", "Dinliyorum · cevabını sesli söyle", "Doğru!", "EKSİKLER", "Emin değilim", "Emin olarak yapılan hatalar sınavda en çok puan kaybettirenlerdir. Bu soru tekrar listene ve kartlarına eklendi.", "Eminim", "Gebelik", "Glukoz intoleransı", "Gut", "Gut, kanda hangi maddenin yükselmesiyle olur? (s. 14)", "Gönder", "Hazır sorularla devam et", "Hiperürisemi", "Kuru öksürük", "Kuru öksürük doğru bir yan etki.", "Kuru öksürük ve anjiyoödem. Kuru öksürük, ACE'nin yıktığı bradikininin birikmesine bağlıdır", "MODEL CEVAP · PDF'TEN", "Metabolik sendrom", "Ortostatik hipotansiyon", "SENİN CEVABIN", "SORU HAZIR", "Sayfa ", "Sayfa 13'e bak", "Sayfa 14'e bak", "Sesle yanıtla", "Sonraki soru", "Sınavdan çık", "Sınavı bitir", "TAHMİN TESTİ", "TEKRAR SINAVI", "Tahmin ettim", "Tansiyonun ayağa kalkınca birden düşmesine ne denir?", "Tekrar dene", "Tiyazid diüretiklerin zorunlu kontrendikasyonu hangisidir?", "Tiyazidler serum ürik asit düzeyini artırır ve gut atağını tetikleyebilir; bu yüzden gut zorunlu kontrendikasyondur. Gebelik, glukoz intoleransı ve metabolik sendrom göreceli kontrendikasyonlardır.", "YAZILI SORU", "YAZILI SORULAR BEKLİYOR", "Yalnızca PDF'teki bilgilere göre", "Yanlış", "Yapay zekâ değerlendirmesi", "ÇOKTAN SEÇMELİ", "Ürik asit atılımını azaltan ilaçlar gut atağını tetikler.", "İPUCU ", "İkinci yan etki olarak anjiyoödemi yazmalıydın", "İlk dozdan sonra hasta ayağa kalkınca başı dönebilir.", "İpucu al · bu soru yarım puan sayılır", "İpuçları bitti", "Şıklardan biri doğrudan bu hastalığın adı.", "“ACE inhibitörleri kuru öksürük yapar. Bunun nedeni bradikinin birikimidir. Ayrıca tansiyonu çok düşürebilir.”", "“Tansiyonu çok düşürür” ifadesi PDF'te ACE inhibitörleri için geçmiyor.", "Hocanın tarzında"], en: [" / 3 · half point", " – check it", "(p. 13)", "You've seen all 3 hints", "ACE inhibitors cause dry cough. This is due to bradykinin buildup. They can also lower blood pressure too much.", "Write two important side effects of ACE inhibitors and explain the mechanism of one.", "Alpha-1 blockers (prazosin, doxazosin) can cause orthostatic hypotension with the first dose, so the first dose is taken at bedtime. Dry cough and angioedema belong to ACE inhibitors.", "Which adverse effect can occur after the first dose of alpha-1 blockers?", "Alpha-1 receptors constrict vessels; when blocked, vessels relax. (p. 13)", "Angioedema", "EXPLANATION", "Retrying connection…", "No connection", "No connection, continue with ready-made questions. Written questions and AI grading unlock when you're back online.", "One more hint (", "The bradykinin accumulation mechanism is correct.", "This helps us set up your review schedule.", "This question is answered · tap the button below to continue", "SECTION CHECK", "How sure are you of your answer?", "Type your answer or say it aloud…", "Answer", "END-OF-LESSON EXAM", "CORRECT ANSWER", "WHAT YOU WROTE CORRECTLY", "Caution: a mistake you were sure about", "Listening · say your answer aloud", "Correct!", "GAPS", "Not sure", "Mistakes made with confidence cost the most points in exams. This question was added to your review list and cards.", "I'm sure", "Pregnancy", "Glucose intolerance", "Gout", "Gout is caused by a rise in which substance in the blood? (p. 14)", "Send", "Continue with ready questions", "Hyperuricemia", "Dry cough", "Dry cough is a correct side effect.", "Dry cough and angioedema. Dry cough is due to the buildup of bradykinin, which ACE breaks down", "MODEL ANSWER · FROM PDF", "Metabolic syndrome", "Orthostatic hypotension", "YOUR ANSWER", "QUESTION READY", "Page ", "See page 13", "See page 14", "Answer by voice", "Next question", "Exit exam", "Finish exam", "PREDICTION TEST", "REVIEW EXAM", "I guessed", "What is a sudden drop in blood pressure on standing called?", "Try again", "Which is the compelling contraindication of thiazide diuretics?", "Thiazides raise serum uric acid and can trigger a gout attack, so gout is a compelling contraindication. Pregnancy, glucose intolerance and metabolic syndrome are relative contraindications.", "WRITTEN QUESTION", "WRITTEN QUESTIONS WAITING", "Based only on what's in the PDF", "Wrong", "AI evaluation", "MULTIPLE CHOICE", "Drugs that reduce uric acid excretion trigger gout attacks.", "HINT ", "You should have written angioedema as the second side effect", "After the first dose, the patient may feel dizzy on standing up.", "Get a hint · this question counts half", "No hints left", "One of the options is the name of this disease itself.", "“ACE inhibitors cause dry cough. This is due to bradykinin buildup. They can also lower blood pressure a lot.”", "The phrase “lowers blood pressure a lot” isn't in the PDF for ACE inhibitors.", "In your teacher's style"], fa: [" / 3 · نیم امتیاز", " را ببین", "(ص. 13)", "هر 3 راهنمایی را دیدی", "مهارکننده‌های ACE سرفهٔ خشک ایجاد می‌کنند. علتش تجمع برادی‌کینین است. همچنین ممکن است فشار خون را زیادی پایین بیاورند.", "دو عارضهٔ مهم مهارکننده‌های ACE را بنویسید و سازوکار یکی را توضیح دهید.", "مسدودکننده‌های آلفا-1 (پرازوسین، دوکسازوسین) با دوز اول ممکن است افت فشار وضعیتی ایجاد کنند؛ برای همین دوز اول پیش از خواب مصرف می‌شود. سرفهٔ خشک و آنژیوادم مربوط به مهارکننده‌های ACE است.", "کدام عارضهٔ ناخواسته ممکن است پس از دوز اول مسدودکننده‌های آلفا-1 دیده شود؟", "گیرنده‌های آلفا-1 رگ‌ها را تنگ می‌کنند؛ با مسدود شدنشان رگ‌ها شل می‌شوند. (ص. 13)", "آنژیوادم", "توضیح", "تلاش دوباره برای اتصال…", "اتصال برقرار نیست", "اتصال نیست، با سؤال‌های آماده ادامه بده. سؤال‌های تشریحی و ارزیابی هوش مصنوعی با وصل شدن اینترنت فعال می‌شوند.", "یک راهنمایی دیگر (", "سازوکار تجمع برادی‌کینین درست است.", "این اطلاعات به ما کمک می‌کند تقویم مرورت را تنظیم کنیم.", "به این سؤال جواب داده شد · برای ادامه دکمه‌ی پایین را بزن", "بررسی بخش", "چقدر به جوابت مطمئنی؟", "جوابت را بنویس یا با صدا بگو…", "جواب بده", "آزمون پایان درس", "پاسخ درست", "آنچه درست نوشتی", "احتیاط: اشتباهی که از آن مطمئن بودی", "گوش می‌دهم · جوابت را بلند بگو", "درست است!", "کمبودها", "مطمئن نیستم", "اشتباه‌هایی که با اطمینان انجام می‌شوند بیشترین نمره را در امتحان کم می‌کنند. این سؤال به فهرست مرور و کارت‌هایت اضافه شد.", "مطمئنم", "بارداری", "عدم تحمل گلوکز", "نقرس", "نقرس با بالا رفتن کدام ماده در خون ایجاد می‌شود؟ (ص. 14)", "ارسال", "با سؤال‌های آماده ادامه بده", "هیپراوریسمی", "سرفهٔ خشک", "سرفهٔ خشک عارضهٔ جانبی درستی است.", "سرفهٔ خشک و آنژیوادم. سرفهٔ خشک به دلیل تجمع برادی‌کینین است که ACE آن را تجزیه می‌کند", "پاسخ نمونه · از PDF", "سندرم متابولیک", "افت فشار خون وضعیتی", "پاسخ تو", "سؤال آماده است", "صفحه ", "صفحه 13 را ببین", "صفحه 14 را ببین", "با صدا جواب بده", "سؤال بعدی", "خروج از امتحان", "پایان امتحان", "آزمون پیش‌بینی", "امتحان مرور", "حدس زدم", "به افت ناگهانی فشار خون هنگام ایستادن چه می‌گویند؟", "دوباره امتحان کن", "منع مصرف قطعی دیورتیک‌های تیازیدی کدام است؟", "تیازیدها اسید اوریک سرم را بالا می‌برند و می‌توانند حمله نقرس را تحریک کنند؛ به همین دلیل نقرس منع مصرف قطعی است. بارداری، عدم تحمل گلوکز و سندرم متابولیک منع مصرف نسبی‌اند.", "سؤال تشریحی", "سؤال‌های تشریحی منتظرند", "فقط بر اساس اطلاعات PDF", "غلط", "ارزیابی هوش مصنوعی", "چندگزینه‌ای", "داروهایی که دفع اسید اوریک را کم می‌کنند، حمله نقرس را تحریک می‌کنند.", "راهنمایی ", "باید آنژیوادم را به عنوان عارضه دوم می‌نوشتی", "بعد از دوز اول، بیمار هنگام بلند شدن ممکن است سرگیجه بگیرد.", "راهنمایی بگیر · این سؤال نصف امتیاز دارد", "راهنمایی‌ها تمام شد", "یکی از گزینه‌ها مستقیماً نام همین بیماری است.", "«مهارکننده‌های ACE سرفه خشک ایجاد می‌کنند. علتش تجمع برادی‌کینین است. همچنین ممکن است فشار خون را خیلی پایین بیاورند.»", "عبارت «فشار خون را خیلی پایین می‌آورد» در PDF برای مهارکننده‌های ACE نیامده است.", "به سبک استادت"], ar: [" / 3 · نصف نقطة", " – راجعها", "(ص 13)", "رأيت التلميحات الـ3 كلها", "تسبب مثبطات ACE سعالًا جافًا بسبب تراكم البراديكينين. وقد تخفض ضغط الدم كثيرًا أيضًا.", "اكتب أثرين جانبيين مهمين لمثبطات ACE واشرح آلية أحدهما.", "قد تسبب حاصرات ألفا-1 (برازوسين، دوكسازوسين) هبوط الضغط الانتصابي مع الجرعة الأولى؛ لذا تؤخذ الجرعة الأولى قبل النوم. السعال الجاف والوذمة الوعائية من آثار مثبطات ACE.", "ما الأثر غير المرغوب الذي قد يظهر بعد الجرعة الأولى من حاصرات ألفا-1؟", "مستقبلات ألفا-1 تضيّق الأوعية؛ وعند حصرها ترتخي الأوعية. (ص. 13)", "الوذمة الوعائية", "الشرح", "جارٍ إعادة محاولة الاتصال…", "لا يوجد اتصال", "لا يوجد اتصال، تابع بالأسئلة الجاهزة. الأسئلة المكتوبة وتقييم الذكاء الاصطناعي تُفتح عند عودة الاتصال.", "تلميح آخر (", "آلية تراكم البراديكينين صحيحة.", "تساعدنا هذه المعلومة في ضبط جدول مراجعتك.", "تمت الإجابة عن هذا السؤال · اضغط الزر بالأسفل للمتابعة", "مراجعة القسم", "ما مدى ثقتك بإجابتك؟", "اكتب إجابتك أو قلها بصوتك…", "أجب", "امتحان نهاية الدرس", "الإجابة الصحيحة", "ما كتبته بشكل صحيح", "تنبيه: خطأ كنت واثقًا منه", "أستمع · قل إجابتك بصوت عالٍ", "صحيح!", "النواقص", "لست متأكدًا", "الأخطاء التي تُرتكب بثقة هي الأكثر خسارة للدرجات في الامتحان. أُضيف هذا السؤال إلى قائمة المراجعة وبطاقاتك.", "أنا متأكد", "الحمل", "عدم تحمل الغلوكوز", "النقرس", "ينتج النقرس عن ارتفاع أي مادة في الدم؟ (ص. 14)", "إرسال", "تابع بالأسئلة الجاهزة", "فرط حمض اليوريك في الدم", "سعال جاف", "السعال الجاف أثر جانبي صحيح.", "السعال الجاف والوذمة الوعائية. ينتج السعال الجاف عن تراكم البراديكينين الذي يفككه ACE", "إجابة نموذجية · من PDF", "المتلازمة الأيضية", "هبوط الضغط الانتصابي", "إجابتك", "السؤال جاهز", "الصفحة ", "انظر الصفحة 13", "انظر الصفحة 14", "أجب بالصوت", "السؤال التالي", "اخرج من الامتحان", "أنهِ الامتحان", "اختبار التوقع", "امتحان المراجعة", "خمّنت", "ماذا يُسمّى الهبوط المفاجئ لضغط الدم عند الوقوف؟", "حاول مجددًا", "ما هو مضاد الاستطباب المطلق لمدرات البول الثيازيدية؟", "ترفع الثيازيدات حمض اليوريك في المصل وقد تثير نوبة نقرس؛ لذلك النقرس مضاد استطباب مطلق. الحمل وعدم تحمل الغلوكوز والمتلازمة الاستقلابية مضادات استطباب نسبية.", "سؤال مقالي", "أسئلة مقالية بانتظارك", "بالاعتماد على معلومات PDF فقط", "خطأ", "تقييم الذكاء الاصطناعي", "اختيار من متعدد", "الأدوية التي تقلل إطراح حمض اليوريك تُحفّز نوبة النقرس.", "تلميح ", "كان عليك كتابة الوذمة الوعائية كأثر جانبي ثانٍ", "بعد الجرعة الأولى قد يشعر المريض بالدوار عند الوقوف.", "خذ تلميحًا · يُحتسب هذا السؤال بنصف درجة", "انتهت التلميحات", "أحد الخيارات هو اسم هذا المرض مباشرة.", "“تسبب مثبطات ACE سعالًا جافًا. والسبب تراكم البراديكينين. كما قد تخفض ضغط الدم كثيرًا.”", "عبارة “يخفض الضغط كثيرًا” غير واردة في PDF بالنسبة لمثبطات ACE.", "بأسلوب أستاذك"]};
+let _lang = 'tr', _M = null; const _TC = {};
+const _x = (s) => { if (_lang === 'tr' || !_I18N[_lang]) return s; if (!_M) { _M = {}; _I18N.k.forEach((k, i) => { _M[k] = i; }); } const i = _M[s]; return i == null ? s : _I18N[_lang][i]; };
+const _TK = {"k99": "(s. 13)", "k286": "ACE inhibitörleri kuru öksürük yapar. Bunun nedeni bradikinin birikimidir. Ayrıca tansiyonu çok düşürebilir.", "k297": "ACE inhibitörlerinin iki önemli yan etkisini yazınız ve birinin mekanizmasını açıklayınız.", "k543": "Bradikinin birikimi mekanizması doğru.", "k1375": "Kuru öksürük doğru bir yan etki.", "k1377": "Kuru öksürük ve anjiyoödem. Kuru öksürük, ACE'nin yıktığı bradikininin birikmesine bağlıdır", "k2568": "İkinci yan etki olarak anjiyoödemi yazmalıydın", "k2637": "“ACE inhibitörleri kuru öksürük yapar. Bunun nedeni bradikinin birikimidir. Ayrıca tansiyonu çok düşürebilir.”", "k2643": "“Tansiyonu çok düşürür” ifadesi PDF'te ACE inhibitörleri için geçmiyor.", "k2761": "Hocanın tarzında"};
+const _PT = {};
+const _tt = () => { if (!_TC[_lang]) { const o = {}; Object.keys(_TK).forEach((k) => { o[k] = (_PT[k] && _lang !== 'tr') ? (_PT[k][_lang] || _x(_TK[k])) : _x(_TK[k]); }); _TC[_lang] = o; } return _TC[_lang]; };
+
+class Component extends DCLogic {
+  renderVals() { const _p = this.props || {}, _s = this.state || {}; _lang = _s.lang || _p.lang || 'tr'; const r = this._rv0(); if (r && typeof r === 'object') { r._t = _tt(); r._dir = (_lang === 'fa' || _lang === 'ar') ? 'rtl' : 'ltr'; r._ai = this._aiDark ? { bg: '#F2B33D', fg: '#241C14', tx: '#EFE8DC' } : { bg: '#9C2F3A', fg: '#FFF6E6', tx: '#2A2420' }; } return r; }
+  _rv0() {
+    const __st = this.state || {};
+    const say = (m, after) => { this.setState({ toast: m }); clearTimeout(this._tt); this._tt = setTimeout(() => { this.setState({ toast: '' }); if (after) after(); }, 1700); };
+    const p = this.props, st = this.state || {};
+    const ios = (p.platform || 'ios') === 'ios';
+    const dark = p.theme === 'dark';
+    const lang = p.lang || 'tr';
+    const rtl = lang === 'fa' || lang === 'ar';
+    const c = dark
+      ? { bg: '#15120F', card: '#211C18', sub: '#2B2520', text: '#EFE8DC', text2: '#BDB2A4', text3: '#9A8F82', line: '#3A322B', pri: '#B23A47', priText: '#F09AA3', priSoft: '#3A2027', amb: '#F2B33D', ambText: '#F2C46E', ambSoft: '#3A2F1A', ok: '#5BC893', onOk: '#0E2A1D', okSoft: '#173328', bad: '#F27A70', onBad: '#2A0F0D', badSoft: '#3D1F1F', blue: '#8DB4F5', blueSoft: '#1E2C45', scrim: 'rgba(0,0,0,.6)' }
+      : { bg: '#F4EFE6', card: '#FFFCF6', sub: '#F1EBE0', text: '#2A2420', text2: '#6E645A', text3: '#776C60', line: '#E6DDCF', pri: '#9C2F3A', priText: '#9C2F3A', priSoft: '#F7E7E9', amb: '#F2B33D', ambText: '#83560A', ambSoft: '#FDF1D6', ok: '#1E7A4C', onOk: '#FFFCF6', okSoft: '#E2F3E9', bad: '#C0352B', onBad: '#FFFCF6', badSoft: '#FCE8E6', blue: '#2557A8', blueSoft: '#E5EEFB', scrim: 'rgba(18,23,30,.45)' };
+    const T = {
+      tr: { close: _x('Sınavdan çık'), kinds: { final: _x('DERS SONU SINAVI'), check: _x('BÖLÜM KONTROLÜ'), guess: _x('TAHMİN TESTİ'), review: _x('TEKRAR SINAVI') }, mc: _x('ÇOKTAN SEÇMELİ'), answer: _x('Cevapla'), confQ: _x('Cevabından ne kadar eminsin?'), confS: _x('Bu bilgi tekrar takvimini ayarlamamıza yardım eder.'), sure: _x('Eminim'), unsure: _x('Emin değilim'), guess: _x('Tahmin ettim'), correct: _x('Doğru!'), wrong: _x('Yanlış'), rightAns: _x('DOĞRU CEVAP'), yours: _x('SENİN CEVABIN'), dangerT: _x('Dikkat: emin olduğunuz bir hata'), dangerS: _x('Emin olarak yapılan hatalar sınavda en çok puan kaybettirenlerdir. Bu soru tekrar listene ve kartlarına eklendi.'), expl: _x('AÇIKLAMA'), look: (n) => _x('Sayfa ') + n + "'" + (n === 13 ? "e" : "e") + _x(' bak'), next: _x('Sonraki soru'), written: _x('YAZILI SORU'), ph: _x('Cevabını yaz ya da sesle anlat…'), voice: _x('Sesle yanıtla'), send: _x('Gönder'), evalT: _x('Yapay zekâ değerlendirmesi'), evalS: _x("Yalnızca PDF'teki bilgilere göre"), right: _x('DOĞRU YAZDIKLARIN'), missing: _x('EKSİKLER'), model: _x("MODEL CEVAP · PDF'TEN"), finish: _x('Sınavı bitir'), offT: _x('Bağlantı yok'), offS: _x('Bağlantı yok, hazır sorularla devam et. Yazılı sorular ve yapay zekâ değerlendirmesi bağlantı gelince açılır.'), offCta: _x('Hazır sorularla devam et'), retry: _x('Tekrar dene'), ready: _x('SORU HAZIR'), waiting: _x('YAZILI SORULAR BEKLİYOR') },
+      en: { close: 'Leave exam', kinds: { final: 'END-OF-LESSON EXAM', check: 'SECTION CHECK', guess: 'PRE-TEST', review: 'REVIEW TEST' }, mc: 'MULTIPLE CHOICE', answer: 'Answer', confQ: 'How sure are you?', confS: 'This helps us schedule your reviews.', sure: "I'm sure", unsure: 'Not sure', guess: 'I guessed', correct: 'Correct!', wrong: 'Wrong', rightAns: 'CORRECT', yours: 'YOUR ANSWER', dangerT: 'Careful: a mistake you were sure about', dangerS: 'Confident mistakes cost the most points in exams. This question was added to your review list and cards.', expl: 'EXPLANATION', look: (n) => 'See page ' + n, next: 'Next question', written: 'WRITTEN QUESTION', ph: 'Type your answer or say it aloud…', voice: 'Answer by voice', send: 'Submit', evalT: 'AI feedback', evalS: 'Based only on your PDF', right: 'WHAT YOU GOT RIGHT', missing: 'MISSING', model: 'MODEL ANSWER · FROM PDF', finish: 'Finish exam', offT: 'No connection', offS: 'No connection — continue with saved questions. Written questions and AI feedback return when you are online.', offCta: 'Continue with saved questions', retry: 'Retry', ready: 'QUESTIONS READY', waiting: 'WRITTEN QUESTIONS WAITING' },
+      fa: { close: 'خروج از آزمون', kinds: { final: 'آزمون پایان درس', check: 'آزمونک بخش', guess: 'آزمون پیش‌بینی', review: 'آزمون مرور' }, mc: 'چندگزینه‌ای', answer: 'پاسخ بده', confQ: 'چقدر از پاسخت مطمئنی؟', confS: 'این به ما کمک می‌کند تقویم مرور را تنظیم کنیم.', sure: 'مطمئنم', unsure: 'مطمئن نیستم', guess: 'حدس زدم', correct: 'درست است!', wrong: 'نادرست', rightAns: 'پاسخ درست', yours: 'پاسخ تو', dangerT: 'دقت کن: اشتباهی که از آن مطمئن بودی', dangerS: 'اشتباه‌های با اطمینان بیشترین نمره را در امتحان می‌گیرند. این سؤال به فهرست مرور و کارت‌هایت اضافه شد.', expl: 'توضیح', look: (n) => 'صفحهٔ ' + n + ' را ببین', next: 'سؤال بعدی', written: 'سؤال تشریحی', ph: 'پاسخت را بنویس یا بگو…', voice: 'پاسخ صوتی', send: 'ارسال', evalT: 'ارزیابی هوش مصنوعی', evalS: 'فقط بر اساس PDF', right: 'درست نوشتی', missing: 'کمبودها', model: 'پاسخ نمونه · از PDF', finish: 'پایان آزمون', offT: 'اتصال برقرار نیست', offS: 'اتصال نیست؛ با سؤال‌های آماده ادامه بده. سؤال‌های تشریحی و ارزیابی هوش مصنوعی پس از اتصال باز می‌شوند.', offCta: 'ادامه با سؤال‌های آماده', retry: 'تلاش دوباره', ready: 'سؤال آماده', waiting: 'سؤال‌های تشریحی در انتظار' },
+      ar: { close: 'الخروج من الاختبار', kinds: { final: 'اختبار نهاية الدرس', check: 'اختبار القسم', guess: 'اختبار تمهيدي', review: 'اختبار المراجعة' }, mc: 'اختيار من متعدد', answer: 'أجب', confQ: 'ما مدى ثقتك بإجابتك؟', confS: 'يساعدنا هذا على ضبط تقويم المراجعة.', sure: 'متأكد', unsure: 'لست متأكدًا', guess: 'خمّنت', correct: 'صحيح!', wrong: 'خطأ', rightAns: 'الإجابة الصحيحة', yours: 'إجابتك', dangerT: 'انتبه: خطأ كنت متأكدًا منه', dangerS: 'الأخطاء الواثقة هي الأكثر كلفة في الامتحان. أُضيف هذا السؤال إلى قائمة المراجعة وبطاقاتك.', expl: 'الشرح', look: (n) => 'انظر الصفحة ' + n, next: 'السؤال التالي', written: 'سؤال كتابي', ph: 'اكتب إجابتك أو قلها بصوتك…', voice: 'أجب بالصوت', send: 'إرسال', evalT: 'تقييم الذكاء الاصطناعي', evalS: 'وفق ملف PDF فقط', right: 'ما كتبته صحيحًا', missing: 'النواقص', model: 'إجابة نموذجية · من PDF', finish: 'أنهِ الاختبار', offT: 'لا يوجد اتصال', offS: 'لا يوجد اتصال، تابع بالأسئلة الجاهزة. تُفتح الأسئلة الكتابية والتقييم عند عودة الاتصال.', offCta: 'تابع بالأسئلة الجاهزة', retry: 'إعادة المحاولة', ready: 'سؤالًا جاهزًا', waiting: 'الأسئلة الكتابية بالانتظار' }
+    };
+    const s = T[lang] || T.tr;
+    if (lang === 'tr') s.look = (n) => n === 13 ? _x("Sayfa 13'e bak") : _x("Sayfa 14'e bak");
+    const Q = [
+      { text: _x('Tiyazid diüretiklerin zorunlu kontrendikasyonu hangisidir?'), opts: [_x('Gebelik'), _x('Gut'), _x('Glukoz intoleransı'), _x('Metabolik sendrom')], correct: 1, page: 14, expl: _x('Tiyazidler serum ürik asit düzeyini artırır ve gut atağını tetikleyebilir; bu yüzden gut zorunlu kontrendikasyondur. Gebelik, glukoz intoleransı ve metabolik sendrom göreceli kontrendikasyonlardır.') },
+      { text: _x('Alfa-1 blokerlerin ilk dozundan sonra görülebilen istenmeyen etki hangisidir?'), opts: [_x('Kuru öksürük'), _x('Ortostatik hipotansiyon'), _x('Anjiyoödem'), _x('Hiperürisemi')], correct: 1, page: 13, expl: _x('Alfa-1 blokerler (prazosin, doksazosin) ilk dozda ortostatik hipotansiyon yapabilir; bu yüzden ilk doz yatmadan önce alınır. Kuru öksürük ve anjiyoödem ACE inhibitörlerine aittir.') }
+    ];
+    const presets = {
+      question: { qi: 0, phase: 'ask', sel: null }, confidence: { qi: 0, phase: 'conf', sel: 1 },
+      correct: { qi: 0, phase: 'reveal', sel: 1, conf: 'sure' }, wrongConfident: { qi: 1, phase: 'reveal', sel: 0, conf: 'sure' },
+      written: { qi: 2, phase: 'written' }, writtenEval: { qi: 2, phase: 'eval' }, offline: { qi: 0, phase: 'offline' }
+    };
+    const pre = presets[p.variant || 'question'] || presets.question;
+    const qi = st.qi != null ? st.qi : pre.qi;
+    const phase = st.phase || pre.phase;
+    const sel = st.sel !== undefined ? st.sel : pre.sel;
+    const conf = st.conf || pre.conf || null;
+    const kind = p.kind || 'final';
+    const totals = { final: 8, check: 2, guess: 6, review: 5 };
+    const total = totals[kind] || 8;
+    const num = kind === 'final' ? [3, 4, 7][qi] : Math.min(total, qi + 1);
+    const q = Q[Math.min(qi, 1)];
+    const reveal = phase === 'reveal';
+    const isRight = sel === q.correct;
+    const letters = ['A', 'B', 'C', 'D'];
+    const opts = q.opts.map((text, i) => {
+      const chosen = i === sel;
+      let bg = c.card, border = '1px solid ' + c.line, chipBg = c.sub, chipFg = c.text2, mark = letters[i], note = '', noteFg = c.text3;
+      if (!reveal && chosen) { bg = c.priSoft; border = '2px solid ' + c.pri; chipBg = c.pri; chipFg = '#FFFCF6'; }
+      if (reveal && i === q.correct) { bg = c.okSoft; border = '2px solid ' + c.ok; chipBg = c.ok; chipFg = c.onOk; mark = '✓'; note = s.rightAns; noteFg = c.ok; }
+      if (reveal && chosen && !isRight) { bg = c.badSoft; border = '2px solid ' + c.bad; chipBg = c.bad; chipFg = c.onBad; mark = '✕'; note = s.yours; noteFg = c.bad; }
+      return { text, bg, border, chipBg, chipFg, mark, note, noteFg, checked: chosen ? 'true' : 'false', pick: () => { if (phase === 'ask') this.setState({ sel: i, qi, phase: 'ask' }); else say(_x('Bu soru cevaplandı · devam etmek için alttaki düğmeye bas')); } };
+    });
+    const QH = [[_x('Gut, kanda hangi maddenin yükselmesiyle olur? (s. 14)'), _x('Ürik asit atılımını azaltan ilaçlar gut atağını tetikler.'), _x('Şıklardan biri doğrudan bu hastalığın adı.')], [_x('Alfa-1 reseptörleri damarları daraltır; bloke edilince damarlar gevşer. (s. 13)'), _x('İlk dozdan sonra hasta ayağa kalkınca başı dönebilir.'), _x('Tansiyonun ayağa kalkınca birden düşmesine ne denir?')]];
+    const qhMap = st.qh || {}; const qhN = qhMap[qi] || 0; const qhRows = QH[Math.min(qi, 1)];
+    const qh = { show: phase === 'ask', list: qhRows.slice(0, qhN).map((t, i) => ({ t, tag: _x('İPUCU ') + (i + 1) + _x(' / 3 · yarım puan') })), bg: qhN ? 'transparent' : c.ambSoft,
+      label: qhN === 0 ? _x('İpucu al · bu soru yarım puan sayılır') : (qhN < 3 ? _x('Bir ipucu daha (') + qhN + '/3)' : _x('İpuçları bitti')),
+      tap: () => { if (qhN >= 3) { say(_x('3 ipucunun hepsini gördün')); return; } this.setState({ qh: Object.assign({}, qhMap, { [qi]: qhN + 1 }), qi, phase: 'ask', sel }); } };
+    const go = (a, b, k) => () => { if (p.go) p.go(a, b, k); };
+    const confIcons = { sure: 'M5 12.5l4.5 4.5L19 7', unsure: 'M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14 M12 17.5h.01', guess: 'M4 12h16 M12 4v16' };
+    const confs = [['sure', c.okSoft, c.ok], ['unsure', c.ambSoft, c.ambText], ['guess', c.blueSoft, c.blue]].map((k) => ({ label: s[k[0]], bg: k[1], fg: k[2], d: confIcons[k[0]], pick: () => this.setState({ qi, sel, phase: 'reveal', conf: k[0] }) }));
+    let primaryLabel = s.answer, primary = () => { if (sel != null) this.setState({ qi, sel, phase: 'conf' }); }, primaryDisabled = sel == null;
+    if (reveal) {
+      primaryDisabled = false;
+      primaryLabel = s.next;
+      primary = () => {
+        if (kind === 'check' && qi >= 1) { if (p.go) p.go('result'); return; }
+        if (qi === 0) this.setState({ qi: 1, phase: 'ask', sel: null, conf: null });
+        else this.setState({ qi: 2, phase: 'written', sel: null, conf: null });
+      };
+    }
+    if (phase === 'written') { primaryLabel = s.send; primaryDisabled = false; primary = () => this.setState({ qi: 2, phase: 'eval' }); }
+    if (phase === 'eval') { primaryLabel = s.finish; primaryDisabled = false; primary = go('result'); }
+    const segs = [];
+    for (let i = 0; i < total; i++) segs.push({ bg: i < num - 1 ? c.pri : (i === num - 1 ? c.amb : c.line) });
+    return { toastOn: !!__st.toast, toastMsg: __st.toast || '', toastBottom: 130, closeConf: () => this.setState({ phase: 'ask', sel: null }),
+      qRetry: () => say(_x('Bağlantı tekrar deneniyor…')), qVoice: () => say(_x('Dinliyorum · cevabını sesli söyle')),
+      qh, c, s, q, opts, confs, segs, lang, num, total,
+      dir: rtl ? 'rtl' : 'ltr', flip: rtl ? -1 : 1,
+      kindLabel: s.kinds[kind] || s.kinds.final,
+      W: ios ? 390 : 412, H: ios ? 844 : 915, topH: ios ? 54 : 36, bottomPad: ios ? 34 : 20,
+      btnR: ios ? 14 : 100, btnH: ios ? 52 : 48, sheetR: ios ? 14 : 28,
+      isOffline: phase === 'offline',
+      isMc: phase === 'ask' || phase === 'conf' || reveal,
+      isConf: phase === 'conf',
+      isReveal: reveal,
+      isWritten: phase === 'written' || phase === 'eval',
+      isWriting: phase === 'written', isEval: phase === 'eval',
+      showFooter: phase !== 'offline',
+      showDanger: reveal && !isRight && conf === 'sure',
+      showResultBanner: reveal && !(!isRight && conf === 'sure'),
+      bannerBg: isRight ? c.okSoft : c.badSoft, bannerFg: isRight ? c.ok : c.bad,
+      bannerIcon: isRight ? 'M5 12.5l4.5 4.5L19 7' : 'M6 6l12 12 M18 6L6 18',
+      bannerText: isRight ? s.correct : s.wrong,
+      confLabel: conf ? s[conf] : '',
+      lookLabel: s.look(q.page),
+      primary, primaryLabel, primaryDisabled,
+      primaryBg: primaryDisabled ? c.line : c.pri, primaryFg: primaryDisabled ? c.text3 : '#FFFCF6',
+      close: go('home'), toReader: go('reader'),
+      resume: () => this.setState({ qi: 0, phase: 'ask', sel: null })
+    };
+  }
+}
+</script>
+</body>
+</html>

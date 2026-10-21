@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Cihazında dene · MacBook</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 1840px; height: 1180px; box-sizing: border-box; background: radial-gradient(circle at 50% 0%, #3A322B 0%, #1A1613 70%); font-family: Poppins, Vazirmatn, system-ui, sans-serif; color: #EFE8DC; display: flex; flex-direction: column; align-items: center; padding: 18px 40px 0; gap: 18px">
+<div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: center">
+<span style="font-size: 15px; font-weight: 600; color: #F2B33D; margin-inline-end: 6px">{{tx.title}}</span>
+<div role="radiogroup" aria-label="{{tx.device}}" style="display: flex; gap: 4px; padding: 4px; border-radius: 24px; background: rgba(255,252,246,.08)"><sc-for list="{{frames}}" as="o" hint-placeholder-count="2"><button role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="height: 38px; padding: 0 18px; border: 0; border-radius: 19px; background: {{o.bg}}; color: {{o.fg}}; font-family: inherit; font-size: 14px; font-weight: {{o.fw}}; cursor: pointer">{{o.l}}</button></sc-for></div>
+<div role="radiogroup" aria-label="{{tx.theme}}" style="display: flex; gap: 4px; padding: 4px; border-radius: 24px; background: rgba(255,252,246,.08)"><sc-for list="{{themes}}" as="o" hint-placeholder-count="2"><button role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="height: 38px; padding: 0 18px; border: 0; border-radius: 19px; background: {{o.bg}}; color: {{o.fg}}; font-family: inherit; font-size: 14px; font-weight: {{o.fw}}; cursor: pointer">{{o.l}}</button></sc-for></div>
+<div role="radiogroup" aria-label="{{tx.lang}}" style="display: flex; gap: 4px; padding: 4px; border-radius: 24px; background: rgba(255,252,246,.08)"><sc-for list="{{langs}}" as="o" hint-placeholder-count="4"><button role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="height: 38px; padding: 0 14px; border: 0; border-radius: 19px; background: {{o.bg}}; color: {{o.fg}}; font-family: inherit; font-size: 14px; font-weight: {{o.fw}}; cursor: pointer">{{o.l}}</button></sc-for></div>
+<button onClick="{{restart}}" style="height: 46px; padding: 0 20px; border: 0; border-radius: 23px; background: #9C2F3A; color: #FFFCF6; font-family: inherit; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 8px 20px rgba(156,47,58,.35)"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>{{tx.restart}}</button>
+</div>
+<div style="flex: none; display: flex; flex-direction: column; align-items: center">
+<div style="position: relative; width: 1552px; height: 1000px; box-sizing: border-box; padding: 20px 20px 20px; border-radius: 30px 30px 14px 14px; background: linear-gradient(180deg, #2B2B2E 0%, #1C1C1E 100%); box-shadow: inset 0 0 0 2px #3A3A3D, 0 40px 80px rgba(0,0,0,.55)">
+<span aria-hidden="true" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); width: 190px; height: 30px; border-radius: 0 0 14px 14px; background: #0D0D0E; z-index: 3; display: flex; align-items: center; justify-content: center"><span style="width: 9px; height: 9px; border-radius: 5px; background: #1E2633; box-shadow: inset 0 0 0 2px #2B3445"></span></span>
+<div style="position: relative; width: 1512px; height: 960px; border-radius: 12px 12px 4px 4px; overflow: hidden; background: {{wall}}">
+<div style="position: absolute; left: 0; right: 0; top: 0; height: 30px; background: {{mbBg}}; backdrop-filter: blur(20px); display: flex; align-items: center; gap: 22px; padding: 0 18px; font-size: 13px; color: {{mbFg}}; z-index: 2">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8s2 .8 3.4.8c1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9-.1 0-2.7-1-2.7-4.1zM13.9 5c.7-.9 1.2-2 1-3.2-1 0-2.3.7-3 1.6-.7.8-1.2 2-1.1 3.1 1.2.1 2.3-.6 3.1-1.5z"></path></svg>
+<span style="font-weight: 700">{{appName}}</span><sc-for list="{{menus}}" as="m" hint-placeholder-count="5"><span>{{m}}</span></sc-for>
+<span style="flex: 1"></span>
+<span style="display: flex; align-items: center; gap: 6px; height: 22px; padding: 0 8px; border-radius: 6px; background: rgba(156,47,58,.85); color: #FFF6E6; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px"><span style="width: 14px; height: 14px; background: url(./star_btn.png) center/contain no-repeat"></span>23:15 · {{tx.plan}}</span>
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12.5a10 10 0 0 1 14 0 M8.5 16a5 5 0 0 1 7 0 M12 19.5h.01"></path></svg>
+<span style="width: 24px; height: 11px; border-radius: 3px; border: 1.5px solid currentColor; position: relative; display: inline-block"><span style="position: absolute; left: 1px; top: 1px; bottom: 1px; width: 70%; background: currentColor; border-radius: 1px"></span></span>
+<span>{{clock}}</span>
+</div>
+<div style="position: absolute; left: 36px; top: 44px; width: 1440px; height: 900px; border-radius: 12px; box-shadow: 0 24px 60px rgba(0,0,0,.45); z-index: 1">
+<dc-import name="DeskApp" screen="{{start}}" frame="{{frame}}" theme="{{theme}}" lang="{{lang}}" reset="{{reset}}" w="{{ 1440 }}" h="{{ 900 }}" hint-size="1440px,900px"></dc-import>
+</div>
+</div>
+</div>
+<div aria-hidden="true" style="position: relative; width: 1760px; height: 26px; border-radius: 2px 2px 22px 22px; background: linear-gradient(180deg, #D7D8DC 0%, #B9BBC0 45%, #8E9096 100%); box-shadow: 0 18px 30px rgba(0,0,0,.45)"><span style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 220px; height: 9px; border-radius: 0 0 10px 10px; background: linear-gradient(180deg, #9EA0A6, #C4C6CB)"></span></div>
+</div>
+<span style="font-size: 13px; color: #BDB2A4">{{tx.hint}}</span>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1840,"height":1180}}'>
+const TX = {
+  tr: { title: 'Cihazında dene', device: 'Cihaz', theme: 'Tema', lang: 'Dil', restart: 'Baştan başlat', plan: 'Bugün 3 görev', menus: ['Dosya', 'Düzen', 'Görünüm', 'Ders', 'Pencere', 'Yardım'], clock: 'Sal 14 Eki  09:41', light: 'Açık', dark: 'Koyu', hint: 'Web: tanıtım sitesi → Web\'de ücretsiz başla → kayıt → e-posta doğrulama → dil → çalışma planı → bölüm → tanıtım → dersler → uygulama. Mac: Apple / Google ile giriş → dil → plan → bölüm → tanıtım → dersler → uygulama.' },
+  en: { title: 'Try it on your device', device: 'Device', theme: 'Theme', lang: 'Language', restart: 'Start over', plan: '3 tasks today', menus: ['File', 'Edit', 'View', 'Course', 'Window', 'Help'], clock: 'Tue 14 Oct  09:41', light: 'Light', dark: 'Dark', hint: 'Web: landing page → Start free on the web → sign up → email check → language → study plan → department → intro → courses → app. Mac: sign in with Apple / Google → language → plan → department → intro → courses → app.' },
+  fa: { title: 'روی دستگاهت امتحان کن', device: 'دستگاه', theme: 'پوسته', lang: 'زبان', restart: 'شروع دوباره', plan: '۳ کار امروز', menus: ['فایل', 'ویرایش', 'نما', 'درس', 'پنجره', 'راهنما'], clock: 'سه‌شنبه ۱۴ اکتبر  ۰۹:۴۱', light: 'روشن', dark: 'تیره', hint: 'وب: صفحهٔ معرفی ← رایگان شروع کن ← ثبت‌نام ← تأیید ایمیل ← زبان ← برنامهٔ درسی ← رشته ← معرفی ← درس‌ها ← برنامه. مک: ورود با Apple / Google ← زبان ← برنامه ← رشته ← معرفی ← درس‌ها ← برنامه.' },
+  ar: { title: 'جرّبه على جهازك', device: 'الجهاز', theme: 'المظهر', lang: 'اللغة', restart: 'ابدأ من جديد', plan: '3 مهام اليوم', menus: ['ملف', 'تحرير', 'عرض', 'الدرس', 'نافذة', 'مساعدة'], clock: 'الثلاثاء 14 أكتوبر  09:41', light: 'فاتح', dark: 'داكن', hint: 'الويب: صفحة التعريف ← ابدأ مجانًا ← التسجيل ← تأكيد البريد ← اللغة ← خطة الدراسة ← التخصص ← التعريف ← الدروس ← التطبيق. ماك: الدخول عبر Apple / Google ← اللغة ← الخطة ← التخصص ← التعريف ← الدروس ← التطبيق.' }
+};
+class Component extends DCLogic {
+  renderVals() {
+    const st = this.state || {};
+    const frame = st.frame || 'web', theme = st.theme || 'light', lang = st.lang || 'tr', reset = st.reset || 0;
+    const tx = TX[lang] || TX.tr;
+    const seg = (on, l, pick) => ({ l, pick, on: on ? 'true' : 'false', bg: on ? '#FFFCF6' : 'transparent', fg: on ? '#2A2420' : '#EFE8DC', fw: on ? 600 : 500 });
+    return {
+      tx, frame, theme, lang, reset, start: frame === 'mac' ? 'login' : 'landing', menus: tx.menus, clock: tx.clock, appName: frame === 'mac' ? 'Kavis Study' : 'Safari',
+      wall: theme === 'dark' ? 'radial-gradient(circle at 30% 20%, #4A2A30 0%, #1E1416 55%, #0E0A0B 100%)' : 'radial-gradient(circle at 30% 20%, #F7D9A0 0%, #D9824E 45%, #9C2F3A 100%)',
+      mbBg: theme === 'dark' ? 'rgba(20,16,13,.55)' : 'rgba(255,252,246,.55)', mbFg: theme === 'dark' ? '#EFE8DC' : '#1A1613',
+      frames: [['web', 'Web'], ['mac', 'Mac']].map((k) => seg(k[0] === frame, k[1], () => this.setState({ frame: k[0], reset: reset + 1 }))),
+      themes: [['light', tx.light], ['dark', tx.dark]].map((k) => seg(k[0] === theme, k[1], () => this.setState({ theme: k[0] }))),
+      langs: [['tr', 'TR'], ['en', 'EN'], ['fa', 'FA'], ['ar', 'AR']].map((k) => seg(k[0] === lang, k[1], () => this.setState({ lang: k[0] }))),
+      restart: () => this.setState({ reset: reset + 1 })
+    };
+  }
+}
+</script>
+</body>
+</html>

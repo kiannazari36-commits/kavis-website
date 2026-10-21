@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Uygulama simgesi çizimi</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div role="img" aria-label="{{label}}" style="width: {{s}}px; height: {{s}}px; border-radius: {{r}}; overflow: hidden; background: {{k.bg}}; box-shadow: {{shadow}}; flex: none; position: relative">
+<sc-if value="{{is.book}}" hint-placeholder-val="{{ true }}">
+<svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="display: block">
+<path d="M18 36 C29 31 40 32 50 39 V77 C40 70 29 69 18 73 Z" fill="{{k.c1}}"></path>
+<path d="M82 36 C71 31 60 32 50 39 V77 C60 70 71 69 82 73 Z" fill="{{k.c3}}"></path>
+<path d="M50 9 L53.2 17.8 L62 21 L53.2 24.2 L50 33 L46.8 24.2 L38 21 L46.8 17.8 Z" fill="{{k.c2}}"></path>
+</svg>
+</sc-if>
+<sc-if value="{{is.orb}}" hint-placeholder-val="{{ false }}">
+<svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="display: block">
+<defs><radialGradient id="{{gid}}" cx="35%" cy="30%" r="75%"><stop offset="0%" stop-color="{{k.o1}}"></stop><stop offset="45%" stop-color="{{k.o2}}"></stop><stop offset="100%" stop-color="{{k.o3}}"></stop></radialGradient></defs>
+<circle cx="50" cy="52" r="33" fill="url(#{{gid}})"></circle>
+<text x="49" y="68" text-anchor="middle" font-family="Poppins, system-ui, sans-serif" font-weight="700" font-size="44" fill="{{k.c1}}">J</text>
+<path d="M76 12 L78.4 18.6 L85 21 L78.4 23.4 L76 30 L73.6 23.4 L67 21 L73.6 18.6 Z" fill="{{k.c2}}"></path>
+</svg>
+</sc-if>
+<sc-if value="{{is.cap}}" hint-placeholder-val="{{ false }}">
+<svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="display: block">
+<path d="M50 26 L86 41 L50 56 L14 41 Z" fill="{{k.c1}}"></path>
+<path d="M29 49 V63 C37 71 63 71 71 63 V49 L50 58 Z" fill="{{k.c3}}"></path>
+<path d="M80 44 V62" stroke="{{k.c3}}" stroke-width="3" stroke-linecap="round"></path>
+<circle cx="80" cy="64" r="3.5" fill="{{k.c3}}"></circle>
+<path d="M26 10 L28.4 16.6 L35 19 L28.4 21.4 L26 28 L23.6 21.4 L17 19 L23.6 16.6 Z" fill="{{k.c2}}"></path>
+</svg>
+</sc-if>
+<sc-if value="{{is.page}}" hint-placeholder-val="{{ false }}">
+<svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="display: block">
+<rect x="20" y="16" width="44" height="58" rx="8" fill="{{k.c1}}"></rect>
+<path d="M29 32 H55 M29 42 H55 M29 52 H45" stroke="{{k.c3}}" stroke-width="4" stroke-linecap="round"></path>
+<circle cx="67" cy="67" r="20" fill="{{k.c2}}"></circle>
+<path d="M54 82 L52 90 L60 85 Z" fill="{{k.c2}}"></path>
+<path d="M67 56 L69.6 64.4 L78 67 L69.6 69.6 L67 78 L64.4 69.6 L56 67 L64.4 64.4 Z" fill="{{k.c4}}"></path>
+</svg>
+</sc-if>
+
+<sc-if value="{{is.owl}}" hint-placeholder-val="{{ false }}">
+<svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="display: block">
+<path d="M22 42 Q22 22 33 15 L41 27 Q50 23 59 27 L67 15 Q78 22 78 42 V64 Q78 87 50 87 Q22 87 22 64 Z" fill="{{k.c1}}"></path>
+<circle cx="38" cy="46" r="12" fill="{{k.c3}}" stroke="{{k.c2}}" stroke-width="3"></circle>
+<circle cx="62" cy="46" r="12" fill="{{k.c3}}" stroke="{{k.c2}}" stroke-width="3"></circle>
+<circle cx="40" cy="47" r="5.5" fill="{{k.c4}}"></circle>
+<circle cx="60" cy="47" r="5.5" fill="{{k.c4}}"></circle>
+<circle cx="42" cy="45" r="1.8" fill="{{k.c3}}"></circle>
+<circle cx="62" cy="45" r="1.8" fill="{{k.c3}}"></circle>
+<path d="M46 57 L54 57 L50 64 Z" fill="{{k.c2}}"></path>
+<path d="M34 71 Q42 67 50 72 Q58 67 66 71 V81 Q58 77 50 82 Q42 77 34 81 Z" fill="{{k.c3}}"></path>
+</svg>
+</sc-if>
+<sc-if value="{{is.capsule}}" hint-placeholder-val="{{ false }}">
+<svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="display: block">
+<g transform="rotate(-40 50 52)">
+<path d="M32 52 V38 A18 18 0 0 1 68 38 V52 Z" fill="{{k.c2}}"></path>
+<path d="M32 52 V66 A18 18 0 0 0 68 66 V52 Z" fill="{{k.c1}}"></path>
+<rect x="38" y="30" width="5" height="16" rx="2.5" fill="{{k.c3}}" opacity=".55"></rect>
+</g>
+<path d="M78 12 L80.6 19.4 L88 22 L80.6 24.6 L78 32 L75.4 24.6 L68 22 L75.4 19.4 Z" fill="{{k.c1}}"></path>
+</svg>
+</sc-if>
+<sc-if value="{{is.bulb}}" hint-placeholder-val="{{ false }}">
+<svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="display: block">
+<path d="M50 9 V15 M23 20 L27.5 24.5 M77 20 L72.5 24.5 M15 43 H21 M85 43 H79" stroke="{{k.c3}}" stroke-width="3.5" stroke-linecap="round"></path>
+<circle cx="50" cy="44" r="22" fill="{{k.c1}}"></circle>
+<path d="M40 58 H60 V66 H40 Z" fill="{{k.c1}}"></path>
+<rect x="40" y="69" width="20" height="5" rx="2.5" fill="{{k.c2}}"></rect>
+<rect x="43" y="76" width="14" height="5" rx="2.5" fill="{{k.c2}}"></rect>
+<path d="M50 31 L53.4 40.6 L63 44 L53.4 47.4 L50 57 L46.6 47.4 L37 44 L46.6 40.6 Z" fill="{{k.c4}}"></path>
+</svg>
+</sc-if>
+<sc-if value="{{is.jmark}}" hint-placeholder-val="{{ false }}">
+<svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="display: block">
+<path d="M58 30 V60 A16 16 0 0 1 26 60" fill="none" stroke="{{k.c1}}" stroke-width="13" stroke-linecap="round"></path>
+<path d="M77 12 L80.4 21.6 L90 25 L80.4 28.4 L77 38 L73.6 28.4 L64 25 L73.6 21.6 Z" fill="{{k.c2}}"></path>
+</svg>
+</sc-if>
+<sc-if value="{{is.lantern}}" hint-placeholder-val="{{ false }}">
+<svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="display: block">
+<circle cx="50" cy="50" r="34" fill="{{k.c2}}" opacity=".18"></circle>
+<path d="M41 22 Q50 11 59 22" fill="none" stroke="{{k.c2}}" stroke-width="3.5" stroke-linecap="round"></path>
+<rect x="35" y="22" width="30" height="7" rx="3.5" fill="{{k.c2}}"></rect>
+<rect x="37" y="29" width="26" height="40" rx="11" fill="{{k.c1}}"></rect>
+<path d="M50 37 L52.8 45.2 L61 48 L52.8 50.8 L50 59 L47.2 50.8 L39 48 L47.2 45.2 Z" fill="{{k.c3}}"></path>
+<rect x="35" y="69" width="30" height="7" rx="3.5" fill="{{k.c2}}"></rect>
+</svg>
+</sc-if>
+<sc-if value="{{is.bookmark}}" hint-placeholder-val="{{ false }}">
+<svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="display: block">
+<rect x="22" y="14" width="56" height="72" rx="9" fill="{{k.c3}}"></rect>
+<path d="M31 30 H47 M31 40 H47 M31 52 H69 M31 62 H69 M31 72 H55" stroke="{{k.c4}}" stroke-width="4" stroke-linecap="round"></path>
+<path d="M54 14 H70 V48 L62 42 L54 48 Z" fill="{{k.c1}}"></path>
+<path d="M70 60 L73 68.5 L81.5 71.5 L73 74.5 L70 83 L67 74.5 L58.5 71.5 L67 68.5 Z" fill="{{k.c2}}"></path>
+</svg>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"concept":{"editor":"enum","options":["book","orb","cap","page","owl","capsule","bulb","jmark","lantern","bookmark"],"default":"book"},"mode":{"editor":"enum","options":["light","dark","tinted"],"default":"light"},"shape":{"editor":"enum","options":["ios","android"],"default":"ios"},"size":{"editor":"int","default":180},"flat":{"editor":"boolean","default":false},"$preview":{"width":180,"height":180}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props;
+    const concept = p.concept || 'book';
+    const mode = p.mode || 'light';
+    const s = Number(p.size) || 180;
+    const P = {
+      book: {
+        light: { bg: 'linear-gradient(150deg, #B23A47 0%, #8A2833 100%)', c1: '#FBF5E8', c3: '#F1E3C8', c2: '#F2B33D' },
+        dark: { bg: 'linear-gradient(150deg, #241E1A 0%, #15120F 100%)', c1: '#E8925A', c3: '#C9535E', c2: '#F2B33D' },
+        tinted: { bg: '#1C1C1E', c1: '#D8D8D8', c3: '#A8A8A8', c2: '#FFFFFF' }
+      },
+      orb: {
+        light: { bg: 'linear-gradient(160deg, #FBF1DF 0%, #F1DDBD 100%)', o1: '#F9D28E', o2: '#E8925A', o3: '#9C2F3A', c1: '#FFFCF6', c2: '#9C2F3A' },
+        dark: { bg: 'linear-gradient(160deg, #241E1A 0%, #15120F 100%)', o1: '#F9D28E', o2: '#E8925A', o3: '#9C2F3A', c1: '#FFFCF6', c2: '#F2B33D' },
+        tinted: { bg: '#1C1C1E', o1: '#F2F2F2', o2: '#BDBDBD', o3: '#7A7A7A', c1: '#1C1C1E', c2: '#E0E0E0' }
+      },
+      cap: {
+        light: { bg: 'linear-gradient(150deg, #FBE9BD 0%, #F5C76A 100%)', c1: '#9C2F3A', c3: '#7E2530', c2: '#FFFCF6' },
+        dark: { bg: 'linear-gradient(150deg, #241E1A 0%, #15120F 100%)', c1: '#E06A74', c3: '#B23A47', c2: '#F2B33D' },
+        tinted: { bg: '#1C1C1E', c1: '#D8D8D8', c3: '#A8A8A8', c2: '#FFFFFF' }
+      },
+      page: {
+        light: { bg: 'linear-gradient(150deg, #B23A47 0%, #E8925A 100%)', c1: '#FFFCF6', c3: '#E6DDCF', c2: '#F2B33D', c4: '#9C2F3A' },
+        dark: { bg: 'linear-gradient(150deg, #241E1A 0%, #15120F 100%)', c1: '#3A322B', c3: '#6E645A', c2: '#E8925A', c4: '#FFFCF6' },
+        tinted: { bg: '#1C1C1E', c1: '#D8D8D8', c3: '#8E8E8E', c2: '#A8A8A8', c4: '#1C1C1E' }
+      }
+    };
+    const L = {
+      owl: { bg: 'linear-gradient(160deg, #FBF1DF 0%, #F1DDBD 100%)', c1: '#9C2F3A', c2: '#F2B33D', c3: '#FFFCF6', c4: '#3B3226' },
+      capsule: { bg: 'linear-gradient(160deg, #FFFCF6 0%, #F1E9DA 100%)', c1: '#9C2F3A', c2: '#F2B33D', c3: '#FFFCF6' },
+      bulb: { bg: 'linear-gradient(160deg, #E8925A 0%, #9C2F3A 100%)', c1: '#FFFCF6', c2: '#F2B33D', c3: '#FBE9BD', c4: '#9C2F3A' },
+      jmark: { bg: 'linear-gradient(150deg, #FBE9BD 0%, #F5C76A 100%)', c1: '#9C2F3A', c2: '#9C2F3A' },
+      lantern: { bg: 'linear-gradient(160deg, #B23A47 0%, #6E1F28 100%)', c1: '#F9D28E', c2: '#F2B33D', c3: '#9C2F3A' },
+      bookmark: { bg: 'linear-gradient(160deg, #F5C76A 0%, #E8925A 100%)', c1: '#9C2F3A', c2: '#9C2F3A', c3: '#FFFCF6', c4: '#E6DDCF' }
+    };
+    const grey = (h) => { if (!h || h[0] !== '#') return h; const n = parseInt(h.slice(1), 16); const y = Math.round(0.3 * (n >> 16) + 0.59 * ((n >> 8) & 255) + 0.11 * (n & 255)); const v = Math.max(70, Math.min(235, y)); const x = v.toString(16).padStart(2, '0'); return '#' + x + x + x; };
+    if (L[concept]) {
+      const b = L[concept];
+      P[concept] = { light: b, dark: Object.assign({}, b, { bg: 'linear-gradient(160deg, #241E1A 0%, #15120F 100%)' }), tinted: { bg: '#1C1C1E', c1: grey(b.c1), c2: grey(b.c2), c3: grey(b.c3), c4: grey(b.c4) } };
+    }
+    const k = (P[concept] || P.book)[mode] || P.book.light;
+    const names = { book: 'Kitap ve kıvılcım', orb: 'J küresi', cap: 'Kep ve kıvılcım', page: 'Sayfa ve asistan', owl: 'Kitaplı baykuş', capsule: 'Kapsül ve kıvılcım', bulb: 'Fikir ampulü', jmark: 'Kıvılcımlı J', lantern: 'Fener', bookmark: 'Sayfa ayracı' };
+    return {
+      k, s, is: { book: concept === 'book', orb: concept === 'orb', cap: concept === 'cap', page: concept === 'page', owl: concept === 'owl', capsule: concept === 'capsule', bulb: concept === 'bulb', jmark: concept === 'jmark', lantern: concept === 'lantern', bookmark: concept === 'bookmark' },
+      r: p.shape === 'android' ? '50%' : Math.round(s * 0.225) + 'px',
+      shadow: p.flat ? 'none' : '0 ' + Math.round(s * 0.04) + 'px ' + Math.round(s * 0.1) + 'px rgba(42,36,32,.22)',
+      gid: 'og' + concept + mode + s,
+      label: 'Kavis Study simgesi · ' + names[concept]
+    };
+  }
+}
+</script>
+</body>
+</html>

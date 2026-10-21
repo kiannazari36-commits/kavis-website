@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Ders ses kaydı</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+<style>[dir=rtl] .dc-back{transform:scaleX(-1)}[dir=rtl],[dir=rtl] *{letter-spacing:0 !important}</style>
+</helmet>
+<div dir="{{dir}}" lang="{{lang}}" style="width: {{W}}px; height: {{H}}px; box-sizing: border-box; display: flex; flex-direction: column; position: relative; overflow: hidden; background: {{c.bg}}; color: {{c.text}}; font-family: Poppins, Vazirmatn, system-ui, sans-serif">
+<div style="height: {{topH}}px; flex: none"></div>
+<div style="flex: none; display: flex; align-items: center; gap: 4px; height: 48px; padding: 0 12px 0 6px">
+<button onClick="{{back}}" aria-label="{{s.back}}" style="width: 44px; height: 44px; border: 0; background: transparent; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX({{flip}})"><path d="M15 5l-7 7 7 7"></path></svg></button>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 1px"><h1 style="margin: 0; font-size: 19px; font-weight: 700">{{s.title}}</h1><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.06em; color: {{c.text3}}">{{_t.k1263}} {{s.date}}</span></div>
+</div>
+
+<div style="flex: none; margin: 0 16px; border-radius: 18px; background: {{c.card}}; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; gap: 12px">
+<button onClick="{{togglePlay}}" aria-label="{{playLabel}}" style="width: 48px; height: 48px; border-radius: 24px; border: 0; background: {{c.pri}}; color: #FFFCF6; display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="{{playIcon}}"></path></svg></button>
+<div dir="ltr" style="flex: 1; display: flex; flex-direction: column; gap: 6px">
+<div aria-hidden="true" style="height: 34px; display: flex; align-items: center; gap: 2px">
+<sc-for list="{{wave}}" as="b" hint-placeholder-count="48"><span style="flex: 1; height: {{b.h}}px; border-radius: 2px; background: {{b.c}}"></span></sc-for>
+</div>
+<div aria-label="{{s.heatLabel}}" style="height: 6px; border-radius: 3px; display: flex; overflow: hidden">
+<sc-for list="{{heat}}" as="h" hint-placeholder-count="12"><span style="flex: {{h.f}}; background: {{h.c}}"></span></sc-for>
+</div>
+</div>
+</div>
+<div style="display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text2}}">
+<span>12:40 / 52:18</span><span style="flex: 1"></span>
+<span style="display: flex; align-items: center; gap: 4px"><span style="width: 10px; height: 6px; border-radius: 2px; background: {{c.amb}}"></span>{{s.heatLegend}}</span>
+<span style="padding: 3px 7px; border-radius: 6px; border: 1px solid {{c.line}}">1,0×</span>
+</div>
+</div>
+
+<div role="tablist" style="flex: none; margin: 12px 16px 8px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: {{segR}}px; background: {{c.sub}}">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="2"><button role="tab" aria-selected="{{t.on}}" onClick="{{t.pick}}" style="height: 36px; border: 0; border-radius: {{segIR}}px; background: {{t.bg}}; color: {{t.fg}}; font-family: inherit; font-size: 13px; font-weight: {{t.fw}}; box-shadow: {{t.shadow}}; cursor: pointer">{{t.label}}</button></sc-for>
+</div>
+
+<sc-if value="{{v.transcript}}" hint-placeholder-val="{{ true }}">
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 4px 16px 24px; display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{segs}}" as="g" hint-placeholder-count="4">
+<article style="border-radius: 16px; background: {{g.bg}}; border: {{g.border}}; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; font-weight: 600; color: {{c.priText}}">{{g.t}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; padding: 2px 6px; border-radius: 5px; background: {{c.sub}}; color: {{c.text2}}">{{_t.k1590}} {{g.p}}</span>
+<sc-if value="{{g.hot}}" hint-placeholder-val="{{ false }}"><span style="font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 5px; background: {{c.amb}}; color: #2A2420; transform: skewX(-8deg)">{{g.hotLabel}}</span></sc-if>
+</div>
+<p dir="ltr" lang="tr" style="margin: 0; font-family: Lora, Vazirmatn, Georgia, serif; font-size: 15px; line-height: 1.6; text-align: left">{{g.text}}</p>
+<div style="display: flex; gap: 6px; flex-wrap: wrap">
+<button onClick="{{g.ask}}" style="height: 32px; padding: 0 10px; border-radius: 8px; border: 1px solid {{g.askBorder}}; background: {{g.askBg}}; color: {{g.askFg}}; font-family: inherit; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 5px; cursor: pointer"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14 M12 17.5h.01"></path></svg>{{s.notGet}}</button>
+<button onClick="{{auTr}}" style="height: 32px; padding: 0 10px; border-radius: 8px; border: 1px solid {{c.line}}; background: transparent; color: {{c.text2}}; font-family: inherit; font-size: 12px; cursor: pointer">{{s.translate}}</button>
+<button onClick="{{auListen}}" style="height: 32px; padding: 0 10px; border-radius: 8px; border: 1px solid {{c.line}}; background: transparent; color: {{c.text2}}; font-family: inherit; font-size: 12px; cursor: pointer">▶ {{s.listen}}</button>
+</div>
+<sc-if value="{{g.open}}" hint-placeholder-val="{{ false }}">
+<div style="border-radius: 12px; background: {{c.priSoft}}; padding: 10px 12px; display: flex; gap: 10px">
+<span style="width: 26px; height: 26px; border-radius: 8px; background: {{c.pri}}; color: #FFFCF6; display: flex; align-items: center; justify-content: center; transform: rotate(-8deg); flex: none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"></path></svg></span>
+<span dir="ltr" lang="tr" style="font-size: 13px; line-height: 1.55; text-align: left">{{g.expl}}</span>
+</div>
+</sc-if>
+</article>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{v.emphasis}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 4px 16px 24px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 14px; background: {{c.ambSoft}}">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{c.ambText}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z M5 11a7 7 0 0 0 14 0 M12 18v3"></path></svg>
+<span style="font-size: 12px; line-height: 1.5">{{s.emphNote}}</span>
+</div>
+<section style="border-radius: 18px; background: {{c.card}}; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px">
+<h2 style="margin: 0 0 6px; font-size: 16px; font-weight: 700">{{s.emphT}}</h2>
+<sc-for list="{{topics}}" as="k" hint-placeholder-count="5">
+<div style="border-top: 1px solid {{c.line}}; padding: 10px 0 6px; display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; align-items: baseline; gap: 8px"><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}; width: 14px">{{k.i}}</span><span dir="ltr" lang="tr" style="flex: 1; font-size: 14px; font-weight: 600; text-align: start">{{k.t}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px; font-weight: 600; color: {{k.fg}}">{{k.m}} {{s.min}}</span></div>
+<span style="margin-inline-start: 22px; height: 8px; border-radius: 4px; background: {{c.sub}}; display: flex; overflow: hidden"><span style="width: {{k.w}}%; background: {{k.bar}}; border-radius: 4px"></span></span>
+<div style="margin-inline-start: 22px; display: flex; gap: 6px; flex-wrap: wrap">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; padding: 2px 6px; border-radius: 5px; background: {{c.sub}}; color: {{c.text2}}">{{_t.k1590}} {{k.p}}</span>
+<sc-if value="{{k.examHint}}" hint-placeholder-val="{{ false }}"><span style="font-size: 10px; font-weight: 600; padding: 3px 7px; border-radius: 5px; background: {{c.badSoft}}; color: {{c.bad}}; transform: skewX(-8deg)">{{s.examSaid}}</span></sc-if>
+<sc-if value="{{k.repeat}}" hint-placeholder-val="{{ false }}"><span style="font-size: 10px; font-weight: 600; padding: 3px 7px; border-radius: 5px; background: {{c.ambSoft}}; color: {{c.ambText}}; transform: skewX(-8deg)">{{k.repeatLabel}}</span></sc-if>
+</div>
+</div>
+</sc-for>
+</section>
+<button onClick="{{toQuiz}}" style="height: {{btnH}}px; border: 0; border-radius: {{btnR}}px; background: {{c.pri}}; color: #FFFCF6; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">{{s.quizEmph}}</button>
+</div>
+</sc-if>
+<sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div role="status" aria-live="polite" style="position: absolute; left: 50%; bottom: {{toastBottom}}px; transform: translateX(-50%); z-index: 50; max-width: 86%; box-sizing: border-box; padding: 12px 18px; border-radius: 22px; background: #2E2721; color: #FBEFD6; font-family: Poppins, Vazirmatn, system-ui, sans-serif; font-size: 14px; line-height: 1.4; text-align: center; box-shadow: 0 12px 30px rgba(42,36,32,.28); pointer-events: none">{{toastMsg}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"platform":{"editor":"enum","options":["ios","android"],"default":"ios"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"variant":{"editor":"enum","options":["transcript","emphasis"],"default":"transcript"},"go":{"editor":null},"live":{"editor":null},"$preview":{"width":390,"height":844}}'>
+const _I18N = {k: [" dk durdu", " kez tekrarladı", "8 EKİM", "ACE inhibitörü yan etkileri", "Alfa-1 bloker ilk doz etkisi", "Anlamadım", "Bakın bu çok önemli, sınavda mutlaka soruyorum: tiyazid verdiğiniz hastada gut varsa olmaz. Ürik asidi artırıyor. Gebelik burada göreceli, karıştırmayın.", "Bu bölüm hocanın sesinden çalınıyor", "Bu bölüm çevrildi · English", "Ders ses kaydı", "Dinle", "Durdur", "Geri", "Hipertansif kriz", "Hoca burada ", "Hoca şunu söylüyor: Tiyazidler kandaki ürik asidi yükseltir; gut hastasında atak yapabilir, bu yüzden kesinlikle verilmez (zorunlu kontrendikasyon). Gebelikte ise “göreceli” — yani dikkatle değerlendirilir. PDF s. 14 ile aynı.", "Hocanın en çok durduğu konular", "Hocanın konulara ayırdığı süre", "Hocanın vurguladığı konulardan sınav", "Hocanın vurguları", "HİPERTANSİYON · 52:18 ·", "Kan basıncı sınıflaması", "Metin", "Oynat", "PDF · S.", "Prazosin, doksazosin… ilk dozda hasta ayağa kalkınca bayılabilir. O yüzden ilk dozu yatarken veriyoruz.", "Ses kaydı metne çevrildi ve PDF sayfalarıyla eşleştirildi. Hocanın uzun durduğu, tekrar ettiği ya da “sınavda çıkar” dediği konular özetinde ve sınavlarında daha ağırlıklı yer alır.", "Tiyazidlerin kontrendikasyonları", "Çevir", "çok durulan yer", "İlk basamakta dört grubumuz var: diüretik, ACE inhibitörü, ARB, kalsiyum kanal blokeri. Bunları sırayla değil, hastaya göre seçiyoruz.", "Şimdi tanımla başlayalım arkadaşlar. Sistolik yüz kırk ve üstü ya da diyastolik doksan ve üstü… iki ayrı vizitte ölçeceğiz, tek ölçümle tanı koymuyoruz.", "“Sınavda çıkar” dedi"], en: [" min", " times repeated", "OCT 8", "ACE inhibitor side effects", "Alpha-1 blocker first-dose effect", "I didn't get it", "Listen, this is very important, I always ask it in the exam: if the patient you give a thiazide to has gout, it's a no. It raises uric acid. Pregnancy is relative here, don't mix them up.", "This part is played in the lecturer's voice", "This section was translated · English", "Lecture audio recording", "Listen", "Stop", "Back", "Hypertensive crisis", "Lecturer spent here ", "The lecturer says: Thiazides raise blood uric acid; they can trigger an attack in gout patients, so they're never given (absolute contraindication). In pregnancy it's “relative” — meaning it's weighed carefully. Same as PDF p. 14.", "Topics the lecturer spent most time on", "Time the lecturer gave each topic", "Exam on topics the lecturer stressed", "Lecturer's emphases", "HYPERTENSION · 52:18 ·", "BP classification", "Text", "Play", "PDF · p.", "Prazosin, doxazosin… on the first dose the patient may faint when standing up. That's why we give the first dose lying down.", "The audio recording was transcribed and matched to the PDF pages. Topics your lecturer lingered on, repeated or called “on the exam” get more weight in your summary and exams.", "Contraindications of thiazides", "Translate", "heavily covered", "We have four first-line groups: diuretic, ACE inhibitor, ARB, calcium channel blocker. We don't pick them in order, but based on the patient.", "Now let's start with the definition, everyone. Systolic one forty and above or diastolic ninety and above… we'll measure on two separate visits; we don't diagnose from a single reading.", "Said “It'll be on the exam”"], fa: [" دقیقه ماند", " بار تکرار کرد", "8 اکتبر", "عوارض مهارکنندهٔ ACE", "اثر دوز اول مسدودکنندهٔ آلفا-1", "نفهمیدم", "دقت کنید، این خیلی مهم است و حتماً در امتحان می‌پرسم: اگر بیماری که به او تیازید می‌دهید نقرس دارد، نمی‌شود. اسید اوریک را بالا می‌برد. بارداری اینجا نسبی است، قاطی نکنید.", "این بخش با صدای استاد پخش می‌شود", "این بخش ترجمه شد · English", "ضبط صوتی کلاس", "گوش بده", "توقف", "بازگشت", "بحران فشار خون بالا", "استاد اینجا ", "استاد می‌گوید: تیازیدها اسید اوریک خون را بالا می‌برند؛ در بیمار نقرسی ممکن است حمله ایجاد کنند، پس اصلاً داده نمی‌شوند (منع مصرف مطلق). در بارداری «نسبی» است — یعنی با احتیاط بررسی می‌شود. مثل PDF ص. 14.", "مباحثی که استاد بیشتر رویشان ماند", "زمانی که استاد به هر مبحث داد", "امتحان از مباحث مورد تأکید استاد", "تأکیدهای استاد", "فشار خون بالا · 52:18 ·", "طبقه‌بندی فشار خون", "متن", "پخش", "PDF · ص.", "پرازوسین، دوکسازوسین… با دوز اول ممکن است بیمار هنگام بلند شدن غش کند. برای همین دوز اول را در حالت درازکش می‌دهیم.", "ضبط صدا به متن تبدیل شد و با صفحه‌های PDF تطبیق داده شد. موضوعاتی که استاد رویشان زیاد مکث کرد، تکرار کرد یا گفت «در امتحان می‌آید» در خلاصه و امتحان‌هایت سهم بیشتری دارند.", "منع مصرف‌های تیازیدها", "ترجمه کن", "جای پرتأکید", "در خط اول چهار گروه داریم: دیورتیک، مهارکننده ACE، ARB، مسدودکننده کانال کلسیم. این‌ها را به ترتیب نه، بلکه بر اساس بیمار انتخاب می‌کنیم.", "خب بچه‌ها با تعریف شروع کنیم. سیستولیک صد و چهل و بالاتر یا دیاستولیک نود و بالاتر… در دو ویزیت جداگانه اندازه می‌گیریم، با یک اندازه‌گیری تشخیص نمی‌دهیم.", "گفت «در امتحان می‌آید»"], ar: [" دقائق", " مرات كرّرها", "8 أكتوبر", "الآثار الجانبية لمثبطات ACE", "تأثير الجرعة الأولى لحاصرات ألفا-1", "لم أفهم", "انتبهوا، هذا مهم جداً وأسأل عنه دائماً في الامتحان: إذا كان المريض الذي تعطونه الثيازيد مصاباً بالنقرس فلا يجوز. فهو يرفع حمض اليوريك. الحمل هنا نسبي، لا تخلطوا بينهما.", "يُشغَّل هذا الجزء بصوت المحاضر", "تمت ترجمة هذا القسم · English", "تسجيل صوتي للمحاضرة", "استمع", "إيقاف", "رجوع", "أزمة ارتفاع ضغط الدم", "توقف الأستاذ هنا ", "يقول الأستاذ: الثيازيدات ترفع حمض اليوريك في الدم؛ وقد تسبب نوبة لمريض النقرس، لذا لا تُعطى أبدًا (مانع استعمال مطلق). أما في الحمل فهو “نسبي” — أي يُقيَّم بحذر. مطابق لـ PDF ص. 14.", "المواضيع التي توقف عندها الأستاذ أكثر", "الوقت الذي خصصه الأستاذ لكل موضوع", "امتحان من المواضيع التي ركّز عليها الأستاذ", "تركيزات الأستاذ", "ارتفاع ضغط الدم · 52:18 ·", "تصنيف ضغط الدم", "نص", "تشغيل", "PDF · ص.", "البرازوسين، الدوكسازوسين… قد يُغمى على المريض عند الوقوف بعد الجرعة الأولى. لذلك نعطي الجرعة الأولى وهو مستلقٍ.", "تم تحويل التسجيل الصوتي إلى نص ومطابقته مع صفحات PDF. المواضيع التي توقف عندها أستاذك طويلًا أو كررها أو قال إنها «ستأتي في الامتحان» تأخذ وزنًا أكبر في ملخصك وامتحاناتك.", "مضادات استطباب الثيازيدات", "ترجم", "موضع تركيز كبير", "لدينا أربع مجموعات في الخط الأول: مدر بول، مثبط ACE، ARB، حاصر قنوات الكالسيوم. لا نختارها بالترتيب بل حسب المريض.", "لنبدأ الآن بالتعريف يا جماعة. الانقباضي مئة وأربعون فما فوق أو الانبساطي تسعون فما فوق… نقيس في زيارتين منفصلتين، ولا نشخّص بقياس واحد.", "قال “سيأتي في الامتحان”"]};
+let _lang = 'tr', _M = null; const _TC = {};
+const _x = (s) => { if (_lang === 'tr' || !_I18N[_lang]) return s; if (!_M) { _M = {}; _I18N.k.forEach((k, i) => { _M[k] = i; }); } const i = _M[s]; return i == null ? s : _I18N[_lang][i]; };
+const _TK = {"k1263": "HİPERTANSİYON · 52:18 ·", "k1590": "PDF · S."};
+const _PT = {};
+const _tt = () => { if (!_TC[_lang]) { const o = {}; Object.keys(_TK).forEach((k) => { o[k] = (_PT[k] && _lang !== 'tr') ? (_PT[k][_lang] || _x(_TK[k])) : _x(_TK[k]); }); _TC[_lang] = o; } return _TC[_lang]; };
+
+class Component extends DCLogic {
+  renderVals() { const _p = this.props || {}, _s = this.state || {}; _lang = _s.lang || _p.lang || 'tr'; const r = this._rv0(); if (r && typeof r === 'object') { r._t = _tt(); r._dir = (_lang === 'fa' || _lang === 'ar') ? 'rtl' : 'ltr'; r._ai = this._aiDark ? { bg: '#F2B33D', fg: '#241C14', tx: '#EFE8DC' } : { bg: '#9C2F3A', fg: '#FFF6E6', tx: '#2A2420' }; } return r; }
+  _rv0() {
+    const __st = this.state || {};
+    const say = (m, after) => { this.setState({ toast: m }); clearTimeout(this._tt); this._tt = setTimeout(() => { this.setState({ toast: '' }); if (after) after(); }, 1700); };
+    const p = this.props, st = this.state || {};
+    const ios = (p.platform || 'ios') === 'ios';
+    const dark = p.theme === 'dark';
+    const lang = p.lang || 'tr';
+    const rtl = lang === 'fa' || lang === 'ar';
+    const c = dark
+      ? { bg: '#15120F', card: '#211C18', sub: '#2B2520', seg: '#463D35', text: '#EFE8DC', text2: '#BDB2A4', text3: '#9A8F82', line: '#3A322B', pri: '#B23A47', priText: '#F09AA3', priSoft: '#3A2027', amb: '#F2B33D', ambText: '#F2C46E', ambSoft: '#3A2F1A', bad: '#F27A70', badSoft: '#3D1F1F', heat0: '#2A3340', heat1: '#5A4A28' }
+      : { bg: '#F4EFE6', card: '#FFFCF6', sub: '#F1EBE0', seg: '#FFFCF6', text: '#2A2420', text2: '#6E645A', text3: '#776C60', line: '#E6DDCF', pri: '#9C2F3A', priText: '#9C2F3A', priSoft: '#F7E7E9', amb: '#F2B33D', ambText: '#83560A', ambSoft: '#FDF1D6', bad: '#C0352B', badSoft: '#FCE8E6', heat0: '#E4E8ED', heat1: '#F8DDA0' };
+    const T = {
+      tr: { back: _x('Geri'), title: _x('Ders ses kaydı'), date: _x('8 EKİM'), tabs: [_x('Metin'), _x('Hocanın vurguları')], heatLabel: _x('Hocanın konulara ayırdığı süre'), heatLegend: _x('çok durulan yer'), notGet: _x('Anlamadım'), translate: _x('Çevir'), listen: _x('Dinle'), hot: (m) => _x('Hoca burada ') + m + _x(' dk durdu'), emphT: _x('Hocanın en çok durduğu konular'), emphNote: _x('Ses kaydı metne çevrildi ve PDF sayfalarıyla eşleştirildi. Hocanın uzun durduğu, tekrar ettiği ya da “sınavda çıkar” dediği konular özetinde ve sınavlarında daha ağırlıklı yer alır.'), min: 'dk', examSaid: _x('“Sınavda çıkar” dedi'), rep: (n) => n + _x(' kez tekrarladı'), quizEmph: _x('Hocanın vurguladığı konulardan sınav'), play: _x('Oynat'), pause: _x('Durdur') },
+      en: { back: 'Back', title: 'Lecture recording', date: 'OCT 8', tabs: ['Transcript', "Lecturer's emphasis"], heatLabel: 'Time the lecturer spent per topic', heatLegend: 'long focus', notGet: "I don't get it", translate: 'Translate', listen: 'Listen', hot: (m) => 'Lecturer spent ' + m + ' min here', emphT: 'Topics the lecturer focused on most', emphNote: 'The recording was transcribed and matched to PDF pages. Topics the lecturer dwelt on, repeated or said “will be on the exam” get more weight in your summary and exams.', min: 'min', examSaid: 'Said “on the exam”', rep: (n) => 'Repeated ' + n + '×', quizEmph: 'Exam on emphasized topics', play: 'Play', pause: 'Pause' },
+      fa: { back: 'بازگشت', title: 'صدای ضبط‌شدهٔ کلاس', date: '۸ اکتبر', tabs: ['متن', 'تأکیدهای استاد'], heatLabel: 'زمانی که استاد روی هر مبحث گذاشت', heatLegend: 'مکث طولانی', notGet: 'نفهمیدم', translate: 'ترجمه', listen: 'شنیدن', hot: (m) => 'استاد اینجا ' + m + ' دقیقه ماند', emphT: 'مبحث‌هایی که استاد بیشتر رویشان ماند', emphNote: 'صدای کلاس به متن تبدیل و با صفحه‌های PDF تطبیق داده شد. مبحث‌هایی که استاد رویشان ماند، تکرار کرد یا گفت «در امتحان می‌آید» در خلاصه و آزمون‌هایت وزن بیشتری دارند.', min: 'دقیقه', examSaid: 'گفت «در امتحان می‌آید»', rep: (n) => n + ' بار تکرار کرد', quizEmph: 'آزمون از مبحث‌های مورد تأکید', play: 'پخش', pause: 'توقف' },
+      ar: { back: 'رجوع', title: 'تسجيل المحاضرة', date: '8 أكتوبر', tabs: ['النص', 'تركيز الأستاذ'], heatLabel: 'الوقت الذي قضاه الأستاذ لكل موضوع', heatLegend: 'توقف طويل', notGet: 'لم أفهم', translate: 'ترجمة', listen: 'استماع', hot: (m) => 'توقف الأستاذ هنا ' + m + ' دقائق', emphT: 'المواضيع التي ركّز عليها الأستاذ', emphNote: 'حُوّل التسجيل إلى نص ورُبط بصفحات الملف. المواضيع التي أطال فيها الأستاذ أو كررها أو قال «ستأتي في الامتحان» تأخذ وزنًا أكبر في ملخصك واختباراتك.', min: 'د', examSaid: 'قال «في الامتحان»', rep: (n) => 'كررها ' + n + ' مرات', quizEmph: 'اختبار في المواضيع المؤكَّد عليها', play: 'تشغيل', pause: 'إيقاف' }
+    };
+    const s = T[lang] || T.tr;
+    const mode = st.mode || p.variant || 'transcript';
+    const v = { transcript: mode === 'transcript', emphasis: mode === 'emphasis' };
+    const go = (a, b, k) => () => { if (p.go) p.go(a, b, k); };
+    const tabs = ['transcript', 'emphasis'].map((id, i) => {
+      const on = id === mode;
+      return { label: s.tabs[i], on: on ? 'true' : 'false', bg: on ? c.seg : 'transparent', fg: on ? c.text : c.text2, fw: on ? 600 : 500, shadow: on ? '0 1px 3px rgba(0,0,0,.12)' : 'none', pick: () => this.setState({ mode: id }) };
+    });
+    const hs = [6, 10, 14, 8, 18, 22, 12, 9, 16, 24, 28, 20, 14, 10, 8, 12, 18, 26, 30, 28, 22, 16, 12, 8, 10, 14, 20, 16, 12, 8, 6, 10, 14, 18, 12, 9, 7, 11, 15, 10, 8, 12, 9, 7, 10, 8, 6, 5];
+    const wave = hs.map((h, i) => ({ h, c: i < 12 ? c.pri : (i >= 16 && i <= 22 ? c.amb : c.line) }));
+    const heat = [[3, 0], [2, 0], [2, 1], [1, 0], [4, 2], [2, 0], [1, 0], [2, 1], [1, 0], [1, 0], [2, 0], [1, 0]].map((k) => ({ f: k[0], c: k[1] === 2 ? c.amb : (k[1] === 1 ? c.heat1 : c.heat0) }));
+    const openIdx = st.open != null ? st.open : 2;
+    const segData = [
+      ['04:12', 5, _x('Şimdi tanımla başlayalım arkadaşlar. Sistolik yüz kırk ve üstü ya da diyastolik doksan ve üstü… iki ayrı vizitte ölçeceğiz, tek ölçümle tanı koymuyoruz.'), 0, ''],
+      ['09:30', 12, _x('İlk basamakta dört grubumuz var: diüretik, ACE inhibitörü, ARB, kalsiyum kanal blokeri. Bunları sırayla değil, hastaya göre seçiyoruz.'), 0, ''],
+      ['12:40', 14, _x('Bakın bu çok önemli, sınavda mutlaka soruyorum: tiyazid verdiğiniz hastada gut varsa olmaz. Ürik asidi artırıyor. Gebelik burada göreceli, karıştırmayın.'), 9, _x('Hoca şunu söylüyor: Tiyazidler kandaki ürik asidi yükseltir; gut hastasında atak yapabilir, bu yüzden kesinlikle verilmez (zorunlu kontrendikasyon). Gebelikte ise “göreceli” — yani dikkatle değerlendirilir. PDF s. 14 ile aynı.')],
+      ['21:55', 13, _x('Prazosin, doksazosin… ilk dozda hasta ayağa kalkınca bayılabilir. O yüzden ilk dozu yatarken veriyoruz.'), 4, '']
+    ];
+    const segs = segData.map((g, i) => {
+      const hot = g[3] >= 5, open = i === openIdx && !!g[4];
+      return {
+        t: g[0], p: g[1], text: g[2], hot, hotLabel: s.hot(g[3]), open, expl: g[4] || '',
+        bg: hot ? c.card : c.card, border: hot ? '2px solid ' + c.amb : '1px solid ' + c.line,
+        askBg: open ? c.priSoft : 'transparent', askFg: open ? c.priText : c.text2, askBorder: open ? c.priText : c.line,
+        ask: () => this.setState({ open: open ? -1 : i })
+      };
+    });
+    const topics = [
+      [_x('Tiyazidlerin kontrendikasyonları'), 14, 14, true, 3], [_x('ACE inhibitörü yan etkileri'), 9, 13, false, 2],
+      [_x('Kan basıncı sınıflaması'), 7, 6, true, 0], [_x('Alfa-1 bloker ilk doz etkisi'), 4, 13, false, 0], [_x('Hipertansif kriz'), 2, 21, false, 0]
+    ].map((k, i) => ({ i: i + 1, t: k[0], m: k[1], p: k[2], examHint: k[3], repeat: k[4] > 0, repeatLabel: s.rep(k[4]), w: Math.round(k[1] / 14 * 100), bar: i === 0 ? c.amb : (i < 3 ? c.pri : c.text3), fg: i === 0 ? c.ambText : c.text2 }));
+    const playing = !!st.playing;
+    return { toastOn: !!__st.toast, toastMsg: __st.toast || '', toastBottom: 110,
+      auTr: () => say(_x('Bu bölüm çevrildi · English')), auListen: () => say(_x('Bu bölüm hocanın sesinden çalınıyor')),
+      c, s, v, lang, tabs, wave, heat, segs, topics,
+      dir: rtl ? 'rtl' : 'ltr', flip: rtl ? -1 : 1,
+      W: ios ? 390 : 412, H: ios ? 844 : 915, topH: ios ? 54 : 36,
+      btnR: ios ? 14 : 100, btnH: ios ? 52 : 48, segR: ios ? 10 : 100, segIR: ios ? 8 : 100,
+      playIcon: playing ? 'M7 5h3.5v14H7z M13.5 5H17v14h-3.5z' : 'M8 5v14l11-7z',
+      playLabel: playing ? s.pause : s.play,
+      togglePlay: () => this.setState({ playing: !playing }),
+      back: go('reader'), toQuiz: go('quiz', 'question', 'review')
+    };
+  }
+}
+</script>
+</body>
+</html>

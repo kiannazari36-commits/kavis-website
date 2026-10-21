@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Bildirimler</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+<style>[dir=rtl] .dc-back{transform:scaleX(-1)}[dir=rtl],[dir=rtl] *{letter-spacing:0 !important}</style>
+</helmet>
+<div dir="{{dir}}" lang="{{lang}}" style="width: {{W}}px; height: {{H}}px; box-sizing: border-box; display: flex; flex-direction: column; position: relative; overflow: hidden; background: {{c.bg}}; color: {{c.text}}; font-family: Poppins, Vazirmatn, system-ui, sans-serif">
+<div style="height: {{topH}}px; flex: none"></div>
+<div style="flex: none; display: flex; align-items: center; gap: 4px; height: 48px; padding: 0 12px 0 6px">
+<button onClick="{{back}}" aria-label="{{s.back}}" style="width: 44px; height: 44px; border: 0; background: transparent; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX({{flip}})"><path d="M15 5l-7 7 7 7"></path></svg></button>
+<h1 style="margin: 0; flex: 1; font-size: 20px; font-weight: 700">{{s.title}}</h1>
+<button onClick="{{toSettings}}" style="height: 36px; padding: 0 12px; border-radius: 18px; border: 1px solid {{c.line}}; background: {{c.card}}; color: {{c.text2}}; display: flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px; cursor: pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z M12 7v5l3 2"></path></svg>09:00</button>
+</div>
+
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 6px 16px 30px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; color: {{c.text3}}">{{s.preview}}</span>
+
+<sc-if value="{{ios}}" hint-placeholder-val="{{ true }}">
+<div style="border-radius: 22px; background: {{c.push}}; padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start; box-shadow: 0 6px 24px rgba(18,23,30,.10)">
+<span style="width: 38px; height: 38px; border-radius: 9px; background: #9C2F3A; color: #FFFCF6; display: flex; align-items: center; justify-content: center; flex: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5.5c2.5-1 5.5-1 9 1v13c-3.5-2-6.5-2-9-1z M21 5.5c-2.5-1-5.5-1-9 1v13c3.5-2 6.5-2 9-1z"></path></svg></span>
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; justify-content: space-between; gap: 8px"><span style="font-size: 14px; font-weight: 600">{{n0.t}}</span><span style="font-size: 12px; color: {{c.text3}}; white-space: nowrap">{{s.now}}</span></div>
+<span style="font-size: 14px; line-height: 1.35; color: {{c.text2}}">{{n0.b}}</span>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{android}}" hint-placeholder-val="{{ false }}">
+<div style="border-radius: 24px; background: {{c.push}}; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: {{c.text2}}">
+<span style="width: 22px; height: 22px; border-radius: 11px; background: #9C2F3A; color: #FFFCF6; display: flex; align-items: center; justify-content: center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5.5c2.5-1 5.5-1 9 1v13c-3.5-2-6.5-2-9-1z M21 5.5c-2.5-1-5.5-1-9 1v13c3.5-2 6.5-2 9-1z"></path></svg></span>
+Kavis Study · {{s.now}}
+</div>
+<span style="font-size: 15px; font-weight: 600">{{n0.t}}</span>
+<span style="font-size: 14px; line-height: 1.4; color: {{c.text2}}">{{n0.b}}</span>
+<div style="display: flex; gap: 8px; padding-top: 4px">
+<button onClick="{{toRevise}}" style="height: 40px; padding: 0 16px; border-radius: 20px; border: 0; background: {{c.priSoft}}; color: {{c.priText}}; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer">{{s.startReview}}</button>
+<button onClick="{{snooze}}" style="height: 40px; padding: 0 16px; border-radius: 20px; border: 0; background: transparent; color: {{c.text2}}; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer">{{s.snooze}}</button>
+</div>
+</div>
+</sc-if>
+
+<sc-for list="{{groups}}" as="g" hint-placeholder-count="3">
+<h2 style="margin: 14px 0 0; font-size: 14px; font-weight: 700; color: {{c.text2}}">{{g.label}}</h2>
+<div style="border-radius: 18px; background: {{c.card}}; overflow: hidden; display: flex; flex-direction: column">
+<sc-for list="{{g.items}}" as="it" hint-placeholder-count="2">
+<button onClick="{{it.tap}}" style="border: 0; border-bottom: {{it.border}}; background: transparent; color: {{c.text}}; display: flex; gap: 12px; align-items: flex-start; padding: 14px; text-align: start; font-family: inherit; cursor: pointer">
+<span style="width: 36px; height: 36px; border-radius: 10px; background: {{it.bg}}; color: {{it.fg}}; display: flex; align-items: center; justify-content: center; transform: rotate(-7deg); flex: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{it.d}}"></path></svg></span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+<span style="display: flex; gap: 8px; align-items: baseline"><span style="flex: 1; font-size: 15px; font-weight: {{it.fw}}; line-height: 1.3">{{it.t}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}; white-space: nowrap">{{it.time}}</span></span>
+<span style="font-size: 13px; line-height: 1.45; color: {{c.text2}}">{{it.b}}</span>
+</span>
+<span style="width: 8px; height: 8px; border-radius: 4px; background: {{it.dot}}; margin-top: 8px; flex: none"></span>
+</button>
+</sc-for>
+</div>
+</sc-for>
+</div>
+<sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div role="status" aria-live="polite" style="position: absolute; left: 50%; bottom: {{toastBottom}}px; transform: translateX(-50%); z-index: 50; max-width: 86%; box-sizing: border-box; padding: 12px 18px; border-radius: 22px; background: #2E2721; color: #FBEFD6; font-family: Poppins, Vazirmatn, system-ui, sans-serif; font-size: 14px; line-height: 1.4; text-align: center; box-shadow: 0 12px 30px rgba(42,36,32,.28); pointer-events: none">{{toastMsg}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"platform":{"editor":"enum","options":["ios","android"],"default":"ios"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"variant":{"editor":null},"go":{"editor":null},"live":{"editor":null},"$preview":{"width":390,"height":844}}'>
+const _I18N = {k: ["+13 puan ilerledin. Yeni seviye: Çok iyi.", "09:00 Farmasötik Kimya II · Amfi 1 · 14:00 Farm. Tek. III Lab", "1 saat ertele", "1 saat sonra ders çalışıyoruz", "14 Ekim Çarşamba · 5 dakika. Takvimine eklendi.", "36 sayfa · 88 terim · 52 soru · 30 kart hazırlandı.", "8 dakikalık tekrar seni bekliyor: özet, 6 kart, 3 soru.", "Bildirimler", "Bu hafta", "Bugün", "Bugün Hipertansiyon tekrar günü", "Bugün bir bölüm okursan seri 7 güne çıkar.", "Bugünkü planın hazır: Hipertansiyon sınavı + 12 kart, 55 dk.", "BİLDİRİM ÖNİZLEMESİ", "Diyabet dersin hazır", "Dün", "Geri", "Hadi başlayalım!", "Haftalık özet: 5 sa 20 dk çalıştın", "Hedefin 6 saatti. 4 gün, günde ortalama 1 sa 20 dk. En çok: Hipertansiyon.", "Paz", "Pzt", "Saat 09:00'da Hipertansiyon seni bekliyor. Hazırlan.", "Serin 6 günde", "Sınav sonucun: 84/100", "Tablet Formülasyonu tekrarı yaklaşıyor", "Tamam, 1 saat sonra tekrar hatırlatacağız", "Tekrara başla", "Yarın 2 dersin var", "şimdi"], en: ["+13 points up. New level: Very good.", "09:00 Pharmaceutical Chemistry II · Amphi 1 · 14:00 Pharm. Tech. III Lab", "Snooze 1 hour", "Study time in 1 hour", "Wednesday, 14 October · 5 minutes. Added to your calendar.", "36 pages · 88 terms · 52 questions · 30 cards prepared.", "An 8-minute review is waiting: summary, 6 cards, 3 questions.", "Notifications", "This week", "Today", "Today is Hypertension review day", "Read one section today and your streak hits 7 days.", "Today's plan is ready: Hypertension exam + 12 cards, 55 min.", "NOTIFICATION PREVIEW", "Your Diabetes lesson is ready", "Yesterday", "Back", "Let's get started!", "Weekly summary: you studied 5h 20m", "Your goal was 6 hours. 4 days, avg 1h 20m a day. Most: Hypertension.", "Sun", "Mon", "Hypertension is waiting for you at 09:00. Get ready.", "Your streak: 6 days", "Your exam result: 84/100", "Tablet Formulation review coming up", "OK, we'll remind you again in 1 hour", "Start review", "You have 2 classes tomorrow", "now"], fa: ["+13 امتیاز پیشرفت کردی. سطح جدید: خیلی خوب.", "09:00 شیمی دارویی II · آمفی 1 · 14:00 آزمایشگاه فناوری داروسازی III", "1 ساعت عقب بینداز", "1 ساعت دیگر درس می‌خوانیم", "چهارشنبه 14 اکتبر · 5 دقیقه. به تقویمت اضافه شد.", "36 صفحه · 88 اصطلاح · 52 سؤال · 30 کارت آماده شد.", "یک مرور 8 دقیقه‌ای منتظرت است: خلاصه، 6 کارت، 3 سؤال.", "اعلان‌ها", "این هفته", "امروز", "امروز روز مرور فشار خون بالا است", "اگر امروز یک بخش بخوانی، رکوردت به 7 روز می‌رسد.", "برنامه‌ی امروزت آماده است: امتحان فشار خون بالا + 12 کارت، 55 دقیقه.", "پیش‌نمایش اعلان", "درس دیابتت آماده است", "دیروز", "بازگشت", "بیا شروع کنیم!", "خلاصه هفتگی: 5 ساعت 20 دقیقه درس خواندی", "هدفت 6 ساعت بود. 4 روز، روزانه میانگین 1 ساعت 20 دقیقه. بیشترین: فشار خون بالا.", "یکشنبه", "دوشنبه", "ساعت 09:00 فشار خون بالا منتظرت است. آماده شو.", "پیوستگی‌ات: 6 روز", "نتیجه امتحانت: 84/100", "مرور فرمولاسیون قرص نزدیک است", "باشه، 1 ساعت دیگر دوباره یادآوری می‌کنیم", "شروع مرور", "فردا 2 کلاس داری", "اکنون"], ar: ["+13 نقطة تقدّم. المستوى الجديد: جيد جدًا.", "09:00 الكيمياء الصيدلانية II · المدرج 1 · 14:00 مختبر التقانة الصيدلانية III", "أجّل 1 ساعة", "سندرس بعد 1 ساعة", "الأربعاء 14 أكتوبر · 5 دقائق. أُضيف إلى تقويمك.", "36 صفحة · 88 مصطلحًا · 52 سؤالًا · 30 بطاقة جاهزة.", "مراجعة مدتها 8 دقائق بانتظارك: ملخص، 6 بطاقات، 3 أسئلة.", "الإشعارات", "هذا الأسبوع", "اليوم", "اليوم يوم مراجعة ارتفاع ضغط الدم", "إذا قرأت قسماً اليوم يصل تتابعك إلى 7 أيام.", "خطة اليوم جاهزة: امتحان ارتفاع ضغط الدم + 12 بطاقة، 55 د.", "معاينة الإشعار", "درس السكري جاهز", "أمس", "رجوع", "هيا نبدأ!", "ملخص الأسبوع: درست 5 س 20 د", "كان هدفك 6 ساعات. 4 أيام، بمعدل 1 س 20 د يوميًا. الأكثر: ارتفاع ضغط الدم.", "الأحد", "الإثنين", "ارتفاع ضغط الدم بانتظارك الساعة 09:00. استعد.", "سلسلتك: 6 أيام", "نتيجة امتحانك: 84/100", "مراجعة تركيب الأقراص تقترب", "حسنًا، سنذكّرك مجددًا بعد 1 ساعة", "ابدأ المراجعة", "لديك حصتان غدًا", "الآن"]};
+let _lang = 'tr', _M = null; const _TC = {};
+const _x = (s) => { if (_lang === 'tr' || !_I18N[_lang]) return s; if (!_M) { _M = {}; _I18N.k.forEach((k, i) => { _M[k] = i; }); } const i = _M[s]; return i == null ? s : _I18N[_lang][i]; };
+const _TK = {};
+const _PT = {};
+const _tt = () => { if (!_TC[_lang]) { const o = {}; Object.keys(_TK).forEach((k) => { o[k] = (_PT[k] && _lang !== 'tr') ? (_PT[k][_lang] || _x(_TK[k])) : _x(_TK[k]); }); _TC[_lang] = o; } return _TC[_lang]; };
+
+class Component extends DCLogic {
+  renderVals() { const _p = this.props || {}, _s = this.state || {}; _lang = _s.lang || _p.lang || 'tr'; const r = this._rv0(); if (r && typeof r === 'object') { r._t = _tt(); r._dir = (_lang === 'fa' || _lang === 'ar') ? 'rtl' : 'ltr'; r._ai = this._aiDark ? { bg: '#F2B33D', fg: '#241C14', tx: '#EFE8DC' } : { bg: '#9C2F3A', fg: '#FFF6E6', tx: '#2A2420' }; } return r; }
+  _rv0() {
+    const __st = this.state || {};
+    const say = (m, after) => { this.setState({ toast: m }); clearTimeout(this._tt); this._tt = setTimeout(() => { this.setState({ toast: '' }); if (after) after(); }, 1700); };
+    const p = this.props;
+    const ios = (p.platform || 'ios') === 'ios';
+    const dark = p.theme === 'dark';
+    const lang = p.lang || 'tr';
+    const rtl = lang === 'fa' || lang === 'ar';
+    const c = dark
+      ? { bg: '#15120F', card: '#211C18', push: '#2B2520', sub: '#2B2520', text: '#EFE8DC', text2: '#BDB2A4', text3: '#9A8F82', line: '#3A322B', pri: '#B23A47', priText: '#F09AA3', priSoft: '#3A2027', ambText: '#F2C46E', ambSoft: '#3A2F1A', ok: '#5BC893', okSoft: '#173328', blue: '#8DB4F5', blueSoft: '#1E2C45' }
+      : { bg: '#F4EFE6', card: '#FFFCF6', push: '#FFFCF6', sub: '#F1EBE0', text: '#2A2420', text2: '#6E645A', text3: '#776C60', line: '#E6DDCF', pri: '#9C2F3A', priText: '#9C2F3A', priSoft: '#F7E7E9', ambText: '#83560A', ambSoft: '#FDF1D6', ok: '#1E7A4C', okSoft: '#E2F3E9', blue: '#2557A8', blueSoft: '#E5EEFB' };
+    const T = {
+      tr: { back: _x('Geri'), title: _x('Bildirimler'), preview: _x('BİLDİRİM ÖNİZLEMESİ'), now: _x('şimdi'), startReview: _x('Tekrara başla'), snooze: _x('1 saat ertele'), g: [_x('Bugün'), _x('Dün'), _x('Bu hafta')], n: [[_x('Yarın 2 dersin var'), _x('09:00 Farmasötik Kimya II · Amfi 1 · 14:00 Farm. Tek. III Lab'), '20:00'], [_x('Hadi başlayalım!'), _x('Bugünkü planın hazır: Hipertansiyon sınavı + 12 kart, 55 dk.'), '09:00'], [_x('1 saat sonra ders çalışıyoruz'), _x('Saat 09:00\'da Hipertansiyon seni bekliyor. Hazırlan.'), '08:00'], [_x('Bugün Hipertansiyon tekrar günü'), _x('8 dakikalık tekrar seni bekliyor: özet, 6 kart, 3 soru.'), '09:00'], [_x('Serin 6 günde'), _x('Bugün bir bölüm okursan seri 7 güne çıkar.'), '08:30'], [_x('Diyabet dersin hazır'), _x('36 sayfa · 88 terim · 52 soru · 30 kart hazırlandı.'), '21:14'], [_x('Sınav sonucun: 84/100'), _x('+13 puan ilerledin. Yeni seviye: Çok iyi.'), '19:40'], [_x('Tablet Formülasyonu tekrarı yaklaşıyor'), _x('14 Ekim Çarşamba · 5 dakika. Takvimine eklendi.'), _x('Pzt')], [_x('Haftalık özet: 5 sa 20 dk çalıştın'), _x('Hedefin 6 saatti. 4 gün, günde ortalama 1 sa 20 dk. En çok: Hipertansiyon.'), _x('Paz')]] },
+      en: { back: 'Back', title: 'Notifications', preview: 'NOTIFICATION PREVIEW', now: 'now', startReview: 'Start review', snooze: 'Snooze 1 hour', g: ['Today', 'Yesterday', 'This week'], n: [['You have 2 classes tomorrow', _x('09:00 Farmasötik Kimya II · Amfi 1 · 14:00 Farm. Tek. III Lab'), '20:00'], ["Let's start!", "Today's plan is ready: Hypertension exam + 12 cards, 55 min.", '09:00'], ["We're studying in 1 hour", 'Hypertension is waiting for you at 09:00. Get ready.', '08:00'], ['Hypertension review day today', 'Your 8-minute review is waiting: summary, 6 cards, 3 questions.', '09:00'], ['Your streak is at 6 days', 'Read one section today to reach 7.', '08:30'], ['Diabetes lesson is ready', '36 pages · 88 terms · 52 questions · 30 cards prepared.', '21:14'], ['Exam result: 84/100', 'Up 13 points. New level: Very good.', '19:40'], ['Tablet Formulation review coming up', 'Wednesday, Oct 14 · 5 min. Added to your calendar.', 'Mon'], ['Weekly summary: you studied 5 h 20 min', 'Your goal was 6 h. 4 days, 1 h 20 min a day on average. Most: Hypertension.', 'Sun']] },
+      fa: { back: 'بازگشت', title: 'اعلان‌ها', preview: 'پیش‌نمایش اعلان', now: 'اکنون', startReview: 'شروع مرور', snooze: 'یک ساعت بعد', g: ['امروز', 'دیروز', 'این هفته'], n: [['فردا ۲ کلاس داری', _x('09:00 Farmasötik Kimya II · Amfi 1 · 14:00 Farm. Tek. III Lab'), '20:00'], ['بیا شروع کنیم!', 'برنامهٔ امروز آماده است: آزمون فشار خون بالا و ۱۲ کارت، ۵۵ دقیقه.', '۰۹:۰۰'], ['یک ساعت دیگر درس می‌خوانیم', 'ساعت ۹ فشار خون بالا منتظر توست. آماده شو.', '۰۸:۰۰'], ['امروز روز مرور ارتفاع ضغط الدم است', 'مرور ۸ دقیقه‌ای منتظر توست: خلاصه، ۶ کارت، ۳ سؤال.', '۰۹:۰۰'], ['۶ روز پیاپی خوانده‌ای', 'امروز یک بخش بخوانی، به ۷ روز می‌رسی.', '۰۸:۳۰'], ['درس السكري آماده است', '۳۶ صفحه · ۸۸ اصطلاح · ۵۲ سؤال · ۳۰ کارت آماده شد.', '۲۱:۱۴'], ['نتیجهٔ آزمون: ۸۴ از ۱۰۰', '۱۳ امتیاز پیشرفت. سطح جدید: خیلی خوب.', '۱۹:۴۰'], ['مرور فرمولاسیون قرص نزدیک است', 'چهارشنبه ۱۴ اکتبر · ۵ دقیقه. به تقویمت اضافه شد.', 'دوشنبه'], ['خلاصهٔ هفتگی: ۵ ساعت و ۲۰ دقیقه خواندی', 'هدفت ۶ ساعت بود. ۴ روز، روزی به‌طور میانگین ۱ ساعت و ۲۰ دقیقه. بیشترین: فشار خون بالا.', 'یکشنبه']] },
+      ar: { back: 'رجوع', title: 'الإشعارات', preview: 'معاينة الإشعار', now: 'الآن', startReview: 'ابدأ المراجعة', snooze: 'تأجيل ساعة', g: ['اليوم', 'أمس', 'هذا الأسبوع'], n: [['لديك محاضرتان غدًا', _x('09:00 Farmasötik Kimya II · Amfi 1 · 14:00 Farm. Tek. III Lab'), '20:00'], ['هيا نبدأ!', 'خطة اليوم جاهزة: اختبار ارتفاع ضغط الدم و12 بطاقة، 55 دقيقة.', '09:00'], ['سندرس بعد ساعة', 'ارتفاع ضغط الدم بانتظارك عند 09:00. استعد.', '08:00'], ['اليوم يوم مراجعة ارتفاع ضغط الدم', 'مراجعة 8 دقائق بانتظارك: ملخص و6 بطاقات و3 أسئلة.', '09:00'], ['سلسلتك 6 أيام', 'اقرأ قسمًا اليوم لتصل إلى 7.', '08:30'], ['درس السكري جاهز', '36 صفحة · 88 مصطلحًا · 52 سؤالًا · 30 بطاقة.', '21:14'], ['نتيجة الاختبار: 84/100', 'تقدّمت 13 نقطة. المستوى الجديد: جيد جدًا.', '19:40'], ['مراجعة صياغة الأقراص قريبة', 'الأربعاء 14 أكتوبر · 5 دقائق. أُضيفت إلى تقويمك.', 'الاثنين'], ['الملخص الأسبوعي: درست 5 س 20 د', 'كان هدفك 6 ساعات. 4 أيام، بمعدل 1 س 20 د يوميًا. الأكثر: ارتفاع ضغط الدم.', 'الأحد']] }
+    };
+    const s = T[lang] || T.tr;
+    const go = (a, b, k) => () => { if (p.go) p.go(a, b, k); };
+    const ic = {
+      repeat: 'M4 12a8 8 0 0 1 14-5.3L20 9 M20 4v5h-5 M20 12a8 8 0 0 1-14 5.3L4 15 M4 20v-5h5',
+      flame: 'M12 21c-4 0-7-2.7-7-6.5 0-3 2-5 3.5-6.5.3 1.6 1.2 2.6 2.3 3C10.5 7.5 12 5 14 3c.4 3 5 5.5 5 11.5 0 3.8-3 6.5-7 6.5z',
+      check: 'M5 12.5l4.5 4.5L19 7',
+      play: 'M8 5v14l11-7z',
+      clock: 'M12 21a8 8 0 1 0 0-16 8 8 0 0 0 0 16z M12 9v4l2.5 1.5 M10 2h4',
+      chart: 'M4 20V11 M10 20V5 M16 20v-6 M21 20H3',
+      cal: 'M5 5h14a1.5 1.5 0 0 1 1.5 1.5v12A1.5 1.5 0 0 1 19 20H5a1.5 1.5 0 0 1-1.5-1.5v-12A1.5 1.5 0 0 1 5 5z M3.5 10h17 M8 3v4 M16 3v4'
+    };
+    const meta = [['cal', c.ambSoft, c.ambText, true, go('schedule', 'list')], ['play', c.priSoft, c.priText, true, go('reader')], ['clock', c.ambSoft, c.ambText, true, go('plan', 'week')], ['repeat', c.priSoft, c.priText, true, go('revise')], ['flame', c.ambSoft, c.ambText, true, go('reader')], ['check', c.okSoft, c.ok, false, go('home')], ['chart', c.blueSoft, c.blue, false, go('progress')], ['cal', c.sub, c.text2, false, go('progress')], ['clock', c.ambSoft, c.ambText, false, go('progress')]];
+    const items = s.n.map((n, i) => ({ t: n[0], b: n[1], time: n[2], d: ic[meta[i][0]], bg: meta[i][1], fg: meta[i][2], dot: meta[i][3] ? c.pri : 'transparent', fw: meta[i][3] ? 700 : 600, tap: meta[i][4], border: '1px solid ' + c.line }));
+    const groups = [{ label: s.g[0], items: items.slice(0, 5) }, { label: s.g[1], items: items.slice(5, 7) }, { label: s.g[2], items: items.slice(7) }];
+    groups.forEach((g) => { g.items[g.items.length - 1].border = '0'; });
+    return { toastOn: !!__st.toast, toastMsg: __st.toast || '', toastBottom: 40,
+      snooze: () => say(_x('Tamam, 1 saat sonra tekrar hatırlatacağız')),
+      c, s, lang, ios, android: !ios, groups, toRevise: go('revise'), n0: { t: s.n[3][0], b: s.n[3][1] },
+      dir: rtl ? 'rtl' : 'ltr', flip: rtl ? -1 : 1,
+      W: ios ? 390 : 412, H: ios ? 844 : 915, topH: ios ? 54 : 36,
+      back: go('home'), toSettings: go('settings'), toCards: go('cards')
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Kartlar</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+<style>[dir=rtl] .dc-back{transform:scaleX(-1)}[dir=rtl],[dir=rtl] *{letter-spacing:0 !important}</style>
+</helmet>
+<div dir="{{dir}}" lang="{{lang}}" style="width: {{W}}px; height: {{H}}px; box-sizing: border-box; display: flex; flex-direction: column; position: relative; overflow: hidden; background: {{c.bg}}; color: {{c.text}}; font-family: Poppins, Vazirmatn, system-ui, sans-serif">
+<div style="height: {{topH}}px; flex: none"></div>
+<div style="flex: none; display: flex; flex-direction: column; gap: 10px; padding: 0 16px 8px">
+<div style="display: flex; align-items: center; gap: 8px; height: 44px">
+<button onClick="{{close}}" aria-label="{{s.close}}" style="width: 44px; height: 44px; margin-inline-start: -10px; border: 0; background: transparent; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12 M18 6L6 18"></path></svg></button>
+<div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 1px">
+<span style="font-size: 15px; font-weight: 700">{{s.title}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.08em; color: {{c.text3}}">{{_t.k1262}}</span>
+</div>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px; color: {{c.text2}}; min-width: 34px; text-align: end">{{n}}/20</span>
+</div>
+<span role="progressbar" aria-valuenow="{{n}}" aria-valuemin="0" aria-valuemax="20" style="height: 6px; border-radius: 3px; background: {{c.line}}; overflow: hidden; display: flex"><span style="width: {{pct}}%; background: {{c.pri}}; border-radius: 3px"></span></span>
+<div style="display: flex; gap: 12px; justify-content: center; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px">
+<span style="color: {{c.bad}}">● {{s.again}} 2</span><span style="color: {{c.ambText}}">● {{s.hard}} 3</span><span style="color: {{c.ok}}">● {{s.good}} 6</span>
+</div>
+</div>
+
+<div style="flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 8px 24px; position: relative">
+<span aria-hidden="true" style="position: absolute; width: 300px; height: 420px; border-radius: 26px; background: {{c.card}}; opacity: 0.45; transform: translateY(18px) rotate(4deg)"></span>
+<span aria-hidden="true" style="position: absolute; width: 318px; height: 430px; border-radius: 26px; background: {{c.card}}; opacity: 0.7; transform: translateY(9px) rotate(-2.5deg)"></span>
+<button onClick="{{flip}}" aria-label="{{s.flipLabel}}" style="position: relative; width: 330px; height: 440px; border-radius: 26px; border: 1px solid {{c.line}}; background: {{c.card}}; color: {{c.text}}; box-shadow: 0 18px 40px rgba(27,36,48,.12); padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px; font-family: inherit; text-align: center; cursor: pointer">
+<sc-if value="{{front}}" hint-placeholder-val="{{ true }}">
+<span style="align-self: center; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; letter-spacing: 0.1em; color: {{c.text3}}">{{s.q}} · {{s.pg}} {{card.page}}</span><span style="display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; line-height: 1; padding: 4px 8px; border-radius: 10px; background: rgba(242,179,61,.2); color: {{c.text2}}; white-space: nowrap; align-self: center; margin-top: 6px"><svg width="9" height="9" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z" fill="#E39A26"></path></svg>{{_t.k2761}}</span>
+<span style="flex: 1; display: flex; align-items: center; justify-content: center">
+<span dir="ltr" lang="tr" style="font-family: Lora, Vazirmatn, Georgia, serif; font-size: 23px; line-height: 1.45; font-weight: 500; text-wrap: balance">{{card.q}}</span>
+</span>
+<span style="align-self: center; display: flex; align-items: center; gap: 8px; font-size: 13px; color: {{c.text3}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 14-5.3L20 9 M20 4v5h-5 M20 12a8 8 0 0 1-14 5.3L4 15 M4 20v-5h5"></path></svg>{{s.tap}}</span>
+</sc-if>
+<sc-if value="{{back}}" hint-placeholder-val="{{ false }}">
+<span style="align-self: center; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; letter-spacing: 0.1em; color: {{c.ok}}">{{s.a}}</span>
+<span dir="ltr" lang="tr" style="font-family: Lora, Vazirmatn, Georgia, serif; font-size: 15px; line-height: 1.45; color: {{c.text3}}">{{card.q}}</span>
+<span style="height: 1px; background: {{c.line}}"></span>
+<span style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px">
+<span dir="ltr" lang="tr" style="font-size: 30px; line-height: 1.2; font-weight: 700; color: {{c.priText}}">{{card.a}}</span>
+<span dir="ltr" lang="tr" style="font-family: Lora, Vazirmatn, Georgia, serif; font-size: 16px; line-height: 1.55; color: {{c.text2}}">{{card.e}}</span>
+</span>
+<span style="align-self: center; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; padding: 5px 10px; border-radius: 6px; background: {{c.sub}}; color: {{c.text2}}">PDF · {{s.pg}} {{card.page}}</span>
+</sc-if>
+</button>
+</div>
+
+<div style="flex: none; padding: 12px 16px {{bottomPad}}px; display: flex; flex-direction: column; gap: 10px">
+<sc-if value="{{front}}" hint-placeholder-val="{{ true }}">
+<button onClick="{{flip}}" style="width: 100%; height: {{btnH}}px; border: 0; border-radius: {{btnR}}px; background: #9C2F3A; color: #FFFCF6; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{s.show}}</button>
+</sc-if>
+<sc-if value="{{back}}" hint-placeholder-val="{{ false }}">
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+<sc-for list="{{rates}}" as="r" hint-placeholder-count="3">
+<button onClick="{{r.tap}}" style="height: 64px; border-radius: 16px; border: 0; background: {{r.bg}}; color: {{r.fg}}; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-family: inherit; cursor: pointer">
+<span style="font-size: 15px; font-weight: 700">{{r.label}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; opacity: 0.85">{{r.next}}</span>
+</button>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"platform":{"editor":"enum","options":["ios","android"],"default":"ios"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"variant":{"editor":"enum","options":["front","back"],"default":"front"},"go":{"editor":null},"live":{"editor":null},"$preview":{"width":390,"height":844}}'>
+const _I18N = {k: ["1 dk", "10 dk", "4 gün", "ACE inhibitörleri nadiren anjiyoödem de yapabilir.", "ACE inhibitörlerine bağlı kuru öksürük neyin birikimiyle ilişkilidir?", "Alfa-1 blokerlerin ilk dozundan sonra ne görülebilir?", "Bildim", "Bilmedim", "Bradikinin", "Bu yüzden ilk dozun yatmadan önce alınması önerilir.", "CEVAP", "Cevabı görmek için dokun", "Cevabı göster", "Gut", "HİPERTANSİYON", "Kapat", "Kartlar", "Kartı çevir", "Ortostatik hipotansiyon", "S.", "SORU", "Tiyazid diüretiklerin zorunlu kontrendikasyonu nedir?", "Tiyazidler serum ürik asit düzeyini artırır.", "Zor", "Hocanın tarzında"], en: ["1 min", "10 min", "4 days", "ACE inhibitors can also rarely cause angioedema.", "Dry cough from ACE inhibitors is linked to the buildup of what?", "What can occur after the first dose of alpha-1 blockers?", "Knew it", "Didn't know", "Bradykinin", "That's why the first dose is recommended at bedtime.", "ANSWER", "Tap to see the answer", "Show answer", "Gout", "HYPERTENSION", "Close", "Cards", "Flip card", "Orthostatic hypotension", "p.", "QUESTION", "What is the compelling contraindication of thiazide diuretics?", "Thiazides raise serum uric acid.", "Hard", "In your teacher's style"], fa: ["1 دقیقه", "10 دقیقه", "4 روز", "مهارکننده‌های ACE به‌ندرت آنژیوادم هم ایجاد می‌کنند.", "سرفهٔ خشک ناشی از مهارکننده‌های ACE با تجمع چه چیزی مرتبط است؟", "پس از دوز اول مسدودکننده‌های آلفا-1 چه ممکن است دیده شود؟", "بلد بودم", "بلد نبودم", "برادی‌کینین", "به همین دلیل توصیه می‌شود دوز اول قبل از خواب مصرف شود.", "جواب", "برای دیدن جواب بزن", "نمایش جواب", "نقرس", "فشار خون بالا", "بستن", "کارت‌ها", "برگرداندن کارت", "افت فشار خون وضعیتی", "ص.", "سؤال", "منع مصرف قطعی دیورتیک‌های تیازیدی چیست؟", "تیازیدها اسید اوریک سرم را بالا می‌برند.", "سخت", "به سبک استادت"], ar: ["1 د", "10 د", "4 أيام", "قد تسبب مثبطات ACE نادرًا الوذمة الوعائية أيضًا.", "يرتبط السعال الجاف الناتج عن مثبطات ACE بتراكم ماذا؟", "ماذا قد يحدث بعد الجرعة الأولى من حاصرات ألفا-1؟", "عرفتها", "لم أعرفها", "البراديكينين", "لذلك يُنصح بأخذ الجرعة الأولى قبل النوم.", "الإجابة", "اضغط لرؤية الإجابة", "أظهر الإجابة", "النقرس", "ارتفاع ضغط الدم", "إغلاق", "البطاقات", "اقلب البطاقة", "هبوط الضغط الانتصابي", "ص.", "السؤال", "ما هو مضاد الاستطباب المطلق لمدرات البول الثيازيدية؟", "ترفع الثيازيدات حمض اليوريك في المصل.", "صعب", "بأسلوب أستاذك"]};
+let _lang = 'tr', _M = null; const _TC = {};
+const _x = (s) => { if (_lang === 'tr' || !_I18N[_lang]) return s; if (!_M) { _M = {}; _I18N.k.forEach((k, i) => { _M[k] = i; }); } const i = _M[s]; return i == null ? s : _I18N[_lang][i]; };
+const _TK = {"k1262": "HİPERTANSİYON", "k2761": "Hocanın tarzında"};
+const _PT = {};
+const _tt = () => { if (!_TC[_lang]) { const o = {}; Object.keys(_TK).forEach((k) => { o[k] = (_PT[k] && _lang !== 'tr') ? (_PT[k][_lang] || _x(_TK[k])) : _x(_TK[k]); }); _TC[_lang] = o; } return _TC[_lang]; };
+
+class Component extends DCLogic {
+  renderVals() { const _p = this.props || {}, _s = this.state || {}; _lang = _s.lang || _p.lang || 'tr'; const r = this._rv0(); if (r && typeof r === 'object') { r._t = _tt(); r._dir = (_lang === 'fa' || _lang === 'ar') ? 'rtl' : 'ltr'; r._ai = this._aiDark ? { bg: '#F2B33D', fg: '#241C14', tx: '#EFE8DC' } : { bg: '#9C2F3A', fg: '#FFF6E6', tx: '#2A2420' }; } return r; }
+  _rv0() {
+    const p = this.props, st = this.state || {};
+    const ios = (p.platform || 'ios') === 'ios';
+    const dark = p.theme === 'dark';
+    const lang = p.lang || 'tr';
+    const rtl = lang === 'fa' || lang === 'ar';
+    const c = dark
+      ? { bg: '#15120F', card: '#211C18', sub: '#2B2520', text: '#EFE8DC', text2: '#BDB2A4', text3: '#9A8F82', line: '#3A322B', pri: '#B23A47', priText: '#F09AA3', amb: '#F2B33D', ambText: '#F2C46E', ambSoft: '#3A2F1A', ok: '#5BC893', okSoft: '#173328', bad: '#F27A70', badSoft: '#3D1F1F' }
+      : { bg: '#F4EFE6', card: '#FFFCF6', sub: '#F1EBE0', text: '#2A2420', text2: '#6E645A', text3: '#776C60', line: '#E6DDCF', pri: '#9C2F3A', priText: '#9C2F3A', amb: '#F2B33D', ambText: '#83560A', ambSoft: '#FDF1D6', ok: '#1E7A4C', okSoft: '#E2F3E9', bad: '#C0352B', badSoft: '#FCE8E6' };
+    const T = {
+      tr: { close: _x('Kapat'), title: _x('Kartlar'), again: _x('Bilmedim'), hard: _x('Zor'), good: _x('Bildim'), q: _x('SORU'), a: _x('CEVAP'), pg: _x('S.'), tap: _x('Cevabı görmek için dokun'), flipLabel: _x('Kartı çevir'), show: _x('Cevabı göster'), next: [_x('1 dk'), _x('10 dk'), _x('4 gün')] },
+      en: { close: 'Close', title: 'Cards', again: "Didn't know", hard: 'Hard', good: 'Knew it', q: 'QUESTION', a: 'ANSWER', pg: 'P.', tap: 'Tap to see the answer', flipLabel: 'Flip card', show: 'Show answer', next: ['1 min', '10 min', '4 days'] },
+      fa: { close: 'بستن', title: 'کارت‌ها', again: 'نمی‌دانستم', hard: 'سخت', good: 'می‌دانستم', q: 'سؤال', a: 'پاسخ', pg: 'ص.', tap: 'برای دیدن پاسخ بزن', flipLabel: 'برگرداندن کارت', show: 'نمایش پاسخ', next: ['۱ دقیقه', '۱۰ دقیقه', '۴ روز'] },
+      ar: { close: 'إغلاق', title: 'البطاقات', again: 'لم أعرف', hard: 'صعب', good: 'عرفت', q: 'سؤال', a: 'الإجابة', pg: 'ص.', tap: 'المس لرؤية الإجابة', flipLabel: 'اقلب البطاقة', show: 'أظهر الإجابة', next: ['دقيقة', '10 دقائق', '4 أيام'] }
+    };
+    const s = T[lang] || T.tr;
+    const cards = [
+      { q: _x('Tiyazid diüretiklerin zorunlu kontrendikasyonu nedir?'), a: _x('Gut'), e: _x('Tiyazidler serum ürik asit düzeyini artırır.'), page: 14 },
+      { q: _x('Alfa-1 blokerlerin ilk dozundan sonra ne görülebilir?'), a: _x('Ortostatik hipotansiyon'), e: _x('Bu yüzden ilk dozun yatmadan önce alınması önerilir.'), page: 13 },
+      { q: _x('ACE inhibitörlerine bağlı kuru öksürük neyin birikimiyle ilişkilidir?'), a: _x('Bradikinin'), e: _x('ACE inhibitörleri nadiren anjiyoödem de yapabilir.'), page: 13 }
+    ];
+    const i = st.i || 0;
+    const showBack = st.side ? st.side === 'back' : (p.variant === 'back' && !st.i);
+    const n = 12 + i;
+    const advance = () => this.setState({ i: (i + 1), side: 'front' });
+    const rates = [[s.again, c.badSoft, c.bad], [s.hard, c.ambSoft, c.ambText], [s.good, c.okSoft, c.ok]].map((r, k) => ({ label: r[0], bg: r[1], fg: r[2], next: s.next[k], tap: advance }));
+    return {
+      c, s, lang, rates, n, pct: Math.round(n / 20 * 100),
+      card: cards[i % 3], front: !showBack, back: showBack,
+      dir: rtl ? 'rtl' : 'ltr',
+      W: ios ? 390 : 412, H: ios ? 844 : 915, topH: ios ? 54 : 36, bottomPad: ios ? 34 : 20,
+      btnR: ios ? 14 : 100, btnH: ios ? 52 : 48,
+      flip: () => this.setState({ side: showBack ? 'front' : 'back', i }),
+      close: () => { if (p.go) p.go('home'); }
+    };
+  }
+}
+</script>
+</body>
+</html>

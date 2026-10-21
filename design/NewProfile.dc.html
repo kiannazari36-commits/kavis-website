@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Yeni stil · Profilim</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+<style>[dir=rtl] .dc-back{transform:scaleX(-1)}[dir=rtl],[dir=rtl] *{letter-spacing:0 !important}</style>
+</helmet>
+<div dir="{{_dir}}" style="width: {{W}}px; height: {{H}}px; box-sizing: border-box; position: relative; overflow: hidden; background: {{c.bgGrad}}; color: {{c.text}}; font-family: Poppins, Vazirmatn, system-ui, sans-serif; display: flex; flex-direction: column">
+<div style="height: 60px; flex: none"></div>
+<div style="display: flex; align-items: center; gap: 12px; padding: 0 20px 6px">
+<button onClick="{{back}}" aria-label="{{_t.k1052}}" style="width: 46px; height: 46px; border-radius: 23px; border: 1px solid {{c.line}}; background: {{c.card}}; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg class="dc-back" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5 M11 6l-6 6 6 6"></path></svg></button>
+<span style="flex: 1; text-align: center; font-size: 16px; font-weight: 600">{{head}}</span>
+<span style="width: 46px"></span>
+</div>
+
+<sc-if value="{{is.view}}" hint-placeholder-val="{{ true }}">
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 10px 20px 36px; display: flex; flex-direction: column; gap: 14px">
+<sc-if value="{{saved}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="border-radius: 20px; background: {{c.goodSoft}}; color: {{c.good}}; padding: 10px 14px; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>{{_t.k508}}</div>
+</sc-if>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; padding-top: 4px">
+<span style="position: relative; width: 96px; height: 96px; border-radius: 48px; background: radial-gradient(circle at 35% 30%, #F9D28E 0%, #E8925A 45%, #9C2F3A 100%); color: #FFFCF6; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 600; box-shadow: 0 0 0 8px {{c.ring}}">EY
+<button onClick="{{toEdit}}" aria-label="{{_t.k1018}}" style="position: absolute; right: -4px; bottom: -4px; width: 36px; height: 36px; border-radius: 18px; border: 3px solid {{c.bgSolid}}; background: {{c.card}}; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z M12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path></svg></button>
+</span>
+<span style="margin-top: 10px; font-size: 26px; font-weight: 600; letter-spacing: -0.02em">{{name}}</span>
+<span style="font-size: 13px; color: {{c.text2}}">elif@ogrenci.edu.tr</span>
+<div style="display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; padding-top: 4px">
+<span style="height: 30px; padding: 0 12px; border-radius: 15px; background: {{c.card}}; border: 1px solid {{c.line}}; display: flex; align-items: center; font-size: 12px">{{dept}} · {{year}}{{_t.k113}}</span>
+<span style="height: 30px; padding: 0 12px; border-radius: 15px; background: {{c.card}}; border: 1px solid {{c.line}}; display: flex; align-items: center; font-size: 12px">{{uni}}</span>
+</div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{stats}}" as="s" hint-placeholder-count="3"><button onClick="{{s.tap}}" style="border-radius: 20px; border: 1px solid {{c.line}}; background: {{c.card}}; color: {{c.text}}; padding: 12px 6px; display: flex; flex-direction: column; align-items: center; gap: 2px; font-family: inherit; cursor: pointer"><span style="font-size: 20px; font-weight: 600">{{s.v}}</span><span style="font-size: 11px; color: {{c.text2}}">{{s.l}}</span></button></sc-for>
+</div>
+
+<button onClick="{{toPaywall}}" style="border-radius: 24px; border: 0; background: {{c.hero}}; color: {{c.onHero}}; padding: 14px 16px; display: flex; align-items: center; gap: 12px; font-family: inherit; text-align: start; box-shadow: {{c.heroShadow}}; cursor: pointer">
+<span style="width: 42px; height: 42px; border-radius: 21px; background: {{c.heroChip}}; display: flex; align-items: center; justify-content: center; flex: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"></path></svg></span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 600">{{_t.k2548}}</span><span style="font-size: 12px; opacity: .8">{{_t.k551}}</span></span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg>
+</button>
+
+<div style="border-radius: 24px; border: 1px solid {{c.line}}; background: {{c.card}}; padding: 4px 14px; display: flex; flex-direction: column">
+<sc-for list="{{menu}}" as="m" hint-placeholder-count="7">
+<button onClick="{{m.tap}}" style="border: 0; border-top: {{m.sep}}; background: transparent; color: {{c.text}}; min-height: 56px; padding: 8px 0; display: flex; align-items: center; gap: 12px; font-family: inherit; text-align: start; cursor: pointer">
+<span style="width: 38px; height: 38px; border-radius: 19px; background: {{m.chip}}; color: {{m.fg}}; display: flex; align-items: center; justify-content: center; flex: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{m.d}}"></path></svg></span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 1px"><span style="font-size: 15px; font-weight: 500">{{m.t}}</span><span style="font-size: 12px; color: {{c.text2}}">{{m.s}}</span></span>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: {{c.text3}}"><path d="M9 5l7 7-7 7"></path></svg>
+</button>
+</sc-for>
+</div>
+
+<button onClick="{{logout}}" style="height: 52px; border-radius: 26px; border: 1px solid {{c.line}}; background: transparent; color: {{c.danger}}; font-family: inherit; font-size: 15px; font-weight: 500; cursor: pointer">{{_t.k2500}}</button>
+<span style="text-align: center; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.text3}}">{{_t.k1274}}</span>
+</div>
+</sc-if>
+
+<sc-if value="{{is.edit}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 10px 20px 0; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: center; gap: 14px">
+<span style="width: 72px; height: 72px; border-radius: 36px; background: radial-gradient(circle at 35% 30%, #F9D28E 0%, #E8925A 45%, #9C2F3A 100%); color: #FFFCF6; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 600; flex: none">EY</span>
+<div style="display: flex; flex-direction: column; gap: 6px"><button onClick="{{pfPhoto}}" style="height: 38px; padding: 0 14px; border-radius: 19px; border: 1px solid {{c.line}}; background: {{c.card}}; color: {{c.text}}; font-family: inherit; font-size: 13px; cursor: pointer">{{_t.k1014}}</button><span style="font-size: 11px; color: {{c.text3}}">{{_t.k2613}}</span></div>
+</div>
+<sc-for list="{{fields}}" as="f" hint-placeholder-count="4">
+<label style="flex: none; display: flex; flex-direction: column; gap: 6px"><span style="font-size: 13px; color: {{c.text2}}; padding-left: 6px">{{f.l}}</span><input value="{{f.v}}" type="{{f.type}}" autocomplete="{{f.ac}}" style="height: 52px; box-sizing: border-box; border-radius: 26px; border: 1px solid {{c.line}}; background: {{c.card}}; color: {{c.text}}; padding: 0 20px; font-family: inherit; font-size: 15px; outline: none"></label>
+</sc-for>
+<div style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 13px; color: {{c.text2}}; padding-left: 6px">{{_t.k1981}}</span>
+<div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{years}}" as="y" hint-placeholder-count="6"><button onClick="{{y.pick}}" aria-pressed="{{y.on}}" style="height: 44px; border-radius: 22px; border: {{y.border}}; background: {{y.bg}}; color: {{y.fg}}; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">{{y.n}}</button></sc-for>
+</div></div>
+<button onClick="{{toPassword}}" style="flex: none; height: 50px; border-radius: 25px; border: 1px solid {{c.line}}; background: {{c.card}}; color: {{c.text}}; font-family: inherit; font-size: 14px; cursor: pointer">{{_t.k2626}}</button>
+<span style="font-size: 12px; line-height: 1.5; color: {{c.text3}}; padding: 0 6px">{{_t.k1172}}</span>
+<div style="height: 6px; flex: none"></div>
+</div>
+<div style="padding: 12px 20px 36px">
+<button onClick="{{save}}" style="width: 100%; height: 58px; border-radius: 29px; border: 0; background: {{c.cta}}; color: #FFFCF6; font-family: inherit; font-size: 17px; font-weight: 500; box-shadow: 0 12px 30px rgba(156,47,58,.28); cursor: pointer">{{_t.k1326}}</button>
+</div>
+</sc-if>
+<sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div role="status" aria-live="polite" style="position: absolute; left: 50%; bottom: {{toastBottom}}px; transform: translateX(-50%); z-index: 50; max-width: 86%; box-sizing: border-box; padding: 12px 18px; border-radius: 22px; background: #2E2721; color: #FBEFD6; font-family: Poppins, Vazirmatn, system-ui, sans-serif; font-size: 14px; line-height: 1.4; text-align: center; box-shadow: 0 12px 30px rgba(42,36,32,.28); pointer-events: none">{{toastMsg}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"platform":{"editor":"enum","options":["ios","android"],"default":"ios"},"variant":{"editor":"enum","options":["view","edit"],"default":"view"},"go":{"editor":null},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"$preview":{"width":390,"height":844}}'>
+const _I18N = {k: [". sınıf", "35 soru · hocanın tarzı çıkarıldı", "42 sa", "6 gün", "Ad soyad", "Ad, e-posta, üniversite, sınıf", "Ankara Üniversitesi", "Ayarlar", "Bildirimler", "Bilgilerin kaydedildi", "Bu ay 2 dersten 1'i kullanıldı · Premium'a geç", "Bu dönem 5 ders · 13 PDF", "Bölüm", "Derslerim klasörü", "E-posta", "Eczacılık", "Fotoğraf seç", "Fotoğraf seçildi", "Fotoğrafı değiştir", "Geri", "Haftalık süre, seviye, sınav haftası", "Hatırlatma 09:00 · 1 saat önce", "Hesabını silmek istersen Ayarlar › Gizlilik bölümünden tüm PDF'lerinle birlikte silebilirsin.", "Hesap bilgilerim", "KAVIS STUDY · 1.0 (12) · Üyelik: Eylül 2026", "Kaydet", "Profilim", "Soru örneklerim", "Sık sorulanlar, bize yaz", "Sınıf", "Yardım merkezi açılıyor", "Yardım ve geri bildirim", "Çalışma planı, dil, tema", "Çıkış yap", "Ücretsiz plan", "Üniversite", "çalışma", "İlerleme ve takvim", "İstersen baş harflerin kalsın", "Şifre değiştirme bağlantısı e-postana gönderildi", "Şifreyi değiştir", "ders sayısı", "çalışma serisi"], en: [". year", "35 questions · lecturer's style extracted", "42 h", "6 days", "Full name", "Name, email, university, year", "Ankara University", "Settings", "Notifications", "Your info has been saved", "1 of 2 courses used this month · Go Premium", "This term 5 courses · 13 PDF", "Section", "My Courses folder", "Email", "Pharmacy", "Choose photo", "Photo selected", "Change photo", "Back", "Weekly time, level, exam week", "Reminder 09:00 · 1 hour before", "If you want to delete your account, you can delete it with all your PDFs in Settings › Privacy.", "My account details", "KAVIS STUDY · 1.0 (12) · MEMBER SINCE: SEPTEMBER 2026", "Save", "My profile", "My sample questions", "FAQ, write to us", "Year", "Opening help center", "Help & feedback", "Study plan, language, theme", "Log out", "Free plan", "University", "study", "Progress and calendar", "Keep just your initials if you like", "A password change link was sent to your email", "Change password", "courses", "study streak"], fa: [". سال", "35 سؤال · سبک استاد استخراج شد", "42 ساعت", "6 روز", "نام و نام خانوادگی", "نام، ایمیل، دانشگاه، سال تحصیلی", "دانشگاه آنکارا", "تنظیمات", "اعلان‌ها", "اطلاعاتت ذخیره شد", "این ماه 1 از 2 درس استفاده شد · ارتقا به Premium", "این ترم 5 درس · 13 PDF", "بخش", "پوشه درس‌های من", "ایمیل", "داروسازی", "انتخاب عکس", "عکس انتخاب شد", "تغییر عکس", "بازگشت", "زمان هفتگی، سطح، هفته امتحان", "یادآوری 09:00 · 1 ساعت قبل", "اگر بخواهی حسابت را حذف کنی، از تنظیمات › حریم خصوصی می‌توانی آن را همراه همه PDFهایت حذف کنی.", "اطلاعات حساب من", "KAVIS STUDY · 1.0 (12) · عضویت: سپتامبر 2026", "ذخیره", "پروفایل من", "نمونه سؤال‌های من", "سؤالات متداول، به ما بنویس", "سال تحصیلی", "در حال باز کردن مرکز راهنما", "راهنما و بازخورد", "برنامه مطالعه، زبان، پوسته", "خروج", "طرح رایگان", "دانشگاه", "مطالعه", "پیشرفت و تقویم", "اگر خواستی فقط حروف اول نامت بماند", "لینک تغییر رمز به ایمیلت ارسال شد", "تغییر رمز", "تعداد درس", "روزهای پیاپی"], ar: [". سنة", "35 سؤالًا · تم استخلاص أسلوب الأستاذ", "42 س", "6 أيام", "الاسم الكامل", "الاسم، البريد الإلكتروني، الجامعة، السنة الدراسية", "جامعة أنقرة", "الإعدادات", "الإشعارات", "تم حفظ معلوماتك", "استُخدمت 1 من 2 مادة هذا الشهر · انتقل إلى Premium", "هذا الفصل 5 مواد · 13 PDF", "القسم", "مجلد موادي", "البريد الإلكتروني", "الصيدلة", "اختر صورة", "تم اختيار الصورة", "تغيير الصورة", "رجوع", "الوقت الأسبوعي، المستوى، أسبوع الامتحان", "تذكير 09:00 · قبل ساعة 1", "إذا أردت حذف حسابك، يمكنك حذفه مع كل ملفات PDF من الإعدادات › الخصوصية.", "بيانات حسابي", "KAVIS STUDY · 1.0 (12) · العضوية: سبتمبر 2026", "حفظ", "ملفي الشخصي", "نماذج أسئلتي", "الأسئلة الشائعة، راسلنا", "السنة الدراسية", "جارٍ فتح مركز المساعدة", "المساعدة والملاحظات", "خطة الدراسة، اللغة، المظهر", "تسجيل الخروج", "الخطة المجانية", "الجامعة", "دراسة", "التقدم والتقويم", "إن شئت أبقِ الأحرف الأولى فقط", "أُرسل رابط تغيير كلمة المرور إلى بريدك", "تغيير كلمة المرور", "عدد المقررات", "أيام متتالية"]};
+let _lang = 'tr', _M = null; const _TC = {};
+const _x = (s) => { if (_lang === 'tr' || !_I18N[_lang]) return s; if (!_M) { _M = {}; _I18N.k.forEach((k, i) => { _M[k] = i; }); } const i = _M[s]; return i == null ? s : _I18N[_lang][i]; };
+const _TK = {"k113": ". sınıf", "k508": "Bilgilerin kaydedildi", "k551": "Bu ay 2 dersten 1'i kullanıldı · Premium'a geç", "k1014": "Fotoğraf seç", "k1018": "Fotoğrafı değiştir", "k1052": "Geri", "k1172": "Hesabını silmek istersen Ayarlar › Gizlilik bölümünden tüm PDF'lerinle birlikte silebilirsin.", "k1274": "KAVIS STUDY · 1.0 (12) · Üyelik: Eylül 2026", "k1326": "Kaydet", "k1981": "Sınıf", "k2500": "Çıkış yap", "k2548": "Ücretsiz plan", "k2613": "İstersen baş harflerin kalsın", "k2626": "Şifreyi değiştir"};
+const _PT = {};
+const _tt = () => { if (!_TC[_lang]) { const o = {}; Object.keys(_TK).forEach((k) => { o[k] = (_PT[k] && _lang !== 'tr') ? (_PT[k][_lang] || _x(_TK[k])) : _x(_TK[k]); }); _TC[_lang] = o; } return _TC[_lang]; };
+
+class Component extends DCLogic {
+  renderVals() { const _p = this.props || {}, _s = this.state || {}; _lang = _s.lang || _p.lang || 'tr'; const r = this._rv0(); if (r && typeof r === 'object') { r._t = _tt(); r._dir = (_lang === 'fa' || _lang === 'ar') ? 'rtl' : 'ltr'; r._ai = this._aiDark ? { bg: '#F2B33D', fg: '#241C14', tx: '#EFE8DC' } : { bg: '#9C2F3A', fg: '#FFF6E6', tx: '#2A2420' }; } return r; }
+  _rv0() {
+    const __st = this.state || {};
+    const say = (m, after) => { this.setState({ toast: m }); clearTimeout(this._tt); this._tt = setTimeout(() => { this.setState({ toast: '' }); if (after) after(); }, 1700); };
+    const p = this.props; const st = this.state || {};
+    const dark = p.theme === 'dark'; const ios = (p.platform || 'ios') === 'ios';
+    const c = dark
+      ? { bgGrad: 'radial-gradient(circle at 50% 0%, #3A2A1E 0%, #15120F 55%)', bgSolid: '#15120F', card: '#211C18', sub: '#2B2520', line: '#3A322B', text: '#EFE8DC', text2: '#BDB2A4', text3: '#9A8F82', cta: '#C24B57', danger: '#F09AA3', good: '#8FD3A8', goodSoft: '#1F3328', ring: 'rgba(242,179,61,.10)', hero: 'linear-gradient(135deg,#4A3520,#6B4A22)', onHero: '#FBEFD6', heroChip: 'rgba(255,240,210,.14)', heroShadow: 'none', red: ['#3A2224', '#F09AA3'], amb: ['#3A2E18', '#F2C66D'], vio: ['#2C2A3A', '#B9B4F0'], grn: ['#1F3328', '#8FD3A8'], gray: ['#2B2520', '#BDB2A4'] }
+      : { bgGrad: 'linear-gradient(180deg, #F7EEDD 0%, #F4EFE6 45%)', bgSolid: '#F4EFE6', card: '#FFFCF6', sub: '#F1EBE0', line: '#E6DDCF', text: '#2A2420', text2: '#6E645A', text3: '#8C8073', cta: '#9C2F3A', danger: '#9C2F3A', good: '#2E7D4F', goodSoft: '#E3F1E7', ring: 'rgba(242,179,61,.2)', hero: 'linear-gradient(135deg,#FBE9BD,#F5C76A)', onHero: '#2A2420', heroChip: 'rgba(255,252,246,.6)', heroShadow: '0 14px 30px rgba(232,146,90,.25)', red: ['#F5E3E2', '#9C2F3A'], amb: ['#FBEBC8', '#A86F0E'], vio: ['#E8E6F6', '#4A3F9A'], grn: ['#E3F1E7', '#2E7D4F'], gray: ['#EFE8DC', '#6E645A'] };
+    const mode = st.mode || p.variant || 'view';
+    const is = { view: mode === 'view', edit: mode === 'edit' };
+    const go = (a, b) => () => { if (p.go) p.go(a, b); };
+    const year = st.year || 3;
+    const stats = [[_x('42 sa'), _x('çalışma'), go('profile')], [_x('6 gün'), _x('çalışma serisi'), go('profile')], ['5', _x('ders sayısı'), go('courses')]].map((s) => ({ v: s[0], l: s[1], tap: s[2] }));
+    const menu = [
+      [_x('Hesap bilgilerim'), _x('Ad, e-posta, üniversite, sınıf'), 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M4 21a8 8 0 0 1 16 0', 'red', () => this.setState({ mode: 'edit', saved: false })],
+      [_x('Derslerim klasörü'), _x('Bu dönem 5 ders · 13 PDF'), 'M3 6.5A1.5 1.5 0 0 1 4.5 5H9l2 2.5h8.5A1.5 1.5 0 0 1 21 9v9.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z', 'amb', go('courses')],
+      [_x('İlerleme ve takvim'), _x('Haftalık süre, seviye, sınav haftası'), 'M4 20V11 M10 20V5 M16 20v-6 M21 20H3', 'grn', go('profile')],
+      [_x('Soru örneklerim'), _x('35 soru · hocanın tarzı çıkarıldı'), 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6 M12 17h.01', 'vio', go('questions')],
+      [_x('Bildirimler'), _x('Hatırlatma 09:00 · 1 saat önce'), 'M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z M10 20a2 2 0 0 0 4 0', 'gray', go('notifications')],
+      [_x('Ayarlar'), _x('Çalışma planı, dil, tema'), 'M4 7h9 M17 7h3 M4 17h3 M11 17h9 M15 5v4 M9 15v4', 'gray', go('settings')],
+      [_x('Yardım ve geri bildirim'), _x('Sık sorulanlar, bize yaz'), 'M4 5h16v11H9l-5 4z', 'gray', () => say(_x('Yardım merkezi açılıyor'))]
+    ].map((m, i) => ({ t: m[0], s: m[1], d: m[2], chip: c[m[3]][0], fg: c[m[3]][1], tap: m[4], sep: i ? '1px solid ' + c.line : '0' }));
+    const fields = [[_x('Ad soyad'), 'Elif Yıldız', 'text', 'name'], [_x('E-posta'), 'elif@ogrenci.edu.tr', 'email', 'email'], [_x('Üniversite'), _x('Ankara Üniversitesi'), 'text', 'organization'], [_x('Bölüm'), _x('Eczacılık'), 'text', 'off']].map((f) => ({ l: f[0], v: f[1], type: f[2], ac: f[3] }));
+    const years = [1, 2, 3, 4, 5, 6].map((n) => { const on = n === year; return { n, on: on ? 'true' : 'false', border: on ? '0' : '1px solid ' + c.line, bg: on ? c.cta : 'transparent', fg: on ? '#FFFCF6' : c.text, pick: () => this.setState({ year: n }) }; });
+    return { toastOn: !!__st.toast, toastMsg: __st.toast || '', toastBottom: 130,
+      pfPhoto: () => say(_x('Fotoğraf seçildi')),
+      c, W: ios ? 390 : 412, H: ios ? 844 : 915, is, stats, menu, fields, years,
+      name: 'Elif Yıldız', dept: _x('Eczacılık'), uni: _x('Ankara Üniversitesi'), year,
+      saved: !!st.saved,
+      head: is.edit ? _x('Hesap bilgilerim') : _x('Profilim'),
+      back: () => { if (is.edit) this.setState({ mode: 'view' }); else if (p.go) p.go('home'); },
+      toEdit: () => this.setState({ mode: 'edit', saved: false }),
+      save: () => this.setState({ mode: 'view', saved: true }),
+      toPassword: () => say(_x('Şifre değiştirme bağlantısı e-postana gönderildi')),
+      toPaywall: go('paywall'),
+      logout: go('welcome')
+    };
+  }
+}
+</script>
+</body>
+</html>

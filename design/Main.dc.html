@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Kavis Study · Prototip</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+<style>[dir=rtl] .dc-back{transform:scaleX(-1)}[dir=rtl],[dir=rtl] *{letter-spacing:0 !important}</style>
+</helmet>
+<div dir="{{_dir}}" style="width: {{W}}px; height: {{H}}px; position: relative; overflow: hidden; background: {{bg}}; font-family: Poppins, Vazirmatn, system-ui, sans-serif; color: #2A2420">
+<sc-if value="{{is.splash}}" hint-placeholder-val="{{ false }}"><dc-import name="NewSplash" lang="{{lang}}" platform="{{pf}}" theme="{{th}}" go="{{go}}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.studyplan}}" hint-placeholder-val="{{ false }}"><dc-import name="NewStudyPlan" lang="{{lang}}" placed="{{placed}}" platform="{{pf}}" theme="{{th}}" go="{{go}}" plan-days="{{planDays}}" plan-hours="{{planHours}}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.support}}" hint-placeholder-val="{{ false }}"><dc-import name="NewSupport" lang="{{lang}}" platform="{{pf}}" theme="{{th}}" variant="{{v}}" go="{{go}}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.placement}}" hint-placeholder-val="{{ false }}"><dc-import name="NewPlacement" lang="{{lang}}" platform="{{pf}}" theme="{{th}}" variant="{{v}}" go="{{go}}" set-pref="{{setPref}}" notify="{{notify}}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.revise}}" hint-placeholder-val="{{ false }}"><dc-import name="NewRevise" lang="{{lang}}" offline="{{offline}}" premium="{{premium}}" platform="{{pf}}" theme="{{th}}" go="{{go}}" set-pref="{{setPref}}" notify="{{notify}}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.schedule}}" hint-placeholder-val="{{ false }}"><dc-import name="NewSchedule" offline="{{offline}}" premium="{{premium}}" lang="{{lang}}" platform="{{pf}}" theme="{{th}}" variant="{{v}}" go="{{go}}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.share}}" hint-placeholder-val="{{ false }}"><dc-import name="NewShare" lang="{{lang}}" platform="{{pf}}" theme="{{th}}" variant="{{v}}" go="{{go}}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.exam}}" hint-placeholder-val="{{ false }}"><dc-import name="NewExamPrep" lang="{{lang}}" platform="{{pf}}" theme="{{th}}" variant="{{v}}" go="{{go}}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.me}}" hint-placeholder-val="{{ false }}"><dc-import name="NewProfile" lang="{{lang}}" platform="{{pf}}" theme="{{th}}" variant="{{v}}" go="{{go}}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.courses}}" hint-placeholder-val="{{ false }}"><dc-import name="NewCourses" lang="{{lang}}" offline="{{offline}}" premium="{{premium}}" notify="{{notify}}" platform="{{pf}}" theme="{{th}}" variant="{{v}}" go="{{go}}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.questions}}" hint-placeholder-val="{{ false }}"><dc-import name="NewQuestions" lang="{{lang}}" platform="{{pf}}" theme="{{th}}" variant="{{v}}" go="{{go}}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.signup}}" hint-placeholder-val="{{ false }}"><dc-import name="NewSignup" lang="{{lang}}" platform="{{pf}}" theme="{{th}}" variant="{{v}}" go="{{go}}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.welcome}}" hint-placeholder-val="{{ true }}"><dc-import name="NewWelcome" lang="{{lang}}" platform="{{pf}}" theme="{{th}}" go="{{go}}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.ai}}" hint-placeholder-val="{{ false }}"><dc-import name="NewAssistant" lang="{{lang}}" offline="{{offline}}" premium="{{premium}}" set-pref="{{setPref}}" platform="{{pf}}" theme="{{th}}" go="{{go}}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.profile}}" hint-placeholder-val="{{ false }}"><dc-import name="NewProgress" lang="{{lang}}" platform="{{pf}}" theme="{{th}}" go="{{go}}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.onboarding}}" hint-placeholder-val="{{ false }}"><dc-import name="ScrOnboarding" platform="{{pf}}" theme="{{th}}" lang="{{lang}}" variant="{{v}}" go="{{go}}" set-pref="{{setPref}}" plan-days="{{planDays}}" plan-hours="{{planHours}}" live="{{ true }}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.home}}" hint-placeholder-val="{{ false }}"><dc-import name="NewHome" lang="{{lang}}" review-done="{{tkDone}}" offline="{{offline}}" premium="{{premium}}" notify="{{notify}}" platform="{{pf}}" theme="{{th}}" go="{{go}}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.upload}}" hint-placeholder-val="{{ false }}"><dc-import name="ScrUpload" platform="{{pf}}" theme="{{th}}" lang="{{lang}}" variant="{{v}}" go="{{go}}" live="{{ true }}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.reader}}" hint-placeholder-val="{{ false }}"><dc-import name="ScrReader" offline="{{offline}}" premium="{{premium}}" tr-style="{{trStyle}}" platform="{{pf}}" theme="{{th}}" lang="{{lang}}" variant="{{v}}" go="{{go}}" live="{{ true }}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.assistant}}" hint-placeholder-val="{{ false }}"><dc-import name="ScrAssistant" course="{{k}}" ask="{{acQ}}" set-pref="{{setPref}}" platform="{{pf}}" theme="{{th}}" lang="{{lang}}" variant="{{v}}" go="{{go}}" live="{{ true }}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.quiz}}" hint-placeholder-val="{{ false }}"><dc-import name="ScrQuiz" platform="{{pf}}" theme="{{th}}" lang="{{lang}}" variant="{{v}}" kind="{{k}}" go="{{go}}" live="{{ true }}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.result}}" hint-placeholder-val="{{ false }}"><dc-import name="ScrResult" platform="{{pf}}" theme="{{th}}" lang="{{lang}}" variant="{{v}}" go="{{go}}" live="{{ true }}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.review}}" hint-placeholder-val="{{ false }}"><dc-import name="ScrReview" platform="{{pf}}" theme="{{th}}" lang="{{lang}}" variant="{{v}}" go="{{go}}" live="{{ true }}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.audio}}" hint-placeholder-val="{{ false }}"><dc-import name="ScrAudio" platform="{{pf}}" theme="{{th}}" lang="{{lang}}" variant="{{v}}" go="{{go}}" live="{{ true }}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.plan}}" hint-placeholder-val="{{ false }}"><dc-import name="ScrPlan" platform="{{pf}}" theme="{{th}}" lang="{{lang}}" variant="{{v}}" go="{{go}}" live="{{ true }}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.progress}}" hint-placeholder-val="{{ false }}"><dc-import name="ScrProgress" platform="{{pf}}" theme="{{th}}" lang="{{lang}}" variant="{{v}}" go="{{go}}" plan-days="{{planDays}}" plan-hours="{{planHours}}" live="{{ true }}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.cards}}" hint-placeholder-val="{{ false }}"><dc-import name="ScrCards" platform="{{pf}}" theme="{{th}}" lang="{{lang}}" variant="{{v}}" go="{{go}}" live="{{ true }}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.notifications}}" hint-placeholder-val="{{ false }}"><dc-import name="ScrNotifications" platform="{{pf}}" theme="{{th}}" lang="{{lang}}" variant="{{v}}" go="{{go}}" live="{{ true }}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.paywall}}" hint-placeholder-val="{{ false }}"><dc-import name="ScrPaywall" set-pref="{{setPref}}" platform="{{pf}}" theme="{{th}}" lang="{{lang}}" variant="{{v}}" go="{{go}}" live="{{ true }}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{is.settings}}" hint-placeholder-val="{{ false }}"><dc-import name="ScrSettings" offline="{{offline}}" premium="{{premium}}" platform="{{pf}}" theme="{{th}}" lang="{{lang}}" variant="{{v}}" go="{{go}}" set-pref="{{setPref}}" plan-days="{{planDays}}" plan-hours="{{planHours}}" live="{{ true }}" hint-size="100%,100%"></dc-import></sc-if>
+<sc-if value="{{ls.on}}" hint-placeholder-val="{{ false }}"><div role="region" aria-label="{{_t.k1845}}" style="position: absolute; left: 12px; right: 12px; bottom: {{ls.bottom}}px; z-index: 40; height: 60px; box-sizing: border-box; border-radius: 30px; background: {{ls.bg}}; border: 1px solid {{ls.line}}; box-shadow: 0 12px 30px rgba(42,36,32,.20); padding: 0 8px 0 8px; display: flex; align-items: center; gap: 10px; color: {{ls.text}}">
+<span aria-hidden="true" style="width: 44px; height: 44px; border-radius: 22px; background: url(./star_btn.png) center/88% no-repeat, radial-gradient(circle at 50% 30%, #B8404D 0%, #9C2F3A 45%, #7A2230 100%); flex: none"></span>
+<button onClick="{{ls.open}}" style="flex: 1; min-width: 0; border: 0; background: transparent; color: inherit; padding: 0; display: flex; flex-direction: column; gap: 2px; font-family: inherit; text-align: start; cursor: pointer"><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 9px; letter-spacing: 0.06em; color: {{ls.text2}}">{{ls.label}}</span><span style="font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ls.title}}</span><span style="height: 3px; border-radius: 2px; background: {{ls.track}}; display: flex; overflow: hidden; margin-top: 2px"><span style="width: {{ls.pct}}%; background: #9C2F3A"></span></span></button>
+<button onClick="{{ls.next}}" aria-label="{{_t.k1886}}" style="width: 36px; height: 36px; border-radius: 18px; border: 0; background: transparent; color: inherit; display: flex; align-items: center; justify-content: center; flex: none; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 5h2v14h-2z M4 5v14l11-7z"></path></svg></button>
+<button onClick="{{ls.toggle}}" aria-label="{{ls.playLabel}}" style="width: 44px; height: 44px; border-radius: 22px; border: 0; background: #9C2F3A; color: #FFFCF6; display: flex; align-items: center; justify-content: center; flex: none; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="{{ls.playIcon}}"></path></svg></button>
+<button onClick="{{ls.stop}}" aria-label="{{_t.k375}}" style="width: 30px; height: 30px; border-radius: 15px; border: 0; background: transparent; color: {{ls.text2}}; display: flex; align-items: center; justify-content: center; flex: none; cursor: pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12 M18 6L6 18"></path></svg></button>
+</div></sc-if>
+<sc-if value="{{lsToastOn}}" hint-placeholder-val="{{ false }}"><div role="status" aria-live="polite" style="position: absolute; left: 50%; bottom: 170px; transform: translateX(-50%); z-index: 50; width: 86%; box-sizing: border-box; padding: 12px 16px; border-radius: 22px; background: #2E2721; color: #FBEFD6; font-size: 13px; line-height: 1.4; text-align: center; pointer-events: none">{{lsToast}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"platform":{"editor":"enum","options":["ios","android"],"default":"ios"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"start":{"editor":"enum","options":["splash","welcome","signup","onboarding","home","studyplan","exam","support","share","schedule","placement","revise","ai","profile","reader","assistant","quiz","result","progress","cards","paywall","settings"],"default":"splash"},"$preview":{"width":390,"height":844}}'>
+const _I18N = {k: [" · uygulamadan çıksan da anlatmaya devam eder", "ACE inhibitörleri yan etkileri", "ANLATILIYOR · ", "Anlatım bitti · 5 bölümü dinledin", "Anlatımı kapat", "DURAKLATILDI · ", "Devam et", "Duraklat", "Gebelikte hipertansiyon", "Hipertansif kriz", "Sesli anlatım kapatıldı", "Sesli anlatım sürüyor", "Sonraki bölüm", "Tiyazid kontrendikasyonları", "İlk basamak ilaçlar", "Şu an: "], en: [" · keeps teaching even if you leave the app", "ACE inhibitor side effects", "NARRATING · ", "Narration done · you listened to 5 parts", "Turn off narration", "PAUSED · ", "Continue", "Pause", "Hypertension in pregnancy", "Hypertensive crisis", "Audio lesson turned off", "Audio lesson playing", "Next part", "Thiazide contraindications", "First-line drugs", "Now: "], fa: [" · حتی اگر از برنامه خارج شوی ادامه می‌دهد", "عوارض جانبی مهارکننده‌های ACE", "در حال روایت · ", "روایت تمام شد · 5 بخش را گوش دادی", "خاموش کردن روایت", "متوقف شد · ", "ادامه بده", "مکث", "فشار خون بالا در بارداری", "بحران فشار خون بالا", "توضیح صوتی خاموش شد", "توضیح صوتی در حال پخش است", "بخش بعدی", "منع مصرف تیازیدها", "داروهای خط اول", "الان: "], ar: [" · يواصل الشرح حتى لو خرجت من التطبيق", "الآثار الجانبية لمثبطات ACE", "جارٍ الشرح · ", "انتهى الشرح · استمعت إلى 5 أجزاء", "إيقاف الشرح", "متوقف مؤقتًا · ", "تابع", "إيقاف مؤقت", "ارتفاع ضغط الدم في الحمل", "أزمة ارتفاع ضغط الدم", "تم إيقاف الشرح الصوتي", "الشرح الصوتي مستمر", "الجزء التالي", "مضادات استطباب الثيازيدات", "أدوية الخط الأول", "الآن: "]};
+let _lang = 'tr', _M = null; const _TC = {};
+const _x = (s) => { if (_lang === 'tr' || !_I18N[_lang]) return s; if (!_M) { _M = {}; _I18N.k.forEach((k, i) => { _M[k] = i; }); } const i = _M[s]; return i == null ? s : _I18N[_lang][i]; };
+const _TK = {"k375": "Anlatımı kapat", "k1845": "Sesli anlatım sürüyor", "k1886": "Sonraki bölüm"};
+const _PT = {};
+const _tt = () => { if (!_TC[_lang]) { const o = {}; Object.keys(_TK).forEach((k) => { o[k] = (_PT[k] && _lang !== 'tr') ? (_PT[k][_lang] || _x(_TK[k])) : _x(_TK[k]); }); _TC[_lang] = o; } return _TC[_lang]; };
+
+class Component extends DCLogic {
+  renderVals() { const _p = this.props || {}, _s = this.state || {}; _lang = _s.lang || _p.lang || 'tr'; const r = this._rv0(); if (r && typeof r === 'object') { r._t = _tt(); r._dir = (_lang === 'fa' || _lang === 'ar') ? 'rtl' : 'ltr'; r._ai = this._aiDark ? { bg: '#F2B33D', fg: '#241C14', tx: '#EFE8DC' } : { bg: '#9C2F3A', fg: '#FFF6E6', tx: '#2A2420' }; } return r; }
+  componentDidMount() {
+    this.lsT = setInterval(() => { const st = this.state || {}; if (st.lsOn && st.lsPlay) { const n = (st.lsSec || 0) + 1; this.setState(n >= 360 ? { lsSec: 360, lsPlay: false } : { lsSec: n }); } }, 1000);
+  }
+  componentWillUnmount() { clearInterval(this.lsT); clearTimeout(this.lsTT); }
+  _rv0() {
+    const p = this.props, st = this.state || {};
+    const pf = st.platform || p.platform || 'ios';
+    const th = st.theme || p.theme || 'light';
+    const lang = st.lang || p.lang || 'tr';
+    const screen = st.screen || p.start || 'splash';
+    const names = ['placement', 'revise','schedule','share','support','studyplan','exam','splash','welcome','signup','questions','courses','me','ai','profile','onboarding','home','upload','reader','assistant','quiz','result','review','plan','audio','progress','cards','notifications','paywall','settings'];
+    const is = {};
+    names.forEach((n) => { is[n] = n === screen; });
+    const ios = pf === 'ios';
+    const LCH = 72, lsSec = Math.min(360, st.lsSec || 0), lsIdx = Math.min(4, Math.floor(lsSec / LCH)), lsPlay = !!st.lsPlay;
+    const lsTitles = [_x('Hipertansif kriz'), _x('ACE inhibitörleri yan etkileri'), _x('Tiyazid kontrendikasyonları'), _x('Gebelikte hipertansiyon'), _x('İlk basamak ilaçlar')];
+    const p2 = (n) => (n < 10 ? '0' : '') + n;
+    const lsSay = (m) => { this.setState({ lsToast: m }); clearTimeout(this.lsTT); this.lsTT = setTimeout(() => this.setState({ lsToast: '' }), 2200); };
+    const dk = th === 'dark';
+    const tabbed = ['home', 'progress', 'settings', 'me', 'ai'].indexOf(screen) >= 0;
+    const ls = {
+      on: !!st.lsOn && ['splash', 'welcome', 'signup', 'onboarding'].indexOf(screen) < 0,
+      bottom: tabbed ? (ios ? 96 : 84) : (screen === 'reader' ? 92 : (screen === 'assistant' ? 150 : 24)),
+      bg: dk ? '#2B2520' : '#FFFCF6', line: dk ? '#3A322B' : '#E6DDCF', text: dk ? '#EFE8DC' : '#2A2420', text2: dk ? '#BDB2A4' : '#6E645A', track: dk ? '#3A322B' : '#EAE1D2',
+      label: (lsPlay ? _x('ANLATILIYOR · ') : _x('DURAKLATILDI · ')) + Math.floor(lsSec / 60) + ':' + p2(lsSec % 60) + ' / 6:00',
+      title: (lsIdx + 1) + '/5 · ' + lsTitles[lsIdx], pct: Math.round(lsSec / 3.6),
+      playIcon: lsPlay ? 'M7 5h3.5v14H7z M13.5 5H17v14h-3.5z' : 'M8 5v14l11-7z', playLabel: lsPlay ? _x('Duraklat') : _x('Devam et'),
+      toggle: () => this.setState(lsSec >= 360 ? { lsSec: 0, lsPlay: true } : { lsPlay: !lsPlay }),
+      next: () => { if (lsIdx >= 4) { this.setState({ lsSec: 360, lsPlay: false }); lsSay(_x('Anlatım bitti · 5 bölümü dinledin')); } else this.setState({ lsSec: (lsIdx + 1) * LCH }); },
+      open: () => lsSay(_x('Şu an: ') + lsTitles[lsIdx] + _x(' · uygulamadan çıksan da anlatmaya devam eder')),
+      stop: () => { this.setState({ lsOn: false, lsPlay: false }); lsSay(_x('Sesli anlatım kapatıldı')); }
+    };
+    return {
+      ls, lsToastOn: !!st.lsToast, lsToast: st.lsToast || '',
+      W: ios ? 390 : 412, H: ios ? 844 : 915,
+      bg: th === 'dark' ? '#15120F' : '#F4EFE6',
+      pf, th, lang, is,
+      trStyle: st.trStyle || 'natural', planDays: st.planDays || 4, planHours: st.planHours || 1.5,
+      v: st.v || '', k: st.k || '',
+      go: (s, v, k) => this.setState({ screen: s, v: v || '', k: k || '' }),
+      premium: !!st.premium, offline: !!st.offline, tkDone: !!st.tkDone, placed: !!st.placed, acQ: st.acQ || '', notify: (m) => lsSay(m),
+      setPref: (o) => this.setState(Object.assign({}, o))
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Yeni stil · Karşılama</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+<style>[dir=rtl] .dc-back{transform:scaleX(-1)}[dir=rtl],[dir=rtl] *{letter-spacing:0 !important}</style>
+</helmet>
+<div dir="{{_dir}}" style="width: {{W}}px; height: {{H}}px; box-sizing: border-box; position: relative; overflow: hidden; background: {{c.bgGrad}}; color: {{c.text}}; font-family: Poppins, Vazirmatn, system-ui, sans-serif; display: flex; flex-direction: column; align-items: center">
+<div style="height: 70px; flex: none"></div>
+<span style="font-size: 20px; font-weight: 600; letter-spacing: -0.02em; color: {{c.brand}}"><span dir="ltr" style="unicode-bidi: isolate; display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; gap: .14em; line-height: 1"><span style="white-space: nowrap; font-weight: 700; font-size: 1.15em; letter-spacing: .01em; line-height: 1; color: {{_ai.tx}}">K<span style="color: {{_ai.bg}}">A</span>V<span style="position: relative; color: {{_ai.bg}}">I<svg viewBox="0 0 24 24" aria-hidden="true" style="position: absolute; left: 50%; top: -.24em; width: .34em; height: .34em; transform: translateX(-50%); overflow: visible"><path d="M12 0 L14.6 9.4 L24 12 L14.6 14.6 L12 24 L9.4 14.6 L0 12 L9.4 9.4Z" fill="{{_ai.bg}}"></path></svg></span>S</span><span style="font-size: .63em; font-weight: 500; letter-spacing: .1em; opacity: .7; line-height: 1; color: {{_ai.tx}}">STUDY</span></span></span>
+<img src="./icon_star.png" alt="{{_t.k1280}}" style="margin-top: 34px; width: 200px; height: 200px; pointer-events: none; filter: drop-shadow(0 24px 40px rgba(122,82,8,.35))">
+<h1 style="margin: 30px 22px 0; font-size: 27px; line-height: 1.2; font-weight: 500; letter-spacing: -0.02em; text-align: center; text-wrap: balance">{{_t.k2322}}<br>{{_t.k1486}}<span style="display: block; margin-top: 10px; color: {{c.brand}}; font-weight: 500">{{_t.k388}}</span></h1>
+<p style="margin: 12px 36px 0; font-size: 15px; line-height: 1.55; color: {{c.text2}}; text-align: center">{{_t.k1593}}</p>
+<span style="flex: 1"></span>
+<div style="width: 100%; box-sizing: border-box; padding: 0 24px 40px; display: flex; flex-direction: column; gap: 12px; align-items: center">
+<button onClick="{{start}}" style="width: 100%; height: 58px; border-radius: 29px; border: 0; background: {{c.cta}}; color: {{c.ctaFg}}; font-family: inherit; font-size: 17px; font-weight: 500; box-shadow: 0 12px 30px rgba(156,47,58,.28); cursor: pointer">{{_t.k482}}</button>
+<button onClick="{{login}}" style="border: 0; background: transparent; font-family: inherit; font-size: 13px; color: {{c.text2}}; cursor: pointer">{{_t.k2326}} <b style="color: {{c.text}}; font-weight: 600">{{_t.k1061}}</b></button>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"platform":{"editor":"enum","options":["ios","android"],"default":"ios"},"go":{"editor":null},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"$preview":{"width":390,"height":844}}'>
+const _I18N = {k: ["Artık yanında Kavis var.", "Başlayalım", "Giriş yap", "Kavis Study simgesi", "Neden hâlâ 1976'daki gibi ders çalışıyorsun?", "PDF'ini yükle; Kavis anlatsın, sorsun, sınava hazırlasın.", "Yıl 2026.", "Zaten hesabın var mı?"], en: ["Now you have Kavis by your side.", "Let's start", "Log in", "Kavis Study icon", "Why are you still studying like it's 1976?", "Upload your PDF; Kavis explains, quizzes you and gets you exam-ready.", "Year 2026.", "Already have an account?"], fa: ["حالا Kavis کنارت است.", "بزن بریم", "ورود", "نماد Kavis Study", "چرا هنوز مثل سال 1976 درس می‌خوانی؟", "PDFت را آپلود کن؛ Kavis توضیح می‌دهد، سؤال می‌پرسد و برای امتحان آماده‌ات می‌کند.", "سال 2026.", "قبلاً حساب داری؟"], ar: ["الآن Kavis بجانبك.", "لنبدأ", "تسجيل الدخول", "أيقونة Kavis Study", "لماذا ما زلت تدرس كما في عام 1976؟", "ارفع ملف PDF؛ Kavis يشرح ويسألك ويجهّزك للامتحان.", "العام 2026.", "لديك حساب بالفعل؟"]};
+let _lang = 'tr', _M = null; const _TC = {};
+const _x = (s) => { if (_lang === 'tr' || !_I18N[_lang]) return s; if (!_M) { _M = {}; _I18N.k.forEach((k, i) => { _M[k] = i; }); } const i = _M[s]; return i == null ? s : _I18N[_lang][i]; };
+const _TK = {"k388": "Artık yanında Kavis var.", "k482": "Başlayalım", "k1061": "Giriş yap", "k1280": "Kavis Study simgesi", "k1486": "Neden hâlâ 1976'daki gibi ders çalışıyorsun?", "k1593": "PDF'ini yükle; Kavis anlatsın, sorsun, sınava hazırlasın.", "k2322": "Yıl 2026.", "k2326": "Zaten hesabın var mı?"};
+const _PT = {};
+const _tt = () => { if (!_TC[_lang]) { const o = {}; Object.keys(_TK).forEach((k) => { o[k] = (_PT[k] && _lang !== 'tr') ? (_PT[k][_lang] || _x(_TK[k])) : _x(_TK[k]); }); _TC[_lang] = o; } return _TC[_lang]; };
+
+class Component extends DCLogic {
+  renderVals() { const _p = this.props || {}, _s = this.state || {}; _lang = _s.lang || _p.lang || 'tr'; const r = this._rv0(); if (r && typeof r === 'object') { r._t = _tt(); r._dir = (_lang === 'fa' || _lang === 'ar') ? 'rtl' : 'ltr'; r._ai = this._aiDark ? { bg: '#F2B33D', fg: '#241C14', tx: '#EFE8DC' } : { bg: '#9C2F3A', fg: '#FFF6E6', tx: '#2A2420' }; } return r; }
+  _rv0() {
+    const p = this.props; const dark = p.theme === 'dark'; this._aiDark = dark; const ios = (p.platform || 'ios') === 'ios';
+    const c = dark
+      ? { bgGrad: 'linear-gradient(0deg, #4A3A1C 0%, #2B2117 35%, #15120F 75%)', text: '#EFE8DC', text2: '#BDB2A4', brand: '#F09AA3', cta: '#C24B57', ctaFg: '#FFFCF6' }
+      : { bgGrad: 'linear-gradient(0deg, #F5C76A 0%, #F8D68C 30%, #FBE9BD 58%, #F4EFE6 80%)', text: '#2A2420', text2: '#6E645A', brand: '#9C2F3A', cta: '#9C2F3A', ctaFg: '#FFFCF6' };
+    return { c, W: ios ? 390 : 412, H: ios ? 844 : 915, start: () => { if (p.go) p.go('signup'); }, login: () => { if (p.go) p.go('signup', 'login'); } };
+  }
+}
+</script>
+</body>
+</html>

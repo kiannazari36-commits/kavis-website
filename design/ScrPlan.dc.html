@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Yarın ve haftalık plan</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+<style>[dir=rtl] .dc-back{transform:scaleX(-1)}[dir=rtl],[dir=rtl] *{letter-spacing:0 !important}</style>
+</helmet>
+<div dir="{{dir}}" lang="{{lang}}" style="width: {{W}}px; height: {{H}}px; box-sizing: border-box; display: flex; flex-direction: column; position: relative; overflow: hidden; background: {{c.bg}}; color: {{c.text}}; font-family: Poppins, Vazirmatn, system-ui, sans-serif">
+<div style="height: {{topH}}px; flex: none"></div>
+
+<sc-if value="{{v.tomorrow}}" hint-placeholder-val="{{ true }}">
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 8px 20px 20px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; background: {{c.okSoft}}; color: {{c.ok}}">
+<span style="width: 34px; height: 34px; border-radius: 17px; background: {{c.ok}}; color: {{c.onOk}}; display: flex; align-items: center; justify-content: center; flex: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></span>
+<span style="display: flex; flex-direction: column; gap: 1px"><span style="font-size: 15px; font-weight: 700">{{s.doneT}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text2}}">{{s.doneS}}</span></span>
+</div>
+<h1 style="margin: 6px 0 0; font-size: 28px; line-height: 1.15; font-weight: 700; letter-spacing: -0.02em; text-wrap: balance">{{s.askT}}</h1>
+<p style="margin: 0; font-size: 14px; line-height: 1.5; color: {{c.text2}}">{{s.askS}}</p>
+<div role="radiogroup" aria-label="{{s.askT}}" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{times}}" as="t" hint-placeholder-count="6">
+<button role="radio" aria-checked="{{t.on}}" onClick="{{t.pick}}" style="position: relative; height: 58px; border-radius: 14px; border: {{t.border}}; background: {{t.bg}}; color: {{t.fg}}; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; font-family: inherit; cursor: pointer">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 17px; font-weight: 600">{{t.h}}</span>
+<span style="font-size: 10px; color: {{t.sub}}">{{t.note}}</span>
+</button>
+</sc-for>
+</div>
+<div style="border-radius: 16px; background: {{c.card}}; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; color: {{c.text3}}">{{s.tmrPlan}} · {{sel}}</span>
+<div dir="ltr" lang="tr" style="display: flex; align-items: center; gap: 10px; text-align: left"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{c.pri}}"></span><span style="flex: 1; font-size: 14px; font-weight: 600">{{_t.k832}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}">{{_t.k263}}</span></div>
+<div dir="ltr" lang="tr" style="display: flex; align-items: center; gap: 10px; text-align: left"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{c.amb}}"></span><span style="flex: 1; font-size: 14px; font-weight: 600">{{_t.k1204}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}">{{_t.k160}}</span></div>
+<div dir="ltr" lang="tr" style="display: flex; align-items: center; gap: 10px; text-align: left"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{c.text3}}"></span><span style="flex: 1; font-size: 14px; font-weight: 600">{{_t.k1316}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}">{{_t.k160}}</span></div>
+</div>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; color: {{c.text3}}">{{s.willSend}}</span>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="border-radius: 16px; background: {{c.card}}; padding: 10px 12px; display: flex; gap: 10px; align-items: flex-start; box-shadow: {{c.shadow}}">
+<span style="width: 30px; height: 30px; border-radius: 8px; background: #9C2F3A; color: #FFFCF6; display: flex; align-items: center; justify-content: center; flex: none"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5.5c2.5-1 5.5-1 9 1v13c-3.5-2-6.5-2-9-1z M21 5.5c-2.5-1-5.5-1-9 1v13c3.5-2 6.5-2 9-1z"></path></svg></span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 1px"><span style="display: flex; justify-content: space-between; gap: 8px"><span style="font-size: 13px; font-weight: 600">{{s.n1T}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}">{{before}}</span></span><span style="font-size: 12px; line-height: 1.4; color: {{c.text2}}">{{s.n1S}}</span></span>
+</div>
+<div style="border-radius: 16px; background: {{c.card}}; padding: 10px 12px; display: flex; gap: 10px; align-items: flex-start; box-shadow: {{c.shadow}}">
+<span style="width: 30px; height: 30px; border-radius: 8px; background: #9C2F3A; color: #FFFCF6; display: flex; align-items: center; justify-content: center; flex: none"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5.5c2.5-1 5.5-1 9 1v13c-3.5-2-6.5-2-9-1z M21 5.5c-2.5-1-5.5-1-9 1v13c3.5-2 6.5-2 9-1z"></path></svg></span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 1px"><span style="display: flex; justify-content: space-between; gap: 8px"><span style="font-size: 13px; font-weight: 600">{{s.n2T}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}">{{sel}}</span></span><span style="font-size: 12px; line-height: 1.4; color: {{c.text2}}">{{s.n2S}}</span></span>
+</div>
+</div>
+<button role="switch" aria-checked="{{everyStr}}" onClick="{{toggleEvery}}" style="min-height: 48px; border: 0; border-radius: 14px; background: {{c.card}}; color: {{c.text}}; display: flex; align-items: center; gap: 10px; padding: 0 14px; font-family: inherit; font-size: 14px; text-align: start; cursor: pointer">
+<span style="flex: 1">{{s.every}}</span>
+<span style="width: 46px; height: 28px; border-radius: 14px; background: {{swTrack}}; display: flex; align-items: center; justify-content: {{swJustify}}; padding: 0 3px; box-sizing: border-box"><span style="width: 22px; height: 22px; border-radius: 11px; background: #FFFCF6; box-shadow: 0 1px 3px rgba(0,0,0,.2)"></span></span>
+</button>
+</div>
+<div style="flex: none; padding: 12px 20px {{bottomPad}}px; display: flex; flex-direction: column; gap: 6px; border-top: 1px solid {{c.line}}; background: {{c.bg}}">
+<button onClick="{{save}}" style="height: {{btnH}}px; border: 0; border-radius: {{btnR}}px; background: {{c.pri}}; color: #FFFCF6; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{saveLabel}}</button>
+<button onClick="{{skip}}" style="min-height: 36px; border: 0; background: transparent; color: {{c.text2}}; font-family: inherit; font-size: 13px; cursor: pointer">{{s.later}}</button>
+</div>
+</sc-if>
+
+<sc-if value="{{v.week}}" hint-placeholder-val="{{ false }}">
+<div style="flex: none; display: flex; align-items: center; gap: 4px; height: 48px; padding: 0 12px 0 6px">
+<button onClick="{{skip}}" aria-label="{{s.back}}" style="width: 44px; height: 44px; border: 0; background: transparent; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX({{flip}})"><path d="M15 5l-7 7 7 7"></path></svg></button>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 1px"><h1 style="margin: 0; font-size: 20px; font-weight: 700">{{s.weekT}}</h1><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.06em; color: {{c.text3}}">{{s.weekS}}</span></div>
+</div>
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 4px 16px 24px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 14px; background: {{c.ambSoft}}; color: {{c.text}}">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{c.ambText}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 1px"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"></path></svg>
+<span style="font-size: 12px; line-height: 1.5">{{s.howMade}}</span>
+</div>
+<sc-for list="{{days}}" as="d" hint-placeholder-count="7">
+<section style="border-radius: 16px; background: {{d.bg}}; border: {{d.border}}; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; opacity: {{d.op}}">
+<div style="display: flex; align-items: center; gap: 10px">
+<span style="width: 40px; display: flex; flex-direction: column; align-items: center; flex: none"><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.text3}}">{{d.dn}}</span><span style="font-size: 18px; font-weight: 700; line-height: 1.1">{{d.n}}</span></span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 1px"><span style="font-size: 14px; font-weight: 700">{{d.title}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}">{{d.meta}}</span></span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; font-weight: 600; padding: 4px 8px; border-radius: 6px; background: {{d.tagBg}}; color: {{d.tagFg}}; transform: skewX(-8deg)">{{d.tag}}</span>
+</div>
+<sc-for list="{{d.items}}" as="it" hint-placeholder-count="2">
+<div dir="ltr" lang="tr" style="display: flex; align-items: center; gap: 10px; padding-left: 50px; text-align: left"><span style="width: 7px; height: 7px; border-radius: 4px; background: {{it.c}}"></span><span style="flex: 1; font-size: 13px; text-decoration: {{it.td}}; color: {{it.fg}}">{{it.t}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.text3}}">{{it.m}}</span></div>
+</sc-for>
+<sc-if value="{{d.today}}" hint-placeholder-val="{{ false }}">
+<button onClick="{{startToday}}" style="margin-inline-start: 50px; height: 42px; border: 0; border-radius: {{btnR}}px; background: {{c.pri}}; color: #FFFCF6; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer">{{s.startNow}}</button>
+</sc-if>
+</section>
+</sc-for>
+<button onClick="{{regen}}" style="height: 46px; border: 1px solid {{c.line}}; border-radius: {{btnR}}px; background: {{c.card}}; color: {{c.text}}; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer">{{s.regen}}</button>
+</div>
+</sc-if>
+<sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div role="status" aria-live="polite" style="position: absolute; left: 50%; bottom: {{toastBottom}}px; transform: translateX(-50%); z-index: 50; max-width: 86%; box-sizing: border-box; padding: 12px 18px; border-radius: 22px; background: #2E2721; color: #FBEFD6; font-family: Poppins, Vazirmatn, system-ui, sans-serif; font-size: 14px; line-height: 1.4; text-align: center; box-shadow: 0 12px 30px rgba(42,36,32,.28); pointer-events: none">{{toastMsg}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"platform":{"editor":"enum","options":["ios","android"],"default":"ios"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"variant":{"editor":"enum","options":["tomorrow","week"],"default":"tomorrow"},"go":{"editor":null},"live":{"editor":null},"$preview":{"width":390,"height":844}}'>
+const _I18N = {k: ["1 saat sonra ders çalışıyoruz", "12 kart", "15 dk", "2 soru", "20 soru", "42 DK · 6 SAYFA · SINAV 84/100", "5–11 EKİM · 4 GÜN × 1,5 SA · VİZEYE 11 GÜN", "6 soru", "60 dk", "8 soru", "Ağır metaller", "BUGÜN", "Bu haftanın planı", "Bu plan her pazar akşamı otomatik hazırlanır: çalışma planın, sınav haftası, zayıf konuların ve tekrar günleri birlikte hesaba katılır. Uygulamayı açınca ne çalışacağını düşünmene gerek kalmaz.", "Bugünkü planın hazır: 90 dakika. Kronometreyi başlatmak için dokun.", "Bugünkü çalışman bitti", "Bugünün planını başlat", "Bölüm 1–2 okuma", "Bölüm 3 okuma", "Bölüm kontrolü", "CMT", "CUM", "Ders sonu sınavı", "Dinlenme günü", "Diyabet", "Diyabet s. 1–12 seni bekliyor. Hazırlan, telefonunu sessize al.", "Diyabet · s. 1–12", "DİNLENME", "Genel tekrar · vize", "Geri", "Hadi başlayalım!", "Haftalık plan yeniden oluşturuldu · zayıf konular öne alındı", "Her gün bu saatte hatırlat", "Hipertansiyon", "Hipertansiyon + kartlar", "Hipertansiyon · zayıf konular tekrarı", "Kartlar · 12 kart", "Kaydet · yarın ", "Okuma", "PAZ", "PER", "PLANLI", "PZT", "Planı yeniden oluştur", "SAL", "SANA GÖNDERECEĞİMİZ MESAJLAR", "Seçtiğin saatten 1 saat önce ve tam saatinde sana haber veririz.", "TAMAM", "Tahmin testi", "Tekrar kartları", "Toksikoloji", "Toksikoloji tekrarı", "YARININ PLANI", "Yarın saat kaçta geleceksin?", "Zayıf konulardan sınav", "en verimli", "s. 13–24", "s. 1–10", "s. 1–12", "s. 8, 15", "ÇAR", "Şimdi değil"], en: ["Study time in 1 hour", "12 cards", "15 min", "2 questions", "20 questions", "42 MIN · 6 PAGES · EXAM 84/100", "OCT 5–11 · 4 DAYS × 1.5 H · 11 DAYS TO MIDTERM", "6 questions", "60 min", "8 questions", "Heavy metals", "TODAY", "This week's plan", "This plan is prepared automatically every Sunday evening: your study plan, exam week, weak topics and review days are all taken into account. When you open the app, you don't need to think about what to study.", "Today's plan is ready: 90 minutes. Tap to start the timer.", "You're done studying for today", "Start today's plan", "Section 1–2 reading", "Section 3 reading", "Section check", "SAT", "FRI", "End-of-lesson exam", "Rest day", "Diabetes", "Diabetes p. 1–12 is waiting. Get ready and silence your phone.", "Diabetes · p. 1–12", "REST", "General review · midterm", "Back", "Let's get started!", "Weekly plan rebuilt · weak topics moved up", "Remind me daily at this time", "Hypertension", "Hypertension + cards", "Hypertension · weak topics review", "Cards · 12 cards", "Save · tomorrow ", "Reading", "SUN", "THU", "PLANNED", "MON", "Rebuild plan", "TUE", "MESSAGES WE'LL SEND YOU", "We'll notify you 1 hour before your chosen time and right on time.", "OK", "Guess test", "Review cards", "Toxicology", "Toxicology review", "TOMORROW'S PLAN", "What time will you come tomorrow?", "Exam from weak topics", "most productive", "p. 13–24", "p. 1–10", "p. 1–12", "p. 8, 15", "WED", "Not now"], fa: ["1 ساعت دیگر درس می‌خوانیم", "12 کارت", "15 دقیقه", "2 سؤال", "20 سؤال", "42 دقیقه · 6 صفحه · آزمون 84/100", "5–11 اکتبر · 4 روز × 1.5 ساعت · 11 روز تا میان‌ترم", "6 سؤال", "60 دقیقه", "8 سؤال", "فلزات سنگین", "امروز", "برنامه‌ی این هفته", "این برنامه هر یکشنبه عصر خودکار آماده می‌شود: برنامه‌ی مطالعه، هفته‌ی امتحان، موضوعات ضعیف و روزهای مرور با هم در نظر گرفته می‌شوند. با باز کردن برنامه لازم نیست فکر کنی چه بخوانی.", "برنامه‌ی امروزت آماده است: 90 دقیقه. برای شروع زمان‌سنج بزن.", "مطالعه‌ی امروزت تمام شد", "شروع برنامه‌ی امروز", "خواندن بخش 1–2", "خواندن بخش 3", "بررسی بخش", "شنبه", "جمعه", "آزمون پایان درس", "روز استراحت", "دیابت", "دیابت ص. 1–12 منتظر توست. آماده شو و گوشی‌ات را بی‌صدا کن.", "دیابت · ص. 1–12", "استراحت", "مرور کلی · میان‌ترم", "بازگشت", "بیا شروع کنیم!", "برنامه هفتگی دوباره ساخته شد · مباحث ضعیف جلو آمدند", "هر روز این ساعت یادآوری کن", "فشار خون بالا", "فشار خون بالا + کارت‌ها", "فشار خون بالا · مرور مباحث ضعیف", "کارت‌ها · 12 کارت", "ذخیره · فردا ", "خواندن", "یکشنبه", "پنجشنبه", "برنامه‌ریزی‌شده", "دوشنبه", "ساخت دوباره برنامه", "سه‌شنبه", "پیام‌هایی که برایت می‌فرستیم", "1 ساعت قبل از ساعتی که انتخاب کردی و سر همان ساعت خبرت می‌کنیم.", "باشه", "آزمون حدس", "کارت‌های مرور", "سم‌شناسی", "مرور سم‌شناسی", "برنامه فردا", "فردا ساعت چند می‌آیی؟", "آزمون از مباحث ضعیف", "پربازده‌ترین", "ص. 13–24", "ص. 1–10", "ص. 1–12", "ص. 8، 15", "چهارشنبه", "الان نه"], ar: ["سندرس بعد 1 ساعة", "12 بطاقة", "15 د", "2 سؤال", "20 سؤالًا", "42 د · 6 صفحات · الاختبار 84/100", "5–11 أكتوبر · 4 أيام × 1.5 س · 11 يومًا للاختبار النصفي", "6 أسئلة", "60 د", "8 أسئلة", "المعادن الثقيلة", "اليوم", "خطة هذا الأسبوع", "تُعَدّ هذه الخطة تلقائياً كل مساء أحد: تُؤخذ خطة دراستك وأسبوع الامتحان ومواضيعك الضعيفة وأيام المراجعة معاً في الحسبان. عند فتح التطبيق لا تحتاج للتفكير فيما ستدرسه.", "خطة اليوم جاهزة: 90 دقيقة. اضغط لبدء المؤقت.", "انتهت دراستك لليوم", "ابدأ خطة اليوم", "قراءة القسم 1–2", "قراءة القسم 3", "مراجعة القسم", "السبت", "الجمعة", "امتحان نهاية الدرس", "يوم راحة", "السكري", "السكري ص. 1–12 بانتظارك. استعد واجعل هاتفك صامتًا.", "السكري · ص. 1–12", "راحة", "مراجعة عامة · النصفي", "رجوع", "هيا نبدأ!", "أُعيد إنشاء الخطة الأسبوعية · قُدّمت المواضيع الضعيفة", "ذكّرني يوميًا في هذا الوقت", "ارتفاع ضغط الدم", "ارتفاع ضغط الدم + بطاقات", "ارتفاع ضغط الدم · مراجعة المواضيع الضعيفة", "البطاقات · 12 بطاقة", "حفظ · غدًا ", "القراءة", "الأحد", "الخميس", "مخطط", "الإثنين", "إعادة إنشاء الخطة", "الثلاثاء", "الرسائل التي سنرسلها لك", "سننبهك قبل الوقت الذي اخترته بساعة 1 وفي الوقت نفسه.", "حسنًا", "اختبار التخمين", "بطاقات المراجعة", "علم السموم", "مراجعة علم السموم", "خطة الغد", "في أي ساعة ستأتي غدًا؟", "اختبار من المواضيع الضعيفة", "الأكثر إنتاجية", "ص. 13–24", "ص. 1–10", "ص. 1–12", "ص. 8، 15", "الأربعاء", "ليس الآن"]};
+let _lang = 'tr', _M = null; const _TC = {};
+const _x = (s) => { if (_lang === 'tr' || !_I18N[_lang]) return s; if (!_M) { _M = {}; _I18N.k.forEach((k, i) => { _M[k] = i; }); } const i = _M[s]; return i == null ? s : _I18N[_lang][i]; };
+const _TK = {"k160": "15 dk", "k263": "60 dk", "k832": "Diyabet · s. 1–12", "k1204": "Hipertansiyon · zayıf konular tekrarı", "k1316": "Kartlar · 12 kart"};
+const _PT = {};
+const _tt = () => { if (!_TC[_lang]) { const o = {}; Object.keys(_TK).forEach((k) => { o[k] = (_PT[k] && _lang !== 'tr') ? (_PT[k][_lang] || _x(_TK[k])) : _x(_TK[k]); }); _TC[_lang] = o; } return _TC[_lang]; };
+
+class Component extends DCLogic {
+  renderVals() { const _p = this.props || {}, _s = this.state || {}; _lang = _s.lang || _p.lang || 'tr'; const r = this._rv0(); if (r && typeof r === 'object') { r._t = _tt(); r._dir = (_lang === 'fa' || _lang === 'ar') ? 'rtl' : 'ltr'; r._ai = this._aiDark ? { bg: '#F2B33D', fg: '#241C14', tx: '#EFE8DC' } : { bg: '#9C2F3A', fg: '#FFF6E6', tx: '#2A2420' }; } return r; }
+  _rv0() {
+    const __st = this.state || {};
+    const say = (m, after) => { this.setState({ toast: m }); clearTimeout(this._tt); this._tt = setTimeout(() => { this.setState({ toast: '' }); if (after) after(); }, 1700); };
+    const p = this.props, st = this.state || {};
+    const ios = (p.platform || 'ios') === 'ios';
+    const dark = p.theme === 'dark';
+    const lang = p.lang || 'tr';
+    const rtl = lang === 'fa' || lang === 'ar';
+    const c = dark
+      ? { bg: '#15120F', card: '#211C18', sub: '#2B2520', text: '#EFE8DC', text2: '#BDB2A4', text3: '#9A8F82', line: '#3A322B', pri: '#B23A47', priText: '#F09AA3', priSoft: '#3A2027', amb: '#F2B33D', ambText: '#F2C46E', ambSoft: '#3A2F1A', ok: '#5BC893', onOk: '#0E2A1D', okSoft: '#173328', shadow: 'none' }
+      : { bg: '#F4EFE6', card: '#FFFCF6', sub: '#F1EBE0', text: '#2A2420', text2: '#6E645A', text3: '#776C60', line: '#E6DDCF', pri: '#9C2F3A', priText: '#9C2F3A', priSoft: '#F7E7E9', amb: '#F2B33D', ambText: '#83560A', ambSoft: '#FDF1D6', ok: '#1E7A4C', onOk: '#FFFCF6', okSoft: '#E2F3E9', shadow: '0 1px 2px rgba(27,36,48,.05), 0 6px 18px rgba(27,36,48,.06)' };
+    const T = {
+      tr: { doneT: _x('Bugünkü çalışman bitti'), doneS: _x('42 DK · 6 SAYFA · SINAV 84/100'), askT: _x('Yarın saat kaçta geleceksin?'), askS: _x('Seçtiğin saatten 1 saat önce ve tam saatinde sana haber veririz.'), best: _x('en verimli'), tmrPlan: _x('YARININ PLANI'), willSend: _x('SANA GÖNDERECEĞİMİZ MESAJLAR'), n1T: _x('1 saat sonra ders çalışıyoruz'), n1S: _x('Diyabet s. 1–12 seni bekliyor. Hazırlan, telefonunu sessize al.'), n2T: _x('Hadi başlayalım!'), n2S: _x('Bugünkü planın hazır: 90 dakika. Kronometreyi başlatmak için dokun.'), every: _x('Her gün bu saatte hatırlat'), save: (h) => _x('Kaydet · yarın ') + h, later: _x('Şimdi değil'), back: _x('Geri'), weekT: _x('Bu haftanın planı'), weekS: _x('5–11 EKİM · 4 GÜN × 1,5 SA · VİZEYE 11 GÜN'), howMade: _x('Bu plan her pazar akşamı otomatik hazırlanır: çalışma planın, sınav haftası, zayıf konuların ve tekrar günleri birlikte hesaba katılır. Uygulamayı açınca ne çalışacağını düşünmene gerek kalmaz.'), dn: [_x('PZT'), _x('SAL'), _x('ÇAR'), _x('PER'), _x('CUM'), _x('CMT'), _x('PAZ')], done: _x('TAMAM'), today: _x('BUGÜN'), planned: _x('PLANLI'), rest: _x('DİNLENME'), restT: _x('Dinlenme günü'), startNow: _x('Bugünün planını başlat'), regen: _x('Planı yeniden oluştur'), mins: 'dk' },
+      en: { doneT: "Today's session is done", doneS: '42 MIN · 6 PAGES · EXAM 84/100', askT: 'What time will you come back tomorrow?', askS: "We'll remind you 1 hour before and right on time.", best: 'most productive', tmrPlan: "TOMORROW'S PLAN", willSend: "MESSAGES WE'LL SEND YOU", n1T: "We're studying in 1 hour", n1S: 'Diabetes p. 1–12 is waiting. Get ready and silence your phone.', n2T: "Let's start!", n2S: "Today's plan is ready: 90 minutes. Tap to start the timer.", every: 'Remind me at this time every day', save: (h) => 'Save · tomorrow ' + h, later: 'Not now', back: 'Back', weekT: "This week's plan", weekS: 'OCT 5–11 · 4 DAYS × 1.5 H · 11 DAYS TO MIDTERM', howMade: 'This plan is built every Sunday evening from your study plan, exam week, weak topics and review days, so you never waste time deciding what to study.', dn: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'], done: 'DONE', today: 'TODAY', planned: 'PLANNED', rest: 'REST', restT: 'Rest day', startNow: "Start today's plan", regen: 'Rebuild plan', mins: 'min' },
+      fa: { doneT: 'مطالعهٔ امروز تمام شد', doneS: '۴۲ دقیقه · ۶ صفحه · آزمون ۸۴/۱۰۰', askT: 'فردا ساعت چند می‌آیی؟', askS: 'یک ساعت قبل و درست سر ساعت خبرت می‌کنیم.', best: 'پربازده‌ترین', tmrPlan: 'برنامهٔ فردا', willSend: 'پیام‌هایی که برایت می‌فرستیم', n1T: 'یک ساعت دیگر درس می‌خوانیم', n1S: 'دیابت ص. ۱–۱۲ منتظر توست. آماده شو و گوشی را بی‌صدا کن.', n2T: 'بیا شروع کنیم!', n2S: 'برنامهٔ امروز آماده است: ۹۰ دقیقه. برای شروع زمان‌سنج بزن.', every: 'هر روز همین ساعت یادآوری کن', save: (h) => 'ذخیره · فردا ' + h, later: 'الان نه', back: 'بازگشت', weekT: 'برنامهٔ این هفته', weekS: '۵ تا ۱۱ اکتبر · ۴ روز × ۱٫۵ ساعت · ۱۱ روز تا میان‌ترم', howMade: 'این برنامه هر یکشنبه عصر خودکار ساخته می‌شود: برنامهٔ مطالعه، هفتهٔ امتحان، مبحث‌های ضعیف و روزهای مرور در نظر گرفته می‌شوند تا وقتت برای تصمیم‌گیری هدر نرود.', dn: ['د', 'س', 'چ', 'پ', 'ج', 'ش', 'ی'], done: 'انجام شد', today: 'امروز', planned: 'برنامه‌ریزی‌شده', rest: 'استراحت', restT: 'روز استراحت', startNow: 'شروع برنامهٔ امروز', regen: 'ساخت دوبارهٔ برنامه', mins: 'دقیقه' },
+      ar: { doneT: 'انتهت جلسة اليوم', doneS: '42 د · 6 صفحات · اختبار 84/100', askT: 'في أي ساعة ستعود غدًا؟', askS: 'سنذكّرك قبلها بساعة وفي الموعد تمامًا.', best: 'الأكثر إنتاجية', tmrPlan: 'خطة الغد', willSend: 'الرسائل التي سنرسلها لك', n1T: 'سندرس بعد ساعة', n1S: 'السكري ص. 1–12 بانتظارك. استعد وضع هاتفك على الصامت.', n2T: 'هيا نبدأ!', n2S: 'خطة اليوم جاهزة: 90 دقيقة. المس لتشغيل المؤقّت.', every: 'ذكّرني يوميًا في هذا الوقت', save: (h) => 'حفظ · غدًا ' + h, later: 'ليس الآن', back: 'رجوع', weekT: 'خطة هذا الأسبوع', weekS: '5–11 أكتوبر · 4 أيام × 1.5 ساعة · 11 يومًا للنصفي', howMade: 'تُعدّ هذه الخطة تلقائيًا كل مساء أحد وفق خطة دراستك وأسبوع الامتحانات ونقاط ضعفك وأيام المراجعة، فلا تضيّع وقتك في التفكير بما ستدرسه.', dn: ['ن', 'ث', 'ر', 'خ', 'ج', 'س', 'ح'], done: 'تم', today: 'اليوم', planned: 'مخطط', rest: 'راحة', restT: 'يوم راحة', startNow: 'ابدأ خطة اليوم', regen: 'أعد إنشاء الخطة', mins: 'د' }
+    };
+    const s = T[lang] || T.tr;
+    const variant = p.variant || 'tomorrow';
+    const v = { tomorrow: variant === 'tomorrow', week: variant === 'week' };
+    const go = (a, b, k) => () => { if (p.go) p.go(a, b, k); };
+    const sel = st.time || '09:00';
+    const hh = parseInt(sel, 10);
+    const before = (hh - 1 < 10 ? '0' : '') + (hh - 1) + ':00';
+    const times = ['08:00', '09:00', '13:00', '17:00', '20:00', '21:00'].map((h) => {
+      const on = h === sel, best = h === '09:00';
+      return { h, note: best ? s.best : '', on: on ? 'true' : 'false', border: on ? '2px solid ' + c.pri : (best ? '1.5px dashed ' + c.amb : '1px solid ' + c.line), bg: on ? c.priSoft : c.card, fg: on ? c.priText : c.text, sub: on ? c.priText : c.ambText, pick: () => this.setState({ time: h }) };
+    });
+    const every = st.every != null ? st.every : true;
+    const it = (t, m, col, done) => ({ t, m, c: col, td: done ? 'line-through' : 'none', fg: done ? c.text3 : c.text });
+    const mk = (i, n, title, meta, kind, items) => {
+      const tg = { done: [s.done, c.okSoft, c.ok], today: [s.today, c.pri, '#FFFCF6'], planned: [s.planned, c.sub, c.text2], rest: [s.rest, c.sub, c.text3] }[kind];
+      return { dn: s.dn[i], n, title, meta, tag: tg[0], tagBg: tg[1], tagFg: tg[2], items, today: kind === 'today', bg: kind === 'today' ? c.card : (kind === 'rest' ? 'transparent' : c.card), border: kind === 'today' ? '2px solid ' + c.pri : (kind === 'rest' ? '1px dashed ' + c.line : '0'), op: kind === 'done' ? 0.75 : 1 };
+    };
+    const days = [
+      mk(0, 5, _x('Hipertansiyon'), '09:00 · 75 ' + s.mins, 'done', [it(_x('Bölüm 1–2 okuma'), _x('s. 1–12'), c.pri, true), it(_x('Bölüm kontrolü'), _x('2 soru'), c.amb, true)]),
+      mk(1, 6, _x('Hipertansiyon'), '09:00 · 60 ' + s.mins, 'done', [it(_x('Bölüm 3 okuma'), _x('s. 13–24'), c.pri, true)]),
+      mk(2, 7, _x('Toksikoloji'), '20:00 · 55 ' + s.mins, 'done', [it(_x('Ağır metaller'), _x('s. 1–10'), c.pri, true)]),
+      mk(3, 8, _x('Hipertansiyon + kartlar'), '09:00 · 90 ' + s.mins, 'today', [it(_x('Ders sonu sınavı'), _x('8 soru'), c.pri, false), it(_x('Tekrar kartları'), _x('12 kart'), c.amb, false)]),
+      mk(4, 9, _x('Diyabet'), '09:00 · 90 ' + s.mins, 'planned', [it(_x('Tahmin testi'), _x('6 soru'), c.amb, false), it(_x('Okuma'), _x('s. 1–12'), c.pri, false)]),
+      mk(5, 10, s.restT, '—', 'rest', []),
+      mk(6, 11, _x('Genel tekrar · vize'), '11:00 · 90 ' + s.mins, 'planned', [it(_x('Zayıf konulardan sınav'), _x('20 soru'), c.pri, false), it(_x('Toksikoloji tekrarı'), _x('s. 8, 15'), c.amb, false)])
+    ];
+    return { toastOn: !!__st.toast, toastMsg: __st.toast || '', toastBottom: 130,
+      regen: () => say(_x('Haftalık plan yeniden oluşturuldu · zayıf konular öne alındı')),
+      c, s, v, lang, sel, before, times, days,
+      dir: rtl ? 'rtl' : 'ltr', flip: rtl ? -1 : 1,
+      W: ios ? 390 : 412, H: ios ? 844 : 915, topH: ios ? 54 : 36, bottomPad: ios ? 30 : 16,
+      btnR: ios ? 14 : 100, btnH: ios ? 52 : 48,
+      everyStr: every ? 'true' : 'false', swTrack: every ? c.pri : (dark ? '#463D35' : '#DDD2C1'), swJustify: every ? 'flex-end' : 'flex-start',
+      toggleEvery: () => this.setState({ every: !every }),
+      saveLabel: s.save(sel),
+      save: go('home'), skip: go('home'), startToday: go('reader')
+    };
+  }
+}
+</script>
+</body>
+</html>

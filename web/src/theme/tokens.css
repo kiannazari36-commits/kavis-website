@@ -1,0 +1,81 @@
+/* Colors copied from design/DeskApp.dc.html (_LIGHT / _DARK). */
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #F4EFE6;
+  --side: #EDE3D2;
+  --card: #FFFCF6;
+  --sub: #F1EBE0;
+  --line: #E6DDCF;
+  --text: #2A2420;
+  --text2: #6E645A;
+  --text3: #8C8073;
+  --pri: #9C2F3A;
+  --pri-t: #9C2F3A;
+  --pri-soft: #F5E3E2;
+  --amb: #F2B33D;
+  --amb-soft: #FBEBC8;
+  --amb-t: #7A5208;
+  --good: #2E7D4F;
+  --good-soft: #E3F1E7;
+  --vio: #4A3F9A;
+  --vio-soft: #E8E6F6;
+  --pb: #9C2F3A;
+  --pf: #FFF6E6;
+  --hero: linear-gradient(135deg,#FBE9BD,#F5C76A);
+  --on-hero: #2A2420;
+  --chrome: #E8DFD0;
+  --bar: #DCD3C5;
+  --addr: #F4EFE6;
+  --hero-btn: #FFFCF6;
+  --teal-soft: #DFF0F1;
+  --inv: #2A2420;
+  --on-inv: #FFFCF6;
+  --login-bg: linear-gradient(0deg,#F5C76A 0%,#F8D68C 32%,#FBE9BD 62%,#F4EFE6 100%);
+  --land-bg: linear-gradient(180deg,#F4EFE6 0%,#FBE9BD 100%);
+  --phone-bg: linear-gradient(0deg,#F5C76A,#FBE9BD 60%,#F4EFE6);
+  --bad: #C0352B;
+  --bad-soft: #FCE8E6;
+  --bad-line: #F0C9C5;
+  --bad-btn: #C0352B;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #15120F;
+  --side: #1A1612;
+  --card: #211C18;
+  --sub: #2B2520;
+  --line: #3A322B;
+  --text: #EFE8DC;
+  --text2: #BDB2A4;
+  --text3: #9A8F82;
+  --pri: #9C2F3A;
+  --pri-t: #F09AA3;
+  --pri-soft: #3A2027;
+  --amb: #F2B33D;
+  --amb-soft: #3A2E18;
+  --amb-t: #F2C66D;
+  --good: #8FBF7A;
+  --good-soft: #22301F;
+  --vio: #B9B4F0;
+  --vio-soft: #2C2A3A;
+  --pb: #F2B33D;
+  --pf: #241C14;
+  --hero: linear-gradient(135deg,#4A3A1C,#6B4A1A);
+  --on-hero: #FBEFD6;
+  --chrome: #2B2520;
+  --bar: #0E0C0A;
+  --addr: #211C18;
+  --hero-btn: #FBEFD6;
+  --teal-soft: #1C2A2C;
+  --inv: #EFE8DC;
+  --on-inv: #15120F;
+  --login-bg: linear-gradient(0deg,#4A3A1C 0%,#2B2117 45%,#15120F 100%);
+  --land-bg: linear-gradient(180deg,#15120F 0%,#2B2117 100%);
+  --phone-bg: #15120F;
+  --bad: #F27A70;
+  --bad-soft: #3D1F1F;
+  --bad-line: #5A2A2A;
+  --bad-btn: #B23A47;
+}

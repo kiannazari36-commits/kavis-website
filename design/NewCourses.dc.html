@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Yeni stil · Derslerim klasörü</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+<style>[dir=rtl] .dc-back{transform:scaleX(-1)}[dir=rtl],[dir=rtl] *{letter-spacing:0 !important}</style>
+</helmet>
+<div dir="{{_dir}}" style="width: {{W}}px; height: {{H}}px; box-sizing: border-box; position: relative; overflow: hidden; background: {{c.bg}}; color: {{c.text}}; font-family: Poppins, Vazirmatn, system-ui, sans-serif; display: flex; flex-direction: column">
+<div style="height: 60px; flex: none"></div>
+<div style="display: flex; align-items: center; gap: 12px; padding: 0 20px 6px">
+<button onClick="{{back}}" aria-label="{{_t.k1052}}" style="width: 46px; height: 46px; border-radius: 23px; border: 1px solid {{c.line}}; background: {{c.card}}; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg class="dc-back" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5 M11 6l-6 6 6 6"></path></svg></button>
+<span style="flex: 1; text-align: center; font-size: 16px; font-weight: 600">{{head}}</span>
+<button onClick="{{headAction}}" aria-label="{{headActionLabel}}" style="width: 46px; height: 46px; border-radius: 23px; border: 1px solid {{c.line}}; background: {{c.card}}; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{headIcon}}"></path></svg></button>
+</div>
+
+<sc-if value="{{is.setup}}" hint-placeholder-val="{{ true }}">
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 14px 20px 0; display: flex; flex-direction: column; gap: 16px">
+<span style="align-self: flex-start; height: 32px; padding: 0 14px; border-radius: 16px; background: {{c.ambSoft}}; color: {{c.amb}}; display: flex; align-items: center; font-size: 12px; font-weight: 600">{{_t.k183}}</span>
+<h1 style="margin: 0; font-size: 30px; line-height: 1.12; font-weight: 500; letter-spacing: -0.03em">{{_t.k564}} <span style="color: {{c.text3}}; font-weight: 400">{{_t.k2352}}</span></h1>
+<p style="margin: -6px 0 0; font-size: 14px; line-height: 1.55; color: {{c.text2}}">{{_t.k1163}}</p>
+
+<div style="border-radius: 27px; border: 1px solid {{c.line}}; background: {{c.card}}; padding: 5px 5px 5px 20px; display: flex; align-items: center; gap: 8px">
+<input placeholder="{{_t.k742}}" aria-label="{{_t.k741}}" style="flex: 1; min-width: 0; height: 44px; border: 0; background: transparent; color: {{c.text}}; font-family: inherit; font-size: 15px; outline: none">
+<button onClick="{{addCourse}}" aria-label="{{_t.k743}}" style="width: 44px; height: 44px; border-radius: 22px; border: 0; background: {{c.cta}}; color: #FFFCF6; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14 M5 12h14"></path></svg></button>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 13px; color: {{c.text2}}">{{_t.k891}}</span>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<sc-for list="{{pick}}" as="k" hint-placeholder-count="7"><button onClick="{{k.tap}}" aria-pressed="{{k.on}}" style="height: 42px; padding: 0 14px 0 8px; border-radius: 21px; border: {{k.border}}; background: {{k.bg}}; color: {{k.fg}}; display: flex; align-items: center; gap: 8px; font-family: inherit; font-size: 14px; cursor: pointer"><span style="width: 26px; height: 26px; border-radius: 13px; background: {{k.dotBg}}; color: {{k.dotFg}}; display: flex; align-items: center; justify-content: center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{k.icon}}"></path></svg></span>{{k.t}}</button></sc-for>
+</div>
+</div>
+<section style="flex: none; border-radius: 24px; border: 1px solid {{c.line}}; background: {{ms.cardBg}}; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 15px; font-weight: 600">{{_t.k2704}}</span>
+<div role="radiogroup" aria-label="{{_t.k2705}}" style="display: flex; gap: 4px; padding: 4px; border-radius: 22px; background: {{ms.segBg}}"><button role="radio" aria-checked="{{ms.a.on}}" onClick="{{ms.a.pick}}" style="flex: 1; min-height: 38px; padding: 4px 10px; border: 0; border-radius: 19px; background: {{ms.a.bg}}; color: {{c.text}}; font-family: inherit; font-size: 13px; font-weight: {{ms.a.fw}}; box-shadow: {{ms.a.shadow}}; cursor: pointer">{{ms.a.l}}</button><button role="radio" aria-checked="{{ms.b.on}}" onClick="{{ms.b.pick}}" style="flex: 1; min-height: 38px; padding: 4px 10px; border: 0; border-radius: 19px; background: {{ms.b.bg}}; color: {{c.text}}; font-family: inherit; font-size: 13px; font-weight: {{ms.b.fw}}; box-shadow: {{ms.b.shadow}}; cursor: pointer">{{ms.b.l}}</button></div>
+<sc-if value="{{ms.started}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; color: {{c.text2}}">{{_t.k2710}}</span><div style="display: flex; flex-wrap: wrap; gap: 8px"><sc-for list="{{ms.courses}}" as="k" hint-placeholder-count="5"><button onClick="{{k.tap}}" aria-pressed="{{k.on}}" style="height: 38px; padding: 0 14px 0 10px; border-radius: 19px; border: {{k.border}}; background: {{k.bg}}; color: {{k.fg}}; display: flex; align-items: center; gap: 6px; font-family: inherit; font-size: 13px; cursor: pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{k.icon}}"></path></svg>{{k.t}}</button></sc-for></div><span style="display: flex; gap: 8px; align-items: flex-start; font-size: 12px; line-height: 1.45; color: {{c.text2}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 2px"><path d="M9 11l2 2 4-4 M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"></path></svg>{{ms.note}}</span></sc-if>
+</section>
+<div style="height: 6px; flex: none"></div>
+</div>
+<div style="padding: 12px 20px 36px; display: flex; flex-direction: column; gap: 10px; align-items: center">
+<button onClick="{{create}}" style="width: 100%; height: 58px; border-radius: 29px; border: 0; background: {{c.cta}}; color: #FFFCF6; font-family: inherit; font-size: 17px; font-weight: 500; box-shadow: 0 12px 30px rgba(156,47,58,.28); cursor: pointer">{{createLabel}}</button>
+<span style="font-size: 12px; color: {{c.text3}}">{{_t.k784}}</span>
+</div>
+</sc-if>
+
+<sc-if value="{{is.list}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 14px 20px 36px; display: flex; flex-direction: column; gap: 16px">
+<h1 style="margin: 0; font-size: 32px; line-height: 1.1; font-weight: 500; letter-spacing: -0.03em">{{_t.k785}} <span style="color: {{c.text3}}; font-weight: 400">{{_t.k2450}}</span></h1>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{totals}}" as="t" hint-placeholder-count="3"><div style="border-radius: 20px; background: {{c.card}}; border: 1px solid {{c.line}}; padding: 12px; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 22px; font-weight: 600; letter-spacing: -0.02em">{{t.v}}</span><span style="font-size: 12px; color: {{c.text2}}">{{t.l}}</span></div></sc-for>
+</div>
+
+<div style="display: flex; gap: 8px; align-items: center"><button onClick="{{flt.all.pick}}" aria-pressed="{{flt.all.on}}" style="height: 38px; padding: 0 16px; border-radius: 19px; border: {{flt.all.border}}; background: {{flt.all.bg}}; color: {{flt.all.fg}}; font-family: inherit; font-size: 13px; font-weight: {{flt.all.fw}}; cursor: pointer">{{flt.all.l}}</button><button onClick="{{flt.dev.pick}}" aria-pressed="{{flt.dev.on}}" style="height: 38px; padding: 0 16px; border-radius: 19px; border: {{flt.dev.border}}; background: {{flt.dev.bg}}; color: {{flt.dev.fg}}; display: flex; align-items: center; gap: 6px; font-family: inherit; font-size: 13px; font-weight: {{flt.dev.fw}}; cursor: pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11 M7 10l5 5 5-5 M5 20h14"></path></svg><span>{{flt.dev.l}}</span><span style="opacity: .8">· {{flt.dev.n}}</span></button></div>
+<span style="display: {{flt.noteD}}; margin-top: -6px; font-size: 12px; color: {{c.text2}}">{{flt.note}}</span>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+<sc-for list="{{folders}}" as="f" hint-placeholder-count="5">
+<button onClick="{{f.open}}" style="position: relative; border: 0; background: transparent; padding: 14px 0 0; font-family: inherit; text-align: start; color: {{c.text}}; cursor: pointer">
+<span aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 64px; height: 26px; border-radius: 14px 14px 0 0; background: {{f.tab}}"></span>
+<span style="position: relative; min-height: 168px; box-sizing: border-box; border-radius: 4px 22px 22px 22px; background: {{f.bg}}; padding: 14px; display: flex; flex-direction: column; gap: 8px">
+<span style="display: flex; align-items: center; justify-content: space-between"><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; font-weight: 600; color: {{f.fg}}">{{f.pdfs}} PDF</span><span style="font-size: 11px; color: {{c.text2}}">{{f.hours}}</span></span>
+<span style="font-size: 16px; font-weight: 600; line-height: 1.25; min-height: 40px">{{f.name}}</span>
+<span style="display: {{f.devD}}; align-self: flex-start; align-items: center; gap: 4px; padding: 2px 7px; border-radius: 7px; background: {{f.tagBg}}; color: {{f.tagFg}}; border: 1px solid {{f.tagLine}}; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 9px; letter-spacing: 0.06em"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11 M7 10l5 5 5-5 M5 20h14"></path></svg><span>{{f.dev}}/{{f.pdfs}}</span><span>{{_t.k704}}</span></span>
+<span style="flex: 1"></span>
+<span style="display: flex; align-items: center; gap: 8px"><span style="flex: 1; height: 6px; border-radius: 3px; background: {{c.track}}; display: flex; overflow: hidden"><span style="width: {{f.pct}}%; background: {{f.fg}}; border-radius: 3px"></span></span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px; font-weight: 600">%{{f.pct}}</span></span>
+<span style="font-size: 11px; color: {{c.text2}}">{{f.sub}}</span>
+</span>
+</button>
+</sc-for>
+<button onClick="{{toSetup}}" style="margin-top: 14px; min-height: 168px; border-radius: 22px; border: 1.5px dashed {{c.line2}}; background: transparent; color: {{c.text2}}; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; font-family: inherit; font-size: 14px; cursor: pointer"><span style="width: 44px; height: 44px; border-radius: 22px; background: {{c.card}}; color: {{c.text}}; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14 M5 12h14"></path></svg></span>{{_t.k743}}</button>
+</div>
+
+<section style="border-radius: 24px; border: 1px solid {{c.line}}; background: {{c.card}}; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 14px; font-weight: 600">{{_t.k573}}</span>
+<span style="height: 14px; border-radius: 7px; display: flex; overflow: hidden; gap: 2px"><sc-for list="{{share}}" as="s" hint-placeholder-count="5"><span style="width: {{s.p}}%; background: {{s.c}}"></span></sc-for></span>
+<div style="display: flex; flex-wrap: wrap; gap: 6px 14px"><sc-for list="{{share}}" as="s" hint-placeholder-count="5"><span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: {{c.text2}}"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{s.c}}"></span>{{s.n}} · %{{s.p}}</span></sc-for></div>
+</section>
+</div>
+</sc-if>
+
+<sc-if value="{{is.detail}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 14px 20px 36px; display: flex; flex-direction: column; gap: 14px">
+<section style="border-radius: 28px; background: {{cur.bg}}; padding: 18px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; font-weight: 600; color: {{cur.fg}}">{{cur.exam}}</span><span style="font-size: 26px; line-height: 1.15; font-weight: 600; letter-spacing: -0.02em">{{cur.name}}</span></div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<span style="border-radius: 18px; background: {{c.glass}}; padding: 10px; display: flex; flex-direction: column"><span style="font-size: 20px; font-weight: 600">{{cur.pdfs}}</span><span style="font-size: 11px; color: {{c.text2}}">PDF</span></span>
+<span style="border-radius: 18px; background: {{c.glass}}; padding: 10px; display: flex; flex-direction: column"><span style="font-size: 20px; font-weight: 600">%{{cur.pct}}</span><span style="font-size: 11px; color: {{c.text2}}">{{_t.k2390}}</span></span>
+<span style="border-radius: 18px; background: {{c.glass}}; padding: 10px; display: flex; flex-direction: column"><span style="font-size: 16px; line-height: 30px; font-weight: 600; white-space: nowrap">{{cur.hours}}</span><span style="font-size: 11px; color: {{c.text2}}">{{_t.k2556}}</span></span>
+</div>
+</section>
+
+<sc-if value="{{hasPdfs}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; align-items: baseline; justify-content: space-between"><h2 style="margin: 0; font-size: 18px; font-weight: 500">{{_t.k1595}}</h2><span style="font-size: 12px; color: {{c.text2}}">{{_t.k1124}}</span></div>
+<sc-for list="{{pdfs}}" as="d" hint-placeholder-count="4">
+<button onClick="{{d.tap}}" style="opacity: {{d.op}}; border-radius: 22px; border: 1px solid {{c.line}}; background: {{c.card}}; color: {{c.text}}; padding: 12px 14px; display: flex; align-items: center; gap: 12px; font-family: inherit; text-align: start; cursor: pointer">
+<span role="img" aria-label="%{{d.pct}} {{_t.k2390}}" style="width: 50px; height: 50px; border-radius: 25px; background: conic-gradient({{d.ring}} {{d.deg}}deg, {{c.track}} 0); display: flex; align-items: center; justify-content: center; flex: none"><span style="width: 40px; height: 40px; border-radius: 20px; background: {{c.card}}; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; font-weight: 600">{{d.pct}}</span></span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px">
+<span style="font-size: 15px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{d.n}}</span>
+<span style="display: flex; align-items: center; gap: 8px"><span style="flex: 1; height: 5px; border-radius: 3px; background: {{c.track}}; display: flex; overflow: hidden"><span style="width: {{d.tw}}%; background: {{c.time}}; border-radius: 3px"></span></span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text2}}; min-width: 58px; text-align: end">{{d.t}}</span></span>
+<span style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: {{c.text3}}">{{d.s}}<span style="display: {{d.dlD}}; padding: 1px 6px; border-radius: 6px; background: {{c.track}}; color: {{c.text2}}; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 9px; letter-spacing: 0.06em">{{_t.k704}}</span></span>
+</span>
+</button>
+</sc-for>
+</sc-if>
+<sc-if value="{{noPdfs}}" hint-placeholder-val="{{ false }}">
+<div style="border-radius: 24px; border: 1.5px dashed {{c.line2}}; padding: 28px 20px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center"><span style="font-size: 16px; font-weight: 600">{{_t.k578}}</span><span style="font-size: 13px; line-height: 1.5; color: {{c.text2}}">{{_t.k2578}}</span></div>
+</sc-if>
+
+<button onClick="{{toUpload}}" style="height: 54px; border-radius: 27px; border: 0; background: {{c.cta}}; color: #FFFCF6; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; font-size: 15px; font-weight: 500; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14 M5 12h14"></path></svg>{{_t.k559}}</button>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"platform":{"editor":"enum","options":["ios","android"],"default":"ios"},"variant":{"editor":"enum","options":["list","setup","detail"],"default":"list"},"offline":{"editor":"boolean","default":false},"premium":{"editor":"boolean","default":false},"notify":{"editor":null},"go":{"editor":null},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"$preview":{"width":390,"height":844}}'>
+const _I18N = {k: [" ders", " dk", " sa", " sayfa kaldı", " sayfa · ", "0 dk", "2026–2027 Güz dönemi", "Alkaloitler", "Astım ve KOAH", "Ağır metaller", "Beta-laktam antibiyotikler", "Biyofarmasötik", "Bu PDF cihazında yok. İnternete bağlanınca indirilir.", "Bu derse PDF ekle", "Bu dönem hangi", "Bu hafta hangi derse ne kadar?", "Bu klasör henüz boş", "CİHAZDA", "Ders adı", "Ders adı yaz (ör. Biyokimya)", "Ders ekle", "Ders klasörü", "Dersleri sonra Derslerim klasöründen değiştirebilirsin", "Derslerim", "Diyabet", "Dönem derslerim", "Eczacılık 3. sınıf için öneriler · dokunarak seç", "Farmakognozi", "Farmakoterapi", "Farmasötik Kimya II", "Farmasötik Teknoloji III", "Film kaplama", "Geri", "Glikozitler", "Halka = okunan · çubuk = ayrılan süre", "Henüz PDF yok", "Her ders için bir klasör açarız. PDF'lerin, sınavların ve kartların o klasörde toplanır.", "Hipertansiyon", "Kalp Yetmezliği", "Kapsüller", "Klasörümü oluştur · ", "Klinik Eczacılık", "Organofosfat zehirlenmesi", "PDF ekle", "PDF'ler", "Parasetamol toksisitesi", "Sınav tarihi yok", "Tablet formülasyonu", "Toksikoloji", "Vize · 19 Ekim", "Vize · 20 Ekim", "Vize · 21 Ekim", "Vize · 22 Ekim", "Vize · 23 Ekim", "Yeni ders ", "başlanmadı", "dersleri alıyorsun?", "okundu", "· Güz", "çalışma", "İlk PDF'ini, slayt fotoğraflarını ya da ders ses kaydını ekle.", " dersin PDF'ini yükleyince kısa seviye tespit sınavı önereceğim · bildiğin konuları atlarız", "Başladı, bazılarını çalıştım", "Dönem başladı mı?", "Dönem durumu", "Hangi dersleri çalışmaya başladın?", "Yeni başlıyor", "Çalışmaya başladığın dersleri seç", "Tümü", "Cihazımdakiler", "İnternetsiz açılabilen dersler", "ders sayısı", "toplam süre"], en: [" courses", " min", " h", " pages left", " pages · ", "0 min", "2026–2027 Fall term", "Alkaloids", "Asthma and COPD", "Heavy metals", "Beta-lactam antibiotics", "Biopharmaceutics", "This PDF isn't on your device. It will download when you're online.", "Add PDF to this course", "This term, which", "How much for each course this week?", "This folder is empty", "ON DEVICE", "Course name", "Type a course name (e.g. Biochemistry)", "Add course", "Course folder", "You can change courses later in the My Courses folder", "My Courses", "Diabetes", "My term courses", "Suggestions for Pharmacy year 3 · tap to pick", "Pharmacognosy", "Pharmacotherapy", "Pharmaceutical Chemistry II", "Pharmaceutical Technology III", "Film coating", "Back", "Glycosides", "Ring = read · bar = time spent", "No PDFs yet", "We open a folder for each course. Your PDFs, exams and cards are gathered there.", "Hypertension", "Heart Failure", "Capsules", "Create my folder · ", "Clinical Pharmacy", "Organophosphate poisoning", "Add PDF", "PDFs", "Paracetamol toxicity", "No exam date", "Tablet formulation", "Toxicology", "Midterm · Oct 19", "Midterm · Oct 20", "Midterm · Oct 21", "Midterm · Oct 22", "Midterm · Oct 23", "New course ", "not started", "courses are you taking?", "read", "· Fall", "study", "Add your first PDF, slide photos or a lecture recording.", " courses: once you upload their PDFs, I'll suggest a short placement test · we'll skip topics you know", "Started, studied some", "Has the term started?", "Term status", "Which courses have you started studying?", "Just starting", "Pick the courses you've started", "All", "On my device", "Courses you can open offline", "courses", "total time"], fa: [" درس", " دقیقه", " ساعت", " صفحه مانده", " صفحه · ", "0 دقیقه", "2026–2027 نیمسال پاییز", "آلکالوئیدها", "آسم و COPD", "فلزات سنگین", "آنتی‌بیوتیک‌های بتالاکتام", "بیوفارماسی", "این PDF روی دستگاهت نیست. با وصل شدن به اینترنت دانلود می‌شود.", "افزودن PDF به این درس", "این ترم کدام", "این هفته برای هر درس چقدر؟", "این پوشه هنوز خالی است", "روی دستگاه", "نام درس", "نام درس را بنویس (مثلاً بیوشیمی)", "افزودن درس", "پوشه درس", "بعداً می‌توانی درس‌ها را از پوشه «درس‌های من» تغییر دهی", "درس‌های من", "دیابت", "درس‌های این ترمم", "پیشنهادها برای داروسازی سال 3 · با لمس انتخاب کن", "فارماکوگنوزی", "دارودرمانی", "شیمی دارویی II", "فناوری دارویی III", "روکش فیلمی", "بازگشت", "گلیکوزیدها", "حلقه = خوانده‌شده · نوار = زمان صرف‌شده", "هنوز PDFی نیست", "برای هر درس یک پوشه باز می‌کنیم. PDFها، امتحان‌ها و کارت‌هایت در آن جمع می‌شوند.", "فشار خون بالا", "نارسایی قلبی", "کپسول‌ها", "پوشه‌ام را بساز · ", "داروسازی بالینی", "مسمومیت با ارگانوفسفات", "افزودن PDF", "PDFها", "سمیت پاراستامول", "تاریخ امتحان ندارد", "فرمولاسیون قرص", "سم‌شناسی", "میان‌ترم · 19 اکتبر", "میان‌ترم · 20 اکتبر", "میان‌ترم · 21 اکتبر", "میان‌ترم · 22 اکتبر", "میان‌ترم · 23 اکتبر", "درس جدید ", "شروع نشده", "درس‌هایی را می‌گذرانی؟", "خوانده‌شده", "· پاییز", "مطالعه", "اولین PDF، عکس اسلایدها یا صدای ضبط‌شده درس را اضافه کن.", " درس: وقتی PDFشان را آپلود کنی، یک آزمون تعیین سطح کوتاه پیشنهاد می‌کنم · مباحثی که بلدی را رد می‌کنیم", "شروع کردم، بعضی را خواندم", "ترم شروع شده؟", "وضعیت ترم", "مطالعه کدام درس‌ها را شروع کرده‌ای؟", "تازه شروع می‌شود", "درس‌هایی که شروع کرده‌ای را انتخاب کن", "همه", "روی دستگاهم", "درس‌هایی که بدون اینترنت باز می‌شوند", "تعداد درس", "زمان کل"], ar: [" مواد", " د", " س", " صفحات متبقية", " صفحات · ", "0 د", "2026–2027 الفصل الخريفي", "القلويدات", "الربو وCOPD", "المعادن الثقيلة", "المضادات الحيوية بيتا لاكتام", "الصيدلانيات الحيوية", "ملف PDF هذا غير موجود على جهازك. سيُنزَّل عند الاتصال بالإنترنت.", "أضف PDF إلى هذه المادة", "هذا الفصل، ما", "كم لكل مادة هذا الأسبوع؟", "هذا المجلد فارغ حتى الآن", "على الجهاز", "اسم المادة", "اكتب اسم المادة (مثل: الكيمياء الحيوية)", "إضافة مادة", "مجلد المادة", "يمكنك تغيير المواد لاحقًا من مجلد «موادي»", "موادي", "السكري", "مواد الفصل", "اقتراحات لصيدلة السنة 3 · اختر باللمس", "علم العقاقير", "العلاج الدوائي", "الكيمياء الصيدلانية II", "التقنية الصيدلانية III", "التغليف الغشائي", "رجوع", "الغليكوسيدات", "الحلقة = المقروء · الشريط = الوقت المخصص", "لا توجد ملفات PDF بعد", "نفتح مجلدًا لكل مادة. تُجمع فيه ملفات PDF والامتحانات والبطاقات.", "ارتفاع ضغط الدم", "قصور القلب", "الكبسولات", "أنشئ مجلدي · ", "الصيدلة السريرية", "التسمم بالفوسفات العضوية", "إضافة PDF", "ملفات PDF", "سمية الباراسيتامول", "لا يوجد موعد امتحان", "تركيب الأقراص", "علم السموم", "النصفي · 19 أكتوبر", "النصفي · 20 أكتوبر", "النصفي · 21 أكتوبر", "النصفي · 22 أكتوبر", "النصفي · 23 أكتوبر", "مادة جديدة ", "لم يبدأ", "مواد تدرس؟", "مقروء", "· الخريف", "دراسة", "أضف أول ملف PDF أو صور الشرائح أو تسجيلًا صوتيًا للمحاضرة.", " مواد: عند رفع ملفات PDF سأقترح اختبار تحديد مستوى قصيرًا · سنتخطى المواضيع التي تعرفها", "بدأت، درست بعضها", "هل بدأ الفصل؟", "حالة الفصل", "ما المواد التي بدأت دراستها؟", "يبدأ الآن", "اختر المواد التي بدأت دراستها", "الكل", "على جهازي", "مقررات يمكن فتحها دون إنترنت", "عدد المقررات", "الوقت الكلي"]};
+let _lang = 'tr', _M = null; const _TC = {};
+const _x = (s) => { if (_lang === 'tr' || !_I18N[_lang]) return s; if (!_M) { _M = {}; _I18N.k.forEach((k, i) => { _M[k] = i; }); } const i = _M[s]; return i == null ? s : _I18N[_lang][i]; };
+const _TK = {"k183": "2026–2027 Güz dönemi", "k559": "Bu derse PDF ekle", "k564": "Bu dönem hangi", "k573": "Bu hafta hangi derse ne kadar?", "k578": "Bu klasör henüz boş", "k704": "CİHAZDA", "k741": "Ders adı", "k742": "Ders adı yaz (ör. Biyokimya)", "k743": "Ders ekle", "k784": "Dersleri sonra Derslerim klasöründen değiştirebilirsin", "k785": "Derslerim", "k891": "Eczacılık 3. sınıf için öneriler · dokunarak seç", "k1052": "Geri", "k1124": "Halka = okunan · çubuk = ayrılan süre", "k1163": "Her ders için bir klasör açarız. PDF'lerin, sınavların ve kartların o klasörde toplanır.", "k1595": "PDF'ler", "k2352": "dersleri alıyorsun?", "k2390": "okundu", "k2450": "· Güz", "k2556": "çalışma", "k2578": "İlk PDF'ini, slayt fotoğraflarını ya da ders ses kaydını ekle.", "k2704": "Dönem başladı mı?", "k2705": "Dönem durumu", "k2710": "Hangi dersleri çalışmaya başladın?"};
+const _PT = {};
+const _tt = () => { if (!_TC[_lang]) { const o = {}; Object.keys(_TK).forEach((k) => { o[k] = (_PT[k] && _lang !== 'tr') ? (_PT[k][_lang] || _x(_TK[k])) : _x(_TK[k]); }); _TC[_lang] = o; } return _TC[_lang]; };
+
+class Component extends DCLogic {
+  renderVals() { const _p = this.props || {}, _s = this.state || {}; _lang = _s.lang || _p.lang || 'tr'; const r = this._rv0(); if (r && typeof r === 'object') { r._t = _tt(); r._dir = (_lang === 'fa' || _lang === 'ar') ? 'rtl' : 'ltr'; r._ai = this._aiDark ? { bg: '#F2B33D', fg: '#241C14', tx: '#EFE8DC' } : { bg: '#9C2F3A', fg: '#FFF6E6', tx: '#2A2420' }; } return r; }
+  _rv0() {
+    const p = this.props; const st = this.state || {};
+    const dark = p.theme === 'dark'; const ios = (p.platform || 'ios') === 'ios';
+    const c = dark
+      ? { bg: '#15120F', card: '#211C18', sub: '#2B2520', track: '#3A322B', line: '#3A322B', line2: '#4A4038', text: '#EFE8DC', text2: '#BDB2A4', text3: '#9A8F82', cta: '#C24B57', amb: '#F2C66D', ambSoft: '#3A2E18', glass: 'rgba(255,240,210,.08)', time: '#E8925A' }
+      : { bg: '#F4EFE6', card: '#FFFCF6', sub: '#F1EBE0', track: '#EAE1D2', line: '#E6DDCF', line2: '#D6C8B2', text: '#2A2420', text2: '#6E645A', text3: '#8C8073', cta: '#9C2F3A', amb: '#A86F0E', ambSoft: '#FBEBC8', glass: 'rgba(255,252,246,.7)', time: '#E8925A' };
+    const pal = dark
+      ? { red: ['#3A2224', '#F09AA3', '#5A2A30'], amb: ['#3A2E18', '#F2C66D', '#5A4520'], vio: ['#2C2A3A', '#B9B4F0', '#3E3A5A'], grn: ['#1F3328', '#8FD3A8', '#2C4A38'], teal: ['#1C3134', '#8CCFD6', '#284549'], gray: ['#2B2520', '#BDB2A4', '#3A322B'] }
+      : { red: ['#F5E3E2', '#9C2F3A', '#E9C3C2'], amb: ['#FBEBC8', '#A86F0E', '#F2D59A'], vio: ['#E8E6F6', '#4A3F9A', '#D3CFF0'], grn: ['#E3F1E7', '#2E7D4F', '#C3E2CD'], teal: ['#DFF0F1', '#1F6E75', '#BEDFE2'], gray: ['#EFE8DC', '#6E645A', '#E0D6C6'] };
+    const data = {
+      [_x('Farmakoterapi')]: { col: 'red', exam: _x('Vize · 19 Ekim'), pdfs: [[_x('Hipertansiyon'), 62, 160, 48], [_x('Diyabet'), 8, 25, 36], [_x('Kalp Yetmezliği'), 100, 190, 40], [_x('Astım ve KOAH'), 45, 90, 30]] },
+      [_x('Toksikoloji')]: { col: 'amb', exam: _x('Vize · 20 Ekim'), pdfs: [[_x('Organofosfat zehirlenmesi'), 80, 120, 28], [_x('Parasetamol toksisitesi'), 100, 80, 18], [_x('Ağır metaller'), 20, 35, 34]] },
+      [_x('Farmasötik Teknoloji III')]: { col: 'vio', exam: _x('Vize · 21 Ekim'), pdfs: [[_x('Tablet formülasyonu'), 100, 180, 52], [_x('Film kaplama'), 55, 70, 26], [_x('Kapsüller'), 0, 0, 22]] },
+      [_x('Farmakognozi')]: { col: 'grn', exam: _x('Vize · 22 Ekim'), pdfs: [[_x('Alkaloitler'), 70, 110, 44], [_x('Glikozitler'), 30, 40, 30]] },
+      [_x('Farmasötik Kimya II')]: { col: 'teal', exam: _x('Vize · 23 Ekim'), pdfs: [[_x('Beta-laktam antibiyotikler'), 15, 30, 38]] }
+    };
+    const suggest = [_x('Farmakoterapi'), _x('Toksikoloji'), _x('Farmasötik Teknoloji III'), _x('Farmakognozi'), _x('Farmasötik Kimya II'), _x('Biyofarmasötik'), _x('Klinik Eczacılık')];
+    const extraN = st.extraN || 0;
+    const allNames = suggest.concat(Array.from({ length: extraN }, (_, i) => _x('Yeni ders ') + (i + 1)));
+    const sel = st.sel || [_x('Farmakoterapi'), _x('Toksikoloji'), _x('Farmasötik Teknoloji III'), _x('Farmakognozi'), _x('Farmasötik Kimya II')];
+    const mode = st.mode || p.variant || 'list';
+    const is = { setup: mode === 'setup', list: mode === 'list', detail: mode === 'detail' };
+    const go = p.go || (() => {});
+    const fmt = (m) => m <= 0 ? _x('0 dk') : (m < 60 ? m + _x(' dk') : Math.floor(m / 60) + _x(' sa') + (m % 60 ? ' ' + (m % 60) + _x(' dk') : ''));
+    const info = (name) => {
+      const d = data[name] || { col: 'gray', exam: _x('Sınav tarihi yok'), pdfs: [] };
+      const mins = d.pdfs.reduce((a, x) => a + x[2], 0);
+      const pages = d.pdfs.reduce((a, x) => a + x[3], 0);
+      const readP = d.pdfs.reduce((a, x) => a + x[3] * x[1] / 100, 0);
+      const pct = pages ? Math.round(readP / pages * 100) : 0;
+      const k = pal[d.col];
+      return { name, d, mins, pct, bg: k[0], fg: k[1], tab: k[2], pdfs: d.pdfs.length, hours: fmt(mins), exam: d.exam };
+    };
+    const pick = allNames.map((t) => {
+      const on = sel.indexOf(t) >= 0;
+      return { t, on: on ? 'true' : 'false', border: on ? '0' : '1px solid ' + c.line, bg: on ? c.cta : c.card, fg: on ? '#FFFCF6' : c.text, dotBg: on ? 'rgba(255,252,246,.22)' : c.sub, dotFg: on ? '#FFFCF6' : c.text2, icon: on ? 'M5 12l5 5 9-10' : 'M12 6v12 M6 12h12', tap: () => this.setState({ sel: on ? sel.filter((x) => x !== t) : sel.concat([t]) }) };
+    });
+    if (!c.ambFg) c.ambFg = c.amb; if (!c.ambLine) c.ambLine = dark ? '#6B5426' : '#E8C77E';
+    const msStarted = !!st.msStarted; const msDone = st.msDone || {}; const msN = (sel).filter((t) => msDone[t]).length;
+    const msSeg = (on) => ({ on: on ? 'true' : 'false', bg: on ? c.card : 'transparent', fw: on ? 600 : 400, shadow: on ? '0 1px 4px rgba(42,36,32,.14)' : 'none' });
+    const ms = { started: msStarted, segBg: c.sub, a: Object.assign(msSeg(!msStarted), { l: _x('Yeni başlıyor'), pick: () => this.setState({ msStarted: false }) }), b: Object.assign(msSeg(msStarted), { l: _x('Başladı, bazılarını çalıştım'), pick: () => this.setState({ msStarted: true }) }),
+      courses: (sel).map((t) => { const on = !!msDone[t]; return { t, on: on ? 'true' : 'false', bg: on ? c.ambSoft : c.card, fg: on ? c.ambFg : c.text, border: on ? '1.5px solid ' + c.ambLine : '1px solid ' + c.line, icon: on ? 'M5 12l5 5 9-10' : 'M12 6v12 M6 12h12', tap: () => { const n = Object.assign({}, msDone); n[t] = !on; this.setState({ msDone: n }); } }; }),
+      note: msN ? msN + _x(" dersin PDF'ini yükleyince kısa seviye tespit sınavı önereceğim · bildiğin konuları atlarız") : _x('Çalışmaya başladığın dersleri seç') };
+    ms.cardBg = c.card;
+    const infos = sel.map(info);
+    const devOnly = st.devOnly != null ? !!st.devOnly : !!p.offline;
+    const devN = (f) => f.d.pdfs.filter((x) => x[1] > 0).length;
+    const devCourses = infos.filter((f) => devN(f) > 0).length;
+    const fseg = (on) => ({ bg: on ? c.cta : c.card, fg: on ? '#FFFCF6' : c.text, border: on ? '0' : '1px solid ' + c.line, fw: on ? 600 : 400, on: on ? 'true' : 'false' });
+    const flt = { all: Object.assign(fseg(!devOnly), { l: _x('Tümü'), pick: () => this.setState({ devOnly: false }) }), dev: Object.assign(fseg(devOnly), { l: _x('Cihazımdakiler'), n: devCourses, pick: () => this.setState({ devOnly: true }) }), note: devOnly ? _x('İnternetsiz açılabilen dersler') : '' , noteD: devOnly ? 'block' : 'none' };
+    const folders = infos.filter((f) => !devOnly || devN(f) > 0).map((f) => ({ tagBg: dark ? 'rgba(0,0,0,.32)' : 'rgba(255,255,255,.7)', tagFg: dark ? '#EFE8DC' : c.text2, tagLine: dark ? 'rgba(255,255,255,.14)' : 'rgba(42,36,32,.08)', dev: devN(f), devD: devN(f) > 0 ? 'inline-flex' : 'none', name: f.name, pdfs: f.pdfs, hours: f.hours, pct: f.pct, bg: f.bg, fg: f.fg, tab: f.tab, sub: f.pdfs ? f.exam : _x('Henüz PDF yok'), open: () => this.setState({ mode: 'detail', cur: f.name }) }));
+    const totMins = infos.reduce((a, f) => a + f.mins, 0);
+    const totPdf = infos.reduce((a, f) => a + f.pdfs, 0);
+    const totals = [[sel.length, _x('ders sayısı')], [totPdf, 'PDF'], [Math.round(totMins / 60) + _x(' sa'), _x('toplam süre')]].map((t) => ({ v: t[0], l: t[1] }));
+    const share = infos.filter((f) => f.mins > 0).map((f) => ({ n: f.name.split(' ')[0], p: Math.round(f.mins / Math.max(1, totMins) * 100), c: f.fg }));
+    const curName = st.cur || sel[0] || _x('Farmakoterapi');
+    const ci = info(curName);
+    const maxM = Math.max(1, ...ci.d.pdfs.map((x) => x[2]));
+    const pdfs = ci.d.pdfs.map((x) => ({ n: x[0], pct: x[1], deg: Math.round(x[1] * 3.6), ring: ci.fg, t: fmt(x[2]), tw: Math.round(x[2] / maxM * 100), s: x[3] + _x(' sayfa · ') + (x[1] === 100 ? 'bitti' : x[1] === 0 ? _x('başlanmadı') : Math.round(x[3] * (100 - x[1]) / 100) + _x(' sayfa kaldı')), dlD: (x[1] > 0) ? 'inline-block' : 'none', op: (p.offline && x[1] === 0) ? 0.45 : 1, tap: () => { if (p.offline && x[1] === 0) { if (p.notify) p.notify(_x('Bu PDF cihazında yok. İnternete bağlanınca indirilir.')); } else go('reader'); } }));
+    const heads = { setup: [_x('Dönem derslerim'), 'M12 5v14 M5 12h14', _x('Ders ekle')], list: [_x('Derslerim'), 'M12 5v14 M5 12h14', _x('Ders ekle')], detail: [_x('Ders klasörü'), 'M12 5v14 M5 12h14', _x('PDF ekle')] };
+    return { ms, flt,
+      c, W: ios ? 390 : 412, H: ios ? 844 : 915, is, pick, folders, totals, share, pdfs,
+      cur: { name: ci.name, pdfs: ci.pdfs, pct: ci.pct, hours: ci.hours, exam: ci.exam, bg: ci.bg, fg: ci.fg },
+      hasPdfs: pdfs.length > 0, noPdfs: pdfs.length === 0,
+      head: heads[mode][0], headIcon: heads[mode][1], headActionLabel: heads[mode][2],
+      headAction: () => { if (mode === 'detail') go('upload'); else if (mode === 'setup') this.setState({ extraN: extraN + 1, sel: sel.concat([_x('Yeni ders ') + (extraN + 1)]) }); else this.setState({ mode: 'setup' }); },
+      addCourse: () => this.setState({ extraN: extraN + 1, sel: sel.concat([_x('Yeni ders ') + (extraN + 1)]) }),
+      createLabel: _x('Klasörümü oluştur · ') + sel.length + _x(' ders'),
+      create: () => this.setState({ mode: 'list' }),
+      toSetup: () => this.setState({ mode: 'setup' }),
+      back: () => { if (mode === 'detail' || mode === 'setup') this.setState({ mode: 'list' }); else go('home'); },
+      toReader: () => go('reader'),
+      toUpload: () => go('upload')
+    };
+  }
+}
+</script>
+</body>
+</html>

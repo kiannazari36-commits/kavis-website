@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Ayarlar</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+<style>[dir=rtl] .dc-back{transform:scaleX(-1)}[dir=rtl],[dir=rtl] *{letter-spacing:0 !important}</style>
+</helmet>
+<div dir="{{dir}}" lang="{{lang}}" style="width: {{W}}px; height: {{H}}px; box-sizing: border-box; display: flex; flex-direction: column; position: relative; overflow: hidden; background: {{c.bg}}; color: {{c.text}}; font-family: Poppins, Vazirmatn, system-ui, sans-serif">
+<div style="height: {{topH}}px; flex: none"></div>
+<h1 style="margin: 0; padding: 4px 20px 10px; font-size: {{titleFs}}px; font-weight: 700; letter-spacing: -0.02em; flex: none">{{s.title}}</h1>
+
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 0 16px 120px; display: flex; flex-direction: column; gap: 8px">
+
+<button onClick="{{toPaywall}}" style="border: 0; border-radius: 16px; background: {{c.card}}; color: {{c.text}}; display: flex; align-items: center; gap: 12px; padding: 14px; font-family: inherit; text-align: start; cursor: pointer">
+<span style="width: 48px; height: 48px; border-radius: 24px; background: {{c.priSoft}}; color: {{c.priText}}; display: flex; align-items: center; justify-content: center; flex: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M4 21a8 8 0 0 1 16 0"></path></svg></span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 16px; font-weight: 600">{{s.account}}</span>
+<span dir="ltr" style="font-size: 13px; color: {{c.text3}}; text-align: start">ornek@ogrenci.edu.tr</span>
+</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; font-weight: 600; padding: 5px 8px; border-radius: 6px; background: {{c.ambSoft}}; color: {{c.ambText}}">{{planLbl}}</span>
+</button>
+
+<h2 style="margin: 14px 4px 2px; font-size: {{h.fs}}px; font-weight: {{h.fw}}; letter-spacing: {{h.ls}}; text-transform: {{h.tt}}; color: {{h.c}}">{{s.hPlan}}</h2>
+<div style="border-radius: 16px; background: {{c.card}}; padding: 14px; display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 14px; color: {{c.text2}}">{{s.daysQ}}</span>
+<div role="radiogroup" aria-label="{{s.daysQ}}" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{dayOpts}}" as="o" hint-placeholder-count="7">
+<button role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="height: 40px; border-radius: 10px; border: {{o.border}}; background: {{o.bg}}; color: {{o.fg}}; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">{{o.n}}</button>
+</sc-for>
+</div>
+<div style="display: flex; align-items: center; gap: 10px">
+<span style="flex: 1; font-size: 14px; color: {{c.text2}}">{{s.hoursQ}}</span>
+<button onClick="{{hoursDown}}" aria-label="{{s.less}}" style="width: 40px; height: 40px; border-radius: 20px; border: 1px solid {{c.line}}; background: {{c.sub}}; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"></path></svg></button>
+<span style="min-width: 64px; text-align: center; font-size: 18px; font-weight: 700">{{hoursLabel}}</span>
+<button onClick="{{hoursUp}}" aria-label="{{s.more}}" style="width: 40px; height: 40px; border-radius: 20px; border: 0; background: {{c.pri}}; color: #FFFCF6; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14 M5 12h14"></path></svg></button>
+</div>
+<div style="border-top: 1px solid {{c.line}}; padding-top: 12px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px">
+<span style="font-size: 14px; font-weight: 600">{{s.thisWeek}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px; color: {{c.text2}}">{{weekLabel}}</span>
+</div>
+<span style="height: 8px; border-radius: 4px; background: {{c.sub}}; display: flex; overflow: hidden"><span style="width: {{weekPct}}%; background: {{c.amb}}; border-radius: 4px"></span></span>
+<button onClick="{{toProgress}}" style="align-self: flex-start; min-height: 36px; border: 0; padding: 0; background: transparent; color: {{c.priText}}; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer">{{s.report}} →</button>
+</div>
+</div>
+
+<h2 style="margin: 14px 4px 2px; font-size: {{h.fs}}px; font-weight: {{h.fw}}; letter-spacing: {{h.ls}}; text-transform: {{h.tt}}; color: {{h.c}}">{{s.hLang}}</h2>
+<div style="border-radius: 16px; background: {{c.card}}; padding: 4px 14px">
+<div style="display: flex; flex-direction: column; gap: 10px; padding: 12px 0; border-bottom: 1px solid {{c.line}}">
+<span style="font-size: 15px">{{s.appLang}}</span>
+<div role="radiogroup" aria-label="{{s.appLang}}" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 3px; border-radius: {{segR}}px; background: {{c.sub}}">
+<sc-for list="{{langs}}" as="o" hint-placeholder-count="4">
+<button role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="height: 36px; border: 0; border-radius: {{segIR}}px; background: {{o.bg}}; color: {{o.fg}}; font-family: inherit; font-size: 13px; font-weight: {{o.fw}}; box-shadow: {{o.shadow}}; cursor: pointer">{{o.name}}</button>
+</sc-for>
+</div>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; min-height: 52px; border-bottom: 1px solid {{c.line}}">
+<span style="flex: 1; font-size: 15px">{{s.trLang}}</span><span style="font-size: 14px; color: {{c.text3}}">English · فارسی · العربية</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 10px 0; border-bottom: 1px solid {{c.line}}">
+<span style="font-size: 15px">{{_t.k2486}}</span>
+<div role="radiogroup" aria-label="{{_t.k2486}}" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 3px; border-radius: {{segR}}px; background: {{c.sub}}">
+<sc-for list="{{trStyles}}" as="o" hint-placeholder-count="2"><button role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="height: 36px; border: 0; border-radius: {{segIR}}px; background: {{o.bg}}; color: {{o.fg}}; font-family: inherit; font-size: 13px; font-weight: {{o.fw}}; box-shadow: {{o.shadow}}; cursor: pointer">{{o.name}}</button></sc-for>
+</div>
+<span style="font-size: 12px; line-height: 1.4; color: {{c.text3}}">{{trStyleHint}}</span>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; min-height: 52px">
+<span style="flex: 1; font-size: 15px">{{s.dept}}</span><span style="font-size: 14px; color: {{c.text3}}">{{s.deptV}}</span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{c.text3}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX({{flip}})"><path d="M9 5l7 7-7 7"></path></svg>
+</div>
+</div>
+
+<h2 style="margin: 14px 4px 2px; font-size: {{h.fs}}px; font-weight: {{h.fw}}; letter-spacing: {{h.ls}}; text-transform: {{h.tt}}; color: {{h.c}}">{{s.hVoice}}</h2>
+<div style="border-radius: 16px; background: {{c.card}}; padding: 4px 14px">
+<div style="display: flex; align-items: center; gap: 10px; min-height: 56px; border-bottom: 1px solid {{c.line}}">
+<span style="flex: 1; font-size: 15px">{{s.voice}}</span>
+<div role="radiogroup" aria-label="{{s.voice}}" style="display: flex; gap: 4px; padding: 3px; border-radius: {{segR}}px; background: {{c.sub}}">
+<sc-for list="{{voices}}" as="o" hint-placeholder-count="2">
+<button role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="height: 34px; padding: 0 14px; border: 0; border-radius: {{segIR}}px; background: {{o.bg}}; color: {{o.fg}}; font-family: inherit; font-size: 13px; font-weight: {{o.fw}}; box-shadow: {{o.shadow}}; cursor: pointer">{{o.name}}</button>
+</sc-for>
+</div>
+</div>
+<label style="display: flex; flex-direction: column; gap: 8px; padding: 12px 0">
+<span style="display: flex; justify-content: space-between"><span style="font-size: 15px">{{s.speed}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 13px; color: {{c.priText}}; font-weight: 600">{{speedLabel}}</span></span>
+<input type="range" min="0.5" max="2" step="0.1" value="{{speed}}" onChange="{{setSpeed}}" style="width: 100%; accent-color: {{c.pri}}">
+<span style="display: flex; justify-content: space-between; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.text3}}"><span>0,5×</span><span>1,0×</span><span>2,0×</span></span>
+</label>
+</div>
+
+<h2 style="margin: 14px 4px 2px; font-size: {{h.fs}}px; font-weight: {{h.fw}}; letter-spacing: {{h.ls}}; text-transform: {{h.tt}}; color: {{h.c}}">{{s.hNotif}}</h2>
+<div style="border-radius: 16px; background: {{c.card}}; padding: 4px 14px">
+<div style="display: flex; align-items: center; gap: 10px; min-height: 56px; border-bottom: 1px solid {{c.line}}">
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px">{{s.remind}}</span><span style="font-size: 12px; color: {{c.text3}}">{{s.remindS}}</span></span>
+<button role="switch" aria-checked="{{remindStr}}" aria-label="{{s.remind}}" onClick="{{toggleRemind}}" style="border: 0; padding: 0; background: transparent; cursor: pointer">
+<span style="width: {{sw.w}}px; height: {{sw.h}}px; border-radius: {{sw.r}}px; background: {{sw.track}}; border: {{sw.border}}; box-sizing: border-box; display: flex; align-items: center; justify-content: {{sw.justify}}; padding: 0 {{sw.pad}}px"><span style="width: {{sw.k}}px; height: {{sw.k}}px; border-radius: {{sw.k}}px; background: {{sw.thumb}}; box-shadow: 0 1px 3px rgba(0,0,0,.2)"></span></span>
+</button>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; min-height: 56px; border-bottom: 1px solid {{c.line}}">
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px">{{_t.k2035}}</span><span style="font-size: 12px; color: {{c.text3}}">{{_t.k516}}</span></span>
+<button role="switch" aria-checked="{{cgStr}}" aria-label="{{_t.k2035}}" onClick="{{toggleCg}}" style="border: 0; padding: 0; background: transparent; cursor: pointer">
+<span style="width: {{sw2.w}}px; height: {{sw2.h}}px; border-radius: {{sw2.r}}px; background: {{sw2.track}}; border: {{sw2.border}}; box-sizing: border-box; display: flex; align-items: center; justify-content: {{sw2.justify}}; padding: 0 {{sw2.pad}}px"><span style="width: {{sw2.k}}px; height: {{sw2.k}}px; border-radius: {{sw2.k}}px; background: {{sw2.thumb}}; box-shadow: 0 1px 3px rgba(0,0,0,.2)"></span></span>
+</button>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; min-height: 52px">
+<span style="flex: 1; font-size: 15px">{{s.time}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 14px; padding: 6px 10px; border-radius: 8px; background: {{c.sub}}">09:00</span>
+</div>
+</div>
+
+<h2 style="margin: 14px 4px 2px; font-size: {{h.fs}}px; font-weight: {{h.fw}}; letter-spacing: {{h.ls}}; text-transform: {{h.tt}}; color: {{h.c}}">{{s.hLook}}</h2>
+<div style="border-radius: 16px; background: {{c.card}}; padding: 12px 14px">
+<div role="radiogroup" aria-label="{{s.hLook}}" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 3px; border-radius: {{segR}}px; background: {{c.sub}}">
+<sc-for list="{{themes}}" as="o" hint-placeholder-count="2">
+<button role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="height: 38px; border: 0; border-radius: {{segIR}}px; background: {{o.bg}}; color: {{o.fg}}; font-family: inherit; font-size: 13px; font-weight: {{o.fw}}; box-shadow: {{o.shadow}}; cursor: pointer">{{o.name}}</button>
+</sc-for>
+</div>
+<button onClick="{{resetPos}}" style="margin-top: 10px; width: 100%; min-height: 44px; padding: 8px 12px; border-radius: 12px; border: 1px solid {{c.line}}; background: transparent; color: {{c.text}}; display: flex; align-items: center; gap: 10px; font-family: inherit; font-size: 14px; text-align: start; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7 M3 4v5h5"></path></svg><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 500">{{_t.k2762}}</span><span style="font-size: 12px; color: {{c.text3}}">{{_t.k2763}}</span></span></button>
+</div>
+
+<h2 style="margin: 14px 4px 2px; font-size: {{h.fs}}px; font-weight: {{h.fw}}; letter-spacing: {{h.ls}}; text-transform: {{h.tt}}; color: {{h.c}}">{{_t.k2490}}</h2>
+<sc-if value="{{offLock}}" hint-placeholder-val="{{ false }}"><button onClick="{{offPay}}" style="width: 100%; border: 0; border-radius: 16px; background: {{c.card}}; color: {{c.text}}; padding: 14px; display: flex; align-items: center; gap: 12px; font-family: inherit; text-align: start; cursor: pointer"><span style="width: 40px; height: 40px; border-radius: 20px; background: {{c.ambSoft}}; color: {{c.ambText}}; display: flex; align-items: center; justify-content: center; flex: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 11V8a6 6 0 0 1 12 0v3 M5 11h14v10H5z"></path></svg></span><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 500">{{_t.k2672}}</span><span style="font-size: 12px; line-height: 1.4; color: {{c.text3}}">{{_t.k2476}}</span></span><span style="font-size: 12px; font-weight: 600; padding: 7px 12px; border-radius: 16px; background: {{c.pri}}; color: #FFFCF6; flex: none">{{_t.k1663}}</span></button></sc-if>
+<sc-if value="{{offOpen}}" hint-placeholder-val="{{ true }}"><div style="border-radius: 16px; background: {{c.card}}; padding: 4px 14px">
+<div style="display: flex; align-items: center; gap: 10px; min-height: 60px; border-bottom: 1px solid {{c.line}};">
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px">{{_t.k2492}}</span><span style="font-size: 12px; color: {{c.text3}}">{{_t.k2598}}</span></span>
+<button role="switch" aria-checked="{{swOff.str}}" aria-label="{{_t.k2492}}" onClick="{{toggleOff}}" style="border: 0; padding: 0; background: transparent; cursor: pointer">
+<span style="width: {{swOff.w}}px; height: {{swOff.h}}px; border-radius: {{swOff.r}}px; background: {{swOff.track}}; border: {{swOff.border}}; box-sizing: border-box; display: flex; align-items: center; justify-content: {{swOff.justify}}; padding: 0 {{swOff.pad}}px"><span style="width: {{swOff.k}}px; height: {{swOff.k}}px; border-radius: {{swOff.k}}px; background: {{swOff.thumb}}; box-shadow: 0 1px 3px rgba(0,0,0,.2)"></span></span>
+</button>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; min-height: 60px; border-bottom: 1px solid {{c.line}};">
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px">{{_t.k2475}}</span><span style="font-size: 12px; color: {{c.text3}}">{{_t.k440}}</span></span>
+<button role="switch" aria-checked="{{swDl.str}}" aria-label="{{_t.k2475}}" onClick="{{toggleDl}}" style="border: 0; padding: 0; background: transparent; cursor: pointer">
+<span style="width: {{swDl.w}}px; height: {{swDl.h}}px; border-radius: {{swDl.r}}px; background: {{swDl.track}}; border: {{swDl.border}}; box-sizing: border-box; display: flex; align-items: center; justify-content: {{swDl.justify}}; padding: 0 {{swDl.pad}}px"><span style="width: {{swDl.k}}px; height: {{swDl.k}}px; border-radius: {{swDl.k}}px; background: {{swDl.thumb}}; box-shadow: 0 1px 3px rgba(0,0,0,.2)"></span></span>
+</button>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 12px 0">
+<div style="display: flex; align-items: baseline; justify-content: space-between"><span style="font-size: 15px">{{_t.k676}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px; color: {{c.text2}}">{{offStore}}</span></div>
+<span style="height: 6px; border-radius: 3px; background: {{c.sub}}; display: flex; overflow: hidden"><span style="width: 18%; background: {{c.pri}}; border-radius: 3px"></span></span>
+<span style="display: flex; gap: 10px; align-items: flex-start; font-size: 12px; line-height: 1.45; color: {{c.text2}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{c.ok}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 1px"><path d="M6 11V8a6 6 0 0 1 12 0v3 M5 11h14v10H5z"></path></svg>{{_t.k1599}}</span>
+<button onClick="{{clearOff}}" style="align-self: flex-start; height: 34px; padding: 0 12px; border-radius: 17px; border: 1px solid {{c.line}}; background: transparent; color: {{c.text}}; font-family: inherit; font-size: 12px; cursor: pointer">{{_t.k677}}</button>
+</div>
+</div>
+</sc-if>
+
+<h2 style="margin: 14px 4px 2px; font-size: {{h.fs}}px; font-weight: {{h.fw}}; letter-spacing: {{h.ls}}; text-transform: {{h.tt}}; color: {{h.c}}">{{_t.k1535}}</h2>
+<div style="border-radius: 16px; background: {{c.card}}; padding: 4px 14px">
+<button onClick="{{toSchedule}}" style="width: 100%; min-height: 60px; border: 0; background: transparent; color: {{c.text}}; display: flex; align-items: center; gap: 12px; padding: 0; font-family: inherit; text-align: start; cursor: pointer"><span style="width: 34px; height: 34px; border-radius: 17px; background: #F2B33D; color: #2A2420; display: flex; align-items: center; justify-content: center; flex: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16v14H4z M4 10h16 M8 3v4 M16 3v4"></path></svg></span><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px">{{_t.k753}}</span><span style="font-size: 12px; color: {{c.text3}}">{{_t.k1683}}</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{c.text3}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX({{flip}})"><path d="M9 5l7 7-7 7"></path></svg></button>
+</div>
+
+<h2 style="margin: 14px 4px 2px; font-size: {{h.fs}}px; font-weight: {{h.fw}}; letter-spacing: {{h.ls}}; text-transform: {{h.tt}}; color: {{h.c}}">{{_t.k2262}}</h2>
+<div style="border-radius: 16px; background: {{c.card}}; padding: 4px 14px">
+<button onClick="{{toSupport}}" style="width: 100%; min-height: 60px; border: 0; border-bottom: 1px solid {{c.line}}; background: transparent; color: {{c.text}}; display: flex; align-items: center; gap: 12px; padding: 0; font-family: inherit; text-align: start; cursor: pointer"><span style="width: 34px; height: 34px; border-radius: 17px; background: #9C2F3A; color: #FFFCF6; display: flex; align-items: center; justify-content: center; flex: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z M8 9h8 M8 12h5"></path></svg></span><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px">{{_t.k802}}</span><span style="font-size: 12px; color: {{c.text3}}">{{_t.k529}}</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{c.text3}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX({{flip}})"><path d="M9 5l7 7-7 7"></path></svg></button>
+<button onClick="{{toFaq}}" style="width: 100%; min-height: 52px; border: 0; background: transparent; color: {{c.text}}; display: flex; align-items: center; padding: 0; font-family: inherit; font-size: 15px; text-align: start; cursor: pointer"><span style="flex: 1">{{_t.k1944}}</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{c.text3}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX({{flip}})"><path d="M9 5l7 7-7 7"></path></svg></button>
+</div>
+
+<h2 style="margin: 14px 4px 2px; font-size: {{h.fs}}px; font-weight: {{h.fw}}; letter-spacing: {{h.ls}}; text-transform: {{h.tt}}; color: {{h.c}}">{{s.hPriv}}</h2>
+<div style="border-radius: 16px; background: {{c.card}}; padding: 4px 14px">
+<div style="display: flex; gap: 10px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid {{c.line}}">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{c.ok}}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 2px"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z M9 12l2 2 4-4"></path></svg>
+<span style="font-size: 13px; line-height: 1.45; color: {{c.text2}}">{{s.privNote}}</span>
+</div>
+<button onClick="{{sExport}}" style="width: 100%; min-height: 52px; border: 0; border-bottom: 1px solid {{c.line}}; background: transparent; color: {{c.text}}; display: flex; align-items: center; padding: 0; font-family: inherit; font-size: 15px; text-align: start; cursor: pointer"><span style="flex: 1">{{s.export}}</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{c.text3}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX({{flip}})"><path d="M9 5l7 7-7 7"></path></svg></button>
+<button onClick="{{sDelete}}" style="width: 100%; min-height: 52px; border: 0; background: transparent; color: {{c.bad}}; display: flex; align-items: center; padding: 0; font-family: inherit; font-size: 15px; text-align: start; cursor: pointer">{{s.delete}}</button>
+</div>
+<span style="text-align: center; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.text3}}; padding-top: 10px">KAVIS STUDY · 1.0 (12)</span>
+</div>
+
+<div style="position: absolute; left: 0; right: 0; bottom: 0">
+<dc-import name="TabBar" platform="{{pf}}" theme="{{th}}" lang="{{lang}}" active="settings" go="{{tabGo}}" hint-size="100%,83px"></dc-import>
+</div>
+<sc-if value="{{dlg.on}}" hint-placeholder-val="{{ false }}"><div style="position: absolute; inset: 0; z-index: 40; display: flex; flex-direction: column; justify-content: flex-end"><div onClick="{{dlg.cancel}}" style="position: absolute; inset: 0; background: rgba(20,14,10,.45)"></div>
+<div role="dialog" aria-modal="true" aria-label="{{dlg.t.t}}" style="position: relative; background: {{dlg.bg}}; color: {{c.text}}; border-radius: 28px 28px 0 0; padding: 12px 24px 34px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 -10px 40px rgba(0,0,0,.25); font-family: Poppins, Vazirmatn, system-ui, sans-serif">
+<span style="width: 40px; height: 5px; border-radius: 3px; background: {{dlg.grab}}; align-self: center; margin-bottom: 8px"></span>
+<span style="width: 52px; height: 52px; border-radius: 16px; background: {{dlg.iconBg}}; color: {{c.bad}}; display: flex; align-items: center; justify-content: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16 M9 7V4h6v3 M6 7l1 13h10l1-13 M10 11v6 M14 11v6"></path></svg></span>
+<span style="font-size: 21px; font-weight: 700; line-height: 1.25">{{dlg.t.t}}</span>
+<span style="font-size: 15px; line-height: 1.5; color: {{c.text2}}">{{dlg.t.d}}</span>
+<span style="font-size: 14px; line-height: 1.5; background: {{dlg.note}}; border-radius: 16px; padding: 12px 14px">{{dlg.t.sub}}</span>
+<span style="font-size: 13px; line-height: 1.45; color: {{c.text2}}">{{dlg.t.mail}}</span>
+<button onClick="{{dlg.ok}}" style="height: 52px; border: 0; border-radius: 26px; background: {{dlg.btn}}; color: #FFFCF6; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 6px">{{dlg.t.del}}</button>
+<button onClick="{{dlg.cancel}}" style="height: 48px; border: 0; background: transparent; color: {{c.text}}; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">{{dlg.t.cancel}}</button>
+</div></div></sc-if>
+<sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div role="status" aria-live="polite" style="position: absolute; left: 50%; bottom: {{toastBottom}}px; transform: translateX(-50%); z-index: 50; max-width: 86%; box-sizing: border-box; padding: 12px 18px; border-radius: 22px; background: #2E2721; color: #FBEFD6; font-family: Poppins, Vazirmatn, system-ui, sans-serif; font-size: 14px; line-height: 1.4; text-align: center; box-shadow: 0 12px 30px rgba(42,36,32,.28); pointer-events: none">{{toastMsg}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"platform":{"editor":"enum","options":["ios","android"],"default":"ios"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"variant":{"editor":null},"go":{"editor":null},"setPref":{"editor":null},"offline":{"editor":"boolean","default":false},"premium":{"editor":"boolean","default":false},"planDays":{"editor":null},"planHours":{"editor":null},"live":{"editor":null},"$preview":{"width":390,"height":844}}'>
+const _I18N = {k: [" sa", " sa hedef", "4 PDF · 186 MB", "4 sa 10 dk / ", "Artır", "Ayarlar", "Aynı anlam o dilde doğal konuşulduğu gibi anlatılır; daha kolay anlaşılır.", "Azalt", "Açtığın PDF'ler cihazına kaydedilecek", "Açtığın her PDF cihazına kaydedilir", "Açık", "Bildirim saati", "Bildirimler", "Bir dersinde ortalaman %10'dan fazla artınca", "Bir sorun mu gördün? Bize yaz, çözelim", "Bu hafta", "Bölüm", "Cihazdaki dersler", "Cihazdaki dersleri yönet", "Ders programı açılır", "Ders programım", "Destek sohbeti açılır", "Destekle konuş", "Dil ve bölüm", "Doğal anlatım", "Düz çeviri", "Eczacılık", "Erkek", "Görünüm", "Günde ortalama", "Haftada kaç gün", "Haftalık çalışma raporu", "Hesabı sil", "Hesabı silmek için e-postana onay bağlantısı gönderdik", "Hesabım", "Hesap ve gizlilik", "Hipertansiyon, Tablet Formülasyonu ve 2 PDF daha cihazında · istediğini silebilirsin", "Hocanın cümlesi kelimesi kelimesine çevrilir; terimleri aynen öğrenmek için.", "Kadın", "Koyu", "Hesap bilgilerin hazırlanıyor · e-postana gönderilecek", "Okul ders programı", "Okuma hızı", "Okuyan ses", "Otomatik indirme kapatıldı", "PDF'lerin yalnızca senin hesabında saklanır ve başka kimseyle paylaşılmaz. Asistan istersen sadece senin PDF'lerini, istersen yapay zekâ araştırmasını da kullanır.", "PDF'lerin yalnızca uygulamanın içinde, şifreli saklanır. Telefonunun dosyalarında görünmez, başka uygulamalarla paylaşılamaz.", "Premium'a geç", "Programını ekle · dersten bir gün önce hatırlatayım", "Ses", "Sık sorulanlar", "Sık sorulanlar açılır", "Tebrik bildirimleri", "Tebrik bildirimleri açık", "Tebrik bildirimleri kapatıldı", "Tekrar günlerinde bildirim gönder", "Tekrar hatırlatıcısı", "Uygulama dili", "Hesap bilgilerimi iste", "Yardım ve destek", "Çalışma planı", "Çalıştığım PDF'leri indir", "Çalıştığın PDF'ler cihazına kaydedilir, internet yokken de açılır.", "Çeviri dilleri", "Çeviri tarzı", "Çevrimdışı kullanım", "Çevrimdışı mod", "Çevrimdışı mod açık · kayıtlı derslerinle çalışabilirsin", "Çevrimiçi moda dönüldü", "ÜCRETSİZ", "İnternet olmadan kayıtlı derslerinle çalış", "İnternetsiz çalış", "Düğmelerin yerini sıfırla", "Tam ekran PDF'teki kalem ve asistan düğmeleri eski yerine döner.", "Düğmeler eski yerine döndü"], en: [" h", " h goal", "4 PDFs · 186 MB", "4 h 10 min / ", "Increase", "Settings", "The same meaning, told the way it's naturally said in that language; easier to understand.", "Decrease", "PDFs you open will be saved to your device", "Every PDF you open is saved to your device", "Light", "Notification time", "Notifications", "When your average in a course rises by more than 10%", "Spotted a problem? Write to us, we'll fix it", "This week", "Section", "Courses on device", "Manage courses on device", "Opens class schedule", "My class schedule", "Opens support chat", "Talk to support", "Language and department", "Natural wording", "Literal translation", "Pharmacy", "Male", "Appearance", "Daily average", "Days per week", "Weekly study report", "Delete account", "We sent a confirmation link to your email to delete the account", "My account", "Account and privacy", "Hypertension, Tablet Formulation and 2 more PDFs on your device · delete any you want", "The lecturer's sentence is translated word for word, to learn the terms exactly.", "Female", "Dark", "Your account data is being prepared · it will be emailed to you", "School timetable", "Reading speed", "Reading voice", "Auto-download turned off", "Your PDFs are stored only in your account and aren't shared with anyone. The assistant uses only your PDFs — or, if you choose, AI research too.", "Your PDFs are stored encrypted, only inside the app. They don't appear in your phone's files and can't be shared with other apps.", "Go Premium", "Add your schedule · I'll remind you a day before class", "Voice", "FAQ", "FAQ opens", "Congratulation notifications", "Congratulation notifications on", "Congratulation notifications turned off", "Send notifications on review days", "Review reminder", "App language", "Request my account data", "Help & support", "Study plan", "Download my studied PDFs", "The PDFs you study are saved to your device and open without internet.", "Translation languages", "Translation style", "Offline use", "Offline mode", "Offline mode on · you can study your saved courses", "Back to online mode", "FREE", "Study your saved courses without internet", "Study offline", "Reset button positions", "The pen and assistant buttons in full-screen PDF go back to their original places.", "Buttons are back in their original places"], fa: [" ساعت", " ساعت هدف", "4 PDF · 186 MB", "4 ساعت 10 دقیقه / ", "افزایش", "تنظیمات", "همان معنا، همان‌طور که در آن زبان طبیعی گفته می‌شود، بیان می‌شود؛ راحت‌تر فهمیده می‌شود.", "کاهش", "PDFهایی که باز می‌کنی روی دستگاهت ذخیره می‌شوند", "هر PDF که باز کنی روی دستگاهت ذخیره می‌شود", "روشن", "ساعت اعلان", "اعلان‌ها", "وقتی میانگینت در یک درس بیش از 10% بالا برود", "مشکلی دیدی؟ برایمان بنویس، حلش می‌کنیم", "این هفته", "بخش", "درس‌های روی دستگاه", "مدیریت درس‌های روی دستگاه", "برنامه کلاس‌ها باز می‌شود", "برنامه کلاس‌های من", "گفتگوی پشتیبانی باز می‌شود", "با پشتیبانی صحبت کن", "زبان و رشته", "بیان طبیعی", "ترجمه تحت‌اللفظی", "داروسازی", "مرد", "ظاهر", "میانگین روزانه", "چند روز در هفته", "گزارش مطالعه هفتگی", "حذف حساب", "برای حذف حساب، لینک تأیید به ایمیلت فرستادیم", "حساب من", "حساب و حریم خصوصی", "فشار خون بالا، فرمولاسیون قرص و 2 PDF دیگر روی دستگاهت · هرکدام را خواستی پاک کن", "جمله استاد کلمه به کلمه ترجمه می‌شود؛ برای یادگیری دقیق اصطلاحات.", "زن", "تیره", "اطلاعات حسابت در حال آماده‌شدن است · به ایمیلت فرستاده می‌شود", "برنامهٔ کلاس‌ها", "سرعت خواندن", "صدای خواننده", "دانلود خودکار خاموش شد", "PDFهایت فقط در حساب خودت ذخیره می‌شوند و با کسی به اشتراک گذاشته نمی‌شوند. دستیار اگر بخواهی فقط از PDFهای خودت استفاده می‌کند و اگر بخواهی از جستجوی هوش مصنوعی هم.", "PDFهایت فقط داخل برنامه و به‌صورت رمزگذاری‌شده ذخیره می‌شوند. در فایل‌های گوشی‌ات دیده نمی‌شوند و با برنامه‌های دیگر قابل اشتراک نیستند.", "ارتقا به Premium", "برنامه‌ات را اضافه کن · یک روز قبل از کلاس یادآوری می‌کنم", "صدا", "سؤالات متداول", "سؤالات متداول باز می‌شود", "اعلان‌های تبریک", "اعلان‌های تبریک روشن است", "اعلان‌های تبریک خاموش شد", "در روزهای مرور اعلان بفرست", "یادآور مرور", "زبان برنامه", "درخواست اطلاعات حسابم", "راهنما و پشتیبانی", "برنامه مطالعه", "دانلود PDFهایی که خواندم", "PDFهایی که می‌خوانی روی دستگاهت ذخیره می‌شوند و بدون اینترنت هم باز می‌شوند.", "زبان‌های ترجمه", "سبک ترجمه", "استفاده آفلاین", "حالت آفلاین", "حالت آفلاین روشن است · می‌توانی با درس‌های ذخیره‌شده‌ات بخوانی", "به حالت آنلاین برگشتی", "رایگان", "بدون اینترنت با درس‌های ذخیره‌شده‌ات بخوان", "بدون اینترنت درس بخوان", "بازنشانی جای دکمه‌ها", "دکمه‌های قلم و دستیار در PDF تمام‌صفحه به جای اولشان برمی‌گردند.", "دکمه‌ها به جای اولشان برگشتند"], ar: [" س", " س الهدف", "4 PDF · 186 MB", "4 س 10 د / ", "زيادة", "الإعدادات", "يُقدَّم المعنى نفسه كما يُقال طبيعيًا في تلك اللغة؛ فيكون أسهل فهمًا.", "تقليل", "ستُحفظ ملفات PDF التي تفتحها على جهازك", "يُحفظ كل ملف PDF تفتحه على جهازك", "فاتح", "وقت الإشعار", "الإشعارات", "عندما يرتفع معدلك في مادة بأكثر من 10%", "لاحظت مشكلة؟ راسلنا وسنحلها", "هذا الأسبوع", "القسم", "المواد على الجهاز", "إدارة المواد على الجهاز", "يفتح جدول المحاضرات", "جدول محاضراتي", "يفتح محادثة الدعم", "تحدّث مع الدعم", "اللغة والقسم", "صياغة طبيعية", "ترجمة حرفية", "الصيدلة", "ذكر", "المظهر", "المتوسط اليومي", "كم يومًا في الأسبوع", "تقرير الدراسة الأسبوعي", "حذف الحساب", "أرسلنا رابط تأكيد إلى بريدك لحذف الحساب", "حسابي", "الحساب والخصوصية", "ارتفاع ضغط الدم، تركيب الأقراص و2 PDF أخرى على جهازك · احذف ما تشاء", "تُترجم جملة الأستاذ كلمة بكلمة؛ لتتعلم المصطلحات كما هي.", "أنثى", "داكن", "يجري تجهيز بيانات حسابك · ستُرسل إلى بريدك الإلكتروني", "الجدول الدراسي", "سرعة القراءة", "صوت القراءة", "تم إيقاف التنزيل التلقائي", "ملفاتك تُحفظ في حسابك فقط ولا تُشارك مع أحد. يستخدم المساعد إن شئت ملفات PDF الخاصة بك فقط، وإن شئت يستعين أيضًا ببحث الذكاء الاصطناعي.", "ملفاتك تُحفظ مشفّرة داخل التطبيق فقط. لا تظهر في ملفات هاتفك ولا يمكن مشاركتها مع تطبيقات أخرى.", "انتقل إلى Premium", "أضف جدولك · سأذكّرك قبل المحاضرة بيوم", "الصوت", "الأسئلة الشائعة", "تُفتح الأسئلة الشائعة", "إشعارات التهنئة", "إشعارات التهنئة مفعّلة", "تم إيقاف إشعارات التهنئة", "أرسل إشعارًا في أيام المراجعة", "تذكير المراجعة", "لغة التطبيق", "طلب بيانات حسابي", "المساعدة والدعم", "خطة الدراسة", "تنزيل ملفات PDF التي درستها", "تُحفظ ملفات PDF التي تدرسها على جهازك وتفتح حتى دون إنترنت.", "لغات الترجمة", "أسلوب الترجمة", "الاستخدام دون اتصال", "وضع عدم الاتصال", "وضع عدم الاتصال مفعّل · يمكنك الدراسة بدروسك المحفوظة", "تمت العودة إلى وضع الاتصال", "مجاني", "ادرس بدروسك المحفوظة دون إنترنت", "ادرس دون إنترنت", "إعادة مواضع الأزرار", "تعود أزرار القلم والمساعد في ملف PDF بملء الشاشة إلى أماكنها الأصلية.", "عادت الأزرار إلى أماكنها الأصلية"]};
+let _lang = 'tr', _M = null; const _TC = {};
+const _x = (s) => { if (_lang === 'tr' || !_I18N[_lang]) return s; if (!_M) { _M = {}; _I18N.k.forEach((k, i) => { _M[k] = i; }); } const i = _M[s]; return i == null ? s : _I18N[_lang][i]; };
+const _TK = {"k440": "Açtığın her PDF cihazına kaydedilir", "k516": "Bir dersinde ortalaman %10'dan fazla artınca", "k529": "Bir sorun mu gördün? Bize yaz, çözelim", "k676": "Cihazdaki dersler", "k677": "Cihazdaki dersleri yönet", "k753": "Ders programım", "k802": "Destekle konuş", "k1535": "Okul ders programı", "k1599": "PDF'lerin yalnızca uygulamanın içinde, şifreli saklanır. Telefonunun dosyalarında görünmez, başka uygulamalarla paylaşılamaz.", "k1663": "Premium'a geç", "k1683": "Programını ekle · dersten bir gün önce hatırlatayım", "k1944": "Sık sorulanlar", "k2035": "Tebrik bildirimleri", "k2262": "Yardım ve destek", "k2475": "Çalıştığım PDF'leri indir", "k2476": "Çalıştığın PDF'ler cihazına kaydedilir, internet yokken de açılır.", "k2486": "Çeviri tarzı", "k2490": "Çevrimdışı kullanım", "k2492": "Çevrimdışı mod", "k2598": "İnternet olmadan kayıtlı derslerinle çalış", "k2672": "İnternetsiz çalış", "k2762": "Düğmelerin yerini sıfırla", "k2763": "Tam ekran PDF'teki kalem ve asistan düğmeleri eski yerine döner."};
+const _PT = {};
+const _tt = () => { if (!_TC[_lang]) { const o = {}; Object.keys(_TK).forEach((k) => { o[k] = (_PT[k] && _lang !== 'tr') ? (_PT[k][_lang] || _x(_TK[k])) : _x(_TK[k]); }); _TC[_lang] = o; } return _TC[_lang]; };
+
+class Component extends DCLogic {
+  renderVals() { const _p = this.props || {}, _s = this.state || {}; _lang = _s.lang || _p.lang || 'tr'; const r = this._rv0(); if (r && typeof r === 'object') { r._t = _tt(); r._dir = (_lang === 'fa' || _lang === 'ar') ? 'rtl' : 'ltr'; r._ai = this._aiDark ? { bg: '#F2B33D', fg: '#241C14', tx: '#EFE8DC' } : { bg: '#9C2F3A', fg: '#FFF6E6', tx: '#2A2420' }; } return r; }
+  _rv0() {
+    const __st = this.state || {};
+    const say = (m, after) => { this.setState({ toast: m }); clearTimeout(this._tt); this._tt = setTimeout(() => { this.setState({ toast: '' }); if (after) after(); }, 1700); };
+    const p = this.props, st = this.state || {};
+    const pf = p.platform || 'ios', ios = pf === 'ios';
+    const th = p.theme || 'light', dark = th === 'dark';
+    const lang = p.lang || 'tr';
+    const rtl = lang === 'fa' || lang === 'ar';
+    const c = dark
+      ? { bg: '#15120F', card: '#211C18', sub: '#2B2520', seg: '#463D35', text: '#EFE8DC', text2: '#BDB2A4', text3: '#9A8F82', line: '#3A322B', pri: '#B23A47', priText: '#F09AA3', priSoft: '#3A2027', ambText: '#F2C46E', ambSoft: '#3A2F1A', ok: '#5BC893', bad: '#F27A70' }
+      : { bg: '#F4EFE6', card: '#FFFCF6', sub: '#F4EFE6', seg: '#FFFCF6', text: '#2A2420', text2: '#6E645A', text3: '#776C60', line: '#E6DDCF', pri: '#9C2F3A', priText: '#9C2F3A', priSoft: '#F7E7E9', ambText: '#83560A', ambSoft: '#FDF1D6', ok: '#1E7A4C', bad: '#C0352B' };
+    const T = {
+      tr: { title: _x('Ayarlar'), account: _x('Hesabım'), freePlan: _x('ÜCRETSİZ'), hLang: _x('Dil ve bölüm'), appLang: _x('Uygulama dili'), trLang: _x('Çeviri dilleri'), dept: _x('Bölüm'), deptV: _x('Eczacılık'), hVoice: _x('Ses'), voice: _x('Okuyan ses'), voices: [_x('Kadın'), _x('Erkek')], speed: _x('Okuma hızı'), hNotif: _x('Bildirimler'), remind: _x('Tekrar hatırlatıcısı'), remindS: _x('Tekrar günlerinde bildirim gönder'), time: _x('Bildirim saati'), hLook: _x('Görünüm'), themes: [_x('Açık'), _x('Koyu')], hPriv: _x('Hesap ve gizlilik'), privNote: _x("PDF'lerin yalnızca senin hesabında saklanır ve başka kimseyle paylaşılmaz. Asistan istersen sadece senin PDF'lerini, istersen yapay zekâ araştırmasını da kullanır."), export: _x('Hesap bilgilerimi iste'), delete: _x('Hesabı sil') },
+      en: { title: 'Settings', account: 'My account', freePlan: 'FREE', hLang: 'Language and field', appLang: 'App language', trLang: 'Translation languages', dept: 'Field', deptV: 'Pharmacy', hVoice: 'Voice', voice: 'Reading voice', voices: ['Female', 'Male'], speed: 'Reading speed', hNotif: 'Notifications', remind: 'Review reminder', remindS: 'Notify me on review days', time: 'Notification time', hLook: 'Appearance', themes: ['Light', 'Dark'], hPriv: 'Account and privacy', privNote: 'Your PDFs are stored only in your account and never shared. The assistant uses only the PDFs you upload.', export: 'Request my account data', delete: 'Delete account' },
+      fa: { title: 'تنظیمات', account: 'حساب من', freePlan: 'رایگان', hLang: 'زبان و رشته', appLang: 'زبان برنامه', trLang: 'زبان‌های ترجمه', dept: 'رشته', deptV: 'داروسازی', hVoice: 'صدا', voice: 'صدای خواننده', voices: ['زن', 'مرد'], speed: 'سرعت خواندن', hNotif: 'اعلان‌ها', remind: 'یادآور مرور', remindS: 'در روزهای مرور اعلان بفرست', time: 'ساعت اعلان', hLook: 'نما', themes: ['روشن', 'تیره'], hPriv: 'حساب و حریم خصوصی', privNote: 'PDFهای تو فقط در حساب خودت ذخیره می‌شوند و با کسی به اشتراک گذاشته نمی‌شوند. دستیار فقط از PDFهای تو استفاده می‌کند.', export: 'درخواست اطلاعات حسابم', delete: 'حذف حساب' },
+      ar: { title: 'الإعدادات', account: 'حسابي', freePlan: 'مجاني', hLang: 'اللغة والتخصص', appLang: 'لغة التطبيق', trLang: 'لغات الترجمة', dept: 'التخصص', deptV: 'الصيدلة', hVoice: 'الصوت', voice: 'صوت القارئ', voices: ['أنثى', 'ذكر'], speed: 'سرعة القراءة', hNotif: 'الإشعارات', remind: 'تذكير المراجعة', remindS: 'أرسل إشعارًا في أيام المراجعة', time: 'وقت الإشعار', hLook: 'المظهر', themes: ['فاتح', 'داكن'], hPriv: 'الحساب والخصوصية', privNote: 'تُحفظ ملفاتك في حسابك فقط ولا تُشارك مع أحد. يستخدم المساعد الملفات التي ترفعها أنت فقط.', export: 'طلب بيانات حسابي', delete: 'حذف الحساب' }
+    };
+    const P = {
+      tr: { hPlan: _x('Çalışma planı'), daysQ: _x('Haftada kaç gün'), hoursQ: _x('Günde ortalama'), less: _x('Azalt'), more: _x('Artır'), thisWeek: _x('Bu hafta'), report: _x('Haftalık çalışma raporu'), h: (x) => String(x).replace('.', ',') + _x(' sa'), wk: (t) => _x('4 sa 10 dk / ') + String(t).replace('.', ',') + _x(' sa hedef') },
+      en: { hPlan: 'Study plan', daysQ: 'Days per week', hoursQ: 'Hours per day', less: 'Less', more: 'More', thisWeek: 'This week', report: 'Weekly study report', h: (x) => x + ' h', wk: (t) => '4 h 10 min / ' + t + ' h goal' },
+      fa: { hPlan: 'برنامهٔ مطالعه', daysQ: 'چند روز در هفته', hoursQ: 'میانگین ساعت در روز', less: 'کمتر', more: 'بیشتر', thisWeek: 'این هفته', report: 'گزارش هفتگی مطالعه', h: (x) => x + ' ساعت', wk: (t) => '۴ ساعت و ۱۰ دقیقه / هدف ' + t + ' ساعت' },
+      ar: { hPlan: 'خطة الدراسة', daysQ: 'أيام في الأسبوع', hoursQ: 'ساعات يوميًا', less: 'أقل', more: 'أكثر', thisWeek: 'هذا الأسبوع', report: 'تقرير الدراسة الأسبوعي', h: (x) => x + ' ساعة', wk: (t) => '4 س 10 د / الهدف ' + t + ' ساعة' }
+    };
+    const s = Object.assign({}, T[lang] || T.tr, P[lang] || P.tr);
+    const days = st.days || p.planDays || 4;
+    const hours = st.hours || p.planHours || 1.5;
+    const savePlan = (d, hh) => { this.setState({ days: d, hours: hh }); if (p.setPref) p.setPref({ planDays: d, planHours: hh }); };
+    const dayOpts = [1, 2, 3, 4, 5, 6, 7].map((n) => {
+      const on = n === days;
+      return { n, on: on ? 'true' : 'false', bg: on ? c.pri : c.sub, fg: on ? '#FFFCF6' : c.text, border: on ? '0' : '1px solid ' + c.line, pick: () => savePlan(n, hours) };
+    });
+    const target = Math.round(days * hours * 10) / 10;
+    const segItem = (on) => ({ bg: on ? c.seg : 'transparent', fg: on ? c.text : c.text2, fw: on ? 600 : 500, shadow: on ? '0 1px 3px rgba(0,0,0,.12)' : 'none', on: on ? 'true' : 'false' });
+    const setPref = (o) => { if (p.setPref) p.setPref(o); };
+    const curLang = st.lang || lang;
+    const _delTxt = (lang) => ({
+      tr: { card: _x('Hesap ve gizlilik'), cardS: "PDF'lerin yalnızca senin hesabında saklanır ve başka kimseyle paylaşılmaz.", exp: _x('Hesap bilgilerimi iste'), del: _x('Hesabı sil'), t: 'Hesabın silinsin mi?', d: 'Derslerin, notların, kartların, sınav sonuçların ve asistan konuşmaların kalıcı olarak silinir. Bu işlem geri alınamaz.', sub: "Premium aboneliğin varsa silmek ödemeyi durdurmaz. Önce App Store ya da Google Play'den aboneliğini iptal et.", mail: 'Onay için e-postana bir bağlantı göndereceğiz. 30 gün içinde fikrini değiştirebilirsin.', cancel: 'Vazgeç', sent: _x('Hesabı silmek için e-postana onay bağlantısı gönderdik'), expSent: _x('Hesap bilgilerin hazırlanıyor · e-postana gönderilecek') },
+      en: { card: 'Account and privacy', cardS: 'Your PDFs are stored only in your account and never shared with anyone.', exp: 'Request my data', del: 'Delete account', t: 'Delete your account?', d: 'Your lessons, notes, cards, exam results and assistant chats will be permanently deleted. This cannot be undone.', sub: 'Deleting your account does not stop a Premium subscription. Cancel it first in the App Store or Google Play.', mail: 'We will email you a confirmation link. You can change your mind within 30 days.', cancel: 'Cancel', sent: 'We sent a confirmation link to your email', expSent: 'Preparing your data · it will be emailed to you' },
+      fa: { card: 'حساب و حریم خصوصی', cardS: 'PDFهایت فقط در حساب خودت ذخیره می‌شوند و با کسی به اشتراک گذاشته نمی‌شوند.', exp: 'درخواست اطلاعات حسابم', del: 'حذف حساب', t: 'حسابت حذف شود؟', d: 'درس‌ها، یادداشت‌ها، کارت‌ها، نتیجه‌های آزمون و گفتگوهای دستیارت برای همیشه حذف می‌شوند. این کار برگشت‌پذیر نیست.', sub: 'اگر اشتراک پریمیوم داری، حذف حساب پرداخت را متوقف نمی‌کند. اول اشتراکت را از App Store یا Google Play لغو کن.', mail: 'برای تأیید، لینکی به ایمیلت می‌فرستیم. تا ۳۰ روز می‌توانی منصرف شوی.', cancel: 'انصراف', sent: 'لینک تأیید حذف حساب به ایمیلت فرستاده شد', expSent: 'اطلاعات حسابت آماده می‌شود · به ایمیلت فرستاده می‌شود' },
+      ar: { card: 'الحساب والخصوصية', cardS: 'تُحفظ ملفاتك في حسابك فقط ولا تُشارك مع أي أحد.', exp: 'طلب بيانات حسابي', del: 'حذف الحساب', t: 'هل تريد حذف حسابك؟', d: 'ستُحذف دروسك وملاحظاتك وبطاقاتك ونتائج اختباراتك ومحادثات المساعد نهائيًا. لا يمكن التراجع عن ذلك.', sub: 'حذف الحساب لا يوقف اشتراك بريميوم. ألغِ اشتراكك أولًا من App Store أو Google Play.', mail: 'سنرسل رابط تأكيد إلى بريدك. يمكنك التراجع خلال 30 يومًا.', cancel: 'إلغاء', sent: 'أرسلنا رابط تأكيد الحذف إلى بريدك', expSent: 'جارٍ تجهيز بياناتك · ستُرسل إلى بريدك' }
+    })[lang] || null;
+    const DT = _delTxt(curLang) || _delTxt('tr');
+    const langs = [['tr', 'Türkçe'], ['en', 'English'], ['fa', 'فارسی'], ['ar', 'العربية']].map((k) => Object.assign(segItem(k[0] === curLang), { name: k[1], pick: () => { this.setState({ lang: k[0] }); setPref({ lang: k[0] }); } }));
+    const curVoice = st.voice || 0;
+    const curTrStyle = st.trStyle || 'natural';
+    const resetPos = () => { try { localStorage.removeItem('aim.pdfPos'); } catch (e) {} say(_x('Düğmeler eski yerine döndü')); };
+    const trStyles = [['literal', _x('Düz çeviri')], ['natural', _x('Doğal anlatım')]].map((k) => Object.assign(segItem(k[0] === curTrStyle), { name: k[1], pick: () => { this.setState({ trStyle: k[0] }); setPref({ trStyle: k[0] }); } }));
+    const voices = s.voices.map((name, i) => Object.assign(segItem(i === curVoice), { name, pick: () => this.setState({ voice: i }) }));
+    const curTheme = st.theme || th;
+    const themes = [['light', s.themes[0]], ['dark', s.themes[1]]].map((k) => Object.assign(segItem(k[0] === curTheme), { name: k[1], pick: () => { this.setState({ theme: k[0] }); setPref({ theme: k[0] }); } }));
+    const remind = st.remind != null ? st.remind : true;
+    const sw = ios
+      ? { w: 51, h: 31, r: 16, k: 27, pad: 2, track: remind ? c.pri : (dark ? '#463D35' : '#DDD2C1'), thumb: '#FFFCF6', border: '0', justify: remind ? 'flex-end' : 'flex-start' }
+      : { w: 52, h: 32, r: 16, k: remind ? 24 : 16, pad: remind ? 4 : 6, track: remind ? c.pri : 'transparent', thumb: remind ? '#FFFCF6' : c.text3, border: remind ? '0' : '2px solid ' + c.text3, justify: remind ? 'flex-end' : 'flex-start' };
+    const cgOn = st.cgOn != null ? st.cgOn : true;
+    const sw2 = ios
+      ? { w: 51, h: 31, r: 16, k: 27, pad: 2, track: cgOn ? c.pri : (dark ? '#463D35' : '#DDD2C1'), thumb: '#FFFCF6', border: '0', justify: cgOn ? 'flex-end' : 'flex-start' }
+      : { w: 52, h: 32, r: 16, k: cgOn ? 24 : 16, pad: cgOn ? 4 : 6, track: cgOn ? c.pri : 'transparent', thumb: cgOn ? '#FFFCF6' : c.text3, border: cgOn ? '0' : '2px solid ' + c.text3, justify: cgOn ? 'flex-end' : 'flex-start' };
+    const offOn = !!p.offline; const dlOn = st.dlOn != null ? st.dlOn : true;
+    const mkSw = (on) => Object.assign(ios ? { w: 51, h: 31, r: 16, k: 27, pad: 2, track: on ? c.pri : (dark ? '#463D35' : '#DDD2C1'), thumb: '#FFFCF6', border: '0', justify: on ? 'flex-end' : 'flex-start' } : { w: 52, h: 32, r: 16, k: on ? 24 : 16, pad: on ? 4 : 6, track: on ? c.pri : 'transparent', thumb: on ? '#FFFCF6' : c.text3, border: on ? '0' : '2px solid ' + c.text3, justify: on ? 'flex-end' : 'flex-start' }, { str: on ? 'true' : 'false' });
+    const swOff = mkSw(offOn); const swDl = mkSw(dlOn);
+    const speed = st.speed || 1;
+    const h = ios
+      ? { fs: 12, fw: 500, ls: '0.04em', tt: 'uppercase', c: c.text3 }
+      : { fs: 14, fw: 600, ls: 'normal', tt: 'none', c: c.priText };
+    return { resetPos, toastOn: !!__st.toast, toastMsg: __st.toast || '', toastBottom: 60,
+      sExport: () => say(_x('Hesap bilgilerin hazırlanıyor · e-postana gönderilecek')), sDelete: () => this.setState({ delDlg: true }), dlg: { on: !!st.delDlg, t: DT, cancel: () => this.setState({ delDlg: false }), ok: () => { this.setState({ delDlg: false }); say(DT.sent); }, iconBg: dark ? '#3D1F1F' : '#FCE8E6', btn: dark ? '#B23A47' : '#C0352B', bg: dark ? '#221C18' : '#FFFBF4', grab: dark ? '#4A403A' : '#E2D7C6', note: dark ? '#2B2520' : '#F4EFE6' },
+      c, s, lang, pf, th, langs, voices, themes, sw, h, speed, dayOpts,
+      hoursLabel: s.h(hours), weekLabel: s.wk(target), weekPct: Math.min(100, Math.round(250 / (target * 60) * 100)),
+      hoursDown: () => savePlan(days, Math.max(0.5, hours - 0.5)),
+      hoursUp: () => savePlan(days, Math.min(8, hours + 0.5)),
+      toProgress: () => { if (p.go) p.go('progress'); },
+      speedLabel: speed.toFixed(1).replace('.', ',') + '×',
+      remindStr: remind ? 'true' : 'false',
+      dir: rtl ? 'rtl' : 'ltr', flip: rtl ? -1 : 1,
+      W: ios ? 390 : 412, H: ios ? 844 : 915, topH: ios ? 54 : 36, titleFs: ios ? 32 : 26,
+      segR: ios ? 10 : 100, segIR: ios ? 8 : 100,
+      toggleRemind: () => this.setState({ remind: !remind }),
+      trStyles, trStyleHint: curTrStyle === 'literal' ? _x('Hocanın cümlesi kelimesi kelimesine çevrilir; terimleri aynen öğrenmek için.') : _x('Aynı anlam o dilde doğal konuşulduğu gibi anlatılır; daha kolay anlaşılır.'),
+      sw2, cgStr: cgOn ? 'true' : 'false', toggleCg: () => { this.setState({ cgOn: !cgOn }); say(cgOn ? _x('Tebrik bildirimleri kapatıldı') : _x('Tebrik bildirimleri açık')); },
+      setSpeed: (e) => this.setState({ speed: parseFloat(e.target.value) }),
+      toPaywall: () => { if (p.go) p.go('paywall'); },
+      swOff, swDl, offStore: _x('4 PDF · 186 MB'),
+      premOn: !!p.premium, premOff: !p.premium, offLock: false, offOpen: true, planLbl: p.premium ? 'PREMIUM' : s.freePlan, offPay: () => { if (p.go) p.go('paywall', 'offline'); },
+      toggleOff: () => { if (p.setPref) p.setPref({ offline: !offOn }); say(offOn ? _x('Çevrimiçi moda dönüldü') : _x('Çevrimdışı mod açık · kayıtlı derslerinle çalışabilirsin')); },
+      toggleDl: () => { this.setState({ dlOn: !dlOn }); say(dlOn ? _x('Otomatik indirme kapatıldı') : _x("Açtığın PDF'ler cihazına kaydedilecek")); },
+      clearOff: () => say(_x('Hipertansiyon, Tablet Formülasyonu ve 2 PDF daha cihazında · istediğini silebilirsin')),
+      toSchedule: () => { if (p.go) p.go('schedule', 'set'); else say(_x('Ders programı açılır')); },
+      toSupport: () => { if (p.go) p.go('support'); else say(_x('Destek sohbeti açılır')); },
+      toFaq: () => { if (p.go) p.go('support', 'faq'); else say(_x('Sık sorulanlar açılır')); },
+      tabGo: (id) => { if (p.go) p.go(id); }
+    };
+  }
+}
+</script>
+</body>
+</html>

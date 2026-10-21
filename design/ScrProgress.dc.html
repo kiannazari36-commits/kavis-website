@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>İlerleme ve takvim</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+<style>[dir=rtl] .dc-back{transform:scaleX(-1)}[dir=rtl],[dir=rtl] *{letter-spacing:0 !important}</style>
+</helmet>
+<div dir="{{dir}}" lang="{{lang}}" style="width: {{W}}px; height: {{H}}px; box-sizing: border-box; display: flex; flex-direction: column; position: relative; overflow: hidden; background: {{c.bg}}; color: {{c.text}}; font-family: Poppins, Vazirmatn, system-ui, sans-serif">
+<div style="height: {{topH}}px; flex: none"></div>
+<div style="flex: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 4px 20px 10px">
+<h1 style="margin: 0; font-size: {{titleFs}}px; font-weight: 700; letter-spacing: -0.02em">{{s.title}}</h1>
+<button onClick="{{pCourse}}" style="height: 36px; padding: 0 12px; border-radius: 18px; border: 1px solid {{c.line}}; background: {{c.card}}; color: {{c.text}}; display: flex; align-items: center; gap: 6px; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer">{{courseLbl}} <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+</div>
+
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 0 16px 120px; display: flex; flex-direction: column; gap: 14px">
+
+<sc-if value="{{v.empty}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; padding: 26px 12px 0">
+<div aria-hidden="true" style="width: 220px; border-radius: 16px; background: {{c.card}}; padding: 14px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; transform: rotate(-3deg); opacity: 0.85">
+<sc-for list="{{ghost}}" as="g" hint-placeholder-count="21"><span style="height: 18px; border-radius: 9px; background: {{c.sub}}"></span></sc-for>
+</div>
+<h2 style="margin: 14px 0 0; font-size: 22px; font-weight: 700">{{s.emptyT}}</h2>
+<p style="margin: 0; font-size: 15px; line-height: 1.5; color: {{c.text2}}; max-width: 300px">{{s.emptyS}}</p>
+<button onClick="{{toHome}}" style="margin-top: 8px; height: {{btnH}}px; padding: 0 26px; border: 0; border-radius: {{btnR}}px; background: {{c.pri}}; color: #FFFCF6; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">{{s.emptyCta}}</button>
+</div>
+</sc-if>
+
+<sc-if value="{{v.default}}" hint-placeholder-val="{{ true }}">
+<section style="border-radius: 18px; background: {{c.examBg}}; color: #FFFCF6; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 54px; height: 54px; border-radius: 14px; background: rgba(255,255,255,.14); transform: rotate(-6deg); flex: none"><span style="font-size: 22px; font-weight: 700; line-height: 1">11</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 9px">{{s.daysShort}}</span></span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; color: #F2B33D">{{s.examWeek}}</span><span style="font-size: 15px; font-weight: 700">{{s.examRange}}</span></span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<button onClick="{{toGeneral}}" style="height: 42px; border-radius: 12px; border: 1px solid rgba(255,255,255,.3); background: transparent; color: #FFFCF6; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer">{{s.genSum}}</button>
+<button onClick="{{toExam}}" style="height: 42px; border-radius: 12px; border: 0; background: #F2B33D; color: #2A2420; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer">{{s.examCenter}}</button>
+</div>
+</section>
+
+<section style="border-radius: 18px; background: {{c.card}}; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: center; gap: 10px">
+<span style="width: 34px; height: 34px; border-radius: 10px; background: {{c.ambSoft}}; color: {{c.ambText}}; display: flex; align-items: center; justify-content: center; transform: rotate(-8deg); flex: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21a8 8 0 1 0 0-16 8 8 0 0 0 0 16z M12 9v4l2.5 1.5 M10 2h4"></path></svg></span>
+<h2 style="margin: 0; flex: 1; font-size: 16px; font-weight: 700">{{s.timeT}}</h2>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}">{{s.range}}</span>
+</div>
+<div style="display: flex; align-items: baseline; gap: 8px">
+<span style="font-size: 30px; font-weight: 700; letter-spacing: -0.02em">{{s.done}}</span>
+<span style="font-size: 14px; color: {{c.text3}}">{{s.goal}}</span>
+</div>
+<span style="height: 8px; border-radius: 4px; background: {{c.sub}}; display: flex; overflow: hidden"><span style="width: 69%; background: {{c.amb}}; border-radius: 4px"></span></span>
+<div dir="ltr" role="img" aria-label="{{s.chartLabel}}" style="position: relative; height: 104px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; align-items: end; padding-top: 6px">
+<span aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: 78px; border-top: 1.5px dashed {{c.priText}}; opacity: 0.6"></span>
+<sc-for list="{{bars}}" as="b" hint-placeholder-count="7">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 4px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 9px; color: {{c.text3}}">{{b.v}}</span>
+<span style="width: 100%; height: {{b.h}}px; border-radius: 5px; background: {{b.bg}}"></span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{b.lc}}">{{b.l}}</span>
+</div>
+</sc-for>
+</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<div style="border-radius: 12px; background: {{c.sub}}; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 700">{{s.avgDay}}</span><span style="font-size: 11px; color: {{c.text3}}">{{s.avgDayL}}</span></div>
+<div style="border-radius: 12px; background: {{c.sub}}; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 700">{{s.avgWeek}}</span><span style="font-size: 11px; color: {{c.text3}}">{{s.avgWeekL}}</span></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.08em; color: {{c.text3}}">{{s.perPdf}}</span>
+<div style="display: flex; align-items: center; gap: 10px; font-size: 14px"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{c.pri}}"></span><span style="flex: 1">{{_t.k1187}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px">{{s.t1}}</span></div>
+<div style="display: flex; align-items: center; gap: 10px; font-size: 14px"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{c.text3}}"></span><span style="flex: 1">{{_t.k825}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px">{{s.t2}}</span></div>
+</div>
+<button onClick="{{toSettings}}" style="height: 44px; border-radius: {{btnR}}px; border: 1px solid {{c.line}}; background: transparent; color: {{c.text}}; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer">{{s.changePlan}} · {{s.planNow}}</button>
+</section>
+
+<section style="border-radius: 18px; background: {{c.card}}; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="width: 40px; height: 40px; border-radius: 11px; background: {{c.pri}}; color: #FFFCF6; display: flex; align-items: center; justify-content: center; transform: rotate(-8deg); flex: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8 M12 17v4 M7 4h10v5a5 5 0 0 1-10 0z M7 6H4v1a3 3 0 0 0 3 3 M17 6h3v1a3 3 0 0 1-3 3"></path></svg></span>
+<div style="display: flex; flex-direction: column; gap: 1px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; color: {{c.text3}}">{{s.level}}</span>
+<span style="font-size: 20px; font-weight: 700">{{lvlName}}</span>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px">
+<sc-for list="{{lvls}}" as="l" hint-placeholder-count="5">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="height: 6px; border-radius: 3px; background: {{l.bg}}"></span>
+<span style="font-size: 10px; line-height: 1.2; color: {{l.fg}}; font-weight: {{l.fw}}">{{l.name}}</span>
+</div>
+</sc-for>
+</div>
+</section>
+
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+<sc-for list="{{stats}}" as="t" hint-placeholder-count="6">
+<div style="border-radius: 14px; background: {{c.card}}; padding: 12px; display: flex; flex-direction: column; gap: 4px; min-height: 74px; box-sizing: border-box">
+<span style="font-size: 22px; font-weight: 700; line-height: 1.1; color: {{t.fg}}">{{t.v}}</span>
+<span style="font-size: 11px; line-height: 1.3; color: {{c.text3}}">{{t.l}}</span>
+</div>
+</sc-for>
+</div>
+
+<section style="border-radius: 18px; background: {{c.card}}; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; gap: 8px">
+<h2 style="margin: 0; font-size: 16px; font-weight: 700; flex: 1">{{s.month}}</h2>
+<button onClick="{{pPrev}}" aria-label="{{s.prev}}" style="width: 36px; height: 36px; border-radius: 18px; border: 0; background: {{c.sub}}; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX({{flip}})"><path d="M15 5l-7 7 7 7"></path></svg></button>
+<button onClick="{{pNext}}" aria-label="{{s.next}}" style="width: 36px; height: 36px; border-radius: 18px; border: 0; background: {{c.sub}}; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX({{flip}})"><path d="M9 5l7 7-7 7"></path></svg></button>
+</div>
+<div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px">
+<sc-for list="{{wd}}" as="w" hint-placeholder-count="7"><span style="text-align: center; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.text3}}; padding-bottom: 4px">{{w}}</span></sc-for>
+<sc-for list="{{days}}" as="d" hint-placeholder-count="35">
+<div style="height: 42px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px">
+<span style="width: 32px; height: 32px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: {{d.fw}}; background: {{d.bg}}; color: {{d.fg}}; border: {{d.ring}}; box-sizing: border-box">{{d.n}}</span>
+<span style="width: 4px; height: 4px; border-radius: 2px; background: {{d.dot}}"></span>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 12px; padding-top: 4px; font-size: 11px; color: {{c.text2}}">
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 6px; height: 6px; border-radius: 3px; background: {{c.text2}}"></span>{{s.lgStudy}}</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 6px; background: {{c.amb}}"></span>{{s.lgExam}}</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 6px; border: 2px solid {{c.bad}}; box-sizing: border-box"></span>{{s.lgNext}}</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 18px; height: 12px; border-radius: 6px; background: {{c.priSoft}}"></span>{{s.lgExamWeek}}</span>
+</div>
+</section>
+
+<section style="border-radius: 18px; background: {{c.card}}; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 15px; font-weight: 700">{{s.words}}</h2>
+<div dir="ltr" style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{words}}" as="w" hint-placeholder-count="5">
+<span style="height: 32px; padding: 0 10px; border-radius: 8px; background: {{c.sub}}; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500"><span style="border-bottom: 1.5px dotted {{c.priText}}">{{w.t}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}">×{{w.n}}</span></span>
+</sc-for>
+</div>
+</section>
+
+<section style="border-radius: 18px; background: {{c.card}}; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; gap: 8px">
+<span style="width: 24px; height: 24px; border-radius: 7px; background: {{c.bad}}; color: {{c.onBad}}; display: flex; align-items: center; justify-content: center; transform: rotate(-8deg)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l9 16H3z M12 10v4 M12 17h.01"></path></svg></span>
+<h2 style="margin: 0; font-size: 15px; font-weight: 700">{{s.danger}}</h2>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; border-bottom: 1px solid {{c.line}}; padding-bottom: 10px">
+<span dir="ltr" lang="tr" style="flex: 1; font-size: 14px; line-height: 1.4; text-align: start">{{_t.k342}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.bad}}">2×</span>
+</div>
+<div style="display: flex; align-items: center; gap: 10px">
+<span dir="ltr" lang="tr" style="flex: 1; font-size: 14px; line-height: 1.4; text-align: start">{{_t.k312}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.bad}}">1×</span>
+</div>
+</section>
+
+<section style="border-radius: 18px; background: {{c.card}}; border: 1.5px dashed {{c.ambDash}}; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: center; gap: 10px">
+<span style="width: 34px; height: 34px; border-radius: 10px; background: {{c.amb}}; color: #2A2420; display: flex; align-items: center; justify-content: center; transform: rotate(-8deg); flex: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6 M10 21h4 M12 3a6 6 0 0 0-3.5 10.9c.6.4 1 1.1 1 1.8V16h5v-.3c0-.7.4-1.4 1-1.8A6 6 0 0 0 12 3z"></path></svg></span>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 1px"><h2 style="margin: 0; font-size: 16px; font-weight: 700">{{s.bestT}}</h2><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.06em; color: {{c.text3}}">{{s.bestBasis}}</span></div>
+</div>
+<p style="margin: 0; font-size: 15px; line-height: 1.55">{{s.bestMsg}}</p>
+<div role="img" aria-label="{{s.bestChart}}" style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{slots}}" as="t" hint-placeholder-count="5">
+<div style="display: grid; grid-template-columns: 92px minmax(0, 1fr) 40px; gap: 10px; align-items: center">
+<span style="display: flex; flex-direction: column; gap: 0"><span style="font-size: 12px; font-weight: {{t.fw}}">{{t.name}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.text3}}">{{t.range}}</span></span>
+<span style="height: 12px; border-radius: 6px; background: {{c.sub}}; display: flex; overflow: hidden"><span style="width: {{t.eff}}%; background: {{t.bar}}; border-radius: 6px"></span></span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; font-weight: {{t.fw}}; color: {{t.fg}}; text-align: end">%{{t.eff}}</span>
+</div>
+</sc-for>
+<span style="font-size: 11px; color: {{c.text3}}">{{s.effNote}}</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<div style="border-radius: 12px; background: {{c.ambSoft}}; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 700; color: {{c.ambText}}">09:00–11:00</span><span style="font-size: 11px; color: {{c.text2}}">{{s.mostEff}}</span></div>
+<div style="border-radius: 12px; background: {{c.sub}}; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 700">20:00–22:00</span><span style="font-size: 11px; color: {{c.text2}}">{{s.mostTime}}</span></div>
+</div>
+<button onClick="{{toSettings}}" style="height: 46px; border-radius: {{btnR}}px; border: 0; background: #9C2F3A; color: #FFFCF6; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer">{{s.setRemind}}</button>
+</section>
+</sc-if>
+</div>
+
+<div style="position: absolute; left: 0; right: 0; bottom: 0">
+<dc-import name="TabBar" platform="{{pf}}" theme="{{th}}" lang="{{lang}}" active="progress" go="{{tabGo}}" hint-size="100%,83px"></dc-import>
+</div>
+<sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div role="status" aria-live="polite" style="position: absolute; left: 50%; bottom: {{toastBottom}}px; transform: translateX(-50%); z-index: 50; max-width: 86%; box-sizing: border-box; padding: 12px 18px; border-radius: 22px; background: #2E2721; color: #FBEFD6; font-family: Poppins, Vazirmatn, system-ui, sans-serif; font-size: 14px; line-height: 1.4; text-align: center; box-shadow: 0 12px 30px rgba(42,36,32,.28); pointer-events: none">{{toastMsg}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"platform":{"editor":"enum","options":["ios","android"],"default":"ios"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"variant":{"editor":"enum","options":["default","empty"],"default":"default"},"go":{"editor":null},"live":{"editor":null},"planDays":{"editor":null},"planHours":{"editor":null},"$preview":{"width":390,"height":844}}'>
+const _I18N = {k: [" gün × ", " sa", " sa haftalık hedef", "1 sa 03 dk", "3 sa 37 dk", "33 dk", "4 sa 10 dk", "5,4 sa", "5–11 EKİM", "ACE inhibitörleri", "ARB'ler ve gebelik", "Akşam", "Alfa-1 bloker ilk doz etkisi ↔ kuru öksürük", "Anjiyoödem", "BU HAFTA PDF'LERE AYRILAN SÜRE", "Başlangıç", "Bradikinin", "Bu haftanın günlük çalışma dakikaları", "Bugünkü kart", "Ct", "Cu", "Derslerime git", "Diyabet", "Diüretikler", "Ekim 2026", "En iyi puan", "En verimli saatler", "En çok dokunulan kelimeler", "En çok çalıştığın saatler", "Eylül 2026 · 14 gün çalıştın, günde ortalama 1 sa 10 dk", "Galiba sabah 09:00–11:00 arasında daha verimli çalışıyorsun. Bu saatlerde doğru cevap oranın %82 ve daha hızlı okuyorsun. En çok ise akşam 20:00–22:00 arasında çalışıyorsun, ama 22:00'den sonra doğru cevap oranın %54'e düşüyor. Zor konuları sabaha, tekrar ve kartları akşama bırakmayı dene.", "Gece", "Gelişiyor", "Genel özet", "GÜN", "Gösterilen: ", "Gün seri", "Hatırlatmayı 09:00'a ayarla", "Henüz ilerleme yok", "Hipertansiyon", "Kasım 2026 henüz başlamadı", "Okunan sayfa", "Ortostatik hipotansiyon", "Pe", "Planı değiştir", "Pt", "Pz", "SEVİYE", "SINAV HAFTASINA", "SON 4 HAFTA · 31 OTURUM", "Sa", "Saat dilimlerine göre verimlilik", "Sabah", "Son 4 hafta · haftalık ortalama", "Son puan", "Sonraki ay", "Sonraki tekrar", "Sınav", "Sınav haftası", "Sınav merkezi", "Tehlikeli hatalar", "Tüm dersler", "Uzman", "Verimlilik: doğru cevap oranı, okuma hızı ve mola sıklığı birlikte hesaplanır.", "Vize · 19–23 Ekim", "Ça", "Çalışma süresi", "Çalışılan gün", "Çalışılan gün başına ortalama", "Çalışıldı", "Çok iyi", "Önceki ay", "Öneri: en verimli saatlerin", "Öğle", "Öğleden sonra", "İlerleme", "İlk dersini okuyup bir bölüm kontrolü çözdüğünde seviyen, puanların ve takvimin burada görünür.", "İyi"], en: [" days × ", " h", " h weekly goal", "1 h 03 min", "3 h 37 min", "33 min", "4 h 10 min", "5.4 h", "OCT 5–11", "ACE inhibitors", "ARBs and pregnancy", "Evening", "Alpha-1 blocker first-dose effect ↔ dry cough", "Angioedema", "TIME SPENT ON PDFS THIS WEEK", "Beginner", "Bradykinin", "Daily study minutes this week", "Today's card", "Sa", "Fr", "Go to My Courses", "Diabetes", "Diuretics", "October 2026", "Best score", "Most productive hours", "Most-tapped words", "Hours you study most", "September 2026 · you studied 14 days, avg 1 h 10 min a day", "Looks like you study more productively in the morning, 09:00–11:00. In these hours your correct-answer rate is 82% and you read faster. But you study most in the evening, 20:00–22:00, and after 22:00 your correct-answer rate drops to 54%. Try leaving hard topics for the morning and reviews and cards for the evening.", "Night", "Developing", "Overall summary", "DAYS", "Showing: ", "Day streak", "Set reminder to 09:00", "No progress yet", "Hypertension", "November 2026 hasn't started yet", "Current page", "Orthostatic hypotension", "Th", "Change plan", "Mo", "Su", "LEVEL", "TO EXAM WEEK", "LAST 4 WEEKS · 31 SESSIONS", "Tu", "Productivity by time of day", "Morning", "Last 4 weeks · weekly average", "Last score", "Next month", "Next review", "Exam", "Exam week", "Exam center", "Dangerous mistakes", "All courses", "Expert", "Efficiency: correct answer rate, reading speed and break frequency are calculated together.", "Midterm · Oct 19–23", "We", "Study time", "Days studied", "Average per study day", "Studied", "Very good", "Previous month", "Tip: your most productive hours", "Noon", "Afternoon", "Progress", "Once you read your first course and solve a section check, your level, points and calendar show up here.", "Good"], fa: [" روز × ", " ساعت", " ساعت هدف هفتگی", "1 ساعت 03 دقیقه", "3 ساعت 37 دقیقه", "33 دقیقه", "4 ساعت 10 دقیقه", "5.4 ساعت", "5–11 اکتبر", "مهارکننده‌های ACE", "ARBها و بارداری", "عصر", "اثر دوز اول مسدودکنندهٔ آلفا-1 ↔ سرفهٔ خشک", "آنژیوادم", "زمان صرف‌شده برای PDFها در این هفته", "مبتدی", "برادی‌کینین", "دقیقه‌های مطالعه‌ی روزانه‌ی این هفته", "کارت امروز", "ش", "ج", "برو به درس‌های من", "دیابت", "دیورتیک‌ها", "اکتبر 2026", "بهترین نمره", "پربازده‌ترین ساعت‌ها", "پرلمس‌ترین کلمات", "ساعت‌هایی که بیشتر درس می‌خوانی", "سپتامبر 2026 · 14 روز درس خواندی، میانگین روزی 1 ساعت 10 دقیقه", "به نظر می‌رسد صبح‌ها بین 09:00–11:00 پربازده‌تر درس می‌خوانی. در این ساعت‌ها نرخ پاسخ درستت 82% است و سریع‌تر می‌خوانی. اما بیشتر از همه عصرها بین 20:00–22:00 درس می‌خوانی، و بعد از 22:00 نرخ پاسخ درستت به 54% می‌رسد. سعی کن مبحث‌های سخت را برای صبح و مرور و کارت‌ها را برای عصر بگذاری.", "شب", "در حال پیشرفت", "خلاصه کلی", "روز", "نمایش: ", "روز پیاپی", "یادآوری را روی 09:00 بگذار", "هنوز پیشرفتی نیست", "فشار خون بالا", "نوامبر 2026 هنوز شروع نشده", "صفحهٔ در حال خواندن", "افت فشار خون وضعیتی", "پ", "تغییر برنامه", "د", "ی", "سطح", "تا هفته امتحان", "4 هفته اخیر · 31 جلسه", "سه", "بهره‌وری بر اساس ساعات روز", "صبح", "4 هفته اخیر · میانگین هفتگی", "نمره آخر", "ماه بعد", "مرور بعدی", "امتحان", "هفته امتحان", "مرکز امتحان", "اشتباهات خطرناک", "همه درس‌ها", "متخصص", "بهره‌وری: درصد پاسخ درست، سرعت خواندن و تعداد استراحت‌ها با هم محاسبه می‌شوند.", "میان‌ترم · 19–23 اکتبر", "چ", "زمان مطالعه", "روزهای مطالعه", "میانگین برای هر روز مطالعه", "مطالعه شد", "خیلی خوب", "ماه قبل", "پیشنهاد: پربازده‌ترین ساعت‌هایت", "ظهر", "بعدازظهر", "پیشرفت", "وقتی اولین درست را خواندی و یک آزمون بخش را حل کردی، سطح، امتیازها و تقویمت اینجا نمایش داده می‌شود.", "خوب"], ar: [" أيام × ", " س", " س الهدف الأسبوعي", "1 س 03 د", "3 س 37 د", "33 د", "4 س 10 د", "5.4 س", "5–11 أكتوبر", "مثبطات ACE", "ARBs والحمل", "المساء", "تأثير الجرعة الأولى لحاصرات ألفا-1 ↔ السعال الجاف", "الوذمة الوعائية", "الوقت المخصص لملفات PDF هذا الأسبوع", "مبتدئ", "البراديكينين", "دقائق الدراسة اليومية هذا الأسبوع", "بطاقة اليوم", "س", "ج", "اذهب إلى موادي", "السكري", "مدرات البول", "أكتوبر 2026", "أفضل درجة", "أكثر الساعات إنتاجية", "الكلمات الأكثر لمسًا", "الساعات التي تدرس فيها أكثر", "سبتمبر 2026 · درست 14 يومًا، بمعدل 1 س 10 د يوميًا", "يبدو أنك تدرس بإنتاجية أعلى صباحًا بين 09:00–11:00. في هذه الساعات تبلغ نسبة إجاباتك الصحيحة 82% وتقرأ أسرع. لكنك تدرس أكثر مساءً بين 20:00–22:00، وبعد 22:00 تنخفض نسبة إجاباتك الصحيحة إلى 54%. جرّب ترك المواضيع الصعبة للصباح والمراجعة والبطاقات للمساء.", "الليل", "في تحسّن", "ملخص عام", "يوم", "المعروض: ", "أيام متتالية", "اضبط التذكير على 09:00", "لا يوجد تقدم بعد", "ارتفاع ضغط الدم", "لم يبدأ نوفمبر 2026 بعد", "الصفحة الحالية", "هبوط الضغط الانتصابي", "خ", "تغيير الخطة", "ن", "ح", "المستوى", "حتى أسبوع الامتحانات", "آخر 4 أسابيع · 31 جلسة", "ث", "الإنتاجية حسب أوقات اليوم", "الصباح", "آخر 4 أسابيع · المتوسط الأسبوعي", "آخر درجة", "الشهر التالي", "المراجعة التالية", "امتحان", "أسبوع الامتحانات", "مركز الامتحانات", "أخطاء خطيرة", "كل المواد", "خبير", "الكفاءة: تُحسب نسبة الإجابات الصحيحة وسرعة القراءة وتكرار الاستراحات معًا.", "النصفي · 19–23 أكتوبر", "أر", "وقت الدراسة", "أيام الدراسة", "المتوسط لكل يوم دراسة", "تمت الدراسة", "جيد جدًا", "الشهر السابق", "اقتراح: أكثر ساعاتك إنتاجية", "الظهر", "بعد الظهر", "التقدم", "بعد قراءة أول درس وحلّ اختبار قسم، يظهر هنا مستواك ونقاطك وتقويمك.", "جيد"]};
+let _lang = 'tr', _M = null; const _TC = {};
+const _x = (s) => { if (_lang === 'tr' || !_I18N[_lang]) return s; if (!_M) { _M = {}; _I18N.k.forEach((k, i) => { _M[k] = i; }); } const i = _M[s]; return i == null ? s : _I18N[_lang][i]; };
+const _TK = {"k312": "ARB'ler ve gebelik", "k342": "Alfa-1 bloker ilk doz etkisi ↔ kuru öksürük", "k825": "Diyabet", "k1187": "Hipertansiyon"};
+const _PT = {};
+const _tt = () => { if (!_TC[_lang]) { const o = {}; Object.keys(_TK).forEach((k) => { o[k] = (_PT[k] && _lang !== 'tr') ? (_PT[k][_lang] || _x(_TK[k])) : _x(_TK[k]); }); _TC[_lang] = o; } return _TC[_lang]; };
+
+class Component extends DCLogic {
+  renderVals() { const _p = this.props || {}, _s = this.state || {}; _lang = _s.lang || _p.lang || 'tr'; const r = this._rv0(); if (r && typeof r === 'object') { r._t = _tt(); r._dir = (_lang === 'fa' || _lang === 'ar') ? 'rtl' : 'ltr'; r._ai = this._aiDark ? { bg: '#F2B33D', fg: '#241C14', tx: '#EFE8DC' } : { bg: '#9C2F3A', fg: '#FFF6E6', tx: '#2A2420' }; } return r; }
+  _rv0() {
+    const __st = this.state || {};
+    const say = (m, after) => { this.setState({ toast: m }); clearTimeout(this._tt); this._tt = setTimeout(() => { this.setState({ toast: '' }); if (after) after(); }, 1700); };
+    const p = this.props;
+    const pf = p.platform || 'ios', ios = pf === 'ios';
+    const th = p.theme || 'light', dark = th === 'dark';
+    const lang = p.lang || 'tr';
+    const rtl = lang === 'fa' || lang === 'ar';
+    const c = dark
+      ? { bg: '#15120F', card: '#211C18', sub: '#2B2520', text: '#EFE8DC', text2: '#BDB2A4', text3: '#9A8F82', line: '#3A322B', pri: '#B23A47', priText: '#F09AA3', priSoft: '#3A2027', amb: '#F2B33D', ambText: '#F2C46E', ambSoft: '#3A2F1A', ok: '#5BC893', bad: '#F27A70', onBad: '#2A0F0D' }
+      : { bg: '#F4EFE6', card: '#FFFCF6', sub: '#F1EBE0', text: '#2A2420', text2: '#6E645A', text3: '#776C60', line: '#E6DDCF', pri: '#9C2F3A', priText: '#9C2F3A', priSoft: '#F7E7E9', amb: '#F2B33D', ambText: '#83560A', ambSoft: '#FDF1D6', ok: '#1E7A4C', bad: '#C0352B', onBad: '#FFFCF6' };
+    const T = {
+      tr: { title: _x('İlerleme'), level: _x('SEVİYE'), lv: [_x('Başlangıç'), _x('Gelişiyor'), _x('İyi'), _x('Çok iyi'), _x('Uzman')], st: [_x('Son puan'), _x('En iyi puan'), _x('Okunan sayfa'), _x('Çalışılan gün'), _x('Bugünkü kart'), _x('Gün seri')], month: _x('Ekim 2026'), prev: _x('Önceki ay'), next: _x('Sonraki ay'), wd: [_x('Pt'), _x('Sa'), _x('Ça'), _x('Pe'), _x('Cu'), _x('Ct'), _x('Pz')], lgStudy: _x('Çalışıldı'), lgExam: _x('Sınav'), lgNext: _x('Sonraki tekrar'), words: _x('En çok dokunulan kelimeler'), danger: _x('Tehlikeli hatalar'), emptyT: _x('Henüz ilerleme yok'), emptyS: _x('İlk dersini okuyup bir bölüm kontrolü çözdüğünde seviyen, puanların ve takvimin burada görünür.'), emptyCta: _x('Derslerime git') },
+      en: { title: 'Progress', level: 'LEVEL', lv: ['Beginner', 'Developing', 'Good', 'Very good', 'Expert'], st: ['Last score', 'Best score', 'Pages read', 'Days studied', "Today's cards", 'Day streak'], month: 'October 2026', prev: 'Previous month', next: 'Next month', wd: ['Mo', 'Tu', 'We', 'Th', 'Fr', _x('Sa'), 'Su'], lgStudy: 'Studied', lgExam: 'Exam', lgNext: 'Next review', words: 'Most-tapped words', danger: 'Dangerous mistakes', emptyT: 'No progress yet', emptyS: 'Read your first lesson and finish a section check to see your level, scores and calendar here.', emptyCta: 'Go to my courses' },
+      fa: { title: 'پیشرفت', level: 'سطح', lv: ['مبتدی', 'در حال پیشرفت', 'خوب', 'خیلی خوب', 'متخصص'], st: ['آخرین نمره', 'بهترین نمره', 'صفحهٔ خوانده‌شده', 'روز مطالعه', 'کارت امروز', 'روز پیاپی'], month: 'اکتبر ۲۰۲۶', prev: 'ماه قبل', next: 'ماه بعد', wd: ['د', 'س', 'چ', 'پ', 'ج', 'ش', 'ی'], lgStudy: 'مطالعه شد', lgExam: 'آزمون', lgNext: 'مرور بعدی', words: 'پرلمس‌ترین واژه‌ها', danger: 'اشتباه‌های خطرناک', emptyT: 'هنوز پیشرفتی ثبت نشده', emptyS: 'وقتی اولین درس را بخوانی و یک آزمونک بخش را حل کنی، سطح، نمره‌ها و تقویمت اینجا دیده می‌شود.', emptyCta: 'رفتن به درس‌هایم' },
+      ar: { title: 'التقدّم', level: 'المستوى', lv: ['مبتدئ', 'متطوّر', 'جيد', 'جيد جدًا', 'خبير'], st: ['آخر درجة', 'أفضل درجة', 'صفحات مقروءة', 'أيام الدراسة', 'بطاقات اليوم', 'أيام متتالية'], month: 'أكتوبر 2026', prev: 'الشهر السابق', next: 'الشهر التالي', wd: ['ن', 'ث', 'ر', 'خ', 'ج', 'س', 'ح'], lgStudy: 'دُرِس', lgExam: 'اختبار', lgNext: 'المراجعة التالية', words: 'الكلمات الأكثر لمسًا', danger: 'أخطاء خطِرة', emptyT: 'لا يوجد تقدّم بعد', emptyS: 'اقرأ درسك الأول وأنهِ اختبار قسم ليظهر مستواك ودرجاتك وتقويمك هنا.', emptyCta: 'اذهب إلى دروسي' }
+    };
+    const days = p.planDays || 4, hours = p.planHours || 1.5;
+    const tgt = Math.round(days * hours * 10) / 10;
+    const P = {
+      tr: { timeT: _x('Çalışma süresi'), range: _x('5–11 EKİM'), done: _x('4 sa 10 dk'), goal: '/ ' + String(tgt).replace('.', ',') + _x(' sa haftalık hedef'), chartLabel: _x('Bu haftanın günlük çalışma dakikaları'), avgDay: _x('1 sa 03 dk'), avgDayL: _x('Çalışılan gün başına ortalama'), avgWeek: _x('5,4 sa'), avgWeekL: _x('Son 4 hafta · haftalık ortalama'), perPdf: _x("BU HAFTA PDF'LERE AYRILAN SÜRE"), t1: _x('3 sa 37 dk'), t2: _x('33 dk'), changePlan: _x('Planı değiştir'), planNow: days + _x(' gün × ') + String(hours).replace('.', ',') + _x(' sa'), dl: [_x('Pt'), _x('Sa'), _x('Ça'), _x('Pe'), _x('Cu'), _x('Ct'), _x('Pz')] },
+      en: { timeT: 'Study time', range: 'OCT 5–11', done: '4 h 10 min', goal: '/ ' + tgt + ' h weekly goal', chartLabel: 'Minutes studied per day this week', avgDay: '1 h 03 min', avgDayL: 'Average per study day', avgWeek: '5.4 h', avgWeekL: 'Last 4 weeks · weekly average', perPdf: 'TIME PER PDF THIS WEEK', t1: '3 h 37 min', t2: '33 min', changePlan: 'Change plan', planNow: days + ' days × ' + hours + ' h', dl: ['Mo', 'Tu', 'We', 'Th', 'Fr', _x('Sa'), 'Su'] },
+      fa: { timeT: 'زمان مطالعه', range: '۵ تا ۱۱ اکتبر', done: '۴ ساعت و ۱۰ دقیقه', goal: '/ هدف هفتگی ' + tgt + ' ساعت', chartLabel: 'دقیقه‌های مطالعهٔ روزانه در این هفته', avgDay: '۱ ساعت و ۳ دقیقه', avgDayL: 'میانگین هر روز مطالعه', avgWeek: '۵٫۴ ساعت', avgWeekL: '۴ هفتهٔ اخیر · میانگین هفتگی', perPdf: 'زمان هر PDF در این هفته', t1: '۳ ساعت و ۳۷ دقیقه', t2: '۳۳ دقیقه', changePlan: 'تغییر برنامه', planNow: days + ' روز × ' + hours + ' ساعت', dl: ['د', 'س', 'چ', 'پ', 'ج', 'ش', 'ی'] },
+      ar: { timeT: 'وقت الدراسة', range: '5–11 أكتوبر', done: '4 س 10 د', goal: '/ الهدف الأسبوعي ' + tgt + ' ساعة', chartLabel: 'دقائق الدراسة اليومية هذا الأسبوع', avgDay: '1 س 3 د', avgDayL: 'المتوسط لكل يوم دراسة', avgWeek: '5.4 ساعة', avgWeekL: 'آخر 4 أسابيع · المتوسط الأسبوعي', perPdf: 'الوقت لكل ملف هذا الأسبوع', t1: '3 س 37 د', t2: '33 د', changePlan: 'تغيير الخطة', planNow: days + ' أيام × ' + hours + ' ساعة', dl: ['ن', 'ث', 'ر', 'خ', 'ج', 'س', 'ح'] }
+    };
+    const E = {
+      tr: { daysShort: _x('GÜN'), examWeek: _x('SINAV HAFTASINA'), examRange: _x('Vize · 19–23 Ekim'), genSum: _x('Genel özet'), examCenter: _x('Sınav merkezi'), lgExamWeek: _x('Sınav haftası') },
+      en: { daysShort: 'DAYS', examWeek: 'UNTIL EXAM WEEK', examRange: 'Midterm · Oct 19–23', genSum: 'Overall summary', examCenter: 'Exam center', lgExamWeek: 'Exam week' },
+      fa: { daysShort: 'روز', examWeek: 'تا هفتهٔ امتحان', examRange: 'میان‌ترم · ۱۹ تا ۲۳ اکتبر', genSum: 'خلاصهٔ کلی', examCenter: 'مرکز آزمون', lgExamWeek: 'هفتهٔ امتحان' },
+      ar: { daysShort: 'يوم', examWeek: 'حتى أسبوع الامتحانات', examRange: 'نصفي · 19–23 أكتوبر', genSum: 'الملخص العام', examCenter: 'مركز الاختبارات', lgExamWeek: 'أسبوع الامتحانات' }
+    };
+    const s0 = Object.assign({}, T[lang] || T.tr, P[lang] || P.tr, E[lang] || E.tr);
+    c.examBg = dark ? '#2E2721' : '#2A2420';
+    c.ambDash = dark ? '#7A6230' : '#E3C27A';
+    const B = {
+      tr: { bestT: _x('Öneri: en verimli saatlerin'), bestBasis: _x('SON 4 HAFTA · 31 OTURUM'), bestMsg: _x('Galiba sabah 09:00–11:00 arasında daha verimli çalışıyorsun. Bu saatlerde doğru cevap oranın %82 ve daha hızlı okuyorsun. En çok ise akşam 20:00–22:00 arasında çalışıyorsun, ama 22:00\'den sonra doğru cevap oranın %54\'e düşüyor. Zor konuları sabaha, tekrar ve kartları akşama bırakmayı dene.'), bestChart: _x('Saat dilimlerine göre verimlilik'), slots: [_x('Sabah'), _x('Öğle'), _x('Öğleden sonra'), _x('Akşam'), _x('Gece')], effNote: _x('Verimlilik: doğru cevap oranı, okuma hızı ve mola sıklığı birlikte hesaplanır.'), mostEff: _x('En verimli saatler'), mostTime: _x('En çok çalıştığın saatler'), setRemind: _x('Hatırlatmayı 09:00\'a ayarla') },
+      en: { bestT: 'Tip: your most productive hours', bestBasis: 'LAST 4 WEEKS · 31 SESSIONS', bestMsg: 'It looks like you study best between 09:00 and 11:00. Your correct-answer rate is 82% and you read faster then. You study most between 20:00 and 22:00, but after 22:00 your rate drops to 54%. Try hard topics in the morning and reviews and cards in the evening.', bestChart: 'Productivity by time of day', slots: ['Morning', 'Midday', 'Afternoon', 'Evening', 'Night'], effNote: 'Productivity combines correct-answer rate, reading speed and how often you pause.', mostEff: 'Most productive hours', mostTime: 'Hours you study most', setRemind: 'Set reminder to 09:00' },
+      fa: { bestT: 'پیشنهاد: پربازده‌ترین ساعت‌هایت', bestBasis: '۴ هفتهٔ اخیر · ۳۱ جلسه', bestMsg: 'به نظر می‌رسد بین ساعت ۹ تا ۱۱ صبح بهتر درس می‌خوانی؛ پاسخ درستت ۸۲٪ است و سریع‌تر می‌خوانی. بیشتر از همه بین ۲۰ تا ۲۲ درس می‌خوانی، اما بعد از ساعت ۲۲ پاسخ درستت به ۵۴٪ می‌رسد. مبحث‌های سخت را صبح و مرور و کارت‌ها را عصر بخوان.', bestChart: 'بازدهی بر اساس ساعت روز', slots: ['صبح', 'ظهر', 'بعدازظهر', 'عصر', 'شب'], effNote: 'بازدهی از نرخ پاسخ درست، سرعت خواندن و تعداد استراحت‌ها محاسبه می‌شود.', mostEff: 'پربازده‌ترین ساعت‌ها', mostTime: 'ساعت‌هایی که بیشتر می‌خوانی', setRemind: 'یادآور را روی ۰۹:۰۰ بگذار' },
+      ar: { bestT: 'اقتراح: أكثر ساعاتك إنتاجية', bestBasis: 'آخر 4 أسابيع · 31 جلسة', bestMsg: 'يبدو أنك تدرس بكفاءة أكبر بين 09:00 و11:00؛ نسبة إجاباتك الصحيحة 82% وتقرأ أسرع. أكثر ما تدرس بين 20:00 و22:00، لكن بعد 22:00 تنخفض النسبة إلى 54%. جرّب المواضيع الصعبة صباحًا والمراجعة والبطاقات مساءً.', bestChart: 'الإنتاجية حسب وقت اليوم', slots: ['صباحًا', 'ظهرًا', 'بعد الظهر', 'مساءً', 'ليلًا'], effNote: 'تُحسب الإنتاجية من نسبة الإجابات الصحيحة وسرعة القراءة وعدد الاستراحات.', mostEff: 'أكثر الساعات إنتاجية', mostTime: 'الساعات التي تدرس فيها أكثر', setRemind: 'اضبط التذكير على 09:00' }
+    }[lang] || {};
+    const s = Object.assign(s0, B);
+    const mins = [75, 60, 55, 60, 0, 0, 0];
+    const bars = mins.map((m, i) => ({ v: m ? m : '', h: Math.max(4, Math.round(m / 120 * 70)), bg: i === 3 ? c.amb : (m ? c.pri : c.line), l: s.dl[i], lc: i === 3 ? c.text : c.text3 }));
+    const variant = p.variant || 'default';
+    const v = { default: variant !== 'empty', empty: variant === 'empty' };
+    const cur = 3;
+    const lvls = s.lv.map((name, i) => ({ name, bg: i <= cur ? (i === cur ? c.amb : c.pri) : c.line, fg: i === cur ? c.text : c.text3, fw: i === cur ? 700 : 400 }));
+    const stats = [['84', 0, c.priText], ['84', 1, c.text], ['41/48', 2, c.text], ['18', 3, c.text], ['12', 4, c.text], ['6', 5, c.ambText]].map((k) => ({ v: k[0], l: s.st[k[1]], fg: k[2] }));
+    const studied = [1, 2, 3, 5, 6, 7, 8], exams = [3, 8];
+    const calDays = [];
+    for (let i = 0; i < 3; i++) calDays.push({ n: '', bg: 'transparent', fg: c.text, ring: '0', dot: 'transparent', fw: 400 });
+    for (let d = 1; d <= 31; d++) {
+      const isExam = exams.indexOf(d) >= 0, isNext = d === 15, isToday = d === 8, isStudy = studied.indexOf(d) >= 0;
+      const inWeek = d >= 19 && d <= 23;
+      calDays.push({
+        n: d,
+        bg: isExam ? c.amb : (inWeek ? c.priSoft : 'transparent'),
+        fg: isExam ? '#2A2420' : (inWeek ? c.priText : (d > 8 ? c.text3 : c.text)),
+        ring: isNext ? '2px solid ' + c.bad : (isToday ? '2px solid ' + c.text : '0'),
+        dot: isStudy ? c.text2 : 'transparent',
+        fw: isToday || isNext ? 700 : 500
+      });
+    }
+    calDays.push({ n: '', bg: 'transparent', fg: c.text, ring: '0', dot: 'transparent', fw: 400 });
+    const words = [[_x('Ortostatik hipotansiyon'), 9], [_x('ACE inhibitörleri'), 7], [_x('Anjiyoödem'), 5], [_x('Diüretikler'), 4], [_x('Bradikinin'), 3]].map((w) => ({ t: w[0], n: w[1] }));
+    const ghost = []; for (let i = 0; i < 21; i++) ghost.push(i);
+    return { toastOn: !!__st.toast, toastMsg: __st.toast || '', toastBottom: 110,
+      courseLbl: [_x('Hipertansiyon'),_x('Diyabet'),_x('Tüm dersler')][__st.ci || 0], pCourse: () => { const n = ((__st.ci || 0) + 1) % 3; this.setState({ ci: n }); say(_x('Gösterilen: ') + [_x('Hipertansiyon'),_x('Diyabet'),_x('Tüm dersler')][n]); }, pPrev: () => say(_x('Eylül 2026 · 14 gün çalıştın, günde ortalama 1 sa 10 dk')), pNext: () => say(_x('Kasım 2026 henüz başlamadı')),
+      c, s, v, lang, pf, th, lvls, stats, days: calDays, words, ghost, wd: s.wd, bars,
+      toSettings: () => { if (p.go) p.go('settings'); },
+      slots: [['06–10', 82], ['10–14', 71], ['14–18', 63], ['18–22', 66], ['22–02', 54]].map((t, i) => ({ name: s.slots[i], range: t[0], eff: t[1], bar: i === 0 ? c.amb : (t[1] < 60 ? c.bad : c.text3), fg: i === 0 ? c.ambText : (t[1] < 60 ? c.bad : c.text2), fw: i === 0 ? 700 : 500 })),
+      toGeneral: () => { if (p.go) p.go('review', 'general'); },
+      toExam: () => { if (p.go) p.go('review', 'exam'); },
+      lvlName: s.lv[cur],
+      dir: rtl ? 'rtl' : 'ltr', flip: rtl ? -1 : 1,
+      W: ios ? 390 : 412, H: ios ? 844 : 915, topH: ios ? 54 : 36, titleFs: ios ? 32 : 26,
+      btnR: ios ? 12 : 100, btnH: ios ? 50 : 48,
+      toHome: () => { if (p.go) p.go('home'); },
+      tabGo: (id) => { if (p.go) p.go(id); }
+    };
+  }
+}
+</script>
+</body>
+</html>

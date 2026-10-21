@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Kavis Study · Cihazlarda dene</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 1860px; height: 1120px; box-sizing: border-box; padding: 56px 64px; background: radial-gradient(circle at 30% 20%, #F3E6CF 0%, #E9DCC6 45%, #DCCBB0 100%); color: #2A2420; font-family: Poppins, system-ui, sans-serif; display: flex; flex-direction: column; gap: 28px">
+<div style="display: flex; align-items: flex-end; gap: 24px">
+<div style="flex: 1; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 15px; font-weight: 600; color: #9C2F3A">Kavis Study</span>
+<h1 style="margin: 0; font-size: 44px; line-height: 1.05; font-weight: 500; letter-spacing: -0.03em">Cihazında dene <span style="color: #8C8073; font-weight: 400">· iPad ve iPhone</span></h1>
+</div>
+<span style="max-width: 520px; font-size: 15px; line-height: 1.5; color: #6E645A">iPhone ve iPad baştan sona çalışır: ikisi de açılış ekranından başlar. iPad'de okuma temasını değiştir, kronometreyi durdur, asistan panelini aç-kapa.</span>
+</div>
+
+<div style="display: flex; align-items: center; gap: 64px">
+<div style="position: relative; width: 1228px; height: 868px; border-radius: 52px; background: linear-gradient(145deg, #3A332D, #1A1613); padding: 24px; box-sizing: border-box; box-shadow: 0 40px 80px rgba(42,36,32,.35), inset 0 0 0 2px #4A423A; flex: none">
+<span aria-hidden="true" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 8px; height: 8px; border-radius: 4px; background: #0D0B0A; box-shadow: inset 0 0 0 1.5px #2E2823"></span>
+<span aria-hidden="true" style="position: absolute; top: -3px; right: 120px; width: 60px; height: 4px; border-radius: 2px; background: #2E2823"></span>
+<div style="width: 1180px; height: 820px; border-radius: 30px; overflow: hidden; background: #F1E9DA">
+<dc-import name="NewIPad" theme="light" first-run="{{ true }}" hint-size="1180px,820px"></dc-import>
+</div>
+</div>
+
+<div style="position: relative; width: 418px; height: 872px; border-radius: 62px; background: linear-gradient(145deg, #3A332D, #1A1613); padding: 14px; box-sizing: border-box; box-shadow: 0 40px 80px rgba(42,36,32,.35), inset 0 0 0 2px #4A423A; flex: none">
+<span aria-hidden="true" style="position: absolute; left: -3px; top: 170px; width: 4px; height: 34px; border-radius: 2px; background: #2E2823"></span>
+<span aria-hidden="true" style="position: absolute; left: -3px; top: 220px; width: 4px; height: 60px; border-radius: 2px; background: #2E2823"></span>
+<span aria-hidden="true" style="position: absolute; right: -3px; top: 230px; width: 4px; height: 90px; border-radius: 2px; background: #2E2823"></span>
+<div style="position: relative; width: 390px; height: 844px; border-radius: 48px; overflow: hidden; background: #F4EFE6">
+<dc-import name="Main" platform="ios" theme="light" lang="tr" start="splash" hint-size="390px,844px"></dc-import>
+<span aria-hidden="true" style="position: absolute; top: 11px; left: 50%; transform: translateX(-50%); width: 120px; height: 34px; border-radius: 17px; background: #0D0B0A; pointer-events: none"></span>
+<span aria-hidden="true" style="position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; border-radius: 3px; background: rgba(42,36,32,.35); pointer-events: none"></span>
+</div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1860,"height":1120}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

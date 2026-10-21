@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Kavis Study · Uygulama simgesi</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div style="position: relative; width: 1640px; height: 1180px; box-sizing: border-box; padding: 56px 64px; background: radial-gradient(circle at 25% 15%, #F7EEDD 0%, #EFE3CF 55%, #E6D5BB 100%); color: #2A2420; font-family: Poppins, system-ui, sans-serif; display: flex; gap: 56px">
+
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 26px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 15px; font-weight: 600; color: #9C2F3A">Kavis Study</span>
+<h1 style="margin: 0; font-size: 44px; line-height: 1.05; font-weight: 500; letter-spacing: -0.03em">Uygulama simgesi <span style="color: #8C8073; font-weight: 400">· telefonda nasıl görünür</span></h1>
+<p style="margin: 4px 0 0; max-width: 720px; font-size: 15px; line-height: 1.55; color: #6E645A">Seçilen simge: bordo zemin üzerinde amber pusula yıldızı. Harf yok, isimden bağımsız. Açık, koyu ve tek renk (iOS'un "tonlu" modu) hâllerini, iPhone ve Android şeklini dene.</p>
+</div>
+
+<section style="border-radius: 30px; background: #FFFCF6; border: 2px solid #9C2F3A; padding: 20px 24px; display: flex; align-items: center; gap: 22px; box-shadow: 0 14px 30px rgba(156,47,58,.14)"><img src="{{src}}" alt="Seçilen simge: pusula yıldızı" style="width: 120px; height: 120px; border-radius: {{selR}}; flex: none; display: block"><span style="flex: 1; display: flex; flex-direction: column; gap: 6px"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; font-weight: 600; color: #9C2F3A; letter-spacing: .06em">SEÇİLEN SİMGE</span><span style="font-size: 22px; font-weight: 600">Pusula yıldızı</span><span style="font-size: 14px; line-height: 1.5; color: #6E645A">Yol gösteren yıldız: hedefe giden yol. Bordo zemin uygulamanın ana rengi, amber yıldız vurgu rengi. Asistan düğmesi ve asistan sayfası da aynı yıldızı kullanıyor.</span></span><button onClick="{{toggleOld}}" aria-expanded="{{oldOn}}" style="height: 44px; padding: 0 18px; border-radius: 22px; border: 1px solid #E0D4BE; background: #F3EADB; color: #2A2420; font-family: inherit; font-size: 13px; font-weight: 500; flex: none; cursor: pointer">{{oldLabel}}</button></section><sc-if value="{{showOld}}" hint-placeholder-val="{{ false }}"><div style="display: flex; flex-direction: column; gap: 12px; opacity: .85"><span style="font-size: 13px; color: #8C8073">Eski öneriler (arşiv · kullanılmıyor)</span><div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px">
+<sc-for list="{{concepts}}" as="k" hint-placeholder-count="10">
+<button onClick="{{k.pick}}" aria-pressed="{{k.on}}" style="border-radius: 26px; border: {{k.border}}; background: {{k.bg}}; color: #2A2420; padding: 14px 8px 12px; display: flex; flex-direction: column; align-items: center; gap: 10px; font-family: inherit; box-shadow: {{k.shadow}}; cursor: pointer">
+<dc-import name="AppIconArt" concept="{{k.id}}" mode="{{mode}}" shape="{{shape}}" size="{{ 92 }}" hint-size="92px,92px"></dc-import>
+<span style="display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; color: #9C2F3A">{{k.n}}</span><span style="font-size: 13px; font-weight: 600; line-height: 1.25">{{k.t}}</span></span>
+</button>
+</sc-for>
+</div>
+<span style="margin-top: -12px; font-size: 13px; line-height: 1.5; color: #6E645A">{{desc}}</span></div></sc-if>
+
+<div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: center">
+<div role="radiogroup" aria-label="Simge modu" style="display: flex; gap: 4px; padding: 4px; border-radius: 26px; background: #E8DEC9">
+<sc-for list="{{modes}}" as="m" hint-placeholder-count="3"><button role="radio" aria-checked="{{m.on}}" onClick="{{m.pick}}" style="height: 44px; padding: 0 18px; border: 0; border-radius: 22px; background: {{m.bg}}; color: {{m.fg}}; font-family: inherit; font-size: 14px; font-weight: {{m.fw}}; box-shadow: {{m.shadow}}; cursor: pointer">{{m.l}}</button></sc-for>
+</div>
+<div role="radiogroup" aria-label="Telefon" style="display: flex; gap: 4px; padding: 4px; border-radius: 26px; background: #E8DEC9">
+<sc-for list="{{shapes}}" as="m" hint-placeholder-count="2"><button role="radio" aria-checked="{{m.on}}" onClick="{{m.pick}}" style="height: 44px; padding: 0 18px; border: 0; border-radius: 22px; background: {{m.bg}}; color: {{m.fg}}; font-family: inherit; font-size: 14px; font-weight: {{m.fw}}; box-shadow: {{m.shadow}}; cursor: pointer">{{m.l}}</button></sc-for>
+</div>
+</div>
+
+<section style="border-radius: 30px; background: rgba(255,252,246,.75); border: 1px solid #E0D4BE; padding: 22px 24px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: baseline; justify-content: space-between"><h2 style="margin: 0; font-size: 18px; font-weight: 600">Boyutlar</h2><span style="font-size: 13px; color: #6E645A">Küçükken de okunuyor mu? En önemli test bu.</span></div>
+<div style="display: flex; align-items: flex-end; gap: 28px">
+<sc-for list="{{sizes}}" as="z" hint-placeholder-count="6"><div style="display: flex; flex-direction: column; align-items: center; gap: 10px"><img src="{{src}}" alt="" style="width: {{z.s}}px; height: {{z.s}}px; border-radius: {{z.r}}; display: block"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #6E645A">{{z.l}}</span></div></sc-for>
+</div>
+</section>
+
+<section style="border-radius: 30px; background: #FFFCF6; border: 1px solid #E0D4BE; padding: 18px 22px; display: flex; align-items: center; gap: 18px">
+<img src="./icon_star.png" alt="" style="width: 76px; height: 76px; display: block; flex: none">
+<span style="flex: 1; display: flex; flex-direction: column; gap: 3px"><span style="font-size: 18px; font-weight: 600"><span dir="ltr" style="unicode-bidi: isolate; display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; gap: .14em; line-height: 1"><span style="white-space: nowrap; font-weight: 700; font-size: 1.15em; letter-spacing: .01em; line-height: 1; color: #2A2420">K<span style="color: #9C2F3A">A</span>V<span style="position: relative; color: #9C2F3A">I<svg viewBox="0 0 24 24" aria-hidden="true" style="position: absolute; left: 50%; top: -.24em; width: .34em; height: .34em; transform: translateX(-50%); overflow: visible"><path d="M12 0 L14.6 9.4 L24 12 L14.6 14.6 L12 24 L9.4 14.6 L0 12 L9.4 9.4Z" fill="#9C2F3A"></path></svg></span>S</span><span style="font-size: .63em; font-weight: 500; letter-spacing: .1em; opacity: .7; line-height: 1; color: #2A2420">STUDY</span></span></span><span style="font-size: 13px; color: #6E645A">Artık yanında Kavis var.</span><span style="font-size: 12px; color: #8C8073">Eğitim · Ücretsiz deneme</span></span>
+<button onClick="{{getApp}}" style="height: 40px; padding: 0 22px; border-radius: 20px; border: 0; background: #9C2F3A; color: #FFFCF6; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer">{{getLabel}}</button>
+</section>
+</div>
+
+<div style="flex: none; display: flex; flex-direction: column; align-items: center; gap: 14px">
+<div style="position: relative; width: 392px; height: 820px; border-radius: 60px; background: linear-gradient(145deg, #3A332D, #1A1613); padding: 14px; box-sizing: border-box; box-shadow: 0 40px 80px rgba(42,36,32,.35), inset 0 0 0 2px #4A423A">
+<div style="position: relative; width: 364px; height: 792px; border-radius: 46px; overflow: hidden; background: {{wall}}; display: flex; flex-direction: column; padding: 70px 22px 22px; box-sizing: border-box">
+<span aria-hidden="true" style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 110px; height: 32px; border-radius: 16px; background: #0D0B0A"></span>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); row-gap: 22px; column-gap: 8px">
+<sc-for list="{{apps}}" as="a" hint-placeholder-count="16">
+<button onClick="{{a.tap}}" style="border: 0; background: transparent; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; font-family: inherit; cursor: pointer">
+<sc-if value="{{a.me}}" hint-placeholder-val="{{ false }}"><img src="{{src}}" alt="" style="width: 62px; height: 62px; border-radius: {{iconR}}; display: block"></sc-if>
+<sc-if value="{{a.other}}" hint-placeholder-val="{{ true }}"><span style="width: 62px; height: 62px; border-radius: {{iconR}}; background: {{a.bg}}; color: {{a.fg}}; display: flex; align-items: center; justify-content: center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{a.d}}"></path></svg></span></sc-if>
+<span style="font-size: 11px; color: {{labelFg}}; font-weight: {{a.fw}}; text-shadow: {{labelShadow}}; white-space: nowrap">{{a.l}}</span>
+</button>
+</sc-for>
+</div>
+<span style="flex: 1"></span>
+<div style="align-self: center; display: flex; gap: 6px; padding-bottom: 14px"><span style="width: 7px; height: 7px; border-radius: 4px; background: {{labelFg}}"></span><span style="width: 7px; height: 7px; border-radius: 4px; background: {{dotOff}}"></span></div>
+<div style="border-radius: 34px; background: {{dock}}; padding: 14px 16px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; justify-items: center">
+<sc-for list="{{dockApps}}" as="a" hint-placeholder-count="4"><button onClick="{{a.tap}}" aria-label="{{a.l}}" style="border: 0; background: transparent; padding: 0; cursor: pointer"><span style="width: 58px; height: 58px; border-radius: {{iconR}}; background: {{a.bg}}; color: {{a.fg}}; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{a.d}}"></path></svg></span></button></sc-for>
+</div>
+</div>
+</div>
+<span style="font-size: 13px; color: #6E645A">Kavis Study simgesine dokun</span>
+</div>
+
+<sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div role="status" aria-live="polite" style="position: absolute; left: 50%; bottom: 40px; transform: translateX(-50%); padding: 12px 20px; border-radius: 22px; background: #2E2721; color: #FBEFD6; font-size: 14px; box-shadow: 0 12px 30px rgba(42,36,32,.28); pointer-events: none">{{toastMsg}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1640,"height":1180}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const st = this.state || {};
+    const say = (m) => { this.setState({ toast: m }); clearTimeout(this._tt); this._tt = setTimeout(() => this.setState({ toast: '' }), 1700); };
+    const concept = st.concept || 'book';
+    const mode = st.mode || 'light';
+    const shape = st.shape || 'ios';
+    const dark = mode !== 'light';
+    const list = [
+      ['book', 'A', 'Kitap ve kıvılcım', 'Açık bir ders kitabı ve üstünde yapay zekâ kıvılcımı.'],
+      ['orb', 'B', 'J küresi', 'Uygulamadaki asistan küresi ve bir "J".'],
+      ['cap', 'C', 'Kep ve kıvılcım', 'Mezuniyet kepi: başarı ve sınav.'],
+      ['page', 'D', 'Sayfa ve asistan', 'Hocanın sayfası ve konuşan asistan balonu.'],
+      ['owl', 'E', 'Kitaplı baykuş', 'Kitap tutan sevimli baykuş; uygulamanın maskotu olabilir.'],
+      ['capsule', 'F', 'Kapsül', 'İlaç kapsülü ve kıvılcım; eczacılık ve sağlık öğrencisine özel.'],
+      ['bulb', 'G', 'Fikir ampulü', 'İçinde kıvılcım olan ampul: "anladım!" anı.'],
+      ['jmark', 'H', 'Kıvılcımlı J', 'Sade bordo bir "J" ve yıldız; en modern ve sade olanı.'],
+      ['lantern', 'I', 'Fener', 'Karanlık konulara ışık tutan fener.'],
+      ['bookmark', 'K', 'Sayfa ayracı', 'Sayfadaki ayraç: kaldığın yerden devam et.']
+    ];
+    const concepts = list.map((k) => {
+      const on = k[0] === concept;
+      return { id: k[0], n: k[1], t: k[2], on: on ? 'true' : 'false', border: on ? '2px solid #9C2F3A' : '1px solid #E0D4BE', bg: on ? '#FFFCF6' : 'rgba(255,252,246,.6)', shadow: on ? '0 14px 30px rgba(156,47,58,.14)' : 'none', pick: () => this.setState({ concept: k[0] }) };
+    });
+    const cur = list.find((k) => k[0] === concept) || list[0];
+    const desc = cur[1] + ' · ' + cur[2] + ': ' + cur[3];
+    const seg = (on) => ({ bg: on ? '#FFFCF6' : 'transparent', fg: on ? '#2A2420' : '#6E645A', fw: on ? 600 : 400, shadow: on ? '0 1px 4px rgba(42,36,32,.14)' : 'none', on: on ? 'true' : 'false' });
+    const modes = [['light', 'Açık'], ['dark', 'Koyu'], ['tinted', 'Tek renk']].map((m) => Object.assign(seg(m[0] === mode), { l: m[1], pick: () => this.setState({ mode: m[0] }) }));
+    const shapes = [['ios', 'iPhone'], ['android', 'Android']].map((m) => Object.assign(seg(m[0] === shape), { l: m[1], pick: () => this.setState({ shape: m[0] }) }));
+    const sizes = [[160, 'App Store 1024'], [120, 'Ana ekran 180'], [80, 'Ana ekran 120'], [58, 'Ayarlar 87'], [40, 'Bildirim 60'], [27, 'Spotlight 40']].map((z) => ({ s: z[0], hs: z[0] + 'px,' + z[0] + 'px', l: z[1], r: shape === 'android' ? '50%' : '0' }));
+    const src = mode === 'dark' ? './icon_star_dark.png' : (mode === 'tinted' ? './icon_star_tint.png' : './icon_star.png');
+    const showOld = !!st.showOld;
+    const dfg = { '#9C2F3A': '#F09AA3', '#7A5208': '#F2C66D', '#2E7D4F': '#8FD3A8', '#4A3F9A': '#B9B4F0', '#2A2420': '#EFE8DC', '#1F6E75': '#8CCFD6', '#6E645A': '#BDB2A4' };
+    const tone = (light, darkBg) => mode === 'tinted' ? ['#1C1C1E', '#D0D0D0'] : (dark ? [darkBg, dfg[light[1]] || '#EFE8DC'] : light);
+    const gen = [
+      ['Takvim', 'M5 5h14v15H5z M5 10h14 M9 3v4 M15 3v4', ['#FFFCF6', '#9C2F3A'], '#2B2520'],
+      ['Notlar', 'M6 4h12v16H6z M9 9h6 M9 13h6 M9 17h3', ['#FBEBC8', '#7A5208'], '#2B2520'],
+      ['Fotoğraf', 'M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0 M4 7h4l2-2h4l2 2h4v12H4z', ['#E3F1E7', '#2E7D4F'], '#1F2A22'],
+      ['Kamera', 'M4 8h4l2-2h4l2 2h4v11H4z M12 16.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z', ['#E8E6F6', '#4A3F9A'], '#24222E'],
+      ['Saat', 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z M12 7v5l3 2', ['#EFE8DC', '#2A2420'], '#2B2520'],
+      ['Hava', 'M7 18h10a4 4 0 0 0 0-8 6 6 0 0 0-11 2 3 3 0 0 0 1 6z', ['#DFF0F1', '#1F6E75'], '#1C2A2C'],
+      ['Mesajlar', 'M4 5h16v11H9l-5 4z', ['#E3F1E7', '#2E7D4F'], '#1F2A22'],
+      ['Müzik', 'M9 18V6l10-2v12 M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0z M19 16a3 3 0 1 1-6 0 3 3 0 0 1 6 0z', ['#F5E3E2', '#9C2F3A'], '#2E2224'],
+      ['Haritalar', 'M9 4l6 2 5-2v14l-5 2-6-2-5 2V6z M9 4v14 M15 6v14', ['#DFF0F1', '#1F6E75'], '#1C2A2C'],
+      ['Kavis Study', '', null, null],
+      ['E-posta', 'M3 6h18v12H3z M3 7l9 6 9-6', ['#E8E6F6', '#4A3F9A'], '#24222E'],
+      ['Hesap mak.', 'M6 3h12v18H6z M9 7h6 M9 12h.01 M12 12h.01 M15 12h.01 M9 16h.01 M12 16h.01 M15 16h.01', ['#EFE8DC', '#2A2420'], '#2B2520'],
+      ['Kitaplar', 'M4 5h6v15H4z M10 5h4v15h-4z M15 6l4-1 3 14-4 1z', ['#FBEBC8', '#7A5208'], '#2B2520'],
+      ['Sağlık', 'M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z', ['#F5E3E2', '#9C2F3A'], '#2E2224'],
+      ['Dosyalar', 'M3 7h7l2 2h9v10H3z', ['#DFF0F1', '#1F6E75'], '#1C2A2C'],
+      ['Ayarlar', 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M4 12h2 M18 12h2 M12 4v2 M12 18v2 M6.3 6.3l1.4 1.4 M16.3 16.3l1.4 1.4 M6.3 17.7l1.4-1.4 M16.3 7.7l1.4-1.4', ['#EFE8DC', '#6E645A'], '#2B2520']
+    ];
+    const apps = gen.map((a) => {
+      const me = a[0] === 'Kavis Study';
+      const t = me ? ['', ''] : tone(a[2], a[3]);
+      return { l: a[0], d: a[1], me, other: !me, bg: t[0], fg: t[1], fw: me ? 600 : 400, tap: me ? () => say('Kavis Study açılıyor…') : () => say(a[0] + ' · örnek uygulama') };
+    });
+    const dockApps = [['Telefon', 'M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2', ['#E3F1E7', '#2E7D4F'], '#1F2A22'], ['Tarayıcı', 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z M3 12h18 M12 3a14 14 0 0 1 0 18 M12 3a14 14 0 0 0 0 18', ['#DFF0F1', '#1F6E75'], '#1C2A2C'], ['Mesajlar', 'M4 5h16v11H9l-5 4z', ['#E3F1E7', '#2E7D4F'], '#1F2A22'], ['Müzik', 'M9 18V6l10-2v12 M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0z M19 16a3 3 0 1 1-6 0 3 3 0 0 1 6 0z', ['#F5E3E2', '#9C2F3A'], '#2E2224']].map((a) => { const t = tone(a[2], a[3]); return { l: a[0], d: a[1], bg: t[0], fg: t[1], tap: () => say(a[0] + ' · örnek uygulama') }; });
+    const got = !!st.got;
+    return {
+      concepts, desc, modes, src, showOld, oldOn: showOld ? 'true' : 'false', oldLabel: showOld ? 'Eski önerileri gizle' : 'Eski öneriler', toggleOld: () => this.setState({ showOld: !showOld }), selR: shape === 'android' ? '50%' : '0', shapes, sizes, apps, dockApps, concept, mode, shape,
+      iconR: shape === 'android' ? '50%' : '14px',
+      wall: dark ? 'radial-gradient(circle at 30% 20%, #3A2A1E 0%, #15120F 70%)' : 'linear-gradient(170deg, #D9824E 0%, #B5434E 55%, #7E2530 100%)',
+      dock: dark ? 'rgba(255,240,210,.08)' : 'rgba(255,252,246,.28)',
+      labelFg: '#FFFCF6', labelShadow: '0 1px 3px rgba(0,0,0,.35)', dotOff: 'rgba(255,252,246,.4)',
+      getLabel: got ? 'AÇ' : 'AL', getApp: () => { this.setState({ got: !got }); say(got ? 'Kavis Study açılıyor…' : 'Yükleniyor… ana ekrana eklendi'); },
+      toastOn: !!st.toast, toastMsg: st.toast || ''
+    };
+  }
+}
+</script>
+</body>
+</html>

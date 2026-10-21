@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>iPad · Okuma ve asistan</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div dir="{{dir}}" lang="{{lang}}" style="position: relative; width: 1180px; height: 820px; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; background: {{c.bg}}; color: {{c.text}}; font-family: Poppins, Vazirmatn, system-ui, sans-serif">
+<div style="height: 24px; flex: none"></div>
+<header style="flex: none; height: 56px; display: flex; align-items: center; gap: 10px; padding: 0 16px; border-bottom: 1px solid {{c.line}}">
+<button onClick="{{lgBack}}" style="height: 44px; padding: 0 8px; border: 0; background: transparent; color: {{c.priText}}; display: flex; align-items: center; gap: 4px; font-family: inherit; font-size: 16px; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX({{flip}})"><path d="M15 5l-7 7 7 7"></path></svg>{{s.back}}</button>
+<div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 1px">
+<span style="font-size: 17px; font-weight: 700">Hipertansiyon</span>
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: 0.06em; color: {{c.text3}}">FARMAKOTERAPİ · {{s.pg}} 12/48</span>
+</div>
+<div role="group" aria-label="{{s.size}}" style="display: flex; align-items: center; border-radius: 10px; background: {{c.card}}; border: 1px solid {{c.line}}">
+<button onClick="{{lgSmall}}" aria-label="{{s.smaller}}" style="width: 44px; height: 36px; border: 0; background: transparent; color: {{c.text}}; font-family: Lora, Georgia, serif; font-size: 13px; font-weight: 600; cursor: pointer">A−</button>
+<span style="width: 1px; height: 18px; background: {{c.line}}"></span>
+<button onClick="{{lgBig}}" aria-label="{{s.bigger}}" style="width: 44px; height: 36px; border: 0; background: transparent; color: {{c.text}}; font-family: Lora, Georgia, serif; font-size: 17px; font-weight: 600; cursor: pointer">A+</button>
+</div>
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 600; padding: 5px 8px; border-radius: 6px; background: {{c.ambSoft}}; color: {{c.ambText}}; transform: skewX(-8deg)">{{s.lvl}}</span>
+<button onClick="{{toggleNotes}}" aria-label="{{s.note}}" aria-pressed="{{notesStr}}" style="width: 44px; height: 44px; border-radius: 12px; border: 0; background: {{penBg}}; color: {{penFg}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1-4L16 5l3 3L8 19z M14 7l3 3"></path></svg></button>
+<button onClick="{{lgAsst}}" aria-label="{{s.assistant}}" aria-pressed="true" style="width: 44px; height: 44px; border-radius: 12px; border: 0; background: {{c.priSoft}}; color: {{c.priText}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z M15 5v14"></path></svg></button>
+</header>
+
+<div style="flex: 1; min-height: 0; display: flex">
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; position: relative">
+<div style="flex: none; display: flex; flex-direction: column; gap: 10px; padding: 12px 28px 10px">
+<div style="display: flex; gap: 8px">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="4">
+<button onClick="{{lgTab}}" style="height: 34px; padding: 0 14px; border-radius: 10px; border: {{t.border}}; background: {{t.bg}}; color: {{t.fg}}; font-family: inherit; font-size: 13px; font-weight: {{t.fw}}; white-space: nowrap; display: flex; align-items: center; gap: 6px; cursor: pointer"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; opacity: .8">{{t.n}}</span>{{t.label}}</button>
+</sc-for>
+</div>
+<div style="display: flex; align-items: center; gap: 10px">
+<span style="flex: 1; height: 4px; border-radius: 2px; background: {{c.line}}; overflow: hidden; display: flex"><span style="width: 25%; background: {{c.pri}}"></span></span>
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; color: {{c.text3}}">%25</span>
+</div>
+</div>
+<sc-if value="{{notes}}" hint-placeholder-val="{{ false }}">
+<div style="flex: none; height: 30px; display: flex; align-items: center; justify-content: center; gap: 8px; background: {{c.ambSoft}}; color: {{c.ambText}}; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.08em">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 11h12v9H6z M8.5 11V8a3.5 3.5 0 0 1 7 0v3"></path></svg>{{s.noteBanner}}
+</div>
+</sc-if>
+<main style="flex: 1; min-height: 0; overflow-y: auto; padding: 8px 28px 120px; display: flex; flex-direction: column; align-items: center">
+<div style="width: 100%; max-width: 640px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: center; gap: 10px; padding-top: 6px">
+<span style="width: 32px; height: 32px; border-radius: 9px; background: {{c.ambSoft}}; color: {{c.ambText}}; display: flex; align-items: center; justify-content: center; transform: rotate(-8deg)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.5 3.5a5 5 0 0 1 7 7l-7 7a5 5 0 0 1-7-7z M7 7l7 7"></path></svg></span>
+<div style="display: flex; flex-direction: column; gap: 1px"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; color: {{c.text3}}">{{s.sec}} 2</span><h2 style="margin: 0; font-size: 20px; font-weight: 700">İlaç tedavisi</h2></div>
+</div>
+
+<article style="position: relative; border-radius: 20px; background: {{c.card}}; padding: 18px 22px 22px; display: flex; flex-direction: column; gap: 12px; box-shadow: {{c.shadow}}">
+<div style="display: flex; align-items: center; gap: 8px">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.06em; color: {{c.text3}}">{{s.pg}} 12</span>
+<span style="font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 5px; background: {{c.blueSoft}}; color: {{c.blue}}; transform: skewX(-10deg)">{{s.tagDose}}</span>
+<span style="flex: 1"></span>
+<button onClick="{{lgTr}}" style="height: 32px; padding: 0 12px; border-radius: 8px; border: 1px solid {{c.line}}; background: transparent; color: {{c.text2}}; display: flex; align-items: center; gap: 6px; font-family: inherit; font-size: 12px; font-weight: 500; cursor: pointer"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h9 M8.5 3v2 M6 5c.5 3 2.5 5.5 5 7 M11 5c-.8 3.5-3 6.5-6.5 8 M13 21l4-9 4 9 M14.5 18h5"></path></svg>{{s.translate}}</button>
+</div>
+<div dir="ltr" lang="tr" style="position: relative; font-family: Lora, Georgia, serif; font-size: 19px; line-height: 1.7; text-align: left">
+<p style="margin: 0 0 12px">İlk basamak tedavide <span style="border-bottom: 1.5px dotted {{c.priText}}">Diüretikler</span>, <span style="border-bottom: 1.5px dotted {{c.priText}}">ACE inhibitörleri</span>, anjiyotensin reseptör blokerleri (ARB) ve kalsiyum kanal blokerleri kullanılır.</p>
+<p style="margin: 0">ACE inhibitörlerine düşük dozla başlanır (ör. ramipril 2,5 mg/gün) ve doz 2–4 haftada bir titre edilir.</p>
+<sc-if value="{{notes}}" hint-placeholder-val="{{ false }}">
+<svg width="596" height="200" viewBox="0 0 596 200" aria-hidden="true" style="position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible">
+<path d="M0 50 L 350 50" stroke="#F2B33D" stroke-opacity="0.42" stroke-width="24" fill="none"></path>
+<path d="M300 132 C 330 120, 452 118, 470 132 C 486 146, 440 160, 390 158 C 330 156, 288 148, 300 134" stroke="{{c.penRed}}" stroke-width="2.6" fill="none" stroke-linecap="round"></path>
+<path d="M480 142 C 520 160, 548 176, 560 196" stroke="{{c.penRed}}" stroke-width="2.2" fill="none" stroke-linecap="round"></path>
+</svg>
+</sc-if>
+</div>
+<sc-if value="{{notes}}" hint-placeholder-val="{{ false }}">
+<span dir="ltr" style="align-self: flex-end; font-family: Lora, Georgia, serif; font-style: italic; font-size: 19px; color: {{c.penRed}}; transform: rotate(-3deg)">max 10 mg/gün — sor!</span>
+</sc-if>
+</article>
+
+<article style="border-radius: 20px; background: {{c.card}}; padding: 18px 22px 22px; display: flex; flex-direction: column; gap: 12px; box-shadow: {{c.shadow}}">
+<div style="display: flex; align-items: center; gap: 8px">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.06em; color: {{c.text3}}">{{s.pg}} 13</span>
+<span style="font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 5px; background: {{c.priSoft}}; color: {{c.priText}}; transform: skewX(-10deg)">{{s.tagSide}}</span>
+<span style="flex: 1"></span>
+<button onClick="{{lgTr}}" style="height: 32px; padding: 0 12px; border-radius: 8px; border: 1px solid {{c.line}}; background: transparent; color: {{c.text2}}; display: flex; align-items: center; gap: 6px; font-family: inherit; font-size: 12px; font-weight: 500; cursor: pointer"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h9 M8.5 3v2 M6 5c.5 3 2.5 5.5 5 7 M11 5c-.8 3.5-3 6.5-6.5 8 M13 21l4-9 4 9 M14.5 18h5"></path></svg>{{s.translate}}</button>
+</div>
+<div dir="ltr" lang="tr" style="font-family: Lora, Georgia, serif; font-size: 19px; line-height: 1.7; text-align: left">
+<p style="margin: 0 0 12px">Alfa-1 blokerlerin (prazosin, doksazosin) ilk dozundan sonra <span style="border-bottom: 1.5px dotted {{c.priText}}">Ortostatik hipotansiyon</span> görülebilir; ilk dozun yatmadan önce alınması önerilir.</p>
+<p style="margin: 0">ACE inhibitörleri bradikinin birikimine bağlı kuru öksürük ve nadiren <span style="border-bottom: 1.5px dotted {{c.priText}}">anjiyoödem</span> yapabilir.</p>
+</div>
+</article>
+</div>
+</main>
+
+<sc-if value="{{notes}}" hint-placeholder-val="{{ false }}">
+<div role="toolbar" aria-label="{{s.noteTools}}" style="position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; padding: 8px 10px; border-radius: 22px; background: {{c.card}}; border: 1px solid {{c.line}}; box-shadow: 0 14px 40px rgba(18,23,30,.18)">
+<sc-for list="{{pens}}" as="t" hint-placeholder-count="3"><button onClick="{{lgTool}}" aria-label="{{t.label}}" aria-pressed="{{t.on}}" style="width: 44px; height: 44px; border-radius: 22px; border: {{t.ring}}; background: transparent; display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer"><span style="width: 26px; height: 26px; border-radius: 13px; background: {{t.color}}"></span></button></sc-for>
+<span style="width: 1px; height: 26px; background: {{c.line}}"></span>
+<sc-for list="{{markers}}" as="t" hint-placeholder-count="2"><button onClick="{{lgTool}}" aria-label="{{t.label}}" style="width: 44px; height: 44px; border-radius: 12px; border: 2px solid transparent; background: transparent; display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer"><span style="width: 15px; height: 28px; border-radius: 3px; background: {{t.color}}; transform: rotate(20deg)"></span></button></sc-for>
+<span style="width: 1px; height: 26px; background: {{c.line}}"></span>
+<button onClick="{{lgText}}" aria-label="{{s.textTool}}" style="width: 44px; height: 44px; border: 0; background: transparent; color: {{c.text}}; font-family: Lora, Georgia, serif; font-size: 21px; font-weight: 600; cursor: pointer">T</button>
+<button onClick="{{lgErase}}" aria-label="{{s.eraser}}" style="width: 44px; height: 44px; border: 0; background: transparent; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 20h12 M4 15l9-9 6 6-7 7H8z M9 10l6 6"></path></svg></button>
+<button onClick="{{lgUndo}}" aria-label="{{s.undo}}" style="width: 44px; height: 44px; border: 0; background: transparent; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX({{flip}})"><path d="M9 6L4 11l5 5 M4 11h11a5 5 0 0 1 0 10h-3"></path></svg></button>
+<button onClick="{{toggleNotes}}" style="height: 40px; padding: 0 18px; margin-inline-start: 4px; border-radius: 12px; border: 0; background: {{c.pri}}; color: #FFFCF6; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer">{{s.done}}</button>
+</div>
+</sc-if>
+</div>
+
+<aside aria-label="{{s.assistant}}" style="width: 390px; flex: none; border-inline-start: 1px solid {{c.line}}; background: {{c.panel}}; display: flex; flex-direction: column">
+<div style="display: flex; align-items: center; gap: 10px; padding: 14px 16px 10px">
+<span style="width: 34px; height: 34px; border-radius: 10px; background: {{c.pri}}; color: #FFFCF6; display: flex; align-items: center; justify-content: center; transform: rotate(-8deg)"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z M19 16l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"></path></svg></span>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 1px"><h2 style="margin: 0; font-size: 18px; font-weight: 700">{{s.assistant}}</h2><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; color: {{c.text3}}">{{s.source}} · Hipertansiyon.pdf</span></div>
+</div>
+<div style="display: flex; align-items: center; gap: 8px; padding: 0 16px 10px; border-bottom: 1px solid {{c.line}}">
+<span style="width: 44px; height: 26px; border-radius: 13px; background: {{c.pri}}; display: flex; align-items: center; justify-content: flex-end; padding: 0 2px; box-sizing: border-box"><span style="width: 22px; height: 22px; border-radius: 11px; background: #FFFCF6"></span></span>
+<span style="font-size: 13px; font-weight: 500; flex: 1">{{s.always}}</span>
+<span style="height: 30px; padding: 0 10px; border-radius: 8px; border: 1px solid {{c.line}}; display: flex; align-items: center; font-size: 12px; color: {{c.text2}}">{{s.voice}}</span>
+<span style="height: 30px; padding: 0 10px; border-radius: 8px; border: 1px solid {{c.line}}; display: flex; align-items: center; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: {{c.text2}}">1,0×</span>
+</div>
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px" dir="ltr">
+<div style="align-self: flex-end; max-width: 82%; border-radius: 18px 18px 6px 18px; background: {{c.pri}}; color: #FFFCF6; padding: 10px 14px; font-size: 14px; line-height: 1.5">Bu sayfayı anlat</div>
+<div style="align-self: flex-start; max-width: 92%; border-radius: 18px 18px 18px 6px; background: {{c.sub}}; padding: 12px 14px; font-size: 14px; line-height: 1.55; display: flex; flex-direction: column; gap: 6px">
+<span>Sayfa 12'nin özü:</span>
+<span>• İlk basamakta 4 ilaç grubu var: diüretikler, ACE inhibitörleri, ARB'ler ve kalsiyum kanal blokerleri.</span>
+<span>• ACE inhibitörlerine düşük dozla başlanır (ramipril 2,5 mg/gün), doz 2–4 haftada bir artırılır.</span>
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: {{c.priText}}">KAYNAK · S. 12</span>
+</div>
+<div style="align-self: flex-end; max-width: 82%; border-radius: 18px 18px 6px 18px; background: {{c.pri}}; color: #FFFCF6; padding: 10px 14px; font-size: 14px; line-height: 1.5">ACE inhibitörleri neden gebelikte kullanılmaz?</div>
+<div style="align-self: flex-start; max-width: 92%; border-radius: 18px 18px 18px 6px; background: {{c.sub}}; padding: 12px 14px; font-size: 14px; line-height: 1.55">PDF'inde (s. 14) gebelikte kontrendike olduğu yazıyor. Nedeni bu derste anlatılmamış; PDF dışından bilgi eklemiyorum.</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 16px; border-top: 1px solid {{c.line}}">
+<sc-for list="{{quick}}" as="q" hint-placeholder-count="7"><button onClick="{{lgQuick}}" style="height: 34px; padding: 0 11px; border-radius: 10px; border: 1px solid {{q.border}}; background: {{q.bg}}; color: {{q.fg}}; font-family: inherit; font-size: 12px; font-weight: 500; cursor: pointer">{{q.label}}</button></sc-for>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; padding: 4px 16px 20px">
+<label style="flex: 1; height: 46px; border-radius: 23px; background: {{c.sub}}; display: flex; align-items: center; padding: 0 16px"><input placeholder="{{s.ph}}" aria-label="{{s.ph}}" style="flex: 1; min-width: 0; border: 0; background: transparent; color: {{c.text}}; font-family: inherit; font-size: 14px; outline: none"></label>
+<button onClick="{{lgMic}}" aria-label="{{s.mic}}" style="width: 46px; height: 46px; border-radius: 23px; border: 0; background: {{c.pri}}; color: #FFFCF6; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z M5 11a7 7 0 0 0 14 0 M12 18v3"></path></svg></button>
+</div>
+</aside>
+</div>
+<sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div role="status" aria-live="polite" style="position: absolute; left: 50%; bottom: {{toastBottom}}px; transform: translateX(-50%); z-index: 50; max-width: 86%; box-sizing: border-box; padding: 12px 18px; border-radius: 22px; background: #2E2721; color: #FBEFD6; font-family: Poppins, Vazirmatn, system-ui, sans-serif; font-size: 14px; line-height: 1.4; text-align: center; box-shadow: 0 12px 30px rgba(42,36,32,.28); pointer-events: none">{{toastMsg}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"variant":{"editor":"enum","options":["default","notes"],"default":"default"},"$preview":{"width":1180,"height":820}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const __st = this.state || {};
+    const say = (m, after) => { this.setState({ toast: m }); clearTimeout(this._tt); this._tt = setTimeout(() => { this.setState({ toast: '' }); if (after) after(); }, 1700); };
+    const p = this.props, st = this.state || {};
+    const dark = p.theme === 'dark';
+    const lang = p.lang || 'tr';
+    const rtl = lang === 'fa' || lang === 'ar';
+    const c = dark
+      ? { bg: '#15120F', card: '#211C18', panel: '#1A1613', sub: '#2B2520', text: '#EFE8DC', text2: '#BDB2A4', text3: '#9A8F82', line: '#3A322B', pri: '#B23A47', priText: '#F09AA3', priSoft: '#3A2027', ambText: '#F2C46E', ambSoft: '#3A2F1A', blue: '#8DB4F5', blueSoft: '#1E2C45', bad: '#F27A70', badSoft: '#3D1F1F', penRed: '#F27A70', shadow: 'none' }
+      : { bg: '#F4EFE6', card: '#FFFCF6', panel: '#F7F8FA', sub: '#F4EFE6', text: '#2A2420', text2: '#6E645A', text3: '#776C60', line: '#E6DDCF', pri: '#9C2F3A', priText: '#9C2F3A', priSoft: '#F7E7E9', ambText: '#83560A', ambSoft: '#FDF1D6', blue: '#2557A8', blueSoft: '#E5EEFB', bad: '#C0352B', badSoft: '#FCE8E6', penRed: '#C0352B', shadow: '0 1px 2px rgba(27,36,48,.05)' };
+    const T = {
+      tr: { back: 'Derslerim', pg: 'SAYFA', size: 'Yazı boyutu', smaller: 'Küçült', bigger: 'Büyüt', lvl: 'İYİ', note: 'Not al', assistant: 'Asistan', sec: 'BÖLÜM', tagDose: 'Doz', tagSide: 'Yan etki', translate: 'Çevir', noteBanner: 'NOT MODU · SAYFA SABİT · APPLE PENCIL', noteTools: 'Not araçları', textTool: 'Yazı', eraser: 'Silgi', undo: 'Geri al', done: 'Bitti', source: 'KAYNAK', always: 'Sürekli dinle', voice: 'Kadın sesi', ph: 'Bu ders hakkında sor…', mic: 'Konuş', quick: ['Bu sayfayı oku', 'Buradan sona oku', 'Bu sayfayı anlat', 'Bana soru sor', 'Özetle', 'Ben anlatayım', 'Durdur'], pens: ['Lacivert kalem', 'Kırmızı kalem', 'Mavi kalem', 'Sarı fosforlu', 'Yeşil fosforlu'] },
+      en: { back: 'My courses', pg: 'PAGE', size: 'Text size', smaller: 'Smaller', bigger: 'Larger', lvl: 'GOOD', note: 'Notes', assistant: 'Assistant', sec: 'SECTION', tagDose: 'Dose', tagSide: 'Side effect', translate: 'Translate', noteBanner: 'NOTE MODE · PAGE LOCKED · APPLE PENCIL', noteTools: 'Note tools', textTool: 'Text', eraser: 'Eraser', undo: 'Undo', done: 'Done', source: 'SOURCE', always: 'Always listen', voice: 'Female voice', ph: 'Ask about this lesson…', mic: 'Speak', quick: ['Read this page', 'Read to the end', 'Explain this page', 'Quiz me', 'Summarize', 'Let me explain', 'Stop'], pens: ['Navy pen', 'Red pen', 'Blue pen', 'Yellow highlighter', 'Green highlighter'] },
+      fa: { back: 'درس‌های من', pg: 'صفحه', size: 'اندازهٔ متن', smaller: 'کوچک‌تر', bigger: 'بزرگ‌تر', lvl: 'خوب', note: 'یادداشت', assistant: 'دستیار', sec: 'بخش', tagDose: 'دوز', tagSide: 'عارضهٔ جانبی', translate: 'ترجمه', noteBanner: 'حالت یادداشت · صفحه ثابت · APPLE PENCIL', noteTools: 'ابزار یادداشت', textTool: 'متن', eraser: 'پاک‌کن', undo: 'واگرد', done: 'تمام', source: 'منبع', always: 'گوش دادن دائمی', voice: 'صدای زن', ph: 'دربارهٔ این درس بپرس…', mic: 'صحبت کن', quick: ['این صفحه را بخوان', 'از اینجا تا آخر بخوان', 'این صفحه را توضیح بده', 'از من سؤال بپرس', 'خلاصه کن', 'من توضیح می‌دهم', 'توقف'], pens: ['قلم سرمه‌ای', 'قلم قرمز', 'قلم آبی', 'ماژیک زرد', 'ماژیک سبز'] },
+      ar: { back: 'دروسي', pg: 'صفحة', size: 'حجم النص', smaller: 'تصغير', bigger: 'تكبير', lvl: 'جيد', note: 'ملاحظة', assistant: 'المساعد', sec: 'القسم', tagDose: 'الجرعة', tagSide: 'أثر جانبي', translate: 'ترجمة', noteBanner: 'وضع الملاحظات · الصفحة مثبّتة · APPLE PENCIL', noteTools: 'أدوات الملاحظات', textTool: 'نص', eraser: 'ممحاة', undo: 'تراجع', done: 'تم', source: 'المصدر', always: 'استماع دائم', voice: 'صوت أنثوي', ph: 'اسأل عن هذا الدرس…', mic: 'تحدّث', quick: ['اقرأ هذه الصفحة', 'اقرأ حتى النهاية', 'اشرح هذه الصفحة', 'اسألني', 'لخّص', 'دعني أشرح', 'إيقاف'], pens: ['قلم كحلي', 'قلم أحمر', 'قلم أزرق', 'مظلل أصفر', 'مظلل أخضر'] }
+    };
+    const s = T[lang] || T.tr;
+    const notes = st.notes != null ? st.notes : p.variant === 'notes';
+    const secNames = ['Tanım', 'İlaç tedavisi', 'Özel durumlar', 'Hipertansif kriz'];
+    const tabs = secNames.map((label, i) => {
+      const on = i === 1;
+      return { n: i + 1, label, bg: on ? c.text : c.card, fg: on ? c.bg : c.text2, border: '1px solid ' + (on ? c.text : c.line), fw: on ? 600 : 500 };
+    });
+    const pens = [dark ? '#EFE8DC' : '#2A2420', c.penRed, dark ? '#8DB4F5' : '#2557A8'].map((color, i) => ({ color, label: s.pens[i], on: i === 1 ? 'true' : 'false', ring: i === 1 ? '2px solid ' + c.text : '2px solid transparent' }));
+    const markers = ['#F2B33D', '#7CCB8F'].map((color, i) => ({ color, label: s.pens[3 + i] }));
+    const quick = s.quick.map((label, i) => ({ label, bg: i === 2 ? c.priSoft : (i === 6 ? c.badSoft : c.card), fg: i === 2 ? c.priText : (i === 6 ? c.bad : c.text), border: i === 2 ? c.priText : (i === 6 ? c.badSoft : c.line) }));
+    return { toastOn: !!__st.toast, toastMsg: __st.toast || '', toastBottom: 40,
+      lgBack: () => say('Derslerim\'e dönülüyor'), lgSmall: () => say('Yazı küçültüldü'), lgBig: () => say('Yazı büyütüldü'), lgAsst: () => say('Asistan paneli'), lgTab: () => say('Bölüm açıldı'), lgTr: () => say('Cümle çevrildi · English'), lgTool: () => say('Kalem rengi seçildi'), lgText: () => say('Yazı aracı seçildi'), lgErase: () => say('Silgi seçildi'), lgUndo: () => say('Geri alındı'), lgQuick: () => say('Asistan hazırlıyor…'), lgMic: () => say('Dinliyorum…'),
+      c, s, lang, tabs, pens, markers, quick, notes,
+      notesStr: notes ? 'true' : 'false',
+      penBg: notes ? c.pri : c.card, penFg: notes ? '#FFFCF6' : c.text,
+      dir: rtl ? 'rtl' : 'ltr', flip: rtl ? -1 : 1,
+      toggleNotes: () => this.setState({ notes: !notes })
+    };
+  }
+}
+</script>
+</body>
+</html>

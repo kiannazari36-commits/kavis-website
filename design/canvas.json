@@ -1,0 +1,713 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "DesignSystem.dc.html": {
+      "h": 3120,
+      "title": "Tasarım sistemi",
+      "w": 2200,
+      "x": 0,
+      "y": 30602
+    },
+    "Gallery.dc.html": {
+      "h": 8512,
+      "title": "iPhone · Açık mod",
+      "w": 3528,
+      "x": 0,
+      "y": 2762
+    },
+    "GalleryAndroidDark.dc.html": {
+      "h": 9080,
+      "title": "Android · Koyu mod",
+      "w": 3704,
+      "x": 3784,
+      "y": 11874
+    },
+    "GalleryAndroidLight.dc.html": {
+      "h": 9080,
+      "title": "Android · Açık mod",
+      "w": 3704,
+      "x": 0,
+      "y": 11874
+    },
+    "GalleryIOSDark.dc.html": {
+      "h": 8512,
+      "title": "iPhone · Koyu mod",
+      "w": 3528,
+      "x": 3608,
+      "y": 2762
+    },
+    "Main.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "radius": 44,
+      "title": "Prototip · iPhone",
+      "w": 390,
+      "x": 0,
+      "y": 0
+    },
+    "ProtoAndroid.dc.html": {
+      "h": 915,
+      "is_interactive": true,
+      "radius": 28,
+      "title": "Prototip · Android",
+      "w": 412,
+      "x": 470,
+      "y": 0
+    },
+    "Rtl.dc.html": {
+      "h": 2127,
+      "title": "Diller ve sağdan sola · EN / FA / AR",
+      "w": 4046,
+      "x": 2748,
+      "y": 26946
+    },
+    "ScrAssistant.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "05 Asistan",
+      "w": 390,
+      "x": 1880,
+      "y": 1518
+    },
+    "ScrCards.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "09 Kartlar",
+      "w": 390,
+      "x": 3760,
+      "y": 1518
+    },
+    "ScrNotifications.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "10 Bildirimler",
+      "w": 390,
+      "x": 4230,
+      "y": 1518
+    },
+    "ScrOnboarding.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "01 Karşılama",
+      "w": 390,
+      "x": 0,
+      "y": 1518
+    },
+    "ScrPaywall.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "11 Abonelik",
+      "w": 390,
+      "x": 4700,
+      "y": 1518
+    },
+    "ScrProgress.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "08 İlerleme ve takvim",
+      "w": 390,
+      "x": 3290,
+      "y": 1518
+    },
+    "ScrQuiz.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "06 Sınav",
+      "w": 390,
+      "x": 2350,
+      "y": 1518
+    },
+    "ScrReader.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "04 Okuma",
+      "w": 390,
+      "x": 1410,
+      "y": 1518
+    },
+    "ScrResult.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "07 Sonuç",
+      "w": 390,
+      "x": 2820,
+      "y": 1518
+    },
+    "ScrReview.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "13 Özetler ve sınav merkezi",
+      "w": 390,
+      "x": 5640,
+      "y": 1518
+    },
+    "ScrSettings.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "12 Ayarlar",
+      "w": 390,
+      "x": 5170,
+      "y": 1518
+    },
+    "ScrUpload.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "03 PDF yükleme",
+      "w": 390,
+      "x": 940,
+      "y": 1518
+    },
+    "States.dc.html": {
+      "h": 3056,
+      "title": "Durumlar · internetsiz, yükleniyor, hata, boş",
+      "w": 2668,
+      "x": 0,
+      "y": 26946
+    },
+    "Store.dc.html": {
+      "h": 1240,
+      "title": "App Store · Google Play ekran görüntüleri",
+      "w": 2908,
+      "x": 2280,
+      "y": 30602
+    },
+    "ScrPlan.dc.html": {
+      "x": 6110,
+      "y": 1518,
+      "w": 390,
+      "h": 844,
+      "title": "14 Yarın ve haftalık plan",
+      "is_interactive": true
+    },
+    "ScrAudio.dc.html": {
+      "x": 6580,
+      "y": 1518,
+      "w": 390,
+      "h": 844,
+      "title": "15 Ders ses kaydı",
+      "is_interactive": true
+    },
+    "NewWelcome.dc.html": {
+      "x": 0,
+      "y": -1900,
+      "w": 390,
+      "h": 844,
+      "title": "Yeni · Karşılama",
+      "radius": 44,
+      "is_interactive": true
+    },
+    "NewHome.dc.html": {
+      "x": 470,
+      "y": -1900,
+      "w": 390,
+      "h": 844,
+      "title": "Yeni · Derslerim",
+      "radius": 44,
+      "is_interactive": true
+    },
+    "NewAssistant.dc.html": {
+      "x": 940,
+      "y": -1900,
+      "w": 390,
+      "h": 844,
+      "title": "Yeni · Asistan",
+      "radius": 44,
+      "is_interactive": true
+    },
+    "NewReader.dc.html": {
+      "x": 1410,
+      "y": -1900,
+      "w": 390,
+      "h": 844,
+      "title": "Yeni · Okuma (sepya)",
+      "radius": 44
+    },
+    "NewProgress.dc.html": {
+      "x": 1880,
+      "y": -1900,
+      "w": 390,
+      "h": 844,
+      "title": "Yeni · İlerleme / profil",
+      "radius": 44,
+      "is_interactive": true
+    },
+    "NewIPad.dc.html": {
+      "x": 2350,
+      "y": -1900,
+      "w": 1180,
+      "h": 820,
+      "title": "Yeni · iPad (sepya okuma + asistan paneli)",
+      "radius": 24,
+      "is_interactive": true
+    },
+    "NewIPadDark.dc.html": {
+      "x": 3610,
+      "y": -1900,
+      "w": 1180,
+      "h": 820,
+      "title": "Yeni · iPad koyu",
+      "radius": 24,
+      "is_interactive": true
+    },
+    "Devices.dc.html": {
+      "x": 0,
+      "y": -5300,
+      "w": 1860,
+      "h": 1120,
+      "title": "Cihazında dene · iPad + iPhone",
+      "is_interactive": true
+    },
+    "NewSignup.dc.html": {
+      "x": 4870,
+      "y": -1900,
+      "w": 390,
+      "h": 844,
+      "title": "Yeni · Kayıt ol / Giriş yap",
+      "radius": 44,
+      "is_interactive": true
+    },
+    "NewQuestions.dc.html": {
+      "x": 5340,
+      "y": -1900,
+      "w": 390,
+      "h": 844,
+      "title": "Yeni · Soru örneklerim (ekle)",
+      "radius": 44,
+      "is_interactive": true
+    },
+    "NewQuestionsStyle.dc.html": {
+      "x": 5810,
+      "y": -1900,
+      "w": 390,
+      "h": 844,
+      "title": "Yeni · Hocanın soru tarzı",
+      "radius": 44,
+      "is_interactive": true
+    },
+    "NewCoursesSetup.dc.html": {
+      "x": 6280,
+      "y": -1900,
+      "w": 390,
+      "h": 844,
+      "title": "Yeni · Bu dönemin dersleri",
+      "radius": 44,
+      "is_interactive": true
+    },
+    "NewCourses.dc.html": {
+      "x": 6750,
+      "y": -1900,
+      "w": 390,
+      "h": 844,
+      "title": "Yeni · Derslerim klasörü",
+      "radius": 44,
+      "is_interactive": true
+    },
+    "NewCoursesDetail.dc.html": {
+      "x": 7220,
+      "y": -1900,
+      "w": 390,
+      "h": 844,
+      "title": "Yeni · Ders klasörü (PDF'ler)",
+      "radius": 44,
+      "is_interactive": true
+    },
+    "NewProfile.dc.html": {
+      "x": 7690,
+      "y": -1900,
+      "w": 390,
+      "h": 844,
+      "title": "Yeni · Profilim",
+      "radius": 44,
+      "is_interactive": true
+    },
+    "AppIcon.dc.html": {
+      "x": 1960,
+      "y": -5300,
+      "w": 1640,
+      "h": 1180,
+      "title": "Uygulama simgesi · 4 öneri + ana ekran",
+      "is_interactive": true
+    },
+    "AppIconArt.dc.html": {
+      "x": 3700,
+      "y": -5300,
+      "w": 180,
+      "h": 180,
+      "title": "Simge çizimi (parça)"
+    },
+    "NewStudyPlan.dc.html": {
+      "x": 8160,
+      "y": -1900,
+      "w": 390,
+      "h": 844,
+      "title": "Yeni · Ders planım (akıllı plan)",
+      "radius": 44,
+      "is_interactive": true
+    },
+    "NewExamPrep.dc.html": {
+      "x": 8630,
+      "y": -1900,
+      "w": 390,
+      "h": 844,
+      "title": "Yeni · Sınava özel (özet + sorular)",
+      "radius": 44,
+      "is_interactive": true
+    },
+    "MolViewer.dc.html": {
+      "x": 9100,
+      "y": -1900,
+      "w": 520,
+      "h": 330,
+      "title": "Yeni · Molekül görüntüleyici (Kaptopril)",
+      "is_interactive": true
+    },
+    "NewSupport.dc.html": {
+      "x": 9100,
+      "y": -1480,
+      "w": 390,
+      "h": 844,
+      "title": "Yeni · Yardım ve destek (canlı sohbet)",
+      "radius": 44,
+      "is_interactive": true
+    },
+    "NewShare.dc.html": {
+      "x": 9570,
+      "y": -1480,
+      "w": 390,
+      "h": 844,
+      "title": "Yeni · Paylaş (Premium) + alıcı akışı",
+      "radius": 44,
+      "is_interactive": true
+    },
+    "NewSchedule.dc.html": {
+      "x": 10040,
+      "y": -1480,
+      "w": 390,
+      "h": 844,
+      "title": "Yeni · Okul ders programı + hatırlatma",
+      "radius": 44,
+      "is_interactive": true
+    },
+    "NewRevise.dc.html": {
+      "x": 10510,
+      "y": -1480,
+      "w": 390,
+      "h": 844,
+      "title": "Yeni · Bugünün tekrarı (özet + kartlar + sorular)",
+      "radius": 44,
+      "is_interactive": true
+    },
+    "GalleryIPad.dc.html": {
+      "x": 0,
+      "y": 21554,
+      "w": 4968,
+      "h": 4792,
+      "title": "iPad · Açık mod"
+    },
+    "GalleryIPadDark.dc.html": {
+      "x": 5048,
+      "y": 21554,
+      "w": 4968,
+      "h": 4792,
+      "title": "iPad · Koyu mod"
+    },
+    "NewPlacement.dc.html": {
+      "x": 10980,
+      "y": -1480,
+      "w": 390,
+      "h": 844,
+      "title": "Yeni · Seviye tespiti (dönem ortasında katılanlar)",
+      "radius": 44,
+      "is_interactive": true
+    },
+    "DeskApp.dc.html": {
+      "x": 0,
+      "y": 34422,
+      "w": 1440,
+      "h": 900,
+      "title": "Web / Mac · tıklanabilir prototip",
+      "radius": 12,
+      "is_interactive": true
+    },
+    "DeskWebLanding.dc.html": {
+      "x": 1520,
+      "y": 34422,
+      "w": 1440,
+      "h": 1000,
+      "title": "Web · Tanıtım sitesi (kavis.study)",
+      "radius": 12
+    },
+    "DeskWebLandingDark.dc.html": {
+      "x": 3040,
+      "y": 34422,
+      "w": 1440,
+      "h": 1000,
+      "title": "Web · Tanıtım sitesi · koyu",
+      "radius": 12
+    },
+    "DeskWebLogin.dc.html": {
+      "x": 4560,
+      "y": 34422,
+      "w": 1440,
+      "h": 900,
+      "title": "Web · Kayıt / giriş",
+      "radius": 12
+    },
+    "DeskWebHome.dc.html": {
+      "x": 0,
+      "y": 35542,
+      "w": 1440,
+      "h": 900,
+      "title": "Web · Ana sayfa",
+      "radius": 12
+    },
+    "DeskWebHomeDark.dc.html": {
+      "x": 1520,
+      "y": 35542,
+      "w": 1440,
+      "h": 900,
+      "title": "Web · Ana sayfa · koyu",
+      "radius": 12
+    },
+    "DeskWebCourses.dc.html": {
+      "x": 3040,
+      "y": 35542,
+      "w": 1440,
+      "h": 900,
+      "title": "Web · Derslerim",
+      "radius": 12
+    },
+    "DeskWebSettings.dc.html": {
+      "x": 4560,
+      "y": 35542,
+      "w": 1440,
+      "h": 900,
+      "title": "Web · Ayarlar",
+      "radius": 12
+    },
+    "DeskMacHome.dc.html": {
+      "x": 0,
+      "y": 36562,
+      "w": 1440,
+      "h": 900,
+      "title": "Mac · Ana sayfa",
+      "radius": 12
+    },
+    "DeskMacCoursesDark.dc.html": {
+      "x": 1520,
+      "y": 36562,
+      "w": 1440,
+      "h": 900,
+      "title": "Mac · Derslerim · koyu",
+      "radius": 12
+    },
+    "DeskMacSettingsDark.dc.html": {
+      "x": 3040,
+      "y": 36562,
+      "w": 1440,
+      "h": 900,
+      "title": "Mac · Ayarlar · koyu",
+      "radius": 12
+    },
+    "DeskMacLoginDark.dc.html": {
+      "x": 4560,
+      "y": 36562,
+      "w": 1440,
+      "h": 900,
+      "title": "Mac · Giriş · koyu",
+      "radius": 12
+    },
+    "DeskWebWide.dc.html": {
+      "x": 0,
+      "y": 37582,
+      "w": 1920,
+      "h": 1080,
+      "title": "Web · Geniş ekran (1920)",
+      "radius": 12
+    },
+    "DevicesDesk.dc.html": {
+      "x": 3980,
+      "y": -5300,
+      "w": 1840,
+      "h": 1180,
+      "title": "Cihazında dene · MacBook (Web + Mac)",
+      "is_interactive": true
+    },
+    "FairUse.dc.html": {
+      "h": 4565,
+      "title": "Sınırlar · deneme 2 ders · adil kullanım · 100 sayfa",
+      "w": 2528,
+      "x": 0,
+      "y": 39062
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-10-08T16:04:50Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "focused",
+    "file": "Devices.dc.html"
+  },
+  "notes": {
+    "androidTitle": {
+      "kind": "title1",
+      "maxW": 7488,
+      "text": "Android · açık ve koyu mod",
+      "w": 240,
+      "x": 0,
+      "y": 11574
+    },
+    "dsTitle": {
+      "kind": "title1",
+      "maxW": 5188,
+      "text": "Tasarım sistemi ve mağaza görselleri",
+      "w": 240,
+      "x": 0,
+      "y": 30302
+    },
+    "iphoneTitle": {
+      "kind": "title1",
+      "maxW": 7136,
+      "text": "iPhone · açık ve koyu mod",
+      "w": 240,
+      "x": 0,
+      "y": 2462
+    },
+    "partsTitle": {
+      "kind": "title1",
+      "maxW": 6970,
+      "text": "Ekran bileşenleri",
+      "w": 240,
+      "x": 0,
+      "y": 1015
+    },
+    "protoHelp": {
+      "fill": "orange",
+      "size": 24,
+      "text": "Güncel akış: Açılış → Karşılama → Kayıt ol (e-posta doğrulama) → Dil → Haftalık plan → Bölüm → Tanıtım → Bu dönemin dersleri → Ana sayfa. Ana sayfadan: PDF / fotoğraf / ses / soru örneği, Bugün tekrar günü (Sonra menüsü), sağdaki \"Bugünün planı\" sekmesi, beyin = Asistan, zil = Bildirimler, alttaki menü: Derslerim · İlerleme · Ayarlar. Dil Ayarlar'dan değişir (TR/EN/FA/AR); internetsiz mod her pakette açık.",
+      "w": 340,
+      "x": 962,
+      "y": 0
+    },
+    "protoTitle": {
+      "kind": "title1",
+      "maxW": 3840,
+      "text": "Tıklanabilir prototip ve iPad",
+      "w": 240,
+      "x": 0,
+      "y": -300
+    },
+    "statesTitle": {
+      "kind": "title1",
+      "maxW": 6794,
+      "text": "Durumlar, diller ve sağdan sola (RTL)",
+      "w": 240,
+      "x": 0,
+      "y": 26646
+    },
+    "newPartsTitle": {
+      "x": 0,
+      "y": -2200,
+      "text": "Yeni stil · ekran bileşenleri",
+      "kind": "title1",
+      "maxW": 10000
+    },
+    "ipadTitle": {
+      "kind": "title1",
+      "maxW": 10016,
+      "text": "iPad · açık ve koyu mod",
+      "w": 240,
+      "x": 0,
+      "y": 21254
+    },
+    "deskTitle": {
+      "kind": "title1",
+      "maxW": 5840,
+      "text": "Web ve Mac · masaüstü",
+      "w": 240,
+      "x": 0,
+      "y": 34122
+    },
+    "deskHelp": {
+      "fill": "orange",
+      "size": 24,
+      "w": 340,
+      "x": 6000,
+      "y": 34422,
+      "text": "İlk pano tıklanabilir: soldaki menüden Ana sayfa · Derslerim · Ayarlar arasında geçilir, Ayarlar > Görünüm'den açık/koyu değişir. Her panonun dili özelliklerden (lang) TR/EN/FA/AR seçilir; Farsça ve Arapça sağdan sola."
+    }
+  },
+  "order": [
+    "Devices.dc.html",
+    "DevicesDesk.dc.html",
+    "AppIcon.dc.html",
+    "AppIconArt.dc.html",
+    "NewWelcome.dc.html",
+    "NewSignup.dc.html",
+    "NewQuestions.dc.html",
+    "NewQuestionsStyle.dc.html",
+    "NewCoursesSetup.dc.html",
+    "NewCourses.dc.html",
+    "NewCoursesDetail.dc.html",
+    "NewProfile.dc.html",
+    "NewStudyPlan.dc.html",
+    "NewExamPrep.dc.html",
+    "MolViewer.dc.html",
+    "NewSupport.dc.html",
+    "NewShare.dc.html",
+    "NewSchedule.dc.html",
+    "NewRevise.dc.html",
+    "NewPlacement.dc.html",
+    "NewHome.dc.html",
+    "NewAssistant.dc.html",
+    "NewReader.dc.html",
+    "NewProgress.dc.html",
+    "NewIPad.dc.html",
+    "NewIPadDark.dc.html",
+    "Main.dc.html",
+    "ProtoAndroid.dc.html",
+    "ScrOnboarding.dc.html",
+    "ScrUpload.dc.html",
+    "ScrReader.dc.html",
+    "ScrAssistant.dc.html",
+    "ScrQuiz.dc.html",
+    "ScrResult.dc.html",
+    "ScrProgress.dc.html",
+    "ScrCards.dc.html",
+    "ScrNotifications.dc.html",
+    "ScrPaywall.dc.html",
+    "ScrSettings.dc.html",
+    "ScrReview.dc.html",
+    "ScrPlan.dc.html",
+    "ScrAudio.dc.html",
+    "Gallery.dc.html",
+    "GalleryIOSDark.dc.html",
+    "GalleryAndroidLight.dc.html",
+    "GalleryAndroidDark.dc.html",
+    "GalleryIPad.dc.html",
+    "GalleryIPadDark.dc.html",
+    "States.dc.html",
+    "Rtl.dc.html",
+    "DesignSystem.dc.html",
+    "Store.dc.html",
+    "DeskApp.dc.html",
+    "DeskWebLanding.dc.html",
+    "DeskWebLandingDark.dc.html",
+    "DeskWebLogin.dc.html",
+    "DeskWebHome.dc.html",
+    "DeskWebHomeDark.dc.html",
+    "DeskWebCourses.dc.html",
+    "DeskWebSettings.dc.html",
+    "DeskMacHome.dc.html",
+    "DeskMacCoursesDark.dc.html",
+    "DeskMacSettingsDark.dc.html",
+    "DeskMacLoginDark.dc.html",
+    "DeskWebWide.dc.html",
+    "FairUse.dc.html"
+  ],
+  "pages": [],
+  "title": "Kavis Study"
+}

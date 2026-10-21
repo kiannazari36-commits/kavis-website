@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Sekme çubuğu</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+<style>[dir=rtl] .dc-back{transform:scaleX(-1)}[dir=rtl],[dir=rtl] *{letter-spacing:0 !important}</style>
+</helmet>
+<nav dir="{{dir}}" aria-label="{{navLabel}}" style="width: {{W}}px; box-sizing: border-box; display: flex; align-items: flex-start; padding: {{pad}}; background: {{bg}}; border-top: {{border}}; font-family: Poppins, Vazirmatn, system-ui, sans-serif; backdrop-filter: blur(20px)">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="4">
+<button onClick="{{t.tap}}" aria-label="{{t.label}}" style="flex: 1; min-width: 0; height: {{itemH}}px; border: 0; padding: 0; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: {{gap}}px; color: {{t.color}}; font-family: inherit; cursor: pointer">
+<span style="display: flex; align-items: center; justify-content: center; width: {{pillW}}px; height: 32px; border-radius: 16px; background: {{t.pill}}">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{t.d}}"></path></svg>
+</span>
+<span style="font-size: {{fs}}px; font-weight: {{t.fw}}; line-height: 1.2; white-space: nowrap; color: {{t.labelColor}}">{{t.label}}</span>
+</button>
+</sc-for>
+</nav>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"platform":{"editor":"enum","options":["ios","android"],"default":"ios"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"active":{"editor":"enum","options":["home","progress","cards","settings"],"default":"home"},"go":{"editor":null},"$preview":{"width":390,"height":83}}'>
+const _I18N = {k: ["Ana gezinme", "Ayarlar", "Derslerim", "Kartlar", "İlerleme"], en: ["Main navigation", "Settings", "My Courses", "Cards", "Progress"], fa: ["ناوبری اصلی", "تنظیمات", "درس‌های من", "کارت‌ها", "پیشرفت"], ar: ["التنقل الرئيسي", "الإعدادات", "موادي", "البطاقات", "التقدم"]};
+let _lang = 'tr', _M = null; const _TC = {};
+const _x = (s) => { if (_lang === 'tr' || !_I18N[_lang]) return s; if (!_M) { _M = {}; _I18N.k.forEach((k, i) => { _M[k] = i; }); } const i = _M[s]; return i == null ? s : _I18N[_lang][i]; };
+const _TK = {};
+const _PT = {};
+const _tt = () => { if (!_TC[_lang]) { const o = {}; Object.keys(_TK).forEach((k) => { o[k] = (_PT[k] && _lang !== 'tr') ? (_PT[k][_lang] || _x(_TK[k])) : _x(_TK[k]); }); _TC[_lang] = o; } return _TC[_lang]; };
+
+class Component extends DCLogic {
+  renderVals() { const _p = this.props || {}, _s = this.state || {}; _lang = _s.lang || _p.lang || 'tr'; const r = this._rv0(); if (r && typeof r === 'object') { r._t = _tt(); r._dir = (_lang === 'fa' || _lang === 'ar') ? 'rtl' : 'ltr'; r._ai = this._aiDark ? { bg: '#F2B33D', fg: '#241C14', tx: '#EFE8DC' } : { bg: '#9C2F3A', fg: '#FFF6E6', tx: '#2A2420' }; } return r; }
+  _rv0() {
+    const p = this.props;
+    const ios = (p.platform || 'ios') === 'ios';
+    const dark = p.theme === 'dark';
+    const lang = p.lang || 'tr';
+    const active = p.active || 'home';
+    const L = {
+      tr: [_x('Derslerim'), _x('İlerleme'), _x('Kartlar'), _x('Ayarlar'), _x('Ana gezinme')],
+      en: ['My courses', 'Progress', 'Cards', 'Settings', 'Main navigation'],
+      fa: ['درس‌های من', 'پیشرفت', 'کارت‌ها', 'تنظیمات', 'ناوبری اصلی'],
+      ar: ['دروسي', 'التقدّم', 'البطاقات', 'الإعدادات', 'التنقل الرئيسي']
+    }[lang] || [];
+    const D = {
+      home: 'M3 5.5c2.5-1 5.5-1 9 1v13c-3.5-2-6.5-2-9-1z M21 5.5c-2.5-1-5.5-1-9 1v13c3.5-2 6.5-2 9-1z',
+      progress: 'M4 20V11 M10 20V5 M16 20v-6 M21 20H3',
+      cards: 'M5 7h11a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z M7 3.5h12a2 2 0 0 1 2 2V17',
+      settings: 'M4 7h9 M17 7h3 M4 17h3 M11 17h9 M15 5v4 M9 15v4'
+    };
+    const pri = dark ? '#F09AA3' : '#9C2F3A';
+    const mute = dark ? '#9A8F82' : '#776C60';
+    const ink = dark ? '#EFE8DC' : '#2A2420';
+    const ids = ['home', 'progress', 'cards', 'settings'];
+    const tabs = ids.map((id, i) => {
+      const on = id === active;
+      return {
+        label: L[i], d: D[id],
+        color: on ? (ios ? pri : ink) : mute,
+        labelColor: on ? (ios ? pri : ink) : mute,
+        pill: (!ios && on) ? (dark ? '#3A2027' : '#F7E7E9') : 'transparent',
+        fw: on ? 600 : 500,
+        tap: () => { if (p.go) p.go(id); }
+      };
+    });
+    return {
+      tabs, navLabel: L[4],
+      dir: (lang === 'fa' || lang === 'ar') ? 'rtl' : 'ltr',
+      W: ios ? 390 : 412,
+      pad: ios ? '0 4px 34px' : '12px 4px 24px',
+      itemH: ios ? 49 : 56,
+      gap: ios ? 0 : 4,
+      pillW: ios ? 28 : 64,
+      fs: ios ? 10 : 12,
+      bg: ios ? (dark ? 'rgba(33,28,24,.94)' : 'rgba(255,252,246,.94)') : (dark ? '#211C18' : '#F7F2E9'),
+      border: ios ? (dark ? '0.5px solid #2F3946' : '0.5px solid #DDD2C1') : '0'
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Yeni stil · Açılış</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+<style>[dir=rtl] .dc-back{transform:scaleX(-1)}[dir=rtl],[dir=rtl] *{letter-spacing:0 !important}</style>
+</helmet>
+<button onClick="{{next}}" aria-label="{{_t.k804}}" style="width: {{W}}px; height: {{H}}px; box-sizing: border-box; border: 0; padding: 0; margin: 0; background: {{c.bg}}; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; font-family: Poppins, Vazirmatn, system-ui, sans-serif; cursor: pointer">
+<img src="./icon_star.png" alt="Kavis Study" style="width: 180px; height: 180px; filter: drop-shadow(0 24px 40px rgba(122,82,8,.35))">
+<span dir="ltr" style="unicode-bidi: isolate; font-size: 34px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.1; color: {{c.title}}">Kavis <span style="font-weight: 400; opacity: .75">Study</span></span>
+<span style="font-size: 14px; color: {{c.sub}}">{{_t.k388}}</span>
+<span style="margin-top: 60px; width: 120px; height: 4px; border-radius: 2px; background: {{c.track}}; overflow: hidden; display: flex"><span style="width: {{pct}}%; background: {{c.bar}}; border-radius: 2px; transition: width 2s ease"></span></span>
+</button>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"platform":{"editor":"enum","options":["ios","android"],"default":"ios"},"go":{"editor":null},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"$preview":{"width":390,"height":844}}'>
+const _I18N = {k: ["Artık yanında Kavis var.", "Devam et"], en: ["Now you have Kavis by your side.", "Continue"], fa: ["حالا Kavis کنارت است.", "ادامه بده"], ar: ["الآن Kavis بجانبك.", "تابع"]};
+let _lang = 'tr', _M = null; const _TC = {};
+const _x = (s) => { if (_lang === 'tr' || !_I18N[_lang]) return s; if (!_M) { _M = {}; _I18N.k.forEach((k, i) => { _M[k] = i; }); } const i = _M[s]; return i == null ? s : _I18N[_lang][i]; };
+const _TK = {"k388": "Artık yanında Kavis var.", "k804": "Devam et"};
+const _PT = {};
+const _tt = () => { if (!_TC[_lang]) { const o = {}; Object.keys(_TK).forEach((k) => { o[k] = (_PT[k] && _lang !== 'tr') ? (_PT[k][_lang] || _x(_TK[k])) : _x(_TK[k]); }); _TC[_lang] = o; } return _TC[_lang]; };
+
+class Component extends DCLogic {
+  renderVals() { const _p = this.props || {}, _s = this.state || {}; _lang = _s.lang || _p.lang || 'tr'; const r = this._rv0(); if (r && typeof r === 'object') { r._t = _tt(); r._dir = (_lang === 'fa' || _lang === 'ar') ? 'rtl' : 'ltr'; r._ai = this._aiDark ? { bg: '#F2B33D', fg: '#241C14', tx: '#EFE8DC' } : { bg: '#9C2F3A', fg: '#FFF6E6', tx: '#2A2420' }; } return r; }
+  componentDidMount() {
+    this.t1 = setTimeout(() => this.setState({ run: true }), 60);
+    this.t2 = setTimeout(() => { if (this.props.go) this.props.go('welcome'); }, 2300);
+  }
+  componentWillUnmount() { clearTimeout(this.t1); clearTimeout(this.t2); }
+  _rv0() {
+    const p = this.props; const st = this.state || {}; const dark = p.theme === 'dark'; this._aiDark = dark; const ios = (p.platform || 'ios') === 'ios';
+    const c = dark
+      ? { bg: 'linear-gradient(0deg, #4A3A1C 0%, #2B2117 35%, #15120F 75%)', title: '#EFE8DC', sub: '#BDB2A4', track: 'rgba(239,232,220,.16)', bar: '#F2B33D' }
+      : { bg: 'linear-gradient(0deg, #F5C76A 0%, #F8D68C 32%, #FBE9BD 62%, #F4EFE6 100%)', title: '#2A2420', sub: '#6E645A', track: 'rgba(42,36,32,.12)', bar: '#9C2F3A' };
+    return { c, W: ios ? 390 : 412, H: ios ? 844 : 915, pct: st.run ? 100 : 8, next: () => { clearTimeout(this.t2); if (p.go) p.go('welcome'); } };
+  }
+}
+</script>
+</body>
+</html>

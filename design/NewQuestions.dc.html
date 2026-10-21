@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Yeni stil · Soru örneklerim</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Lora:wght@400;500&family=JetBrains+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+<style>[dir=rtl] .dc-back{transform:scaleX(-1)}[dir=rtl],[dir=rtl] *{letter-spacing:0 !important}</style>
+</helmet>
+<div dir="{{_dir}}" style="width: {{W}}px; height: {{H}}px; box-sizing: border-box; position: relative; overflow: hidden; background: {{c.bg}}; color: {{c.text}}; font-family: Poppins, Vazirmatn, system-ui, sans-serif; display: flex; flex-direction: column">
+<div style="height: 60px; flex: none"></div>
+<div style="display: flex; align-items: center; gap: 12px; padding: 0 20px 6px">
+<button onClick="{{back}}" aria-label="{{_t.k1052}}" style="width: 46px; height: 46px; border-radius: 23px; border: 1px solid {{c.line}}; background: {{c.card}}; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg class="dc-back" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5 M11 6l-6 6 6 6"></path></svg></button>
+<span style="flex: 1; text-align: center; font-size: 16px; font-weight: 600">{{head}}</span>
+<span style="width: 46px"></span>
+</div>
+
+<sc-if value="{{is.add}}" hint-placeholder-val="{{ true }}">
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 14px 20px 0; display: flex; flex-direction: column; gap: 16px">
+<h1 style="margin: 0; font-size: 30px; line-height: 1.12; font-weight: 500; letter-spacing: -0.03em">{{_t.p0a}} <span style="color: {{c.text3}}; font-weight: 400">{{_t.p0b}}</span></h1>
+<p style="margin: -6px 0 0; font-size: 14px; line-height: 1.55; color: {{c.text2}}">{{_t.k940}}</p>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 13px; color: {{c.text2}}">{{_t.k1127}}</span>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<sc-for list="{{courses}}" as="k" hint-placeholder-count="3"><button onClick="{{k.pick}}" aria-pressed="{{k.on}}" style="height: 40px; padding: 0 16px; border-radius: 20px; border: {{k.border}}; background: {{k.bg}}; color: {{k.fg}}; font-family: inherit; font-size: 14px; cursor: pointer">{{k.t}}</button></sc-for>
+</div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+<sc-for list="{{methods}}" as="m" hint-placeholder-count="3"><button onClick="{{m.tap}}" style="border-radius: 24px; border: 1px solid {{c.line}}; background: {{c.card}}; color: {{c.text}}; padding: 16px 8px; display: flex; flex-direction: column; align-items: center; gap: 8px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer"><span style="width: 46px; height: 46px; border-radius: 23px; background: {{m.chip}}; color: {{m.fg}}; display: flex; align-items: center; justify-content: center"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{m.d}}"></path></svg></span>{{m.l}}</button></sc-for>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: baseline; justify-content: space-between"><span style="font-size: 13px; color: {{c.text2}}">{{_t.k898}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px; color: {{c.text3}}">{{total}} {{_t.k2413}}</span></div>
+<sc-for list="{{files}}" as="f" hint-placeholder-count="3">
+<div style="border-radius: 22px; border: 1px solid {{c.line}}; background: {{c.card}}; padding: 12px 14px; display: flex; align-items: center; gap: 12px">
+<span style="width: 42px; height: 42px; border-radius: 21px; background: {{f.chip}}; color: {{f.fg}}; display: flex; align-items: center; justify-content: center; flex: none; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; font-weight: 600">{{f.tag}}</span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span dir="ltr" style="font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: start">{{f.n}}</span><span style="font-size: 12px; color: {{c.text2}}">{{f.s}}</span></span>
+<span style="height: 26px; padding: 0 10px; border-radius: 13px; background: {{c.goodSoft}}; color: {{c.good}}; display: flex; align-items: center; font-size: 11px; font-weight: 600">{{f.q}} {{_t.k2413}}</span>
+</div>
+</sc-for>
+</div>
+
+<div style="display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 20px; background: {{c.sub}}; color: {{c.text2}}">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z M9 12l2 2 4-4"></path></svg>
+<span style="font-size: 12px; line-height: 1.5">{{_t.k1914}}</span>
+</div>
+<div style="height: 6px; flex: none"></div>
+</div>
+<div style="padding: 12px 20px 36px">
+<button onClick="{{analyze}}" style="width: 100%; height: 58px; border-radius: 29px; border: 0; background: {{c.cta}}; color: #FFFCF6; font-family: inherit; font-size: 17px; font-weight: 500; box-shadow: 0 12px 30px rgba(156,47,58,.28); cursor: pointer">{{_t.k1899}}</button>
+</div>
+</sc-if>
+
+<sc-if value="{{is.analyzing}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 0 32px 80px; text-align: center">
+<span aria-hidden="true" style="width: 120px; height: 120px; border-radius: 60px; background: transparent url(./star_glow.png) center/contain no-repeat; box-shadow: none; color: transparent; display: flex; align-items: center; justify-content: center"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"></path></svg></span>
+<h1 style="margin: 30px 0 0; font-size: 26px; font-weight: 500; letter-spacing: -0.02em">{{_t.k1913}}</h1>
+<div style="width: 100%; display: flex; flex-direction: column; gap: 10px; text-align: start">
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="3"><div style="display: flex; align-items: center; gap: 10px; font-size: 14px; color: {{s.fg}}"><span style="width: 24px; height: 24px; border-radius: 12px; background: {{s.bg}}; color: #FFFCF6; display: flex; align-items: center; justify-content: center; flex: none"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{s.icon}}"></path></svg></span>{{s.t}}</div></sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{is.style}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 14px 20px 0; display: flex; flex-direction: column; gap: 14px">
+<section style="border-radius: 28px; background: {{c.hero}}; color: {{c.onHero}}; padding: 20px; display: flex; flex-direction: column; gap: 6px; box-shadow: {{c.heroShadow}}">
+<span style="font-size: 12px; font-weight: 600; opacity: .75">{{_t.k963}}</span>
+<span style="font-size: 24px; line-height: 1.2; font-weight: 600; letter-spacing: -0.02em">{{_t.k1231}}</span>
+<span style="font-size: 13px; line-height: 1.5; opacity: .85">{{_t.k1382}}</span>
+</section>
+
+<section style="border-radius: 26px; border: 1px solid {{c.line}}; background: {{c.card}}; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-size: 16px; font-weight: 600">{{_t.k1900}}</h2>
+<sc-for list="{{types}}" as="t" hint-placeholder-count="4"><div style="display: flex; flex-direction: column; gap: 5px"><div style="display: flex; justify-content: space-between; font-size: 13px"><span>{{t.t}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; color: {{c.text2}}">%{{t.p}}</span></div><span style="height: 8px; border-radius: 4px; background: {{c.seg}}; display: flex; overflow: hidden"><span style="width: {{t.p}}%; background: {{t.c}}; border-radius: 4px"></span></span></div></sc-for>
+<div style="display: flex; gap: 8px; flex-wrap: wrap; padding-top: 4px">
+<span style="height: 30px; padding: 0 12px; border-radius: 15px; background: {{c.sub}}; display: flex; align-items: center; font-size: 12px">{{_t.k248}}</span>
+<span style="height: 30px; padding: 0 12px; border-radius: 15px; background: {{c.sub}}; display: flex; align-items: center; font-size: 12px">{{_t.k1349}}</span>
+<span style="height: 30px; padding: 0 12px; border-radius: 15px; background: {{c.sub}}; display: flex; align-items: center; font-size: 12px">{{_t.k93}}</span>
+</div>
+</section>
+
+<section style="border-radius: 26px; border: 1px solid {{c.line}}; background: {{c.card}}; padding: 18px; display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 16px; font-weight: 600">{{_t.k927}}</h2>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<sc-for list="{{topics}}" as="t" hint-placeholder-count="5"><span style="height: 34px; padding: 0 14px; border-radius: 17px; background: {{t.bg}}; color: {{t.fg}}; display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500">{{t.t}}<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; opacity: .8">×{{t.n}}</span></span></sc-for>
+</div>
+</section>
+
+<section style="border-radius: 26px; border: 1px solid {{c.line}}; background: {{c.card}}; padding: 18px; display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 16px; font-weight: 600">{{_t.k2533}}</h2>
+<div style="border-radius: 18px; background: {{c.sub}}; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; font-weight: 600; color: {{c.text3}}">{{_t.k1766}}</span><span style="font-family: Lora, Vazirmatn, Georgia, serif; font-size: 14px; line-height: 1.5">{{_t.k252}}</span></div>
+<div style="border-radius: 18px; border: 1.5px dashed {{c.ambLine}}; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; font-weight: 600; color: {{c.amb}}">{{_t.k640}}</span><span style="font-family: Lora, Vazirmatn, Georgia, serif; font-size: 14px; line-height: 1.5">{{_t.k211}}</span></div>
+</section>
+
+<section style="border-radius: 26px; border: 1px solid {{c.line}}; background: {{c.card}}; padding: 6px 18px; display: flex; flex-direction: column">
+<sc-for list="{{uses}}" as="u" hint-placeholder-count="3">
+<button onClick="{{u.tap}}" role="switch" aria-checked="{{u.on}}" style="border: 0; border-top: {{u.sep}}; background: transparent; color: {{c.text}}; padding: 12px 0; display: flex; align-items: center; gap: 12px; font-family: inherit; text-align: start; cursor: pointer">
+<span style="width: 40px; height: 40px; border-radius: 20px; background: {{u.chip}}; color: {{u.fg}}; display: flex; align-items: center; justify-content: center; flex: none"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{u.d}}"></path></svg></span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 500">{{u.t}}</span><span style="font-size: 12px; line-height: 1.4; color: {{c.text2}}">{{u.s}}</span></span>
+<span style="width: 50px; height: 30px; border-radius: 15px; background: {{u.track}}; display: flex; align-items: center; padding: 3px; box-sizing: border-box; justify-content: {{u.justify}}; flex: none"><span style="width: 24px; height: 24px; border-radius: 12px; background: #FFFCF6; box-shadow: 0 1px 3px rgba(0,0,0,.2)"></span></span>
+</button>
+</sc-for>
+</section>
+<div style="height: 6px; flex: none"></div>
+</div>
+<div style="padding: 12px 20px 36px; display: flex; flex-direction: column; gap: 10px">
+<button onClick="{{toQuiz}}" style="width: 100%; height: 58px; border-radius: 29px; border: 0; background: {{c.cta}}; color: #FFFCF6; font-family: inherit; font-size: 17px; font-weight: 500; box-shadow: 0 12px 30px rgba(156,47,58,.28); cursor: pointer">{{_t.k589}}</button>
+<button onClick="{{toAdd}}" style="border: 0; background: transparent; font-family: inherit; font-size: 13px; color: {{c.text2}}; cursor: pointer">{{_t.k723}} <b style="color: {{c.text}}; font-weight: 600">{{_t.k2427}}</b></button>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"platform":{"editor":"enum","options":["ios","android"],"default":"ios"},"variant":{"editor":"enum","options":["add","analyzing","style"],"default":"add"},"go":{"editor":null},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"$preview":{"width":390,"height":844}}'>
+const _I18N = {k: ["\"Hangisi yanlıştır\" · sık", "\"Sınavda böyle sorulur\" bölümü ve çıkmış soru kalıpları", "10 sorunun 4'ü hasta vakası, 2'si doz hesabı olur", "3 fotoğraf", "32 yaşında, 24 haftalık gebe hastada KB 160/105 mmHg. Aşağıdakilerden hangisi kullanılmamalıdır?", "5 şıklı test · %70", "58 yaşında, diyabetik ve proteinürisi olan hastada ilk tercih antihipertansif hangisidir?", "ACE inhibitörleri", "Arkadaşından gelen 2 soru", "Az önce eklendi", "Beta blokerler", "Bu tarzda 10 soruluk sınav", "BİZİM SORUMUZ · AYNI TARZ, YENİ KONU", "Daha fazla soru ekle ·", "Ders PDF'leriyle eşleştirildi", "Diüretikler", "Doz hesabı", "Eklenenler", "Elinde soru", "En çok sorulan konular", "Eski sınav, hocanın örnek soruları ya da arkadaşının notu. Gönder, biz de sana daha çok o tarzda soru hazırlayalım.", "Etki mekanizması", "FARMAKOTERAPİ · 35 SORU İNCELENDİ", "FOTO", "Farm. Teknoloji III", "Farmakoterapi", "Fotoğraf", "Gebelikte HT", "Geri", "Geçen yılın vizesi · cevap anahtarlı", "Hangi ders?", "Hasta vakası (hangi ilaç?)", "Hipertansif kriz", "Hocan en çok hasta vakası soruyor", "Hocanın derste yazdırdığı sorular", "Hocanın soru tarzı", "Kartlarda", "Klasik (yazılı) · %30", "Kısa bir hasta öyküsü verip \"hangi ilaç seçilmeli?\" diye soruyor. Şıklar genelde aynı ilaç grubundan.", "SENİN SORUN · VİZE 2025", "Soru tarzını çıkar", "Soru tipleri", "Soru tipleri ayrıldı", "Soru örneklerim", "Sorular metne çevrildi", "Soruların inceleniyor", "Soruların yalnızca senin hesabında kalır. Cevap anahtarı yoksa sorun değil; doğru cevabı ders PDF'inden buluruz.", "Sık sorulan konular bulundu", "Sınavlarda", "Toksikoloji", "Vize_2025_sorular.pdf", "YAZI", "Yan etki / etkileşim eşleştirme", "Yapıştırılan metin", "Yazarak", "Yeni fotoğraf ", "soru", "tarz daha iyi öğrenilir", "var mı?", "Ön yüz kısa vaka, arka yüz doğru ilaç ve nedeni", "Örnek · senin sorun ve bizim benzer sorumuz", "Özetlerde"], en: ["\"Which is false\" · common", "\"How it's asked in exams\" section and past question patterns", "4 of 10 questions are patient cases, 2 are dose calculations", "3 photos", "A 32-year-old patient, 24 weeks pregnant, has BP 160/105 mmHg. Which of the following should not be used?", "5-option test · 70%", "In a 58-year-old diabetic patient with proteinuria, which antihypertensive is the first choice?", "ACE inhibitors", "2 questions from your friend", "Just added", "Beta blockers", "10-question exam in this style", "OUR QUESTION · SAME STYLE, NEW TOPIC", "Add more questions ·", "Matched with lecture PDFs", "Diuretics", "Dose calculation", "Added", "Have questions", "Most-asked topics", "A past exam, your instructor's sample questions or a friend's notes. Send it, and we'll prepare more questions in that style for you.", "Mechanism of action", "PHARMACOTHERAPY · 35 QUESTIONS REVIEWED", "PHOTO", "Pharm. Technology III", "Pharmacotherapy", "Photo", "HTN in pregnancy", "Back", "Last year's midterm · with answer key", "Which course?", "Patient case (which drug?)", "Hypertensive crisis", "Your lecturer asks patient cases the most", "Questions the lecturer dictated in class", "Lecturer's question style", "In cards", "Written (essay) · 30%", "It gives a short patient case and asks \"which drug should be chosen?\". Options are usually from the same drug group.", "YOUR QUESTION · MIDTERM 2025", "Extract question style", "Question types", "Question types sorted", "My sample questions", "Questions converted to text", "Reviewing your questions", "Your questions stay in your account only. No answer key? No problem; we'll find the right answer in the lecture PDF.", "Frequently asked topics found", "In exams", "Toxicology", "Midterm_2025_questions.pdf", "TEXT", "Side effect / interaction matching", "Pasted text", "By typing", "New photo ", "questions", "the style is learned better", "got any?", "Front: short case, back: the right drug and why", "Example · your question and our similar one", "In summaries"], fa: ["«کدام نادرست است» · رایج", "بخش «در امتحان این‌طور می‌پرسند» و الگوهای سؤالات قبلی", "از 10 سؤال، 4 تا مورد بیمار و 2 تا محاسبه دوز است", "3 عکس", "بیمار 32 ساله، باردار 24 هفته، فشار خون 160/105 mmHg. کدام یک از موارد زیر نباید استفاده شود؟", "تست 5 گزینه‌ای · 70%", "در بیمار 58 ساله دیابتی با پروتئینوری، اولین انتخاب داروی ضد فشار خون کدام است؟", "مهارکننده‌های ACE", "2 سؤال از دوستت", "همین الان اضافه شد", "بتابلاکرها", "امتحان 10 سؤالی به این سبک", "سؤال ما · همان سبک، موضوع جدید", "سؤال‌های بیشتر اضافه کن ·", "با PDFهای درس تطبیق داده شد", "دیورتیک‌ها", "محاسبه دوز", "افزوده‌شده‌ها", "سؤال داری", "پرسؤال‌ترین مبحث‌ها", "امتحان قبلی، سؤال‌های نمونه استاد یا جزوه دوستت. بفرست تا سؤال‌های بیشتری به همان سبک برایت آماده کنیم.", "مکانیسم اثر", "دارودرمانی · 35 سؤال بررسی شد", "عکس", "فناوری دارویی III", "دارودرمانی", "عکس", "فشار خون در بارداری", "بازگشت", "میان‌ترم سال گذشته · با پاسخ‌نامه", "کدام درس؟", "مورد بیمار (کدام دارو؟)", "بحران فشار خون بالا", "استادت بیشتر از همه مورد بیمار می‌پرسد", "سؤال‌هایی که استاد سر کلاس دیکته کرد", "سبک سؤال استاد", "در کارت‌ها", "تشریحی (کتبی) · 30%", "یک شرح حال کوتاه بیمار می‌دهد و می‌پرسد «کدام دارو باید انتخاب شود؟». گزینه‌ها معمولاً از یک گروه دارویی‌اند.", "سؤال تو · میان‌ترم 2025", "استخراج سبک سؤال‌ها", "انواع سؤال", "انواع سؤال جدا شد", "نمونه سؤال‌های من", "سؤال‌ها به متن تبدیل شد", "در حال بررسی سؤال‌هایت", "سؤال‌هایت فقط در حساب خودت می‌مانند. کلید جواب نداری؟ مشکلی نیست؛ جواب درست را از PDF درس پیدا می‌کنیم.", "موضوعات پرتکرار پیدا شد", "در امتحان‌ها", "سم‌شناسی", "سؤالات_میان‌ترم_2025.pdf", "متن", "تطبیق عارضه جانبی / تداخل", "متن چسبانده‌شده", "با نوشتن", "عکس جدید ", "سؤال", "سبک بهتر یاد گرفته می‌شود", "داری؟", "رو: مورد کوتاه، پشت: داروی درست و دلیلش", "نمونه · سؤال تو و سؤال مشابه ما", "در خلاصه‌ها"], ar: ["«أيها خاطئ» · شائع", "قسم «هكذا يُسأل في الامتحان» وأنماط الأسئلة السابقة", "من 10 أسئلة: 4 حالات مرضية و2 حساب جرعات", "3 صور", "مريضة عمرها 32 عامًا، حامل في الأسبوع 24، ضغطها 160/105 mmHg. أيٌّ مما يلي يجب ألا يُستخدم؟", "اختبار من 5 خيارات · 70%", "ما هو الخيار الأول من خافضات الضغط لمريض عمره 58 عامًا مصاب بالسكري وبيلة بروتينية؟", "مثبطات ACE", "سؤالان من صديقك", "أُضيف للتو", "حاصرات بيتا", "امتحان من 10 أسئلة بهذا الأسلوب", "سؤالنا · نفس الأسلوب، موضوع جديد", "أضف مزيدًا من الأسئلة ·", "تمت مطابقته مع ملفات PDF للدرس", "مدرات البول", "حساب الجرعة", "المُضافة", "لديك أسئلة", "أكثر المواضيع سؤالًا", "امتحان سابق، أو أسئلة أستاذك النموذجية، أو ملاحظات صديقك. أرسلها لنعدّ لك أسئلة أكثر بذلك الأسلوب.", "آلية العمل", "العلاج الدوائي · تمت مراجعة 35 سؤالًا", "صورة", "التقنية الصيدلانية III", "العلاج الدوائي", "صورة", "ارتفاع الضغط في الحمل", "رجوع", "نصفي العام الماضي · مع مفتاح الإجابات", "أي مادة؟", "حالة مريض (أي دواء؟)", "أزمة ارتفاع ضغط الدم", "أستاذك يسأل عن حالات المرضى أكثر شيء", "الأسئلة التي أملاها الأستاذ في الدرس", "أسلوب أسئلة الأستاذ", "في البطاقات", "مقالي (كتابي) · 30%", "يعطي قصة مريض قصيرة ويسأل «أي دواء يجب اختياره؟». الخيارات عادةً من نفس المجموعة الدوائية.", "سؤالك · امتحان منتصف الفصل 2025", "استخرج أسلوب الأسئلة", "أنواع الأسئلة", "تم فرز أنواع الأسئلة", "نماذج أسئلتي", "تم تحويل الأسئلة إلى نص", "جارٍ فحص أسئلتك", "تبقى أسئلتك في حسابك فقط. لا يوجد مفتاح إجابات؟ لا مشكلة؛ سنجد الإجابة الصحيحة في PDF المادة.", "تم العثور على المواضيع الأكثر تكرارًا", "في الامتحانات", "علم السموم", "أسئلة_النصفي_2025.pdf", "نص", "مطابقة الآثار الجانبية / التداخلات", "نص ملصق", "بالكتابة", "صورة جديدة ", "سؤال", "يُفهم الأسلوب بشكل أفضل", "لديك؟", "الوجه: حالة قصيرة، الخلف: الدواء الصحيح وسببه", "مثال · سؤالك وسؤالنا المشابه", "في الملخصات"]};
+let _lang = 'tr', _M = null; const _TC = {};
+const _x = (s) => { if (_lang === 'tr' || !_I18N[_lang]) return s; if (!_M) { _M = {}; _I18N.k.forEach((k, i) => { _M[k] = i; }); } const i = _M[s]; return i == null ? s : _I18N[_lang][i]; };
+const _TK = {"k93": "\"Hangisi yanlıştır\" · sık", "k211": "32 yaşında, 24 haftalık gebe hastada KB 160/105 mmHg. Aşağıdakilerden hangisi kullanılmamalıdır?", "k248": "5 şıklı test · %70", "k252": "58 yaşında, diyabetik ve proteinürisi olan hastada ilk tercih antihipertansif hangisidir?", "k589": "Bu tarzda 10 soruluk sınav", "k640": "BİZİM SORUMUZ · AYNI TARZ, YENİ KONU", "k723": "Daha fazla soru ekle ·", "k898": "Eklenenler", "k927": "En çok sorulan konular", "k940": "Eski sınav, hocanın örnek soruları ya da arkadaşının notu. Gönder, biz de sana daha çok o tarzda soru hazırlayalım.", "k963": "FARMAKOTERAPİ · 35 SORU İNCELENDİ", "k1052": "Geri", "k1127": "Hangi ders?", "k1231": "Hocan en çok hasta vakası soruyor", "k1349": "Klasik (yazılı) · %30", "k1382": "Kısa bir hasta öyküsü verip \"hangi ilaç seçilmeli?\" diye soruyor. Şıklar genelde aynı ilaç grubundan.", "k1766": "SENİN SORUN · VİZE 2025", "k1899": "Soru tarzını çıkar", "k1900": "Soru tipleri", "k1913": "Soruların inceleniyor", "k1914": "Soruların yalnızca senin hesabında kalır. Cevap anahtarı yoksa sorun değil; doğru cevabı ders PDF'inden buluruz.", "k2413": "soru", "k2427": "tarz daha iyi öğrenilir", "k2533": "Örnek · senin sorun ve bizim benzer sorumuz", "p0a": "Elinde soru", "p0b": "var mı?"};
+const _PT = {"p0a": {"en": "Got any", "fa": "سؤالی", "ar": "هل لديك"}, "p0b": {"en": "questions?", "fa": "داری؟", "ar": "أسئلة؟"}};
+const _tt = () => { if (!_TC[_lang]) { const o = {}; Object.keys(_TK).forEach((k) => { o[k] = (_PT[k] && _lang !== 'tr') ? (_PT[k][_lang] || _x(_TK[k])) : _x(_TK[k]); }); _TC[_lang] = o; } return _TC[_lang]; };
+
+class Component extends DCLogic {
+  renderVals() { const _p = this.props || {}, _s = this.state || {}; _lang = _s.lang || _p.lang || 'tr'; const r = this._rv0(); if (r && typeof r === 'object') { r._t = _tt(); r._dir = (_lang === 'fa' || _lang === 'ar') ? 'rtl' : 'ltr'; r._ai = this._aiDark ? { bg: '#F2B33D', fg: '#241C14', tx: '#EFE8DC' } : { bg: '#9C2F3A', fg: '#FFF6E6', tx: '#2A2420' }; } return r; }
+  componentWillUnmount() { if (this.t) clearInterval(this.t); }
+  _rv0() {
+    const p = this.props; const st = this.state || {};
+    const dark = p.theme === 'dark'; const ios = (p.platform || 'ios') === 'ios';
+    const c = dark
+      ? { bg: '#15120F', card: '#211C18', sub: '#2B2520', seg: '#2B2520', line: '#3A322B', text: '#EFE8DC', text2: '#BDB2A4', text3: '#9A8F82', cta: '#C24B57', pri: '#F09AA3', priSoft: '#3A2224', amb: '#F2C66D', ambSoft: '#3A2E18', ambLine: '#6B5426', good: '#8FD3A8', goodSoft: '#1F3328', violet: '#B9B4F0', violetSoft: '#2C2A3A', ring: 'rgba(242,179,61,.10)', ring2: 'rgba(156,47,58,.08)', hero: 'linear-gradient(135deg,#4A3520,#6B4A22)', onHero: '#FBEFD6', heroShadow: 'none' }
+      : { bg: '#F4EFE6', card: '#FFFCF6', sub: '#F1EBE0', seg: '#EAE1D2', line: '#E6DDCF', text: '#2A2420', text2: '#6E645A', text3: '#8C8073', cta: '#9C2F3A', pri: '#9C2F3A', priSoft: '#F5E3E2', amb: '#A86F0E', ambSoft: '#FBEBC8', ambLine: '#E8C77E', good: '#2E7D4F', goodSoft: '#E3F1E7', violet: '#4A3F9A', violetSoft: '#E8E6F6', ring: 'rgba(242,179,61,.18)', ring2: 'rgba(156,47,58,.07)', hero: 'linear-gradient(135deg,#FBE9BD,#F5C76A)', onHero: '#2A2420', heroShadow: '0 14px 30px rgba(232,146,90,.25)' };
+    const mode = st.mode || p.variant || 'add';
+    const is = { add: mode === 'add', analyzing: mode === 'analyzing', style: mode === 'style' };
+    const go = p.go || (() => {});
+    const course = st.course || _x('Farmakoterapi');
+    const courses = [_x('Farmakoterapi'), _x('Toksikoloji'), _x('Farm. Teknoloji III')].map((t) => { const on = t === course; return { t, on: on ? 'true' : 'false', border: on ? '0' : '1px solid ' + c.line, bg: on ? c.cta : 'transparent', fg: on ? '#FFFCF6' : c.text, pick: () => this.setState({ course: t }) }; });
+    const extra = st.extra || 0;
+    const addOne = () => this.setState({ extra: extra + 1 });
+    const methods = [[_x('Fotoğraf'), 'M4 8h3l2-3h6l2 3h3v11H4z M12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z', c.ambSoft, c.amb], ['PDF', 'M6 3h8l5 5v13H6z M14 3v5h5 M12 18v-6 M9.5 14.5L12 12l2.5 2.5', c.priSoft, c.pri], [_x('Yazarak'), 'M4 20h4L19 9l-4-4L4 16z M13.5 6.5l4 4', c.violetSoft, c.violet]].map((m) => ({ l: m[0], d: m[1], chip: m[2], fg: m[3], tap: addOne }));
+    const base = [['PDF', _x('Vize_2025_sorular.pdf'), _x('Geçen yılın vizesi · cevap anahtarlı'), 24, c.priSoft, c.pri], [_x('FOTO'), _x('3 fotoğraf'), _x('Hocanın derste yazdırdığı sorular'), 9, c.ambSoft, c.amb], [_x('YAZI'), _x('Yapıştırılan metin'), _x('Arkadaşından gelen 2 soru'), 2, c.violetSoft, c.violet]];
+    for (let i = 0; i < extra; i++) base.push([_x('FOTO'), _x('Yeni fotoğraf ') + (i + 1), _x('Az önce eklendi'), 3, c.ambSoft, c.amb]);
+    const files = base.map((f) => ({ tag: f[0], n: f[1], s: f[2], q: f[3], chip: f[4], fg: f[5] }));
+    const total = base.reduce((a, f) => a + f[3], 0);
+    const prog = st.prog || 0;
+    const steps = [_x('Sorular metne çevrildi'), _x('Soru tipleri ayrıldı'), _x('Sık sorulan konular bulundu'), _x('Ders PDF\'leriyle eşleştirildi')].map((t, i) => { const done = i < prog; const now = i === prog; return { t, fg: done || now ? c.text : c.text3, bg: done ? c.good : (now ? c.amb : c.seg), icon: done ? 'M5 12l5 5 9-10' : '' }; });
+    const analyze = () => {
+      this.setState({ mode: 'analyzing', prog: 0 });
+      if (this.t) clearInterval(this.t);
+      this.t = setInterval(() => {
+        const s2 = this.state || {}; const n = (s2.prog || 0) + 1;
+        if (n > 4) { clearInterval(this.t); this.t = null; this.setState({ mode: 'style' }); }
+        else this.setState({ prog: n });
+      }, 700);
+    };
+    const types = [[_x('Hasta vakası (hangi ilaç?)'), 40, c.cta], [_x('Etki mekanizması'), 25, '#E8925A'], [_x('Doz hesabı'), 20, '#F2B33D'], [_x('Yan etki / etkileşim eşleştirme'), 15, dark ? '#8C84D8' : '#6E64C4']].map((t) => ({ t: t[0], p: t[1], c: t[2] }));
+    const topics = [[_x('ACE inhibitörleri'), 7], [_x('Hipertansif kriz'), 5], [_x('Gebelikte HT'), 4], [_x('Beta blokerler'), 4], [_x('Diüretikler'), 3]].map((t, i) => ({ t: t[0], n: t[1], bg: i < 2 ? c.priSoft : c.sub, fg: i < 2 ? c.pri : c.text }));
+    const use = st.use || { exam: true, cards: true, sum: true };
+    const uses = [['exam', _x('Sınavlarda'), _x('10 sorunun 4\'ü hasta vakası, 2\'si doz hesabı olur'), 'M9 11l2 2 4-4 M5 4h14v16H5z', c.priSoft, c.pri], ['cards', _x('Kartlarda'), _x('Ön yüz kısa vaka, arka yüz doğru ilaç ve nedeni'), 'M4 6h12v14H4z M8 2h12v14', c.ambSoft, c.amb], ['sum', _x('Özetlerde'), _x('"Sınavda böyle sorulur" bölümü ve çıkmış soru kalıpları'), 'M5 5h14 M5 10h14 M5 15h9 M5 20h6', c.goodSoft, c.good]].map((u, i) => {
+      const on = !!use[u[0]];
+      return { t: u[1], s: u[2], d: u[3], chip: u[4], fg: u[5], on: on ? 'true' : 'false', sep: i ? '1px solid ' + c.line : '0', track: on ? c.cta : c.seg, justify: on ? 'flex-end' : 'flex-start', tap: () => this.setState({ use: Object.assign({}, use, { [u[0]]: !on }) }) };
+    });
+    return {
+      c, W: ios ? 390 : 412, H: ios ? 844 : 915, is, courses, methods, files, total, steps, types, topics, uses, analyze,
+      head: is.style ? _x('Hocanın soru tarzı') : _x('Soru örneklerim'),
+      back: () => { if (is.style || is.analyzing) this.setState({ mode: 'add' }); else go('home'); },
+      toAdd: () => this.setState({ mode: 'add' }),
+      toQuiz: () => go('quiz', 'question', 'final')
+    };
+  }
+}
+</script>
+</body>
+</html>

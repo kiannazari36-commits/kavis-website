@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Derslerim</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+<style>[dir=rtl] .dc-back{transform:scaleX(-1)}[dir=rtl],[dir=rtl] *{letter-spacing:0 !important}</style>
+</helmet>
+<div dir="{{dir}}" lang="{{lang}}" style="width: {{W}}px; height: {{H}}px; box-sizing: border-box; display: flex; flex-direction: column; position: relative; overflow: hidden; background: {{c.bg}}; color: {{c.text}}; font-family: Poppins, Vazirmatn, system-ui, sans-serif">
+<div style="height: {{topH}}px; flex: none"></div>
+
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 20px 0; flex: none">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; letter-spacing: 0.1em; color: {{c.text3}}">{{s.date}}</span>
+<div style="display: flex; align-items: center; gap: 8px">
+<span aria-label="{{s.streak}}" style="display: flex; align-items: center; gap: 4px; height: 32px; padding: 0 10px; border-radius: 16px; background: {{c.ambSoft}}; color: {{c.ambText}}; font-size: 13px; font-weight: 600">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21c-4 0-7-2.7-7-6.5 0-3 2-5 3.5-6.5.3 1.6 1.2 2.6 2.3 3C10.5 7.5 12 5 14 3c.4 3 5 5.5 5 11.5 0 3.8-3 6.5-7 6.5z"></path></svg>6
+</span>
+<button onClick="{{toNotif}}" aria-label="{{s.notif}}" style="width: 44px; height: 44px; border-radius: 22px; border: 0; background: {{c.card}}; color: {{c.text}}; display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z M10 21h4"></path></svg>
+<span style="position: absolute; top: 10px; right: 11px; width: 8px; height: 8px; border-radius: 4px; background: {{c.pri}}; border: 2px solid {{c.card}}"></span>
+</button>
+</div>
+</div>
+<h1 style="margin: 0; padding: 2px 20px 10px; font-size: {{titleFs}}px; font-weight: 700; letter-spacing: -0.02em; flex: none">{{s.title}}</h1>
+
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 4px 20px 120px; display: flex; flex-direction: column; gap: 14px">
+
+<sc-if value="{{v.offline}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: {{c.ambSoft}}; color: {{c.ambText}}">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18 M5 9.5a14 14 0 0 1 4-2.6 M19 9.5a14 14 0 0 0-6.5-3.2 M8.5 13a7 7 0 0 1 3-1.5 M12 18h.01"></path></svg>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 14px; font-weight: 600">{{s.offT}}</span>
+<span style="font-size: 13px; line-height: 1.4">{{s.offS}}</span>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{showTask}}" hint-placeholder-val="{{ true }}">
+<div style="border-radius: 20px; background: {{c.taskBg}}; color: #FFFCF6; padding: 18px; display: flex; flex-direction: column; gap: 10px; position: relative; overflow: hidden">
+<span aria-hidden="true" style="position: absolute; right: -50px; top: -60px; width: 190px; height: 190px; border-radius: 95px; border: 1px solid rgba(255,255,255,.16)"></span>
+<span aria-hidden="true" style="position: absolute; right: -10px; top: -20px; width: 110px; height: 110px; border-radius: 55px; border: 1px solid rgba(255,255,255,.12)"></span>
+<div style="display: flex; align-items: center; gap: 10px">
+<span style="width: 30px; height: 30px; border-radius: 8px; background: #F2B33D; color: #2A2420; display: flex; align-items: center; justify-content: center; transform: rotate(-8deg)">
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{task.icon}}"></path></svg>
+</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; letter-spacing: 0.12em; opacity: 0.88">{{s.today}}</span>
+</div>
+<div style="font-size: 22px; font-weight: 700; line-height: 1.2; letter-spacing: -0.01em">{{task.t}}</div>
+<div style="font-size: 14px; line-height: 1.4; opacity: 0.92">{{task.s}}</div>
+<sc-if value="{{v.continue}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; align-items: center; gap: 10px">
+<span style="flex: 1; height: 6px; border-radius: 3px; background: rgba(255,255,255,.22); overflow: hidden; display: flex"><span style="width: 38%; background: #F2B33D; border-radius: 3px"></span></span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px">%38</span>
+</div>
+</sc-if>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 4px">
+<button onClick="{{task.tap}}" style="height: 44px; padding: 0 18px; border: 0; border-radius: {{btnR}}px; background: #FFFCF6; color: #7E2530; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">{{task.cta}}</button>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px; opacity: 0.88">{{task.meta}}</span>
+</div>
+</div>
+
+<div style="border-radius: 16px; background: {{c.card}}; padding: 14px 16px; display: flex; align-items: center; gap: 14px">
+<span style="width: 38px; height: 38px; border-radius: 10px; background: {{c.ambSoft}}; color: {{c.ambText}}; display: flex; align-items: center; justify-content: center; transform: rotate(-7deg); flex: none">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21c-4 0-7-2.7-7-6.5 0-3 2-5 3.5-6.5.3 1.6 1.2 2.6 2.3 3C10.5 7.5 12 5 14 3c.4 3 5 5.5 5 11.5 0 3.8-3 6.5-7 6.5z"></path></svg>
+</span>
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 15px; font-weight: 600">{{s.streak}}</span>
+<span style="font-size: 12px; color: {{c.text3}}">{{s.streakSub}}</span>
+</div>
+<div aria-hidden="true" style="display: flex; gap: 5px">
+<sc-for list="{{week}}" as="d" hint-placeholder-count="7">
+<span style="display: flex; flex-direction: column; align-items: center; gap: 4px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 9px; color: {{c.text3}}">{{d.l}}</span>
+<span style="width: 12px; height: 12px; border-radius: 6px; background: {{d.bg}}; border: {{d.ring}}; box-sizing: border-box"></span>
+</span>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{showTask}}" hint-placeholder-val="{{ true }}">
+<section style="border-radius: 16px; background: {{c.card}}; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: center; gap: 8px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; color: {{c.text3}}; flex: 1">{{s.pl.t}}</span>
+<button onClick="{{toWeek}}" style="min-height: 32px; border: 0; padding: 0; background: transparent; color: {{c.priText}}; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer">{{s.pl.week}} →</button>
+</div>
+<div dir="ltr" lang="tr" style="display: flex; align-items: center; gap: 10px; text-align: left"><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}; width: 40px">09:00</span><span style="width: 7px; height: 7px; border-radius: 4px; background: {{c.pri}}"></span><span style="flex: 1; font-size: 14px; font-weight: 600">{{_t.k1202}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.text3}}">{{_t.k233}}</span></div>
+<div dir="ltr" lang="tr" style="display: flex; align-items: center; gap: 10px; text-align: left"><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}; width: 40px">09:40</span><span style="width: 7px; height: 7px; border-radius: 4px; background: {{c.amb}}"></span><span style="flex: 1; font-size: 14px; font-weight: 600">{{_t.k2054}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.text3}}">{{_t.k160}}</span></div>
+</section>
+<button onClick="{{toExam}}" style="border: 0; border-radius: 16px; background: {{c.examBg}}; color: #FFFCF6; padding: 12px 14px; display: flex; align-items: center; gap: 12px; font-family: inherit; text-align: start; cursor: pointer">
+<span style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,.14); transform: rotate(-6deg); flex: none"><span style="font-size: 18px; font-weight: 700; line-height: 1">11</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 8px">{{s.ex.d}}</span></span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 700">{{s.ex.t}}</span><span style="font-size: 12px; opacity: .85">{{s.ex.s}}</span></span>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX({{flip}})"><path d="M9 5l7 7-7 7"></path></svg>
+</button>
+</sc-if>
+
+<sc-if value="{{v.loading}}" hint-placeholder-val="{{ false }}">
+<div aria-busy="true" aria-label="{{s.loading}}" style="display: flex; flex-direction: column; gap: 14px">
+<div style="height: 168px; border-radius: 20px; background: {{c.skel}}"></div>
+<div style="height: 64px; border-radius: 16px; background: {{c.skel}}"></div>
+<div style="display: flex; justify-content: space-between; padding-top: 6px"><span style="width: 90px; height: 16px; border-radius: 8px; background: {{c.skel}}"></span><span style="width: 50px; height: 16px; border-radius: 8px; background: {{c.skel}}"></span></div>
+<sc-for list="{{three}}" as="x" hint-placeholder-count="3">
+<div style="border-radius: 16px; background: {{c.card}}; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; gap: 12px"><span style="width: 44px; height: 52px; border-radius: 8px; background: {{c.skel}}"></span><span style="flex: 1; display: flex; flex-direction: column; gap: 8px; padding-top: 6px"><span style="width: 60%; height: 14px; border-radius: 7px; background: {{c.skel}}"></span><span style="width: 40%; height: 12px; border-radius: 6px; background: {{c.skel}}"></span></span></div>
+<span style="height: 6px; border-radius: 3px; background: {{c.skel}}"></span>
+</div>
+</sc-for>
+<span style="text-align: center; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}">{{s.loading}}…</span>
+</div>
+</sc-if>
+
+<sc-if value="{{v.empty}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; padding: 36px 8px 0">
+<div aria-hidden="true" style="position: relative; width: 150px; height: 150px">
+<span style="position: absolute; left: 22px; top: 18px; width: 92px; height: 118px; border-radius: 10px; background: {{c.card}}; border: 1px solid {{c.line}}; transform: rotate(-10deg)"></span>
+<span style="position: absolute; left: 40px; top: 14px; width: 92px; height: 118px; border-radius: 10px; background: {{c.card}}; border: 1px solid {{c.line}}; transform: rotate(4deg); display: flex; flex-direction: column; gap: 7px; padding: 16px 12px; box-sizing: border-box">
+<span style="align-self: flex-start; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 9px; font-weight: 600; color: #FFFCF6; background: {{c.pri}}; border-radius: 3px; padding: 1px 5px">PDF</span>
+<span style="height: 5px; width: 90%; border-radius: 3px; background: {{c.line}}"></span><span style="height: 5px; width: 70%; border-radius: 3px; background: {{c.line}}"></span><span style="height: 5px; width: 80%; border-radius: 3px; background: {{c.line}}"></span>
+</span>
+<span style="position: absolute; right: 6px; bottom: 10px; width: 40px; height: 40px; border-radius: 20px; background: {{c.amb}}; color: #2A2420; display: flex; align-items: center; justify-content: center">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14 M5 12h14"></path></svg>
+</span>
+</div>
+<h2 style="margin: 6px 0 0; font-size: 22px; font-weight: 700">{{s.emptyT}}</h2>
+<p style="margin: 0; font-size: 15px; line-height: 1.5; color: {{c.text2}}; max-width: 300px">{{s.emptyS}}</p>
+<button onClick="{{toUpload}}" style="margin-top: 10px; height: {{btnH}}px; padding: 0 28px; border: 0; border-radius: {{btnR}}px; background: {{c.pri}}; color: #FFFCF6; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{s.upload}}</button>
+<button onClick="{{toReader}}" style="min-height: 44px; border: 0; background: transparent; color: {{c.priText}}; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer">{{s.sample}}</button>
+</div>
+</sc-if>
+
+<sc-if value="{{showList}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; align-items: baseline; justify-content: space-between; padding-top: 6px">
+<h2 style="margin: 0; font-size: 18px; font-weight: 700">{{s.courses}}</h2>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px; color: {{c.text3}}">{{s.count}}</span>
+</div>
+<sc-for list="{{courses}}" as="k" hint-placeholder-count="3">
+<button onClick="{{k.tap}}" style="border: 0; border-radius: 16px; background: {{c.card}}; color: {{c.text}}; padding: 16px; display: flex; flex-direction: column; gap: 12px; text-align: start; font-family: inherit; cursor: pointer; box-shadow: {{c.shadow}}">
+<span style="display: flex; gap: 12px; align-items: flex-start; width: 100%">
+<span style="width: 44px; height: 52px; border-radius: 8px; background: {{c.sub}}; border: 1px solid {{c.line}}; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; flex: none">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 9px; font-weight: 600; color: {{c.priText}}">PDF</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text2}}">{{k.pages}}</span>
+</span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+<span style="font-size: 17px; font-weight: 600; line-height: 1.25">{{k.name}}</span>
+<span style="font-size: 13px; color: {{c.text3}}">{{k.course}}</span>
+</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.04em; padding: 4px 8px; border-radius: 6px; background: {{k.lvlBg}}; color: {{k.lvlFg}}; white-space: nowrap; transform: skewX(-8deg)">{{k.lvl}}</span>
+</span>
+<span style="display: flex; align-items: center; gap: 10px; width: 100%">
+<span style="flex: 1; height: 6px; border-radius: 3px; background: {{c.sub}}; overflow: hidden; display: flex"><span style="width: {{k.pct}}%; background: {{c.pri}}; border-radius: 3px"></span></span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px; color: {{c.text2}}; min-width: 36px; text-align: end">%{{k.pct}}</span>
+</span>
+<span style="display: flex; align-items: center; gap: 8px; width: 100%; font-size: 13px">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{c.text3}}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a1.5 1.5 0 0 1 1.5 1.5v12A1.5 1.5 0 0 1 19 20H5a1.5 1.5 0 0 1-1.5-1.5v-12A1.5 1.5 0 0 1 5 5z M3.5 10h17 M8 3v4 M16 3v4"></path></svg>
+<span style="color: {{c.text3}}">{{s.next}}:</span>
+<span style="font-weight: 600; color: {{k.nextFg}}; background: {{k.nextBg}}; padding: 2px 8px; border-radius: 6px">{{k.next}}</span>
+<span style="flex: 1"></span>
+<sc-if value="{{v.offline}}" hint-placeholder-val="{{ false }}"><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.ok}}">{{s.offTag}}</span></sc-if>
+</span>
+</button>
+</sc-for>
+<sc-if value="{{ios}}" hint-placeholder-val="{{ true }}">
+<button onClick="{{toUpload}}" disabled="{{v.offline}}" style="height: 56px; border-radius: 16px; border: 1.5px dashed {{c.text3}}; background: transparent; color: {{c.text}}; display: flex; align-items: center; justify-content: center; gap: 10px; font-family: inherit; font-size: 15px; font-weight: 600; opacity: {{upOpacity}}; cursor: pointer">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4 M7.5 8.5L12 4l4.5 4.5 M5 14v4.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V14"></path></svg>
+{{s.upload}}
+</button>
+</sc-if>
+<button onClick="{{toPaywall}}" style="border: 0; border-radius: 14px; background: {{c.sub}}; color: {{c.text2}}; min-height: 48px; padding: 0 14px; display: flex; align-items: center; gap: 10px; font-family: inherit; font-size: 13px; cursor: pointer">
+<span style="flex: 1; text-align: start">{{s.free}}</span>
+<span style="font-weight: 600; color: {{c.priText}}">{{s.upgrade}}</span>
+</button>
+</sc-if>
+</div>
+
+<sc-if value="{{fab}}" hint-placeholder-val="{{ false }}">
+<button onClick="{{toUpload}}" style="position: absolute; bottom: 120px; inset-inline-end: 16px; height: 56px; padding: 0 20px 0 16px; border: 0; border-radius: 16px; background: {{c.fabBg}}; color: {{c.fabFg}}; display: flex; align-items: center; gap: 10px; font-family: inherit; font-size: 15px; font-weight: 600; box-shadow: 0 3px 8px rgba(27,36,48,.18), 0 1px 3px rgba(27,36,48,.2); cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4 M7.5 8.5L12 4l4.5 4.5 M5 14v4.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V14"></path></svg>
+{{s.upload}}
+</button>
+</sc-if>
+
+<div style="position: absolute; left: 0; right: 0; bottom: 0">
+<dc-import name="TabBar" platform="{{pf}}" theme="{{th}}" lang="{{lang}}" active="home" go="{{tabGo}}" hint-size="100%,83px"></dc-import>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"platform":{"editor":"enum","options":["ios","android"],"default":"ios"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"variant":{"editor":"enum","options":["review","continue","start","empty","loading","offline"],"default":"review"},"go":{"editor":null},"live":{"editor":null},"$preview":{"width":390,"height":844}}'>
+const _I18N = {k: ["12 kart · 3 soru", "14 Eki", "15 dk", "19–23 Ekim · Sınav merkezi ve genel özet", "3 ders", "40 dk", "6 gün üst üste", "6 soru · 3 dk", "BAŞLANGIÇ", "BUGÜNKÜ GÖREV", "BUGÜNÜN PLANI · PERŞEMBE", "Bağlantı yok", "Başlarken: tahmin testi", "Bildirimler", "Bugün", "Bugün tekrar günü", "Bugün çalışırsan seri 7 olur", "Dersler", "Dersler yükleniyor", "Derslerim", "Diyabet", "Diyabet · okumadan önce ne bildiğini gör", "Farmakoterapi", "Farmasötik Teknoloji III", "GELİŞİYOR", "GÜN", "Haftalık plan", "Henüz ders yok", "Hipertansiyon", "Hipertansiyon · 5 dakikalık tekrar", "Hipertansiyon · Bölüm 2: İlaç tedavisi", "Hipertansiyon · ders sonu sınavı", "Hocanın ders PDF'ini yükle; ilk dersin birkaç dakika içinde hazır olsun.", "Okumaya devam", "PDF yükle", "PERŞEMBE · 8 EKİM", "Premium'a geç", "Sayfa 12'den devam", "Sonraki tekrar", "Tablet Formülasyonu", "Tahmin testi", "Tekrar kartları · 12 kart", "Tekrara başla", "Teste başla", "UZMAN", "Vize haftasına 11 gün", "Ç", "ÇEVRİMDIŞI HAZIR", "ÇOK İYİ", "Örnek dersi aç: Hipertansiyon", "Ücretsiz plan · bu ay 1/2 ders", "İYİ", "İndirilen dersler çevrimdışı açılır. PDF yükleme bağlantı gelince açılır.", "≈ 18 dk kaldı"], en: ["12 cards · 3 questions", "14 Oct", "15 min", "19–23 October · Exam center and overall summary", "3 courses", "40 min", "6 days in a row", "6 questions · 3 min", "BEGINNER", "TODAY'S TASK", "TODAY'S PLAN · THURSDAY", "No connection", "Getting started: placement test", "Notifications", "Today", "Today is review day", "Study today and your streak hits 7", "Courses", "Loading courses", "My Courses", "Diabetes", "Diabetes · see what you know before reading", "Pharmacotherapy", "Pharmaceutical Technology III", "DEVELOPING", "DAYS", "Weekly plan", "No courses yet", "Hypertension", "Hypertension · 5-minute review", "Hypertension · Part 2: Drug therapy", "Hypertension · end-of-lecture exam", "Upload your lecturer's PDF; your first lesson will be ready in a few minutes.", "Continue reading", "Upload PDF", "THURSDAY · 8 OCT", "Go Premium", "Continue from page 12", "Next review", "Tablet Formulation", "Guess test", "Review cards · 12 cards", "Start review", "Start test", "EXPERT", "11 days to midterm week", "W", "READY OFFLINE", "VERY GOOD", "Open sample course: Hypertension", "Free plan · 1/2 courses this month", "GOOD", "Downloaded courses open offline. PDF upload resumes once you're connected.", "≈ 18 min left"], fa: ["12 کارت · 3 سؤال", "14 اکتبر", "15 دقیقه", "19–23 اکتبر · مرکز امتحان و خلاصه کلی", "3 درس", "40 دقیقه", "6 روز پشت سر هم", "6 سؤال · 3 دقیقه", "مبتدی", "کار امروز", "برنامه‌ی امروز · پنجشنبه", "اتصال برقرار نیست", "شروع: آزمون تعیین سطح", "اعلان‌ها", "امروز", "امروز روز مرور است", "اگر امروز درس بخوانی رکوردت 7 می‌شود", "درس‌ها", "در حال بارگذاری درس‌ها", "درس‌های من", "دیابت", "دیابت · قبل از خواندن ببین چه می‌دانی", "دارودرمانی", "فناوری دارویی III", "در حال پیشرفت", "روز", "برنامه هفتگی", "هنوز درسی نیست", "فشار خون بالا", "فشار خون بالا · مرور 5 دقیقه‌ای", "فشار خون بالا · بخش 2: درمان دارویی", "فشار خون بالا · امتحان پایان درس", "PDF درس استادت را آپلود کن؛ اولین درست در چند دقیقه آماده می‌شود.", "ادامهٔ خواندن", "آپلود PDF", "پنجشنبه · 8 اکتبر", "ارتقا به Premium", "ادامه از صفحه 12", "مرور بعدی", "فرمولاسیون قرص", "آزمون حدس", "کارت‌های مرور · 12 کارت", "شروع مرور", "شروع آزمون", "متخصص", "11 روز تا هفته میان‌ترم", "چ", "آماده آفلاین", "خیلی خوب", "باز کردن درس نمونه: فشار خون بالا", "طرح رایگان · این ماه 1/2 درس", "خوب", "درس‌های دانلودشده آفلاین باز می‌شوند. آپلود PDF با وصل شدن اینترنت فعال می‌شود.", "≈ 18 دقیقه مانده"], ar: ["12 بطاقة · 3 أسئلة", "14 أكتوبر", "15 د", "19–23 أكتوبر · مركز الامتحانات والملخص العام", "3 مواد", "40 د", "6 أيام متتالية", "6 أسئلة · 3 د", "مبتدئ", "مهمة اليوم", "خطة اليوم · الخميس", "لا يوجد اتصال", "البداية: اختبار تحديد المستوى", "الإشعارات", "اليوم", "اليوم يوم المراجعة", "ادرس اليوم ويصبح تتابعك 7", "المواد", "جارٍ تحميل المواد", "موادي", "السكري", "السكري · اعرف ما تعرفه قبل القراءة", "العلاج الدوائي", "التقنية الصيدلانية III", "في تحسّن", "يوم", "الخطة الأسبوعية", "لا توجد مواد بعد", "ارتفاع ضغط الدم", "ارتفاع ضغط الدم · مراجعة 5 دقائق", "ارتفاع ضغط الدم · الجزء 2: العلاج الدوائي", "ارتفاع ضغط الدم · امتحان نهاية الدرس", "ارفع ملف PDF الخاص بأستاذك؛ وسيجهز درسك الأول خلال دقائق.", "متابعة القراءة", "رفع PDF", "الخميس · 8 أكتوبر", "انتقل إلى Premium", "تابع من الصفحة 12", "المراجعة التالية", "تركيب الأقراص", "اختبار التخمين", "بطاقات المراجعة · 12 بطاقة", "ابدأ المراجعة", "ابدأ الاختبار", "خبير", "11 يومًا حتى أسبوع النصفي", "ر", "جاهز دون اتصال", "جيد جدًا", "افتح الدرس التجريبي: ارتفاع ضغط الدم", "الخطة المجانية · هذا الشهر 1/2 درس", "جيد", "تفتح الدروس المنزّلة دون اتصال. يُتاح رفع PDF عند عودة الاتصال.", "≈ بقي 18 دقيقة"]};
+let _lang = 'tr', _M = null; const _TC = {};
+const _x = (s) => { if (_lang === 'tr' || !_I18N[_lang]) return s; if (!_M) { _M = {}; _I18N.k.forEach((k, i) => { _M[k] = i; }); } const i = _M[s]; return i == null ? s : _I18N[_lang][i]; };
+const _TK = {"k160": "15 dk", "k233": "40 dk", "k1202": "Hipertansiyon · ders sonu sınavı", "k2054": "Tekrar kartları · 12 kart"};
+const _PT = {};
+const _tt = () => { if (!_TC[_lang]) { const o = {}; Object.keys(_TK).forEach((k) => { o[k] = (_PT[k] && _lang !== 'tr') ? (_PT[k][_lang] || _x(_TK[k])) : _x(_TK[k]); }); _TC[_lang] = o; } return _TC[_lang]; };
+
+class Component extends DCLogic {
+  renderVals() { const _p = this.props || {}, _s = this.state || {}; _lang = _s.lang || _p.lang || 'tr'; const r = this._rv0(); if (r && typeof r === 'object') { r._t = _tt(); r._dir = (_lang === 'fa' || _lang === 'ar') ? 'rtl' : 'ltr'; r._ai = this._aiDark ? { bg: '#F2B33D', fg: '#241C14', tx: '#EFE8DC' } : { bg: '#9C2F3A', fg: '#FFF6E6', tx: '#2A2420' }; } return r; }
+  _rv0() {
+    const p = this.props;
+    const pf = p.platform || 'ios', ios = pf === 'ios';
+    const th = p.theme || 'light', dark = th === 'dark';
+    const lang = p.lang || 'tr';
+    const c = dark
+      ? { bg: '#15120F', card: '#211C18', sub: '#2B2520', skel: '#2B2520', text: '#EFE8DC', text2: '#BDB2A4', text3: '#9A8F82', line: '#3A322B', pri: '#B23A47', priText: '#F09AA3', priSoft: '#3A2027', taskBg: '#7E2530', amb: '#F2B33D', ambText: '#F2C46E', ambSoft: '#3A2F1A', ok: '#5BC893', okSoft: '#173328', fabBg: '#3A2027', fabFg: '#F7D3D7', shadow: 'none' }
+      : { bg: '#F4EFE6', card: '#FFFCF6', sub: '#F1EBE0', skel: '#EAE1D2', text: '#2A2420', text2: '#6E645A', text3: '#776C60', line: '#E6DDCF', pri: '#9C2F3A', priText: '#9C2F3A', priSoft: '#F7E7E9', taskBg: '#9C2F3A', amb: '#F2B33D', ambText: '#83560A', ambSoft: '#FDF1D6', ok: '#1E7A4C', okSoft: '#E2F3E9', fabBg: '#F7E7E9', fabFg: '#5E1A23', shadow: '0 1px 2px rgba(27,36,48,.05)' };
+    const T = {
+      tr: { date: _x('PERŞEMBE · 8 EKİM'), title: _x('Derslerim'), today: _x('BUGÜNKÜ GÖREV'), rT: _x('Bugün tekrar günü'), rS: _x('Hipertansiyon · 5 dakikalık tekrar'), rM: _x('12 kart · 3 soru'), rC: _x('Tekrara başla'), cT: _x("Sayfa 12'den devam"), cS: _x('Hipertansiyon · Bölüm 2: İlaç tedavisi'), cM: _x('≈ 18 dk kaldı'), cC: _x('Okumaya devam'), sT: _x('Başlarken: tahmin testi'), sS: _x('Diyabet · okumadan önce ne bildiğini gör'), sM: _x('6 soru · 3 dk'), sC: _x('Teste başla'), streak: _x('6 gün üst üste'), streakSub: _x('Bugün çalışırsan seri 7 olur'), days: ['P', 'S', _x('Ç'), 'P', 'C', 'C', 'P'], courses: _x('Dersler'), count: _x('3 ders'), upload: _x('PDF yükle'), next: _x('Sonraki tekrar'), todayW: _x('Bugün'), pretest: _x('Tahmin testi'), d3: _x('14 Eki'), free: _x('Ücretsiz plan · bu ay 1/2 ders'), upgrade: _x("Premium'a geç"), lv: [_x('BAŞLANGIÇ'), _x('GELİŞİYOR'), _x('İYİ'), _x('ÇOK İYİ'), _x('UZMAN')], emptyT: _x('Henüz ders yok'), emptyS: _x("Hocanın ders PDF'ini yükle; ilk dersin birkaç dakika içinde hazır olsun."), sample: _x('Örnek dersi aç: Hipertansiyon'), offT: _x('Bağlantı yok'), offS: _x('İndirilen dersler çevrimdışı açılır. PDF yükleme bağlantı gelince açılır.'), offTag: _x('ÇEVRİMDIŞI HAZIR'), loading: _x('Dersler yükleniyor'), notif: _x('Bildirimler') },
+      en: { date: 'THURSDAY · OCT 8', title: 'My courses', today: "TODAY'S TASK", rT: 'Review day', rS: 'Hipertansiyon · 5-minute review', rM: '12 cards · 3 questions', rC: 'Start review', cT: 'Continue from page 12', cS: 'Hipertansiyon · Part 2: Drug therapy', cM: '≈ 18 min left', cC: 'Keep reading', sT: 'Getting started: pre-test', sS: 'Diyabet · see what you know before reading', sM: '6 questions · 3 min', sC: 'Start test', streak: '6-day streak', streakSub: 'Study today to make it 7', days: ['M', 'T', 'W', 'T', 'F', 'S', 'S'], courses: 'Courses', count: '3 courses', upload: 'Upload PDF', next: 'Next review', todayW: 'Today', pretest: 'Pre-test', d3: 'Oct 14', free: 'Free plan · 1/2 courses this month', upgrade: 'Go Premium', lv: ['BEGINNER', 'DEVELOPING', 'GOOD', 'VERY GOOD', 'EXPERT'], emptyT: 'No courses yet', emptyS: "Upload your lecturer's PDF and your first lesson will be ready in a few minutes.", sample: 'Open a sample: Hipertansiyon', offT: 'No connection', offS: 'Downloaded courses open offline. Uploading resumes when you are back online.', offTag: 'OFFLINE READY', loading: 'Loading courses', notif: 'Notifications' },
+      fa: { date: 'پنجشنبه · ۸ اکتبر', title: 'درس‌های من', today: 'کار امروز', rT: 'امروز روز مرور است', rS: 'فشار خون بالا · مرور ۵ دقیقه‌ای', rM: '۱۲ کارت · ۳ سؤال', rC: 'شروع مرور', cT: 'ادامه از صفحهٔ ۱۲', cS: 'فشار خون بالا · بخش ۲: درمان دارویی', cM: '≈ ۱۸ دقیقه مانده', cC: 'ادامهٔ خواندن', sT: 'شروع: آزمون پیش‌بینی', sS: 'دیابت · پیش از خواندن ببین چه می‌دانی', sM: '۶ سؤال · ۳ دقیقه', sC: 'شروع آزمون', streak: '۶ روز پیاپی', streakSub: 'امروز بخوانی، ۷ روز می‌شود', days: ['د', 'س', 'چ', 'پ', 'ج', 'ش', 'ی'], courses: 'درس‌ها', count: '۳ درس', upload: 'بارگذاری PDF', next: 'مرور بعدی', todayW: 'امروز', pretest: 'آزمون پیش‌بینی', d3: '۱۴ اکتبر', free: 'طرح رایگان · این ماه ۱ از ۲ درس', upgrade: 'ارتقا به پریمیوم', lv: ['مبتدی', 'در حال پیشرفت', 'خوب', 'خیلی خوب', 'متخصص'], emptyT: 'هنوز درسی نداری', emptyS: 'PDF درس استادت را بارگذاری کن؛ اولین درست چند دقیقه بعد آماده است.', sample: 'باز کردن درس نمونه: فشار خون بالا', offT: 'اتصال برقرار نیست', offS: 'درس‌های دانلودشده آفلاین باز می‌شوند. بارگذاری پس از اتصال ممکن است.', offTag: 'آمادهٔ آفلاین', loading: 'در حال بارگذاری درس‌ها', notif: 'اعلان‌ها' },
+      ar: { date: 'الخميس · 8 أكتوبر', title: 'دروسي', today: 'مهمة اليوم', rT: 'اليوم يوم المراجعة', rS: 'ارتفاع ضغط الدم · مراجعة 5 دقائق', rM: '12 بطاقة · 3 أسئلة', rC: 'ابدأ المراجعة', cT: 'تابع من الصفحة 12', cS: 'ارتفاع ضغط الدم · الجزء 2: العلاج الدوائي', cM: '≈ 18 دقيقة متبقية', cC: 'تابع القراءة', sT: 'البداية: اختبار تمهيدي', sS: 'السكري · اعرف ما تعرفه قبل القراءة', sM: '6 أسئلة · 3 دقائق', sC: 'ابدأ الاختبار', streak: '6 أيام متتالية', streakSub: 'ادرس اليوم لتصل إلى 7', days: ['ن', 'ث', 'ر', 'خ', 'ج', 'س', 'ح'], courses: 'الدروس', count: '3 دروس', upload: 'رفع PDF', next: 'المراجعة التالية', todayW: 'اليوم', pretest: 'اختبار تمهيدي', d3: '14 أكتوبر', free: 'الخطة المجانية · 1 من 2 هذا الشهر', upgrade: 'الترقية إلى بريميوم', lv: ['مبتدئ', 'متطوّر', 'جيد', 'جيد جدًا', 'خبير'], emptyT: 'لا توجد دروس بعد', emptyS: 'ارفع ملف PDF الخاص بأستاذك وسيكون درسك الأول جاهزًا خلال دقائق.', sample: 'افتح درسًا تجريبيًا: ارتفاع ضغط الدم', offT: 'لا يوجد اتصال', offS: 'تُفتح الدروس المحمّلة دون اتصال. يُستأنف الرفع عند عودة الاتصال.', offTag: 'جاهز دون اتصال', loading: 'جارٍ تحميل الدروس', notif: 'الإشعارات' }
+    };
+    const s = Object.assign({}, T[lang] || T.tr, { ex: {
+      tr: { d: _x('GÜN'), t: _x('Vize haftasına 11 gün'), s: _x('19–23 Ekim · Sınav merkezi ve genel özet') },
+      en: { d: 'DAYS', t: '11 days to midterm week', s: 'Oct 19–23 · Exam center and overall summary' },
+      fa: { d: 'روز', t: '۱۱ روز تا هفتهٔ میان‌ترم', s: '۱۹ تا ۲۳ اکتبر · مرکز آزمون و خلاصهٔ کلی' },
+      ar: { d: 'يوم', t: '11 يومًا حتى الامتحانات النصفية', s: '19–23 أكتوبر · مركز الاختبارات والملخص العام' }
+    }[lang], pl: {
+      tr: { t: _x('BUGÜNÜN PLANI · PERŞEMBE'), week: _x('Haftalık plan') },
+      en: { t: "TODAY'S PLAN · THURSDAY", week: 'Weekly plan' },
+      fa: { t: 'برنامهٔ امروز · پنجشنبه', week: 'برنامهٔ هفتگی' },
+      ar: { t: 'خطة اليوم · الخميس', week: 'الخطة الأسبوعية' }
+    }[lang] });
+    c.examBg = dark ? '#2E2721' : '#2A2420';
+    const variant = p.variant || 'review';
+    const v = {}; ['review', 'continue', 'start', 'empty', 'loading', 'offline'].forEach((k) => { v[k] = k === variant; });
+    const go = (a, b, k) => () => { if (p.go) p.go(a, b, k); };
+    const task = v.continue
+      ? { t: s.cT, s: s.cS, meta: s.cM, cta: s.cC, tap: go('reader'), icon: 'M3 5.5c2.5-1 5.5-1 9 1v13c-3.5-2-6.5-2-9-1z M21 5.5c-2.5-1-5.5-1-9 1v13c3.5-2 6.5-2 9-1z' }
+      : v.start
+        ? { t: s.sT, s: s.sS, meta: s.sM, cta: s.sC, tap: go('quiz', 'question', 'guess'), icon: 'M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14 M12 17.5h.01' }
+        : { t: s.rT, s: s.rS, meta: s.rM, cta: s.rC, tap: go('cards'), icon: 'M4 12a8 8 0 0 1 14-5.3L20 9 M20 4v5h-5 M20 12a8 8 0 0 1-14 5.3L4 15 M4 20v-5h5' };
+    const lvlStyle = (i) => i >= 3 ? [c.priSoft, c.priText] : (i === 2 ? [c.ambSoft, c.ambText] : [c.sub, c.text2]);
+    const courses = [
+      { name: _x('Hipertansiyon'), course: _x('Farmakoterapi'), pages: 48, pct: 62, lv: 2, next: s.todayW, hot: true, tap: go('reader') },
+      { name: _x('Diyabet'), course: _x('Farmakoterapi'), pages: 36, pct: v.start ? 0 : 8, lv: 0, next: s.pretest, hot: false, tap: go('quiz', 'question', 'guess') },
+      { name: _x('Tablet Formülasyonu'), course: _x('Farmasötik Teknoloji III'), pages: 52, pct: 100, lv: 3, next: s.d3, hot: false, tap: go('reader') }
+    ].map((k) => {
+      const ls = lvlStyle(k.lv);
+      return Object.assign(k, { lvl: s.lv[k.lv], lvlBg: ls[0], lvlFg: ls[1], nextBg: k.hot ? c.ambSoft : 'transparent', nextFg: k.hot ? c.ambText : c.text });
+    });
+    const studied = [true, true, true, true, true, true, false];
+    const week = s.days.map((l, i) => ({ l, bg: studied[i] && i < 3 ? c.amb : (i < 3 ? c.line : (i === 3 ? 'transparent' : c.line)), ring: i === 3 ? '2px solid ' + c.amb : '0' }));
+    week.forEach((d, i) => { if (i < 3) d.bg = c.amb; });
+    return {
+      c, s, v, lang, pf, th, ios,
+      dir: (lang === 'fa' || lang === 'ar') ? 'rtl' : 'ltr',
+      W: ios ? 390 : 412, H: ios ? 844 : 915, topH: ios ? 54 : 36,
+      titleFs: ios ? 32 : 26, btnR: ios ? 12 : 100, btnH: ios ? 50 : 48,
+      task, courses, week, three: [1, 2, 3],
+      showTask: !v.empty && !v.loading,
+      showList: !v.empty && !v.loading,
+      fab: !ios && !v.empty && !v.loading && !v.offline,
+      upOpacity: v.offline ? 0.45 : 1,
+      flip: (lang === 'fa' || lang === 'ar') ? -1 : 1, toExam: go('review', 'exam'), toWeek: go('plan', 'week'),
+      toUpload: go('upload'), toReader: go('reader'), toPaywall: go('paywall'), toNotif: go('notifications'),
+      tabGo: (id) => { if (p.go) p.go(id === 'home' ? 'home' : id); }
+    };
+  }
+}
+</script>
+</body>
+</html>

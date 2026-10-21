@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Özetler ve sınav merkezi</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+<style>[dir=rtl] .dc-back{transform:scaleX(-1)}[dir=rtl],[dir=rtl] *{letter-spacing:0 !important}</style>
+</helmet>
+<div dir="{{dir}}" lang="{{lang}}" style="width: {{W}}px; height: {{H}}px; box-sizing: border-box; display: flex; flex-direction: column; position: relative; overflow: hidden; background: {{c.bg}}; color: {{c.text}}; font-family: Poppins, Vazirmatn, system-ui, sans-serif">
+<div style="height: {{topH}}px; flex: none"></div>
+
+<div style="flex: none; display: flex; align-items: center; gap: 4px; height: 48px; padding: 0 12px 0 6px">
+<button onClick="{{back}}" aria-label="{{s.back}}" style="width: 44px; height: 44px; border: 0; background: transparent; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX({{flip}})"><path d="M15 5l-7 7 7 7"></path></svg></button>
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+<h1 style="margin: 0; font-size: 20px; font-weight: 700; line-height: 1.2">{{title}}</h1>
+<span style="display: flex; align-items: center; gap: 6px; min-width: 0"><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.06em; color: {{c.text3}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{subtitle}}</span><span style="display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; line-height: 1; padding: 4px 8px; border-radius: 10px; background: rgba(242,179,61,.2); color: {{c.text2}}; white-space: nowrap; padding: 2px 6px; font-size: 9px"><svg width="9" height="9" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z" fill="#E39A26"></path></svg>{{_t.k2761}}</span></span>
+</div>
+</div>
+
+<sc-if value="{{showTabs}}" hint-placeholder-val="{{ true }}">
+<div role="tablist" style="flex: none; margin: 0 16px 10px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: {{segR}}px; background: {{c.sub}}">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="3">
+<button role="tab" aria-selected="{{t.on}}" onClick="{{t.pick}}" style="height: 36px; border: 0; border-radius: {{segIR}}px; background: {{t.bg}}; color: {{t.fg}}; font-family: inherit; font-size: 13px; font-weight: {{t.fw}}; box-shadow: {{t.shadow}}; cursor: pointer">{{t.label}}</button>
+</sc-for>
+</div>
+</sc-if>
+
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 0 16px 24px; display: flex; flex-direction: column; gap: 14px">
+
+<sc-if value="{{v.lesson}}" hint-placeholder-val="{{ true }}">
+<section style="border-radius: 18px; background: {{c.card}}; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; gap: 10px">
+<span style="width: 30px; height: 30px; border-radius: 9px; background: {{c.bad}}; color: {{c.onBad}}; display: flex; align-items: center; justify-content: center; transform: rotate(-8deg); flex: none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l9 16H3z M12 10v4 M12 17h.01"></path></svg></span>
+<h2 style="margin: 0; flex: 1; font-size: 16px; font-weight: 700">{{s.weakT}}</h2>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}">4</span>
+</div>
+<sc-for list="{{weak}}" as="w" hint-placeholder-count="4">
+<button onClick="{{toReader}}" style="border: 0; border-top: 1px solid {{c.line}}; background: transparent; color: {{c.text}}; padding: 10px 0 2px; display: flex; flex-direction: column; gap: 6px; text-align: start; font-family: inherit; cursor: pointer">
+<span style="display: flex; align-items: baseline; gap: 8px; width: 100%">
+<span dir="ltr" lang="tr" style="flex: 1; font-size: 14px; font-weight: 600; line-height: 1.35; text-align: start">{{w.t}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.priText}}">{{s.pg}} {{w.p}}</span>
+</span>
+<span style="display: flex; align-items: center; gap: 8px; width: 100%">
+<span style="font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 5px; background: {{w.tagBg}}; color: {{w.tagFg}}; transform: skewX(-8deg); white-space: nowrap">{{w.tag}}</span>
+<span style="flex: 1; height: 5px; border-radius: 3px; background: {{c.sub}}; display: flex; overflow: hidden"><span style="width: {{w.m}}%; background: {{w.barC}}; border-radius: 3px"></span></span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.text3}}; min-width: 30px; text-align: end">%{{w.m}}</span>
+</span>
+</button>
+</sc-for>
+</section>
+
+<section style="border-radius: 18px; background: {{c.card}}; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; gap: 10px">
+<span style="width: 30px; height: 30px; border-radius: 9px; background: {{c.priSoft}}; color: {{c.priText}}; display: flex; align-items: center; justify-content: center; transform: rotate(-8deg); flex: none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11V5a1.5 1.5 0 0 1 3 0v5 M12 10V4a1.5 1.5 0 0 1 3 0v6 M15 10V6a1.5 1.5 0 0 1 3 0v7a7 7 0 0 1-7 7h-1a6 6 0 0 1-5-2.7L3 14a1.5 1.5 0 0 1 2.5-1.7L7 14V8a1.5 1.5 0 0 1 2 0"></path></svg></span>
+<h2 style="margin: 0; flex: 1; font-size: 16px; font-weight: 700">{{s.wordsT}}</h2>
+</div>
+<sc-for list="{{words}}" as="w" hint-placeholder-count="4">
+<div dir="ltr" lang="tr" style="display: flex; gap: 10px; align-items: baseline; border-top: 1px solid {{c.line}}; padding-top: 8px; text-align: left">
+<span style="font-size: 14px; font-weight: 600; border-bottom: 1.5px dotted {{c.priText}}; white-space: nowrap">{{w.t}}</span>
+<span style="flex: 1; font-size: 12px; line-height: 1.4; color: {{c.text2}}">{{w.d}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}">×{{w.n}}</span>
+</div>
+</sc-for>
+</section>
+
+<button onClick="{{toAudio}}" style="border: 2px solid {{c.amb}}; border-radius: 18px; background: {{c.card}}; color: {{c.text}}; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; font-family: inherit; text-align: start; cursor: pointer">
+<span style="display: flex; align-items: center; gap: 10px; width: 100%">
+<span style="width: 30px; height: 30px; border-radius: 9px; background: {{c.amb}}; color: #2A2420; display: flex; align-items: center; justify-content: center; transform: rotate(-8deg); flex: none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z M5 11a7 7 0 0 0 14 0 M12 18v3"></path></svg></span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 1px"><span style="font-size: 16px; font-weight: 700">{{s.audT}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.text3}}">{{s.audS}}</span></span>
+</span>
+<span dir="ltr" lang="tr" style="display: flex; align-items: center; gap: 8px; width: 100%; font-size: 13px"><span style="flex: 1; font-weight: 600; text-align: left">{{_t.k2112}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.ambText}}">{{_t.k157}}</span></span>
+<span dir="ltr" lang="tr" style="display: flex; align-items: center; gap: 8px; width: 100%; font-size: 13px"><span style="flex: 1; font-weight: 600; text-align: left">{{_t.k300}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}">{{_t.k273}}</span></span>
+<span style="font-size: 12px; line-height: 1.45; color: {{c.text2}}">{{s.audNote}}</span>
+</button>
+
+<section style="border-radius: 18px; background: {{c.ambSoft}}; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; color: {{c.ambText}}">{{s.recapT}}</span>
+<div dir="ltr" lang="tr" style="display: flex; flex-direction: column; gap: 6px; font-family: Lora, Vazirmatn, Georgia, serif; font-size: 15px; line-height: 1.55; text-align: left">
+<span>{{_t.k2647}} <b>{{_t.k2447}}</b> {{_t.k2380}} <span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.priText}}">{{_t.k100}}</span></span>
+<span>{{_t.k2648}} <span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.priText}}">{{_t.k99}}</span></span>
+<span>{{_t.k2644}} <span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.priText}}">{{_t.k100}}</span></span>
+</div>
+</section>
+
+<div style="display: flex; flex-direction: column; gap: 10px">
+<button onClick="{{toQuiz}}" style="height: {{btnH}}px; border: 0; border-radius: {{btnR}}px; background: {{c.pri}}; color: #FFFCF6; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">{{s.weakQuiz}}</button>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<button onClick="{{toCards}}" style="height: 46px; border: 1px solid {{c.line}}; border-radius: {{btnR}}px; background: {{c.card}}; color: {{c.text}}; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer">{{s.toCards}}</button>
+<button onClick="{{toReader}}" style="height: 46px; border: 1px solid {{c.line}}; border-radius: {{btnR}}px; background: {{c.card}}; color: {{c.text}}; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer">{{s.readPages}}</button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{v.general}}" hint-placeholder-val="{{ false }}">
+<button onClick="{{toExam}}" style="border: 0; border-radius: 18px; background: {{c.examBg}}; color: #FFFCF6; padding: 14px 16px; display: flex; align-items: center; gap: 12px; font-family: inherit; text-align: start; cursor: pointer">
+<span style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 54px; height: 54px; border-radius: 14px; background: rgba(255,255,255,.14); transform: rotate(-6deg); flex: none"><span style="font-size: 22px; font-weight: 700; line-height: 1">11</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 9px">{{s.daysShort}}</span></span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 700">{{s.examSoon}}</span><span style="font-size: 12px; opacity: .85">{{s.examRange}}</span></span>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: scaleX({{flip}})"><path d="M9 5l7 7-7 7"></path></svg>
+</button>
+
+<section style="border-radius: 18px; background: {{c.card}}; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 16px; font-weight: 700">{{s.byCourse}}</h2>
+<sc-for list="{{courses}}" as="k" hint-placeholder-count="4">
+<div style="border-top: 1px solid {{c.line}}; padding-top: 10px; display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; align-items: baseline; gap: 8px"><span dir="ltr" lang="tr" style="flex: 1; font-size: 14px; font-weight: 600; text-align: start">{{k.name}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px; font-weight: 600; color: {{k.fg}}">%{{k.m}}</span></div>
+<span style="height: 6px; border-radius: 3px; background: {{c.sub}}; display: flex; overflow: hidden"><span style="width: {{k.m}}%; background: {{k.bar}}; border-radius: 3px"></span></span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.text3}}">{{k.meta}}</span>
+</div>
+</sc-for>
+</section>
+
+<section style="border-radius: 18px; background: {{c.card}}; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: center; gap: 10px">
+<span style="width: 28px; height: 28px; border-radius: 8px; background: {{c.bad}}; color: {{c.onBad}}; display: flex; align-items: center; justify-content: center; transform: rotate(-8deg)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l9 16H3z M12 10v4 M12 17h.01"></path></svg></span>
+<h2 style="margin: 0; font-size: 16px; font-weight: 700">{{s.topWeak}}</h2>
+</div>
+<sc-for list="{{gWeak}}" as="w" hint-placeholder-count="5">
+<div style="display: flex; align-items: center; gap: 10px; border-top: 1px solid {{c.line}}; padding-top: 8px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}; width: 14px">{{w.i}}</span>
+<span dir="ltr" lang="tr" style="flex: 1; display: flex; flex-direction: column; gap: 1px; text-align: start"><span style="font-size: 14px; font-weight: 600">{{w.t}}</span><span style="font-size: 11px; color: {{c.text3}}">{{w.c}}</span></span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.bad}}">%{{w.m}}</span>
+</div>
+</sc-for>
+</section>
+
+<section style="border-radius: 18px; background: {{c.card}}; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 16px; font-weight: 700">{{s.wordsAll}}</h2>
+<div dir="ltr" style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{gWords}}" as="w" hint-placeholder-count="6"><span style="height: 30px; padding: 0 10px; border-radius: 8px; background: {{c.sub}}; display: flex; align-items: center; gap: 6px; font-size: 13px"><span style="border-bottom: 1.5px dotted {{c.priText}}">{{w.t}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.text3}}">×{{w.n}}</span></span></sc-for>
+</div>
+</section>
+<button onClick="{{toQuiz}}" style="height: {{btnH}}px; border: 0; border-radius: {{btnR}}px; background: {{c.pri}}; color: #FFFCF6; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">{{s.genReview}}</button>
+</sc-if>
+
+<sc-if value="{{v.examLike}}" hint-placeholder-val="{{ false }}">
+<section style="border-radius: 20px; background: {{c.examBg}}; color: #FFFCF6; padding: 16px; display: flex; align-items: center; gap: 14px">
+<div style="display: flex; flex-direction: column; align-items: center; width: 74px; flex: none"><span style="font-size: 40px; font-weight: 700; line-height: 1; letter-spacing: -0.03em">11</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.08em; opacity: .85">{{s.daysLeft}}</span></div>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 3px"><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; color: #F2B33D">{{s.examWeek}}</span><span style="font-size: 16px; font-weight: 700">{{s.examRange}}</span><span style="font-size: 12px; opacity: .85">{{s.fromCal}}</span></div>
+<button onClick="{{openSetWeek}}" style="height: 36px; padding: 0 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,.35); background: transparent; color: #FFFCF6; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; flex: none">{{s.change}}</button>
+</section>
+
+<div role="radiogroup" aria-label="{{s.typeQ}}" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<sc-for list="{{modes}}" as="m" hint-placeholder-count="2">
+<button role="radio" aria-checked="{{m.on}}" onClick="{{m.pick}}" style="min-height: 112px; border-radius: 16px; border: {{m.border}}; background: {{m.bg}}; color: {{c.text}}; padding: 12px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; font-family: inherit; text-align: start; cursor: pointer">
+<span style="width: 32px; height: 32px; border-radius: 9px; background: {{m.iconBg}}; color: {{m.iconFg}}; display: flex; align-items: center; justify-content: center; transform: rotate(-8deg)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{m.d}}"></path></svg></span>
+<span style="font-size: 14px; font-weight: 700; line-height: 1.25">{{m.t}}</span>
+<span style="font-size: 11px; line-height: 1.35; color: {{c.text3}}">{{m.s}}</span>
+</button>
+</sc-for>
+</div>
+
+<section style="border-radius: 18px; background: {{c.card}}; padding: 6px 14px; display: flex; flex-direction: column">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; color: {{c.text3}}; padding: 8px 0 4px">{{listLabel}}</span>
+<sc-for list="{{examCourses}}" as="k" hint-placeholder-count="4">
+<button role="{{k.role}}" aria-checked="{{k.on}}" onClick="{{k.pick}}" style="min-height: 58px; border: 0; border-top: 1px solid {{c.line}}; background: transparent; color: {{c.text}}; display: flex; align-items: center; gap: 12px; padding: 6px 0; font-family: inherit; text-align: start; cursor: pointer">
+<span style="width: 22px; height: 22px; border-radius: {{k.shapeR}}px; border: {{k.ring}}; background: {{k.fill}}; color: #FFFCF6; box-sizing: border-box; display: flex; align-items: center; justify-content: center; flex: none"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{k.check}}"></path></svg></span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span dir="ltr" lang="tr" style="font-size: 14px; font-weight: 600; text-align: start">{{k.name}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.text3}}">{{k.meta}}</span></span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; padding: 4px 8px; border-radius: 6px; background: {{k.dateBg}}; color: {{k.dateFg}}">{{k.date}}</span>
+</button>
+</sc-for>
+</section>
+
+<section style="border-radius: 18px; background: {{c.card}}; padding: 12px 14px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: center; gap: 10px">
+<span style="flex: 1; font-size: 14px">{{s.qCount}}</span>
+<div role="radiogroup" aria-label="{{s.qCount}}" style="display: flex; gap: 4px; padding: 3px; border-radius: {{segR}}px; background: {{c.sub}}">
+<sc-for list="{{counts}}" as="q" hint-placeholder-count="3"><button role="radio" aria-checked="{{q.on}}" onClick="{{q.pick}}" style="height: 32px; padding: 0 12px; border: 0; border-radius: {{segIR}}px; background: {{q.bg}}; color: {{q.fg}}; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 12px; font-weight: 600; box-shadow: {{q.shadow}}; cursor: pointer">{{q.n}}</button></sc-for>
+</div>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; border-top: 1px solid {{c.line}}; padding-top: 12px">
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px">{{s.focusWeak}}</span><span style="font-size: 11px; color: {{c.text3}}">{{s.focusWeakS}}</span></span>
+<span role="switch" aria-checked="true" style="width: 46px; height: 28px; border-radius: 14px; background: {{c.pri}}; display: flex; align-items: center; justify-content: flex-end; padding: 0 3px; box-sizing: border-box; flex: none"><span style="width: 22px; height: 22px; border-radius: 11px; background: #FFFCF6"></span></span>
+</div>
+</section>
+<button onClick="{{startExam}}" style="height: {{btnH}}px; border: 0; border-radius: {{btnR}}px; background: {{c.pri}}; color: #FFFCF6; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer; flex: none">{{startLabel}}</button>
+</sc-if>
+</div>
+
+<sc-if value="{{v.setWeek}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{closeSheet}}" style="position: absolute; inset: 0; background: {{c.scrim}}"></div>
+<section role="dialog" aria-label="{{s.setT}}" style="position: absolute; left: 0; right: 0; bottom: 0; border-radius: {{sheetR}}px {{sheetR}}px 0 0; background: {{c.card}}; padding: 8px 20px {{bottomPad}}px; display: flex; flex-direction: column; gap: 12px">
+<span aria-hidden="true" style="align-self: center; width: 36px; height: 5px; border-radius: 3px; background: {{c.line}}"></span>
+<div style="display: flex; flex-direction: column; gap: 3px"><h2 style="margin: 0; font-size: 19px; font-weight: 700">{{s.setT}}</h2><span style="font-size: 13px; color: {{c.text3}}">{{s.setS}}</span></div>
+<div role="radiogroup" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: {{segR}}px; background: {{c.sub}}">
+<span style="height: 34px; border-radius: {{segIR}}px; background: {{c.card}}; box-shadow: 0 1px 3px rgba(0,0,0,.12); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600">{{s.midterm}}</span>
+<span style="height: 34px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: {{c.text2}}">{{s.final}}</span>
+<span style="height: 34px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: {{c.text2}}">{{s.makeup}}</span>
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between"><span style="font-size: 15px; font-weight: 700">{{s.month}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.priText}}">{{s.examRange}}</span></div>
+<div dir="ltr" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); row-gap: 4px">
+<sc-for list="{{wd}}" as="w" hint-placeholder-count="7"><span style="text-align: center; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.text3}}; padding-bottom: 2px">{{w}}</span></sc-for>
+<sc-for list="{{cal}}" as="d" hint-placeholder-count="35">
+<span style="height: 36px; display: flex; align-items: center; justify-content: center; background: {{d.band}}; border-radius: {{d.r}}">
+<span style="width: 32px; height: 32px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: {{d.fw}}; background: {{d.bg}}; color: {{d.fg}}">{{d.n}}</span>
+</span>
+</sc-for>
+</div>
+<div dir="ltr" lang="tr" style="display: flex; flex-direction: column; gap: 6px; border-top: 1px solid {{c.line}}; padding-top: 10px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; color: {{c.text3}}; text-align: left">{{s.perCourse}}</span>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; font-size: 12px">
+<span style="padding: 6px 8px; border-radius: 8px; background: {{c.sub}}">{{_t.k985}} <b>{{_t.k162}}</b></span>
+<span style="padding: 6px 8px; border-radius: 8px; background: {{c.sub}}">{{_t.k2124}} <b>{{_t.k181}}</b></span>
+<span style="padding: 6px 8px; border-radius: 8px; background: {{c.sub}}">{{_t.k976}} <b>{{_t.k187}}</b></span>
+<span style="padding: 6px 8px; border-radius: 8px; background: {{c.sub}}">{{_t.k971}} <b>{{_t.k191}}</b></span>
+</div>
+</div>
+<button onClick="{{closeSheet}}" style="height: {{btnH}}px; border: 0; border-radius: {{btnR}}px; background: {{c.pri}}; color: #FFFCF6; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{s.save}}</button>
+</section>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"platform":{"editor":"enum","options":["ios","android"],"default":"ios"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"variant":{"editor":"enum","options":["lesson","general","exam","examAll","setWeek"],"default":"lesson"},"go":{"editor":null},"live":{"editor":null},"$preview":{"width":390,"height":844}}'>
+const _I18N = {k: [" sınavını başlat", "(s. 13)", "(s. 14)", "14 dk · s. 14", "19 Eki", "2 PDF · 1 zayıf konu", "2 PDF · 4 zayıf konu", "20 Eki", "21 Eki", "23 Eki", "3 PDF · 6 zayıf konu", "9 dk · s. 13", "ACE ile yıkılan, öksürüğe yol açan peptit", "ACE inhibitörleri", "ACE inhibitörü yan etkileri", "ACE inhibitörü yan etkileri · anjiyoödem", "Alfa-1 bloker ilk doz etkisi", "Alfa-1 blokerler · ilk doz etkisi", "Anjiyotensin II oluşumunu azaltan ilaç grubu", "Anjiyoödem", "Antidot", "Ayağa kalkınca kan basıncının ani düşmesi", "Ağır metal antidotları", "BU DÖNEM · 4 DERS · 9 PDF", "Beta-laktamaz inhibitörleri", "Biyoyararlanım", "Bradikinin", "Bu ders", "Bu dönemin tüm derslerinden tek sınav", "Bütünleme", "BİR DERS SEÇ", "Cevaplanmadı", "Ct", "Cu", "DERS BAZINDA SINAV GÜNLERİ", "Deri ve mukozada ani, derin şişlik", "Ders özeti", "Derse özel sınav", "Derslere göre durum", "Değiştir", "Dokunduğun kelimeler", "Ekim 2026", "Emin olduğun hata", "En zayıf 5 konu · tüm dersler", "En çok dokunduğun kelimeler", "Farm. Mikrobiyoloji ·", "Farm. Mikrobiyoloji · s. 17", "Farm. Teknoloji III ·", "Farmakoterapi", "Farmakoterapi ·", "Farmakoterapi · Diyabet · s. 9", "Farmakoterapi · Hipertansiyon · s. 13", "Farmasötik Mikrobiyoloji", "Farmasötik Teknoloji III", "Final", "Genel sınav", "Genel sınavı başlat", "Genel tekrarı başlat", "Genel özet", "Geri", "GÜN", "GÜN KALDI", "Hipertansif kriz · acil tedavi", "Hipertansiyon, Diyabet · 3 zayıf konu", "Hoca kontrendikasyonlar için “sınavda soruyorum” dedi. Bu konular özetinde ve sınavlarında daha ağırlıklı.", "Hocanın derste vurguladıkları", "HİPERTANSİYON · SINAV 84/100 · 8 EKİM", "Kartlara ekle", "Kaydet", "Kontrendikasyonlar · ARB ve gebelik", "Ortostatik hipotansiyon", "Parasetamol toksisitesi · N-asetilsistein", "Pe", "Pt", "Pz", "S.", "SES KAYDINDAN · 52 DK", "SINAV HAFTASI", "SINAVA GİRECEK DERSLER", "Sa", "Sayfaları oku", "Soru sayısı", "Soruların yarısı zayıf konulardan gelir", "Sınav", "Sınav haftanı gir", "Sınav haftası yaklaşıyor", "Sınav merkezi", "Sınav türü", "TEKRAR İÇİN KISA ÖZET · PDF'TEN", "Takviminden alındı", "Tek bir ders, ör. yalnızca Toksikoloji", "Tiyazidlerin kontrendikasyonları", "Toksikoloji", "Toksikoloji ·", "Toksikoloji · s. 15", "Toksikoloji · s. 8", "Uygulama hatırlatmaları ve sınavları buna göre hazırlar.", "Vize", "Vize · 19–23 Ekim", "VİZE HAFTASINA HAZIRLIK", "Yanlış cevap", "Yazılıda eksik", "Zayıf konulara ağırlık ver", "Zayıf konulardan 10 soru", "Zayıf olduğun konular", "kontrendikasyonu; gebelik değil", "soru hazır", "zorunlu", "Ça", "İnsülin türleri ve etki süreleri", "Şelasyon", "• ACE inhibitörleri ve ARB'ler gebelikte kontrendike", "• Gut → tiyazidlerin", "• Kuru öksürük ACE inhibitörü; alfa-1 bloker ilk dozu → ortostatik hipotansiyon", "Hocanın tarzında"], en: [" — start exam", "(p. 13)", "(p. 14)", "14 min · p. 14", "19 Oct", "2 PDFs · 1 weak topic", "2 PDFs · 4 weak topics", "20 Oct", "21 Oct", "23 Oct", "3 PDFs · 6 weak topics", "9 min · p. 13", "Peptide broken down by ACE that causes cough", "ACE inhibitors", "ACE inhibitor side effects", "ACE inhibitor side effects · angioedema", "Alpha-1 blocker first-dose effect", "Alpha-1 blockers · first-dose effect", "Drug group that reduces angiotensin II formation", "Angioedema", "Antidote", "Sudden drop in blood pressure on standing", "Heavy metal antidotes", "THIS TERM · 4 COURSES · 9 PDF", "Beta-lactamase inhibitors", "Bioavailability", "Bradykinin", "This course", "One exam from all your courses this term", "Make-up exam", "CHOOSE A COURSE", "Not answered", "Sa", "Fr", "EXAM DAYS BY COURSE", "Sudden, deep swelling of the skin and mucosa", "Lesson summary", "Course-specific exam", "Status by course", "Change", "Words you tapped", "October 2026", "Confident mistake", "5 weakest topics · all courses", "Words you tapped most", "Pharm. Microbiology ·", "Pharm. Microbiology · p. 17", "Pharm. Technology III ·", "Pharmacotherapy", "Pharmacotherapy ·", "Pharmacotherapy · Diabetes · p. 9", "Pharmacotherapy · Hypertension · p. 13", "Pharmaceutical Microbiology", "Pharmaceutical Technology III", "Final", "General exam", "Start general exam", "Start general review", "Overall summary", "Back", "DAYS", "DAYS LEFT", "Hypertensive crisis · emergency treatment", "Hypertension, Diabetes · 3 weak topics", "The lecturer said “I'll ask this in the exam” about contraindications. These topics weigh more in your summary and exams.", "What the lecturer stressed in class", "HYPERTENSION · EXAM 84/100 · OCT 8", "Add to cards", "Save", "Contraindications · ARBs and pregnancy", "Orthostatic hypotension", "Paracetamol toxicity · N-acetylcysteine", "Th", "Mo", "Su", "p.", "FROM AUDIO RECORDING · 52 MIN", "EXAM WEEK", "COURSES WITH EXAMS", "Tu", "Read pages", "Number of questions", "Half the questions come from weak topics", "Exam", "Enter your exam week", "Exam week is coming", "Exam center", "Exam type", "SHORT REVIEW SUMMARY · FROM PDF", "Taken from your calendar", "A single course, e.g. only Toxicology", "Contraindications of thiazides", "Toxicology", "Toxicology ·", "Toxicology · p. 15", "Toxicology · p. 8", "The app prepares reminders and exams based on this.", "Midterm", "Midterm · Oct 19–23", "MIDTERM WEEK PREP", "Wrong answer", "Missing in written exam", "Focus on weak topics", "10 questions from weak topics", "Topics you're weak in", "contraindication; not pregnancy", "questions ready", "absolute", "We", "Insulin types and durations of action", "Chelation", "• ACE inhibitors and ARBs are contraindicated in pregnancy", "• Gout → thiazides'", "• Dry cough → ACE inhibitor; alpha-1 blocker first dose → orthostatic hypotension", "In your teacher's style"], fa: [" — شروع امتحان", "(ص. 13)", "(ص. 14)", "14 دقیقه · ص. 14", "19 اکتبر", "2 PDF · 1 موضوع ضعیف", "2 PDF · 4 موضوع ضعیف", "20 اکتبر", "21 اکتبر", "23 اکتبر", "3 PDF · 6 موضوع ضعیف", "9 دقیقه · ص. 13", "پپتیدی که ACE تجزیه‌اش می‌کند و سرفه می‌دهد", "مهارکننده‌های ACE", "عوارض مهارکنندهٔ ACE", "عوارض مهارکنندهٔ ACE · آنژیوادم", "اثر دوز اول مسدودکنندهٔ آلفا-1", "مسدودکننده‌های آلفا-1 · اثر دوز اول", "گروه دارویی کاهنده تولید آنژیوتانسین II", "آنژیوادم", "پادزهر", "افت ناگهانی فشار خون هنگام ایستادن", "پادزهرهای فلزات سنگین", "این ترم · 4 درس · 9 PDF", "مهارکننده‌های بتالاکتاماز", "فراهمی زیستی", "برادی‌کینین", "این درس", "یک امتحان از همه‌ی درس‌های این ترم", "امتحان جبرانی", "یک درس انتخاب کن", "پاسخ داده نشد", "ش", "ج", "روزهای امتحان به تفکیک درس", "تورم ناگهانی و عمیق پوست و مخاط", "خلاصه درس", "آزمون مخصوص درس", "وضعیت به تفکیک درس", "تغییر", "واژه‌هایی که لمس کردی", "اکتبر 2026", "اشتباه با اطمینان", "5 مبحث ضعیف‌تر · همه درس‌ها", "کلماتی که بیشتر لمس کردی", "میکروب‌شناسی دارویی ·", "میکروب‌شناسی دارویی · ص. 17", "فناوری دارویی III ·", "دارودرمانی", "دارودرمانی ·", "دارودرمانی · دیابت · ص. 9", "دارودرمانی · فشار خون بالا · ص. 13", "میکروب‌شناسی دارویی", "فناوری دارویی III", "پایان‌ترم", "امتحان جامع", "شروع امتحان جامع", "شروع مرور کلی", "خلاصه کلی", "بازگشت", "روز", "روز مانده", "بحران فشار خون بالا · درمان اورژانسی", "فشار خون بالا، دیابت · 3 مبحث ضعیف", "استاد درباره موارد منع مصرف گفت «در امتحان می‌پرسم». این مباحث در خلاصه و امتحان‌هایت وزن بیشتری دارند.", "تأکیدهای استاد سر کلاس", "فشار خون بالا · امتحان 84/100 · 8 اکتبر", "به کارت‌ها اضافه کن", "ذخیره", "موارد منع مصرف · ARB و بارداری", "افت فشار خون وضعیتی", "سمیت پاراستامول · N-استیل‌سیستئین", "پ", "د", "ی", "ص.", "از ضبط صدا · 52 دقیقه", "هفته امتحان", "درس‌های امتحانی", "سه", "خواندن صفحه‌ها", "تعداد سؤال‌ها", "نیمی از سؤال‌ها از موضوعات ضعیف است", "امتحان", "هفته امتحانت را وارد کن", "هفته امتحان نزدیک است", "مرکز امتحان", "نوع امتحان", "خلاصه کوتاه برای مرور · از PDF", "از تقویمت گرفته شد", "یک درس، مثلاً فقط سم‌شناسی", "منع مصرف‌های تیازیدها", "سم‌شناسی", "سم‌شناسی ·", "سم‌شناسی · ص. 15", "سم‌شناسی · ص. 8", "برنامه یادآورها و آزمون‌ها را بر این اساس آماده می‌کند.", "میان‌ترم", "میان‌ترم · 19–23 اکتبر", "آمادگی برای هفته میان‌ترم", "جواب غلط", "کمبود در امتحان تشریحی", "روی مباحث ضعیف تمرکز کن", "10 سؤال از مباحث ضعیف", "مباحثی که در آن‌ها ضعیفی", "منع مصرف تیازیدهاست؛ نه بارداری", "سؤال آماده", "مطلق", "چ", "انواع انسولین و مدت اثر آن‌ها", "شلاته کردن", "• مهارکننده‌های ACE و ARBها در بارداری منع مصرف دارند", "• نقرس → منع مصرف", "• سرفه خشک ← مهارکننده ACE؛ دوز اول آلفا-1 بلاکر ← افت فشار وضعیتی", "به سبک استادت"], ar: [" — ابدأ الامتحان", "(ص 13)", "(ص 14)", "14 د · ص 14", "19 أكتوبر", "2 PDF · 1 موضوع ضعيف", "2 PDF · 4 مواضيع ضعيفة", "20 أكتوبر", "21 أكتوبر", "23 أكتوبر", "3 PDF · 6 مواضيع ضعيفة", "9 د · ص. 13", "ببتيد يكسّره ACE ويسبب السعال", "مثبطات ACE", "الآثار الجانبية لمثبطات ACE", "الآثار الجانبية لمثبطات ACE · الوذمة الوعائية", "تأثير الجرعة الأولى لحاصرات ألفا-1", "حاصرات ألفا-1 · تأثير الجرعة الأولى", "مجموعة دوائية تقلل تكوين الأنجيوتنسين II", "الوذمة الوعائية", "ترياق", "انخفاض مفاجئ في ضغط الدم عند الوقوف", "ترياقات المعادن الثقيلة", "هذا الفصل · 4 مواد · 9 PDF", "مثبطات بيتا لاكتاماز", "التوافر الحيوي", "البراديكينين", "هذه المادة", "امتحان واحد من جميع مواد هذا الفصل", "امتحان الإعادة", "اختر مادة", "لم تتم الإجابة", "س", "ج", "أيام الامتحانات حسب المادة", "تورّم مفاجئ وعميق في الجلد والأغشية المخاطية", "ملخص الدرس", "امتحان خاص بالمادة", "الحالة حسب المادة", "تغيير", "الكلمات التي لمستها", "أكتوبر 2026", "خطأ عن ثقة", "أضعف 5 مواضيع · كل المواد", "الكلمات التي لمستها أكثر", "الأحياء الدقيقة الصيدلانية ·", "الأحياء الدقيقة الصيدلانية · ص. 17", "التقنية الصيدلانية III ·", "العلاج الدوائي", "العلاج الدوائي ·", "العلاج الدوائي · السكري · ص. 9", "العلاج الدوائي · ارتفاع ضغط الدم · ص. 13", "الأحياء الدقيقة الصيدلانية", "التقنية الصيدلانية III", "النهائي", "امتحان شامل", "ابدأ الامتحان الشامل", "ابدأ المراجعة العامة", "ملخص عام", "رجوع", "يوم", "يوم متبقٍ", "أزمة ارتفاع ضغط الدم · العلاج الإسعافي", "ارتفاع ضغط الدم، السكري · 3 مواضيع ضعيفة", "قال الأستاذ عن موانع الاستعمال “سأسأل عنها في الامتحان”. لهذه المواضيع وزن أكبر في ملخصك وامتحاناتك.", "ما ركّز عليه الأستاذ في الدرس", "ارتفاع ضغط الدم · امتحان 84/100 · 8 أكتوبر", "أضف إلى البطاقات", "حفظ", "مضادات الاستطباب · ARB والحمل", "هبوط الضغط الانتصابي", "سمية الباراسيتامول · N-أسيتيل سيستئين", "خ", "ن", "ح", "ص.", "من التسجيل الصوتي · 52 د", "أسبوع الامتحانات", "المواد التي ستُمتحن فيها", "ث", "اقرأ الصفحات", "عدد الأسئلة", "نصف الأسئلة من المواضيع الضعيفة", "امتحان", "أدخل أسبوع امتحاناتك", "أسبوع الامتحانات يقترب", "مركز الامتحانات", "نوع الامتحان", "ملخص قصير للمراجعة · من PDF", "مأخوذ من تقويمك", "مادة واحدة، مثل علم السموم فقط", "مضادات استطباب الثيازيدات", "علم السموم", "علم السموم ·", "علم السموم · ص. 15", "علم السموم · ص. 8", "يجهّز التطبيق التذكيرات والاختبارات بناءً على ذلك.", "النصفي", "النصفي · 19–23 أكتوبر", "التحضير لأسبوع النصفي", "إجابة خاطئة", "نقص في الامتحان المقالي", "ركّز على المواضيع الضعيفة", "10 أسئلة من المواضيع الضعيفة", "المواضيع التي أنت ضعيف فيها", "مضاد استطباب؛ وليس الحمل", "سؤال جاهز", "المطلق", "أر", "أنواع الإنسولين ومدة تأثيرها", "الاستخلاب", "• مثبطات ACE وARB مضاد استطبابها في الحمل", "• النقرس → مضاد استطباب", "• السعال الجاف ← مثبط ACE؛ الجرعة الأولى من حاصر ألفا-1 ← هبوط الضغط الانتصابي", "بأسلوب أستاذك"]};
+let _lang = 'tr', _M = null; const _TC = {};
+const _x = (s) => { if (_lang === 'tr' || !_I18N[_lang]) return s; if (!_M) { _M = {}; _I18N.k.forEach((k, i) => { _M[k] = i; }); } const i = _M[s]; return i == null ? s : _I18N[_lang][i]; };
+const _TK = {"k99": "(s. 13)", "k100": "(s. 14)", "k157": "14 dk · s. 14", "k162": "19 Eki", "k181": "20 Eki", "k187": "21 Eki", "k191": "23 Eki", "k273": "9 dk · s. 13", "k300": "ACE inhibitörü yan etkileri", "k971": "Farm. Mikrobiyoloji ·", "k976": "Farm. Teknoloji III ·", "k985": "Farmakoterapi ·", "k2112": "Tiyazidlerin kontrendikasyonları", "k2124": "Toksikoloji ·", "k2380": "kontrendikasyonu; gebelik değil", "k2447": "zorunlu", "k2644": "• ACE inhibitörleri ve ARB'ler gebelikte kontrendike", "k2647": "• Gut → tiyazidlerin", "k2648": "• Kuru öksürük ACE inhibitörü; alfa-1 bloker ilk dozu → ortostatik hipotansiyon", "k2761": "Hocanın tarzında"};
+const _PT = {};
+const _tt = () => { if (!_TC[_lang]) { const o = {}; Object.keys(_TK).forEach((k) => { o[k] = (_PT[k] && _lang !== 'tr') ? (_PT[k][_lang] || _x(_TK[k])) : _x(_TK[k]); }); _TC[_lang] = o; } return _TC[_lang]; };
+
+class Component extends DCLogic {
+  renderVals() { const _p = this.props || {}, _s = this.state || {}; _lang = _s.lang || _p.lang || 'tr'; const r = this._rv0(); if (r && typeof r === 'object') { r._t = _tt(); r._dir = (_lang === 'fa' || _lang === 'ar') ? 'rtl' : 'ltr'; r._ai = this._aiDark ? { bg: '#F2B33D', fg: '#241C14', tx: '#EFE8DC' } : { bg: '#9C2F3A', fg: '#FFF6E6', tx: '#2A2420' }; } return r; }
+  _rv0() {
+    const p = this.props, st = this.state || {};
+    const ios = (p.platform || 'ios') === 'ios';
+    const dark = p.theme === 'dark';
+    const lang = p.lang || 'tr';
+    const rtl = lang === 'fa' || lang === 'ar';
+    const c = dark
+      ? { bg: '#15120F', card: '#211C18', sub: '#2B2520', seg: '#463D35', text: '#EFE8DC', text2: '#BDB2A4', text3: '#9A8F82', line: '#3A322B', pri: '#B23A47', priText: '#F09AA3', priSoft: '#3A2027', amb: '#F2B33D', ambText: '#F2C46E', ambSoft: '#3A2F1A', ok: '#5BC893', bad: '#F27A70', onBad: '#2A0F0D', badSoft: '#3D1F1F', blue: '#8DB4F5', blueSoft: '#1E2C45', examBg: '#2E2721', scrim: 'rgba(0,0,0,.6)' }
+      : { bg: '#F4EFE6', card: '#FFFCF6', sub: '#F1EBE0', seg: '#FFFCF6', text: '#2A2420', text2: '#6E645A', text3: '#776C60', line: '#E6DDCF', pri: '#9C2F3A', priText: '#9C2F3A', priSoft: '#F7E7E9', amb: '#F2B33D', ambText: '#83560A', ambSoft: '#FDF1D6', ok: '#1E7A4C', bad: '#C0352B', onBad: '#FFFCF6', badSoft: '#FCE8E6', blue: '#2557A8', blueSoft: '#E5EEFB', examBg: '#2A2420', scrim: 'rgba(18,23,30,.45)' };
+    const T = {
+      tr: { back: _x('Geri'), lessonT: _x('Ders özeti'), lessonS: _x('HİPERTANSİYON · SINAV 84/100 · 8 EKİM'), generalT: _x('Genel özet'), generalS: _x('BU DÖNEM · 4 DERS · 9 PDF'), examT: _x('Sınav merkezi'), examS: _x('VİZE HAFTASINA HAZIRLIK'), tabs: [_x('Bu ders'), _x('Genel özet'), _x('Sınav')], pg: _x('S.'), weakT: _x('Zayıf olduğun konular'), tags: [_x('Emin olduğun hata'), _x('Yanlış cevap'), _x('Cevaplanmadı'), _x('Yazılıda eksik')], wordsT: _x('Dokunduğun kelimeler'), recapT: _x('TEKRAR İÇİN KISA ÖZET · PDF\'TEN'), weakQuiz: _x('Zayıf konulardan 10 soru'), toCards: _x('Kartlara ekle'), readPages: _x('Sayfaları oku'), daysShort: _x('GÜN'), examSoon: _x('Sınav haftası yaklaşıyor'), examRange: _x('Vize · 19–23 Ekim'), byCourse: _x('Derslere göre durum'), topWeak: _x('En zayıf 5 konu · tüm dersler'), wordsAll: _x('En çok dokunduğun kelimeler'), genReview: _x('Genel tekrarı başlat'), daysLeft: _x('GÜN KALDI'), examWeek: _x('SINAV HAFTASI'), fromCal: _x('Takviminden alındı'), change: _x('Değiştir'), typeQ: _x('Sınav türü'), mCourse: _x('Derse özel sınav'), mCourseS: _x('Tek bir ders, ör. yalnızca Toksikoloji'), mAll: _x('Genel sınav'), mAllS: _x('Bu dönemin tüm derslerinden tek sınav'), pickOne: _x('BİR DERS SEÇ'), pickMany: _x('SINAVA GİRECEK DERSLER'), pdfs: 'PDF', qs: _x('soru hazır'), qCount: _x('Soru sayısı'), focusWeak: _x('Zayıf konulara ağırlık ver'), focusWeakS: _x('Soruların yarısı zayıf konulardan gelir'), start1: (n) => n + _x(' sınavını başlat'), startAll: _x('Genel sınavı başlat'), setT: _x('Sınav haftanı gir'), setS: _x('Uygulama hatırlatmaları ve sınavları buna göre hazırlar.'), midterm: _x('Vize'), final: _x('Final'), makeup: _x('Bütünleme'), month: _x('Ekim 2026'), perCourse: _x('DERS BAZINDA SINAV GÜNLERİ'), save: _x('Kaydet'), wd: [_x('Pt'), _x('Sa'), _x('Ça'), _x('Pe'), _x('Cu'), _x('Ct'), _x('Pz')] },
+      en: { back: 'Back', lessonT: 'Lesson summary', lessonS: 'HIPERTANSIYON · EXAM 84/100 · OCT 8', generalT: 'Overall summary', generalS: 'THIS TERM · 4 COURSES · 9 PDFS', examT: 'Exam center', examS: 'PREPARING FOR MIDTERM WEEK', tabs: ['This lesson', 'Overall', 'Exam'], pg: 'P.', weakT: 'Your weak topics', tags: ['Confident mistake', 'Wrong answer', 'Unanswered', 'Missing in written'], wordsT: 'Words you tapped', recapT: 'SHORT REVIEW SUMMARY · FROM PDF', weakQuiz: '10 questions on weak topics', toCards: 'Add to cards', readPages: 'Read the pages', daysShort: 'DAYS', examSoon: 'Exam week is coming', examRange: 'Midterm · Oct 19–23', byCourse: 'Status by course', topWeak: 'Top 5 weak topics · all courses', wordsAll: 'Most-tapped words', genReview: 'Start overall review', daysLeft: 'DAYS LEFT', examWeek: 'EXAM WEEK', fromCal: 'From your calendar', change: 'Change', typeQ: 'Exam type', mCourse: 'Single-course exam', mCourseS: 'One course, e.g. only Toksikoloji', mAll: 'Combined exam', mAllS: 'One exam across all courses this term', pickOne: 'PICK A COURSE', pickMany: 'COURSES IN THE EXAM', pdfs: 'PDF', qs: 'questions ready', qCount: 'Questions', focusWeak: 'Focus on weak topics', focusWeakS: 'Half the questions come from weak topics', start1: (n) => 'Start ' + n + ' exam', startAll: 'Start combined exam', setT: 'Set your exam week', setS: 'Reminders and exams are planned around it.', midterm: 'Midterm', final: _x('Final'), makeup: 'Make-up', month: 'October 2026', perCourse: 'EXAM DAYS BY COURSE', save: 'Save', wd: ['Mo', 'Tu', 'We', 'Th', 'Fr', _x('Sa'), 'Su'] },
+      fa: { back: 'بازگشت', lessonT: 'خلاصهٔ درس', lessonS: 'فشار خون بالا · آزمون ۸۴/۱۰۰ · ۸ اکتبر', generalT: 'خلاصهٔ کلی', generalS: 'این ترم · ۴ درس · ۹ PDF', examT: 'مرکز آزمون', examS: 'آمادگی برای هفتهٔ میان‌ترم', tabs: ['این درس', 'کلی', 'آزمون'], pg: 'ص.', weakT: 'مبحث‌هایی که ضعیفی', tags: ['اشتباه با اطمینان', 'پاسخ نادرست', 'بی‌پاسخ', 'کمبود در تشریحی'], wordsT: 'واژه‌هایی که لمس کردی', recapT: 'خلاصهٔ کوتاه برای مرور · از PDF', weakQuiz: '۱۰ سؤال از مبحث‌های ضعیف', toCards: 'افزودن به کارت‌ها', readPages: 'خواندن صفحه‌ها', daysShort: 'روز', examSoon: 'هفتهٔ امتحان نزدیک است', examRange: 'میان‌ترم · ۱۹ تا ۲۳ اکتبر', byCourse: 'وضعیت هر درس', topWeak: '۵ مبحث ضعیف · همهٔ درس‌ها', wordsAll: 'پرلمس‌ترین واژه‌ها', genReview: 'شروع مرور کلی', daysLeft: 'روز مانده', examWeek: 'هفتهٔ امتحان', fromCal: 'از تقویم تو', change: 'تغییر', typeQ: 'نوع آزمون', mCourse: 'آزمون یک درس', mCourseS: 'فقط یک درس، مثلاً سم‌شناسی', mAll: 'آزمون کلی', mAllS: 'یک آزمون از همهٔ درس‌های این ترم', pickOne: 'یک درس انتخاب کن', pickMany: 'درس‌های آزمون', pdfs: 'PDF', qs: 'سؤال آماده', qCount: 'تعداد سؤال', focusWeak: 'تمرکز روی مبحث‌های ضعیف', focusWeakS: 'نیمی از سؤال‌ها از مبحث‌های ضعیف است', start1: (n) => 'شروع آزمون ' + n, startAll: 'شروع آزمون کلی', setT: 'هفتهٔ امتحانت را وارد کن', setS: 'یادآورها و آزمون‌ها بر اساس آن چیده می‌شوند.', midterm: 'میان‌ترم', final: 'پایان‌ترم', makeup: 'جبرانی', month: 'اکتبر ۲۰۲۶', perCourse: 'روز امتحان هر درس', save: 'ذخیره', wd: ['د', 'س', 'چ', 'پ', 'ج', 'ش', 'ی'] },
+      ar: { back: 'رجوع', lessonT: 'ملخص الدرس', lessonS: 'ارتفاع ضغط الدم · اختبار 84/100 · 8 أكتوبر', generalT: 'الملخص العام', generalS: 'هذا الفصل · 4 مقررات · 9 ملفات', examT: 'مركز الاختبارات', examS: 'الاستعداد لأسبوع الامتحانات النصفية', tabs: ['هذا الدرس', 'عام', 'اختبار'], pg: 'ص.', weakT: 'المواضيع التي تضعف فيها', tags: ['خطأ واثق', 'إجابة خاطئة', 'بلا إجابة', 'نقص في الكتابي'], wordsT: 'الكلمات التي لمستها', recapT: 'ملخص قصير للمراجعة · من الملف', weakQuiz: '10 أسئلة من نقاط الضعف', toCards: 'أضف إلى البطاقات', readPages: 'اقرأ الصفحات', daysShort: 'يوم', examSoon: 'أسبوع الامتحانات يقترب', examRange: 'نصفي · 19–23 أكتوبر', byCourse: 'الحالة حسب المقرر', topWeak: 'أضعف 5 مواضيع · كل المقررات', wordsAll: 'الكلمات الأكثر لمسًا', genReview: 'ابدأ المراجعة العامة', daysLeft: 'يومًا متبقيًا', examWeek: 'أسبوع الامتحانات', fromCal: 'من تقويمك', change: 'تغيير', typeQ: 'نوع الاختبار', mCourse: 'اختبار مقرر واحد', mCourseS: 'مقرر واحد، مثل علم السموم فقط', mAll: 'اختبار شامل', mAllS: 'اختبار واحد من كل مقررات الفصل', pickOne: 'اختر مقررًا', pickMany: 'مقررات الاختبار', pdfs: 'ملف', qs: 'سؤالًا جاهزًا', qCount: 'عدد الأسئلة', focusWeak: 'ركّز على نقاط الضعف', focusWeakS: 'نصف الأسئلة من نقاط الضعف', start1: (n) => 'ابدأ اختبار ' + n, startAll: 'ابدأ الاختبار الشامل', setT: 'أدخل أسبوع امتحانك', setS: 'تُرتَّب التذكيرات والاختبارات وفقه.', midterm: 'نصفي', final: 'نهائي', makeup: 'تكميلي', month: 'أكتوبر 2026', perCourse: 'أيام الامتحان لكل مقرر', save: 'حفظ', wd: ['ن', 'ث', 'ر', 'خ', 'ج', 'س', 'ح'] }
+    };
+    const s = Object.assign({}, T[lang] || T.tr, {
+      tr: { audT: _x('Hocanın derste vurguladıkları'), audS: _x('SES KAYDINDAN · 52 DK'), audNote: _x('Hoca kontrendikasyonlar için “sınavda soruyorum” dedi. Bu konular özetinde ve sınavlarında daha ağırlıklı.') },
+      en: { audT: 'What the lecturer stressed in class', audS: 'FROM RECORDING · 52 MIN', audNote: 'The lecturer said “I ask this in exams” about contraindications. These topics get more weight in your summary and exams.' },
+      fa: { audT: 'تأکیدهای استاد سر کلاس', audS: 'از صدای کلاس · ۵۲ دقیقه', audNote: 'استاد دربارهٔ منع مصرف‌ها گفت «در امتحان می‌پرسم». این مبحث‌ها در خلاصه و آزمون‌هایت وزن بیشتری دارند.' },
+      ar: { audT: 'ما ركّز عليه الأستاذ في المحاضرة', audS: 'من التسجيل · 52 دقيقة', audNote: 'قال الأستاذ عن موانع الاستعمال «أسأل عنها في الامتحان». تأخذ هذه المواضيع وزنًا أكبر في ملخصك واختباراتك.' }
+    }[lang] || {});
+    const variant = st.mode || p.variant || 'lesson';
+    const examMode = st.examMode || (variant === 'examAll' ? 'all' : 'course');
+    const v = { lesson: variant === 'lesson', general: variant === 'general', setWeek: variant === 'setWeek' };
+    v.examLike = variant === 'exam' || variant === 'examAll' || variant === 'setWeek';
+    const go = (a, b, k) => () => { if (p.go) p.go(a, b, k); };
+    const tabIds = ['lesson', 'general', 'exam'];
+    const curTab = v.examLike ? 'exam' : variant;
+    const tabs = tabIds.map((id, i) => {
+      const on = id === curTab;
+      return { label: s.tabs[i], on: on ? 'true' : 'false', bg: on ? c.seg : 'transparent', fg: on ? c.text : c.text2, fw: on ? 600 : 500, shadow: on ? '0 1px 3px rgba(0,0,0,.12)' : 'none', pick: () => this.setState({ mode: id }) };
+    });
+    const tagStyle = [[c.bad, c.badSoft], [c.bad, c.badSoft], [c.ambText, c.ambSoft], [c.blue, c.blueSoft]];
+    const weak = [
+      [_x('Alfa-1 blokerler · ilk doz etkisi'), 13, 0, 25], [_x('Kontrendikasyonlar · ARB ve gebelik'), 14, 1, 40],
+      [_x('Hipertansif kriz · acil tedavi'), 21, 2, 30], [_x('ACE inhibitörü yan etkileri · anjiyoödem'), 13, 3, 55]
+    ].map((w) => ({ t: w[0], p: w[1], tag: s.tags[w[2]], tagFg: tagStyle[w[2]][0], tagBg: tagStyle[w[2]][1], m: w[3], barC: w[3] < 35 ? c.bad : c.amb }));
+    const words = [
+      [_x('Ortostatik hipotansiyon'), _x('Ayağa kalkınca kan basıncının ani düşmesi'), 9], [_x('ACE inhibitörleri'), _x('Anjiyotensin II oluşumunu azaltan ilaç grubu'), 7],
+      [_x('Anjiyoödem'), _x('Deri ve mukozada ani, derin şişlik'), 5], [_x('Bradikinin'), _x('ACE ile yıkılan, öksürüğe yol açan peptit'), 3]
+    ].map((w) => ({ t: w[0], d: w[1], n: w[2] }));
+    const courses = [
+      [_x('Farmakoterapi'), 72, _x('Hipertansiyon, Diyabet · 3 zayıf konu')], [_x('Toksikoloji'), 48, _x('3 PDF · 6 zayıf konu')],
+      [_x('Farmasötik Teknoloji III'), 86, _x('2 PDF · 1 zayıf konu')], [_x('Farmasötik Mikrobiyoloji'), 61, _x('2 PDF · 4 zayıf konu')]
+    ].map((k) => ({ name: k[0], m: k[1], meta: k[2], bar: k[1] < 55 ? c.bad : (k[1] < 75 ? c.amb : c.ok), fg: k[1] < 55 ? c.bad : (k[1] < 75 ? c.ambText : c.ok) }));
+    const gWeak = [
+      [_x('Ağır metal antidotları'), _x('Toksikoloji · s. 8'), 22], [_x('Alfa-1 bloker ilk doz etkisi'), _x('Farmakoterapi · Hipertansiyon · s. 13'), 25],
+      [_x('Parasetamol toksisitesi · N-asetilsistein'), _x('Toksikoloji · s. 15'), 31], [_x('İnsülin türleri ve etki süreleri'), _x('Farmakoterapi · Diyabet · s. 9'), 34],
+      [_x('Beta-laktamaz inhibitörleri'), _x('Farm. Mikrobiyoloji · s. 17'), 38]
+    ].map((w, i) => ({ i: i + 1, t: w[0], c: w[1], m: w[2] }));
+    const gWords = [[_x('Şelasyon'), 11], [_x('Ortostatik hipotansiyon'), 9], [_x('Antidot'), 8], [_x('ACE inhibitörleri'), 7], [_x('Biyoyararlanım'), 6], [_x('Anjiyoödem'), 5]].map((w) => ({ t: w[0], n: w[1] }));
+    const modes = [
+      ['course', s.mCourse, s.mCourseS, 'M3 5.5c2.5-1 5.5-1 9 1v13c-3.5-2-6.5-2-9-1z M21 5.5c-2.5-1-5.5-1-9 1v13c3.5-2 6.5-2 9-1z'],
+      ['all', s.mAll, s.mAllS, 'M4 6h16 M4 12h16 M4 18h16 M8 4v4 M14 10v4 M10 16v4']
+    ].map((m) => {
+      const on = m[0] === examMode;
+      return { t: m[1], s: m[2], d: m[3], on: on ? 'true' : 'false', border: on ? '2px solid ' + c.pri : '1px solid ' + c.line, bg: on ? c.priSoft : c.card, iconBg: on ? c.pri : c.sub, iconFg: on ? '#FFFCF6' : c.text2, pick: () => this.setState({ examMode: m[0] }) };
+    });
+    const sel = st.course != null ? st.course : 1;
+    const allSel = st.allSel || [true, true, true, true];
+    const examCourses = [
+      [_x('Farmakoterapi'), '2 ' + s.pdfs + ' · 116 ' + s.qs, _x('19 Eki')], [_x('Toksikoloji'), '3 ' + s.pdfs + ' · 72 ' + s.qs, _x('20 Eki')],
+      [_x('Farmasötik Teknoloji III'), '2 ' + s.pdfs + ' · 88 ' + s.qs, _x('21 Eki')], [_x('Farmasötik Mikrobiyoloji'), '2 ' + s.pdfs + ' · 64 ' + s.qs, _x('23 Eki')]
+    ].map((k, i) => {
+      const multi = examMode === 'all';
+      const on = multi ? allSel[i] : i === sel;
+      return {
+        name: k[0], meta: k[1], date: k[2], role: multi ? 'checkbox' : 'radio', on: on ? 'true' : 'false',
+        shapeR: multi ? 6 : 11, ring: on ? '0' : '1.5px solid ' + c.text3, fill: on ? c.pri : 'transparent', check: on ? 'M5 12.5l4.5 4.5L19 7' : '',
+        dateBg: on ? c.ambSoft : c.sub, dateFg: on ? c.ambText : c.text2,
+        pick: () => { if (multi) { const a = allSel.slice(); a[i] = !a[i]; this.setState({ allSel: a }); } else this.setState({ course: i }); }
+      };
+    });
+    const cnt = st.cnt || (examMode === 'all' ? 60 : 40);
+    const counts = [20, 40, 60].map((n) => ({ n, on: n === cnt ? 'true' : 'false', bg: n === cnt ? c.seg : 'transparent', fg: n === cnt ? c.text : c.text2, shadow: n === cnt ? '0 1px 3px rgba(0,0,0,.12)' : 'none', pick: () => this.setState({ cnt: n }) }));
+    const cal = [];
+    for (let i = 0; i < 3; i++) cal.push({ n: '', band: 'transparent', r: '0', bg: 'transparent', fg: c.text, fw: 400 });
+    for (let d = 1; d <= 31; d++) {
+      const inW = d >= 19 && d <= 23, edge = d === 19 ? '16px 0 0 16px' : (d === 23 ? '0 16px 16px 0' : '0');
+      cal.push({ n: d, band: inW ? c.priSoft : 'transparent', r: inW ? edge : '0', bg: (d === 19 || d === 23) ? c.pri : (d === 8 ? c.sub : 'transparent'), fg: (d === 19 || d === 23) ? '#FFFCF6' : (inW ? c.priText : c.text), fw: inW || d === 8 ? 700 : 500 });
+    }
+    cal.push({ n: '', band: 'transparent', r: '0', bg: 'transparent', fg: c.text, fw: 400 });
+    const courseName = [_x('Farmakoterapi'), _x('Toksikoloji'), _x('Farmasötik Teknoloji III'), _x('Farmasötik Mikrobiyoloji')][sel];
+    return {
+      c, s, v, lang, tabs, weak, words, courses, gWeak, gWords, modes, examCourses, counts, cal, wd: s.wd,
+      dir: rtl ? 'rtl' : 'ltr', flip: rtl ? -1 : 1,
+      W: ios ? 390 : 412, H: ios ? 844 : 915, topH: ios ? 54 : 36, bottomPad: ios ? 30 : 18,
+      btnR: ios ? 14 : 100, btnH: ios ? 52 : 48, segR: ios ? 10 : 100, segIR: ios ? 8 : 100, sheetR: ios ? 14 : 28,
+      showTabs: true,
+      title: v.lesson ? s.lessonT : (v.general ? s.generalT : s.examT),
+      subtitle: v.lesson ? s.lessonS : (v.general ? s.generalS : s.examS),
+      listLabel: examMode === 'all' ? s.pickMany : s.pickOne,
+      startLabel: examMode === 'all' ? s.startAll : s.start1(courseName),
+      back: go('progress'), toReader: go('reader'), toAudio: go('audio', 'emphasis'), toCards: go('cards'),
+      toQuiz: go('quiz', 'question', 'review'),
+      toExam: () => this.setState({ mode: 'exam' }),
+      openSetWeek: () => this.setState({ mode: 'setWeek' }),
+      closeSheet: () => this.setState({ mode: 'exam' }),
+      startExam: go('quiz', 'question', 'final')
+    };
+  }
+}
+</script>
+</body>
+</html>

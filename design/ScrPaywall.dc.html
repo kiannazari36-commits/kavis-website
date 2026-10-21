@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Abonelik</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+<style>[dir=rtl] .dc-back{transform:scaleX(-1)}[dir=rtl],[dir=rtl] *{letter-spacing:0 !important}</style>
+</helmet>
+<div dir="{{dir}}" lang="{{lang}}" style="width: {{W}}px; height: {{H}}px; box-sizing: border-box; display: flex; flex-direction: column; position: relative; overflow: hidden; background: {{c.bg}}; color: {{c.text}}; font-family: Poppins, Vazirmatn, system-ui, sans-serif">
+<div style="height: {{topH}}px; flex: none"></div>
+<div style="flex: none; display: flex; justify-content: flex-end; padding: 0 12px">
+<button onClick="{{close}}" aria-label="{{s.close}}" style="width: 44px; height: 44px; border-radius: 22px; border: 0; background: {{c.card}}; color: {{c.text2}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12 M18 6L6 18"></path></svg></button>
+</div>
+
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 0 20px 16px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="width: 46px; height: 46px; border-radius: 13px; background: {{c.pri}}; color: #F2B33D; display: flex; align-items: center; justify-content: center; transform: rotate(-8deg)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z M19 16l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"></path></svg></span>
+<h1 style="margin: 6px 0 0; font-size: 28px; line-height: 1.15; font-weight: 700; letter-spacing: -0.02em"><span dir="ltr" style="unicode-bidi: isolate; display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; gap: .14em; line-height: 1"><span style="white-space: nowrap; font-weight: 700; font-size: 1.15em; letter-spacing: .01em; line-height: 1; color: {{_ai.tx}}">K<span style="color: {{_ai.bg}}">A</span>V<span style="position: relative; color: {{_ai.bg}}">I<svg viewBox="0 0 24 24" aria-hidden="true" style="position: absolute; left: 50%; top: -.24em; width: .34em; height: .34em; transform: translateX(-50%); overflow: visible"><path d="M12 0 L14.6 9.4 L24 12 L14.6 14.6 L12 24 L9.4 14.6 L0 12 L9.4 9.4Z" fill="{{_ai.bg}}"></path></svg></span>S</span><span style="font-size: .63em; font-weight: 500; letter-spacing: .1em; opacity: .7; line-height: 1; color: {{_ai.tx}}">STUDY</span></span><span style="display: inline-block; vertical-align: middle; margin-inline-start: 12px; padding: 5px 10px 4px; border-radius: 10px; background: {{_ai.bg}}; color: {{_ai.fg}}; font-size: 13px; font-weight: 700; letter-spacing: .08em; line-height: 1">PREMIUM</span></h1>
+<p style="margin: 0; font-size: 15px; line-height: 1.5; color: {{c.text2}}">{{s.sub}}</p>
+<sc-if value="{{reasonOn}}" hint-placeholder-val="{{ false }}"><span style="align-self: flex-start; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; padding: 8px 12px; border-radius: 12px; background: {{c.ambSoft}}; color: {{c.text}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 11V8a6 6 0 0 1 12 0v3 M5 11h14v10H5z"></path></svg>{{reason}}</span></sc-if>
+</div>
+
+<div role="table" style="flex: none; border-radius: 18px; background: {{c.card}}; overflow: hidden">
+<div role="row" style="display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr); gap: 8px; padding: 12px 14px; border-bottom: 1px solid {{c.line}}; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.08em; color: {{c.text3}}">
+<span role="columnheader"></span><span role="columnheader" style="text-align: center">{{s.free}}</span><span role="columnheader" style="text-align: center; color: {{c.priText}}; font-weight: 600">PREMIUM</span>
+</div>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="7">
+<div role="row" style="display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr); gap: 8px; align-items: center; padding: 10px 14px; border-bottom: {{r.border}}; font-size: 13px">
+<span role="cell" style="line-height: 1.35">{{r.k}}</span>
+<span role="cell" style="text-align: center; color: {{r.freeFg}}; font-size: {{r.freeFs}}px">{{r.free}}</span>
+<span role="cell" style="text-align: center; color: {{c.priText}}; font-weight: 600; font-size: {{r.proFs}}px">{{r.pro}}</span>
+</div>
+</sc-for>
+</div>
+<span style="margin-top: -6px; font-size: 11px; line-height: 1.4; color: {{c.text3}}">{{s.fair}}</span>
+
+<div role="radiogroup" aria-label="{{s.plan}}" style="flex: none; display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{plans}}" as="pl" hint-placeholder-count="2">
+<button role="radio" aria-checked="{{pl.on}}" onClick="{{pl.pick}}" style="position: relative; min-height: 70px; border-radius: 16px; border: {{pl.border}}; background: {{pl.bg}}; color: {{c.text}}; display: flex; align-items: center; gap: 14px; padding: 12px 16px; font-family: inherit; text-align: start; cursor: pointer">
+<span style="width: 22px; height: 22px; border-radius: 11px; border: {{pl.ring}}; box-sizing: border-box; display: flex; align-items: center; justify-content: center; flex: none"><span style="width: 10px; height: 10px; border-radius: 5px; background: {{pl.dot}}"></span></span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 16px; font-weight: 700">{{pl.name}}</span>
+<span style="font-size: 12px; color: {{c.text3}}">{{pl.note}}</span>
+</span>
+<span style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex: none"><span dir="ltr" style="unicode-bidi: isolate; display: {{pl.wasD}}; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}; text-decoration: line-through">{{pl.was}}</span><span dir="ltr" style="unicode-bidi: isolate; font-family: Poppins, Vazirmatn, system-ui, sans-serif; font-size: 18px; font-weight: 700; white-space: nowrap">{{pl.price}}</span></span>
+<sc-if value="{{pl.launch}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -10px; inset-inline-end: 14px; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 6px; background: {{c.pri}}; color: #FFFCF6; transform: rotate(-3deg)">{{s.launch}}</span></sc-if><sc-if value="{{pl.best}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -10px; inset-inline-end: 14px; font-size: 12px; font-weight: 700; padding: 4px 11px; border-radius: 8px; background: #F2B33D; color: #2A2420; transform: rotate(-4deg); box-shadow: 0 3px 8px rgba(42,36,32,.22)">{{s.best}}</span></sc-if>
+</button>
+</sc-for>
+</div>
+</div>
+
+<div style="flex: none; padding: 12px 20px {{bottomPad}}px; display: flex; flex-direction: column; gap: 8px; align-items: center; border-top: 1px solid {{c.line}}; background: {{c.bg}}">
+<button onClick="{{pwCta}}" style="width: 100%; height: {{btnH}}px; border: 0; border-radius: {{btnR}}px; background: {{c.pri}}; color: #FFFCF6; font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer">{{s.cta}}</button>
+<span style="font-size: 11px; line-height: 1.4; color: {{c.text3}}; text-align: center">{{storeNote}}</span>
+<div style="display: flex; gap: 14px; font-size: 12px">
+<button onClick="{{pwRestore}}" style="min-height: 32px; border: 0; background: transparent; padding: 0; color: {{c.text2}}; font-family: inherit; font-size: 12px; text-decoration: underline; cursor: pointer">{{s.restore}}</button>
+<button onClick="{{pwTerms}}" style="min-height: 32px; border: 0; background: transparent; padding: 0; color: {{c.text2}}; font-family: inherit; font-size: 12px; text-decoration: underline; cursor: pointer">{{s.terms}}</button>
+<button onClick="{{pwPrivacy}}" style="min-height: 32px; border: 0; background: transparent; padding: 0; color: {{c.text2}}; font-family: inherit; font-size: 12px; text-decoration: underline; cursor: pointer">{{s.privacy}}</button>
+</div>
+<button onClick="{{close}}" style="min-height: 36px; border: 0; background: transparent; color: {{c.priText}}; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer">{{s.stayFree}}</button>
+</div>
+<sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div role="status" aria-live="polite" style="position: absolute; left: 50%; bottom: {{toastBottom}}px; transform: translateX(-50%); z-index: 50; max-width: 86%; box-sizing: border-box; padding: 12px 18px; border-radius: 22px; background: #2E2721; color: #FBEFD6; font-family: Poppins, Vazirmatn, system-ui, sans-serif; font-size: 14px; line-height: 1.4; text-align: center; box-shadow: 0 12px 30px rgba(42,36,32,.28); pointer-events: none">{{toastMsg}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"platform":{"editor":"enum","options":["ios","android"],"default":"ios"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"variant":{"editor":null},"setPref":{"editor":null},"go":{"editor":null},"live":{"editor":null},"$preview":{"width":390,"height":844}}'>
+const _I18N = {k: ["Asistan soruları", "Ayda 2", "Ayda 20", "Aylık", "Bu hesapta önceki satın alım bulunamadı", "Ders paylaşma", "Ders sonu sınavı ve yazılı değerlendirme", "Ders yükleme", "En avantajlı", "Gizlilik", "Gizlilik politikası açılıyor", "Her dersi sınırsız yükle, asistana istediğin kadar sor, sınavlara hazır gir.", "Kapat", "Koşullar", "Kullanım koşulları açılıyor", "Paylaşmak Premium'a özel", "Plan seç", "Premium · 3 günlük ücretsiz deneme başladı", "Satın alımları geri yükle", "Sesli okuma ve “Ben anlatayım”", "Sınırlı", "Tekrar takvimi ve kartlar", "Terim açıklaması ve çeviri", "Yıllık", "Çevrimdışı okuma Premium'a özel", "ÜCRETSİZ", "Ücretsiz planla devam et", "Çevrimdışı okuma ve tekrar (internetsiz)", "Sınırsız*", "Dönemlik · 5 ay", "Lansmana özel", "3 gün ücretsiz dene", "* Adil kullanım: en hızlı hizmet aylıkta ayda 40 ders ve 1.000 soru, dönemlikte toplam 200 ders ve 5.000 soru, yıllıkta toplam 480 ders ve 12.000 soru. Sonrasında da devam edersin, biraz daha yavaş olur."], en: ["Assistant questions", "2 a month", "20 a month", "Monthly", "No previous purchase found on this account", "Lesson sharing", "End-of-lesson exam and written assessment", "Lesson upload", "Best value", "Privacy", "Opening privacy policy", "Upload every course without limits, ask the assistant all you want, go into exams ready.", "Close", "Terms", "Opening terms of use", "Sharing is Premium-only", "Choose plan", "Premium · 3-day free trial started", "Restore purchases", "Read aloud and “Let me explain”", "Limited", "Review schedule and cards", "Term explanation and translation", "Yearly", "Offline reading is Premium-only", "FREE", "Continue with free plan", "Offline reading and review", "Unlimited*", "5-month term", "Launch offer", "Try free for 3 days", "* Fair use: fastest service for 40 lessons and 1,000 questions a month on Monthly, 200 lessons and 5,000 questions in total on Term, and 480 lessons and 12,000 questions in total on Yearly. After that you can keep going, a little slower."], fa: ["سؤال‌های دستیار", "ماهی 2", "ماهی 20", "ماهانه", "خرید قبلی در این حساب پیدا نشد", "اشتراک‌گذاری درس", "آزمون پایان درس و ارزیابی تشریحی", "بارگذاری درس", "به‌صرفه‌ترین", "حریم خصوصی", "در حال باز کردن سیاست حریم خصوصی", "هر درسی را بی‌محدودیت آپلود کن، هرچه خواستی از دستیار بپرس، آماده سر امتحان برو.", "بستن", "شرایط", "شرایط استفاده باز می‌شود", "اشتراک‌گذاری مخصوص Premium است", "انتخاب برنامه", "Premium · آزمایش رایگان 3 روزه شروع شد", "بازیابی خریدها", "بلندخوانی و «بگذار توضیح بدهم»", "محدود", "برنامه مرور و کارت‌ها", "توضیح اصطلاح و ترجمه", "سالانه", "خواندن آفلاین مخصوص Premium است", "رایگان", "ادامه با طرح رایگان", "مطالعه و مرور آفلاین", "نامحدود*", "ترمی · ۵ ماه", "ویژهٔ عرضه", "۳ روز رایگان امتحان کن", "* استفادهٔ منصفانه: سریع‌ترین سرویس در ماهانه ۴۰ درس و ۱۰۰۰ سؤال در ماه، در ترمی در مجموع ۲۰۰ درس و ۵۰۰۰ سؤال و در سالانه در مجموع ۴۸۰ درس و ۱۲۰۰۰ سؤال. بعد از آن هم ادامه می‌دهی، کمی کندتر."], ar: ["أسئلة المساعد", "2 شهريًا", "20 شهريًا", "شهري", "لم يُعثر على مشتريات سابقة في هذا الحساب", "مشاركة الدرس", "امتحان نهاية الدرس والتقييم الكتابي", "رفع الدرس", "الأوفر", "الخصوصية", "جارٍ فتح سياسة الخصوصية", "ارفع كل المواد بلا حدود، واسأل المساعد كما تشاء، وادخل الامتحانات جاهزًا.", "إغلاق", "الشروط", "جارٍ فتح شروط الاستخدام", "المشاركة حصرية لـ Premium", "اختر خطة", "Premium · بدأت التجربة المجانية 3 أيام", "استعادة المشتريات", "القراءة بصوت عالٍ و«دعني أشرح»", "محدود", "جدول المراجعة والبطاقات", "شرح المصطلح والترجمة", "سنوي", "القراءة دون اتصال خاصة بـ Premium", "مجاني", "تابع بالخطة المجانية", "القراءة والمراجعة دون اتصال", "بلا حدود*", "فصلي · 5 أشهر", "عرض الإطلاق", "جرّب 3 أيام مجانًا", "* استخدام عادل: أسرع خدمة لـ40 درسًا و1000 سؤال شهريًا في الباقة الشهرية، و200 درس و5000 سؤال إجمالًا في باقة الفصل، و480 درسًا و12000 سؤال إجمالًا في الباقة السنوية. بعدها تستمر لكن أبطأ قليلًا."]};
+let _lang = 'tr', _M = null; const _TC = {};
+const _x = (s) => { if (_lang === 'tr' || !_I18N[_lang]) return s; if (!_M) { _M = {}; _I18N.k.forEach((k, i) => { _M[k] = i; }); } const i = _M[s]; return i == null ? s : _I18N[_lang][i]; };
+const _TK = {};
+const _PT = {};
+const _tt = () => { if (!_TC[_lang]) { const o = {}; Object.keys(_TK).forEach((k) => { o[k] = (_PT[k] && _lang !== 'tr') ? (_PT[k][_lang] || _x(_TK[k])) : _x(_TK[k]); }); _TC[_lang] = o; } return _TC[_lang]; };
+
+class Component extends DCLogic {
+  renderVals() { const _p = this.props || {}, _s = this.state || {}; _lang = _s.lang || _p.lang || 'tr'; const r = this._rv0(); if (r && typeof r === 'object') { r._t = _tt(); r._dir = (_lang === 'fa' || _lang === 'ar') ? 'rtl' : 'ltr'; r._ai = this._aiDark ? { bg: '#F2B33D', fg: '#241C14', tx: '#EFE8DC' } : { bg: '#9C2F3A', fg: '#FFF6E6', tx: '#2A2420' }; } return r; }
+  _rv0() {
+    const __st = this.state || {};
+    const say = (m, after) => { this.setState({ toast: m }); clearTimeout(this._tt); this._tt = setTimeout(() => { this.setState({ toast: '' }); if (after) after(); }, 1700); };
+    const p = this.props, st = this.state || {};
+    const ios = (p.platform || 'ios') === 'ios';
+    const dark = p.theme === 'dark'; this._aiDark = dark;
+    const lang = p.lang || 'tr';
+    const rtl = lang === 'fa' || lang === 'ar';
+    const c = dark
+      ? { bg: '#15120F', card: '#211C18', sub: '#2B2520', text: '#EFE8DC', text2: '#BDB2A4', text3: '#9A8F82', line: '#3A322B', pri: '#B23A47', priText: '#F09AA3', priSoft: '#3A2027' }
+      : { bg: '#F4EFE6', card: '#FFFCF6', sub: '#F1EBE0', text: '#2A2420', text2: '#6E645A', text3: '#776C60', line: '#E6DDCF', pri: '#9C2F3A', priText: '#9C2F3A', priSoft: '#F7E7E9' };
+    const T = {
+      tr: { close: _x('Kapat'), sub: _x('Her dersi sınırsız yükle, asistana istediğin kadar sor, sınavlara hazır gir.'), free: _x('ÜCRETSİZ'), rows: [[_x('Ders yükleme'), _x('Ayda 2'), _x('Sınırsız*')], [_x('Asistan soruları'), _x('Ayda 20'), _x('Sınırsız*')], [_x('Sesli okuma ve “Ben anlatayım”'), _x('Sınırlı'), '✓'], [_x('Ders sonu sınavı ve yazılı değerlendirme'), '—', '✓'], [_x('Terim açıklaması ve çeviri'), '✓', '✓'], [_x('Tekrar takvimi ve kartlar'), '✓', '✓'], [_x('Çevrimdışı okuma ve tekrar (internetsiz)'), '✓', '✓'], [_x('Ders paylaşma'), '—', '✓']], plan: _x('Plan seç'), yearly: _x('Yıllık'), yearlyNote: 'Ayda yaklaşık 167 TL · aylığa göre %44 tasarruf', wasY: '3.599,88 TL', wasT: '1.499,95 TL', monthly: _x('Aylık'), monthlyNote: 'İlk aboneler bu fiyatta kalır · istediğin ay iptal et', launch: _x('Lansmana özel'), term: _x('Dönemlik · 5 ay'), termNote: 'Ayda yaklaşık 240 TL · aylığa göre %20 tasarruf', perT: '1.199,99 TL', perY: '1.999,99 TL', perM: '299,99 TL', fair: _x('* Adil kullanım: en hızlı hizmet aylıkta ayda 40 ders ve 1.000 soru, dönemlikte toplam 200 ders ve 5.000 soru, yıllıkta toplam 480 ders ve 12.000 soru. Sonrasında da devam edersin, biraz daha yavaş olur.'), best: _x('En avantajlı'), cta: _x('3 gün ücretsiz dene'), noteI: '3 günlük deneme bitince seçtiğin plan Apple App Store hesabından ücretlendirilir. Ayarlar > Abonelikler’den istediğin zaman iptal edebilirsin.', noteA: '3 günlük deneme bitince seçtiğin plan Google Play hesabından ücretlendirilir. Play Store > Abonelikler’den istediğin zaman iptal edebilirsin.', restore: _x('Satın alımları geri yükle'), terms: _x('Koşullar'), privacy: _x('Gizlilik'), stayFree: _x('Ücretsiz planla devam et') },
+      en: { close: 'Close', sub: 'Upload unlimited lessons, ask the assistant anything, walk into exams prepared.', free: 'FREE', rows: [['Lesson uploads', '2 / month', 'Unlimited*'], ['Assistant questions', '20 / month', 'Unlimited*'], ['Read-aloud and “Let me explain”', 'Limited', '✓'], ['End-of-lesson exam and written feedback', '—', '✓'], ['Term explanations and translation', '✓', '✓'], ['Review calendar and cards', '✓', '✓'], ['Offline reading and review', '✓', '✓'], ['Lesson sharing', '—', '✓']], plan: 'Choose a plan', yearly: 'Yearly', yearlyNote: 'About 167 TL/month · save 44% vs monthly', monthly: 'Monthly', monthlyNote: 'Early subscribers keep this price · cancel any month', perY: '1.999,99 TL', perM: '299,99 TL', term: '5-month term', termNote: 'About 240 TL/month · save 20% vs monthly', perT: '1.199,99 TL', wasY: '3.599,88 TL', wasT: '1.499,95 TL', launch: 'Launch offer', fair: '* Fair use: fastest service for 40 lessons and 1,000 questions a month on Monthly, 200 lessons and 5,000 questions in total on Term, and 480 lessons and 12,000 questions in total on Yearly. After that you can keep going, a little slower.', best: 'Best value', cta: 'Try free for 3 days', noteI: 'After the 3-day trial, your plan is charged to your Apple App Store account. Cancel anytime in Settings > Subscriptions.', noteA: 'After the 3-day trial, your plan is charged to your Google Play account. Cancel anytime in Play Store > Subscriptions.', restore: 'Restore purchases', terms: 'Terms', privacy: 'Privacy', stayFree: 'Continue with free plan' },
+      fa: { close: 'بستن', sub: 'هر تعداد درس بارگذاری کن، هرچه خواستی از دستیار بپرس و آماده سر امتحان برو.', free: 'رایگان', rows: [['بارگذاری درس', 'ماهی ۲', 'نامحدود*'], ['پرسش از دستیار', 'ماهی ۲۰', 'نامحدود*'], ['خواندن صوتی و «من توضیح می‌دهم»', 'محدود', '✓'], ['آزمون پایان درس و ارزیابی تشریحی', '—', '✓'], ['توضیح اصطلاح و ترجمه', '✓', '✓'], ['تقویم مرور و کارت‌ها', '✓', '✓'], ['مطالعه و مرور آفلاین', '✓', '✓'], ['اشتراک‌گذاری درس', '—', '✓']], plan: 'انتخاب طرح', yearly: 'سالانه', yearlyNote: 'حدود ۱۶۷ لیر در ماه · ۴۴٪ صرفه‌جویی نسبت به ماهانه', monthly: 'ماهانه', monthlyNote: 'مشترکان اول با همین قیمت می‌مانند · هر ماه می‌توانی لغو کنی', perY: '1.999,99 TL', perM: '299,99 TL', term: 'ترمی · ۵ ماه', termNote: 'حدود ۲۴۰ لیر در ماه · ۲۰٪ صرفه‌جویی نسبت به ماهانه', perT: '1.199,99 TL', wasY: '3.599,88 TL', wasT: '1.499,95 TL', launch: 'ویژهٔ عرضه', fair: '* استفادهٔ منصفانه: سریع‌ترین سرویس در ماهانه ۴۰ درس و ۱۰۰۰ سؤال در ماه، در ترمی در مجموع ۲۰۰ درس و ۵۰۰۰ سؤال و در سالانه در مجموع ۴۸۰ درس و ۱۲۰۰۰ سؤال. بعد از آن هم ادامه می‌دهی، کمی کندتر.', best: 'به‌صرفه‌ترین', cta: '۳ روز رایگان امتحان کن', noteI: 'پس از دورهٔ آزمایشی ۳ روزه، هزینه از حساب Apple App Store کسر می‌شود. هر زمان از تنظیمات > اشتراک‌ها لغو کن.', noteA: 'پس از دورهٔ آزمایشی ۳ روزه، هزینه از حساب Google Play کسر می‌شود. هر زمان از Play Store > اشتراک‌ها لغو کن.', restore: 'بازیابی خریدها', terms: 'شرایط', privacy: 'حریم خصوصی', stayFree: 'ادامه با طرح رایگان' },
+      ar: { close: 'إغلاق', sub: 'ارفع دروسًا بلا حدود، واسأل المساعد ما تشاء، وادخل الامتحان مستعدًا.', free: 'مجاني', rows: [['رفع الدروس', '2 شهريًا', 'بلا حدود*'], ['أسئلة المساعد', '20 شهريًا', 'بلا حدود*'], ['القراءة الصوتية و«دعني أشرح»', 'محدود', '✓'], ['اختبار نهاية الدرس والتقييم الكتابي', '—', '✓'], ['شرح المصطلحات والترجمة', '✓', '✓'], ['تقويم المراجعة والبطاقات', '✓', '✓'], ['القراءة والمراجعة دون اتصال', '✓', '✓'], ['مشاركة الدروس', '—', '✓']], plan: 'اختر خطة', yearly: 'سنوي', yearlyNote: 'حوالي 167 ليرة شهريًا · توفير 44% مقارنة بالشهري', monthly: 'شهري', monthlyNote: 'المشتركون الأوائل يبقون على هذا السعر · ألغِ في أي شهر', perY: '1.999,99 TL', perM: '299,99 TL', term: 'فصلي · 5 أشهر', termNote: 'حوالي 240 ليرة شهريًا · توفير 20% مقارنة بالشهري', perT: '1.199,99 TL', wasY: '3.599,88 TL', wasT: '1.499,95 TL', launch: 'عرض الإطلاق', fair: '* استخدام عادل: أسرع خدمة لـ40 درسًا و1000 سؤال شهريًا في الباقة الشهرية، و200 درس و5000 سؤال إجمالًا في باقة الفصل، و480 درسًا و12000 سؤال إجمالًا في الباقة السنوية. بعدها تستمر لكن أبطأ قليلًا.', best: 'الأوفر', cta: 'جرّب 3 أيام مجانًا', noteI: 'بعد الفترة التجريبية لمدة 3 أيام تُحتسب الخطة على حساب Apple App Store. ألغِ في أي وقت من الإعدادات > الاشتراكات.', noteA: 'بعد الفترة التجريبية لمدة 3 أيام تُحتسب الخطة على حساب Google Play. ألغِ في أي وقت من Play Store > الاشتراكات.', restore: 'استعادة المشتريات', terms: 'الشروط', privacy: 'الخصوصية', stayFree: 'المتابعة بالخطة المجانية' }
+    };
+    const s = T[lang] || T.tr;
+    const rows = s.rows.map((r, i) => ({ k: r[0], free: r[1], pro: r[2], freeFg: r[1] === '—' ? c.text3 : c.text2, freeFs: r[1].length < 3 ? 15 : 12, proFs: r[2].length < 3 ? 15 : 12, border: i < s.rows.length - 1 ? '1px solid ' + c.line : '0' }));
+    const sel = st.plan || 'y';
+    const plans = [['y', s.yearly, s.yearlyNote, s.perY, true, s.wasY || ''], ['t', s.term || s.yearly, s.termNote || '', s.perT || s.perY, false, s.wasT || ''], ['m', s.monthly, s.monthlyNote, s.perM, false, '', true]].map((k) => {
+      const on = k[0] === sel;
+      return { launch: !!k[6], was: k[5], wasD: k[5] ? 'block' : 'none', name: k[1], note: k[2], price: k[3], best: k[4], on: on ? 'true' : 'false', border: on ? '2px solid ' + c.pri : '1px solid ' + c.line, bg: on ? c.priSoft : c.card, ring: on ? '2px solid ' + c.pri : '1.5px solid ' + c.text3, dot: on ? c.pri : 'transparent', pick: () => this.setState({ plan: k[0] }) };
+    });
+    return { toastOn: !!__st.toast, toastMsg: __st.toast || '', toastBottom: 220,
+      pwCta: () => { if (p.setPref) p.setPref({ premium: true }); say(_x('Premium · 3 günlük ücretsiz deneme başladı'), () => { if (p.go) p.go(p.variant === 'share' ? 'share' : (p.variant === 'offline' ? 'settings' : 'home')); }); }, reasonOn: p.variant === 'share' || p.variant === 'offline', reason: p.variant === 'share' ? _x('Paylaşmak Premium\'a özel') : _x('Çevrimdışı okuma Premium\'a özel'), pwRestore: () => say(_x('Bu hesapta önceki satın alım bulunamadı')), pwTerms: () => say(_x('Kullanım koşulları açılıyor')), pwPrivacy: () => say(_x('Gizlilik politikası açılıyor')),
+      c, s, lang, rows, plans,
+      dir: rtl ? 'rtl' : 'ltr',
+      storeNote: ios ? s.noteI : s.noteA,
+      W: ios ? 390 : 412, H: ios ? 844 : 915, topH: ios ? 54 : 36, bottomPad: ios ? 30 : 16,
+      btnR: ios ? 14 : 100, btnH: ios ? 54 : 52,
+      close: () => { if (p.go) p.go('home'); }
+    };
+  }
+}
+</script>
+</body>
+</html>

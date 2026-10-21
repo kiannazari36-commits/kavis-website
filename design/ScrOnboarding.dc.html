@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Karşılama ve kurulum</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&amp;family=Lora:ital,wght@0,400;0,500;0,600;1,400&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Vazirmatn:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+<style>[dir=rtl] .dc-back{transform:scaleX(-1)}[dir=rtl],[dir=rtl] *{letter-spacing:0 !important}</style>
+</helmet>
+<div dir="{{dir}}" lang="{{lang}}" style="width: {{W}}px; height: {{H}}px; box-sizing: border-box; display: flex; flex-direction: column; position: relative; overflow: hidden; background: {{c.bgGrad}}; color: {{c.text}}; font-family: Poppins, Vazirmatn, system-ui, sans-serif">
+<div style="height: {{topH}}px; flex: none"></div>
+
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 24px; height: 44px; flex: none">
+<div style="display: flex; align-items: center; gap: 10px">
+<span style="font-weight: 600; font-size: 19px; letter-spacing: -0.02em; color: {{c.priText}}"><span dir="ltr" style="unicode-bidi: isolate; display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; gap: .14em; line-height: 1"><span style="white-space: nowrap; font-weight: 700; font-size: 1.15em; letter-spacing: .01em; line-height: 1; color: {{_ai.tx}}">K<span style="color: {{_ai.bg}}">A</span>V<span style="position: relative; color: {{_ai.bg}}">I<svg viewBox="0 0 24 24" aria-hidden="true" style="position: absolute; left: 50%; top: -.24em; width: .34em; height: .34em; transform: translateX(-50%); overflow: visible"><path d="M12 0 L14.6 9.4 L24 12 L14.6 14.6 L12 24 L9.4 14.6 L0 12 L9.4 9.4Z" fill="{{_ai.bg}}"></path></svg></span>S</span><span style="font-size: .63em; font-weight: 500; letter-spacing: .1em; opacity: .7; line-height: 1; color: {{_ai.tx}}">STUDY</span></span></span>
+</div>
+<sc-if value="{{isIntro}}" hint-placeholder-val="{{ false }}">
+<button onClick="{{skip}}" style="border: 0; background: transparent; color: {{c.text2}}; font-family: inherit; font-size: 15px; font-weight: 500; min-height: 44px; padding: 0 4px; cursor: pointer">{{s.skip}}</button>
+</sc-if>
+<sc-if value="{{notIntro}}" hint-placeholder-val="{{ true }}">
+<span style="font-size: 13px; font-weight: 500; color: {{c.text2}}; background: {{c.card}}; border: 1px solid {{c.line}}; padding: 6px 12px; border-radius: 16px">{{stepNo}} / 6</span>
+</sc-if>
+</div>
+
+<sc-if value="{{v.lang}}" hint-placeholder-val="{{ true }}">
+<div style="flex: 1; display: flex; flex-direction: column; padding: 28px 24px 0; gap: 10px; min-height: 0; width: 341px; height: 541px">
+<div style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; letter-spacing: 0.12em; color: {{c.ambText}}">{{s.welcome}}</div>
+<h1 style="margin: 0; font-size: 32px; line-height: 1.12; font-weight: 500; letter-spacing: -0.03em; text-wrap: balance">{{s.langT}}</h1>
+<p style="margin: 0 0 14px; font-size: 15px; line-height: 1.5; color: {{c.text2}}">{{s.langS}}</p>
+<div role="radiogroup" aria-label="{{s.langT}}" style="display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{langs}}" as="o" hint-placeholder-count="4">
+<button role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="display: flex; align-items: center; gap: 14px; min-height: 68px; padding: 0 14px; border-radius: {{r}}px; background: {{c.card}}; border: {{o.border}}; color: {{c.text}}; font-family: inherit; text-align: start; cursor: pointer">
+<span style="width: 44px; height: 44px; border-radius: 22px; background: {{o.chipBg}}; color: {{o.chipFg}}; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 13px; font-weight: 600; flex: none">{{o.code}}</span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 17px; font-weight: 600">{{o.name}}</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}">{{o.note}}</span>
+</span>
+<span style="width: 22px; height: 22px; border-radius: 11px; border: {{o.ring}}; box-sizing: border-box; display: flex; align-items: center; justify-content: center; flex: none">
+<span style="width: 10px; height: 10px; border-radius: 5px; background: {{o.dot}}"></span>
+</span>
+</button>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{v.plan}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; display: flex; flex-direction: column; padding: 24px 24px 0; gap: 10px; min-height: 0">
+<div style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; letter-spacing: 0.12em; color: {{c.ambText}}">2 / 6</div>
+<h1 style="margin: 0; font-size: 28px; line-height: 1.15; font-weight: 500; letter-spacing: -0.03em; text-wrap: balance">{{s.planT}}</h1>
+<p style="margin: 0 0 6px; font-size: 14px; line-height: 1.5; color: {{c.text2}}">{{s.planS}}</p>
+<div style="border-radius: {{r}}px; background: {{c.card}}; border: 1px solid {{c.line}}; padding: 14px; display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 15px; font-weight: 600">{{s.daysQ}}</span>
+<div role="radiogroup" aria-label="{{s.daysQ}}" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{dayOpts}}" as="o" hint-placeholder-count="7">
+<button role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="height: 44px; border-radius: 22px; border: {{o.border}}; background: {{o.bg}}; color: {{o.fg}}; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{o.n}}</button>
+</sc-for>
+</div>
+</div>
+<div style="border-radius: {{r}}px; background: {{c.card}}; border: 1px solid {{c.line}}; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 15px; font-weight: 600">{{s.hoursQ}}</span>
+<div style="display: flex; align-items: center; gap: 12px">
+<button onClick="{{hoursDown}}" aria-label="{{s.less}}" style="width: 48px; height: 48px; border-radius: 24px; border: 1px solid {{c.line}}; background: {{c.sub}}; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"></path></svg></button>
+<span aria-live="polite" style="flex: 1; text-align: center; font-size: 32px; font-weight: 700; letter-spacing: -0.02em">{{hoursLabel}}</span>
+<button onClick="{{hoursUp}}" aria-label="{{s.more}}" style="width: 48px; height: 48px; border-radius: 24px; border: 0; background: {{c.pri}}; color: #FFFCF6; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14 M5 12h14"></path></svg></button>
+</div>
+</div>
+<div style="border-radius: {{r}}px; background: {{c.ambSoft}}; padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start">
+<span style="width: 36px; height: 36px; border-radius: 18px; background: {{c.amb}}; color: #2A2420; display: flex; align-items: center; justify-content: center; flex: none"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a1.5 1.5 0 0 1 1.5 1.5v12A1.5 1.5 0 0 1 19 20H5a1.5 1.5 0 0 1-1.5-1.5v-12A1.5 1.5 0 0 1 5 5z M3.5 10h17 M8 3v4 M16 3v4"></path></svg></span>
+<span style="display: flex; flex-direction: column; gap: 3px">
+<span style="font-size: 15px; font-weight: 700; color: {{c.text}}">{{planSum}}</span>
+<span style="font-size: 12px; line-height: 1.45; color: {{c.text2}}">{{s.planNote}}</span>
+</span>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{v.dept}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; display: flex; flex-direction: column; padding: 28px 24px 0; gap: 10px; min-height: 0">
+<div style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; letter-spacing: 0.12em; color: {{c.ambText}}">3 / 6</div>
+<h1 style="margin: 0; font-size: 32px; line-height: 1.12; font-weight: 500; letter-spacing: -0.03em; text-wrap: balance">{{s.deptT}}</h1>
+<p style="margin: 0 0 14px; font-size: 15px; line-height: 1.5; color: {{c.text2}}">{{s.deptS}}</p>
+<div role="radiogroup" aria-label="{{s.deptT}}" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+<sc-for list="{{depts}}" as="o" hint-placeholder-count="6">
+<button role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 18px; height: 112px; padding: 16px; box-sizing: border-box; border-radius: {{r}}px; background: {{o.bg}}; border: {{o.border}}; color: {{c.text}}; font-family: inherit; text-align: start; cursor: pointer">
+<span style="width: 44px; height: 44px; border-radius: 22px; background: {{o.chipBg}}; color: {{o.chipFg}}; display: flex; align-items: center; justify-content: center">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{o.d}}"></path></svg>
+</span>
+<span style="font-size: 16px; font-weight: 600; line-height: 1.2">{{o.name}}</span>
+</button>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{isIntro}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; display: flex; flex-direction: column; padding: 16px 24px 0; gap: 14px; min-height: 0">
+<div style="height: 360px; border-radius: 30px; background: {{c.card}}; position: relative; overflow: hidden; flex: none; box-shadow: {{c.shadow}}">
+
+<sc-if value="{{v.intro1}}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; left: 34px; top: 46px; width: 170px; height: 230px; border-radius: 10px; background: {{c.sub}}; border: 1px solid {{c.line}}; transform: rotate(-7deg); padding: 18px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 9px">
+<span style="align-self: flex-start; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; font-weight: 600; color: #FFFCF6; background: {{c.pri}}; border-radius: 4px; padding: 2px 6px">PDF</span>
+<span style="height: 8px; width: 80%; border-radius: 4px; background: {{c.line}}"></span>
+<span style="height: 6px; width: 95%; border-radius: 3px; background: {{c.line}}"></span>
+<span style="height: 6px; width: 88%; border-radius: 3px; background: {{c.line}}"></span>
+<span style="height: 6px; width: 92%; border-radius: 3px; background: {{c.line}}"></span>
+<span style="height: 6px; width: 60%; border-radius: 3px; background: {{c.line}}"></span>
+</div>
+<div dir="ltr" style="position: absolute; right: 26px; top: 92px; width: 200px; border-radius: 14px; background: {{c.card}}; border: 1px solid {{c.line}}; box-shadow: 0 12px 30px rgba(27,36,48,.14); transform: rotate(3deg); padding: 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.text3}}">{{_t.k1761}}</span>
+<span style="font-size: 10px; font-weight: 600; color: {{c.ambText}}; background: {{c.ambSoft}}; padding: 2px 7px; border-radius: 4px; transform: skewX(-10deg)">{{_t.k811}}</span>
+</div>
+<p style="margin: 0; font-family: Lora, Vazirmatn, Georgia, serif; font-size: 13px; line-height: 1.5">{{_t.k1863}} <span style="border-bottom: 1.5px dotted {{c.priText}}">{{_t.k2368}}</span> {{_t.k2392}}</p>
+</div>
+</sc-if>
+
+<sc-if value="{{v.intro2}}" hint-placeholder-val="{{ false }}">
+<div dir="ltr" style="position: absolute; left: 24px; right: 24px; top: 34px; display: flex; flex-direction: column; gap: 10px">
+<p style="margin: 0; font-family: Lora, Vazirmatn, Georgia, serif; font-size: 16px; line-height: 1.6">{{_t.k349}} <span style="border-bottom: 2px dotted {{c.priText}}; background: {{c.priSoft}}; border-radius: 3px; padding: 0 2px">{{_t.k1567}}</span> {{_t.k2362}}</p>
+<div style="margin-left: 40px; border-radius: 14px; background: {{c.card}}; border: 1px solid {{c.line}}; box-shadow: 0 14px 34px rgba(27,36,48,.16); padding: 14px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; letter-spacing: 0.08em; color: {{c.text3}}">{{_t.k1989}}</span>
+<span style="font-weight: 600; font-size: 14px">{{_t.k1567}}</span>
+<span style="font-size: 12px; line-height: 1.5; color: {{c.text2}}">{{_t.k425}}</span>
+<div style="display: flex; gap: 6px; padding-top: 4px">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; padding: 4px 8px; border-radius: 6px; background: {{c.sub}}">EN</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; padding: 4px 8px; border-radius: 6px; background: {{c.sub}}">FA</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; padding: 4px 8px; border-radius: 6px; background: {{c.sub}}">AR</span>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{v.intro3}}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; left: 28px; top: 40px; width: 140px; height: 140px">
+<svg width="140" height="140" viewBox="0 0 140 140" aria-hidden="true"><circle cx="70" cy="70" r="58" fill="none" stroke="{{c.sub}}" stroke-width="12"></circle><circle cx="70" cy="70" r="58" fill="none" stroke="{{c.pri}}" stroke-width="12" stroke-linecap="round" stroke-dasharray="306 364" transform="rotate(-90 70 70)"></circle></svg>
+<div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center">
+<span style="font-size: 34px; font-weight: 700; line-height: 1">84</span>
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text3}}">/100</span>
+</div>
+</div>
+<span style="position: absolute; left: 150px; top: 44px; font-size: 12px; font-weight: 600; color: {{c.ambText}}; background: {{c.ambSoft}}; padding: 5px 10px; border-radius: 6px; transform: rotate(-6deg)">+13</span>
+<div dir="ltr" style="position: absolute; right: 24px; top: 70px; width: 150px; border-radius: 14px; background: {{c.sub}}; padding: 12px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; transform: rotate(4deg)">
+<sc-for list="{{miniCal}}" as="d" hint-placeholder-count="21">
+<span style="height: 14px; border-radius: 7px; background: {{d.bg}}; border: {{d.ring}}; box-sizing: border-box"></span>
+</sc-for>
+</div>
+<div style="position: absolute; left: 24px; right: 24px; bottom: 34px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<span style="height: 44px; border-radius: 12px; background: {{c.badSoft}}; color: {{c.bad}}; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600">{{s.b1}}</span>
+<span style="height: 44px; border-radius: 12px; background: {{c.ambSoft}}; color: {{c.ambText}}; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600">{{s.b2}}</span>
+<span style="height: 44px; border-radius: 12px; background: {{c.okSoft}}; color: {{c.ok}}; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600">{{s.b3}}</span>
+</div>
+</sc-if>
+
+</div>
+<h1 style="margin: 10px 0 0; font-size: 28px; line-height: 1.15; font-weight: 500; letter-spacing: -0.03em; text-wrap: balance">{{introT}}</h1>
+<p style="margin: 0; font-size: 15px; line-height: 1.55; color: {{c.text2}}; text-wrap: pretty">{{introS}}</p>
+</div>
+</sc-if>
+
+<div style="flex: none; padding: 16px 24px {{bottomPad}}px; display: flex; flex-direction: column; gap: 18px; align-items: center">
+<div aria-hidden="true" style="display: flex; gap: 6px">
+<sc-for list="{{dots}}" as="d" hint-placeholder-count="5">
+<span style="height: 6px; width: {{d.w}}px; border-radius: 3px; background: {{d.bg}}"></span>
+</sc-for>
+</div>
+<button onClick="{{next}}" style="width: 100%; height: {{btnH}}px; border: 0; border-radius: {{btnR}}px; color: #FFFCF6; font-family: inherit; font-size: 23px; font-weight: 500; box-shadow: 0 12px 30px rgba(156,47,58,.28); cursor: pointer; background-color: #9c2f3a">{{nextLabel}}</button>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"platform":{"editor":"enum","options":["ios","android"],"default":"ios"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"variant":{"editor":"enum","options":["lang","plan","dept","intro1","intro2","intro3"],"default":"lang"},"go":{"editor":null},"setPref":{"editor":null},"planDays":{"editor":null},"planHours":{"editor":null},"live":{"editor":null},"$preview":{"width":390,"height":844}}'>
+const _I18N = {k: [" gün × ", " sa", " saat", "Alfa-1 blokerlerin ilk dozundan sonra", "Artır", "Atla", "Ayağa kalkınca kan basıncının ani düşmesi; baş dönmesi, bayılma.", "Azalt", "Başlayalım", "Bildim", "Bilmedim", "Bilmediğin terime dokun, açıklaması açılsın. Cümleyi seç; İngilizce, Farsça ya da Arapça oku. Asistan istersen sadece senin PDF'inden, istersen yapay zekâ araştırmasıyla da cevap verir.", "Bir günde ortalama kaç saat?", "Bu, arayüzün dilidir. Hocanın PDF'i her zaman olduğu gibi kalır.", "Bölüm kontrolleri, ders sonu sınavı ve tekrar takvimi konuyu kalıcı hale getirir.", "Devam", "Dikkat", "Diğer", "Diş Hekimliği", "Dokun, anla, çevir", "Eczacılık", "Gerçekçi bir hedef seç; tekrar takvimi ve hatırlatmalar buna göre kurulur.", "Haftada ", "Haftada kaç gün çalışabilirsin?", "Haftalık çalışma planın", "Hangi bölümde okuyorsun?", "Hemşirelik", "Hocanın metni, hiç değişmeden", "Ortostatik hipotansiyon", "PDF'ini yükle; her slayt okunabilir bir karta dönüşür. Tek bir kelime bile değiştirilmez.", "Planı birkaç hafta sonra Ayarlar › Çalışma planı bölümünden istediğin zaman değiştirebilirsin.", "SAYFA 5", "Sağlık Bilimleri", "Sistolik KB ≥140 mmHg ve/veya diyastolik KB ≥90 mmHg olması", "Sına, tekrar et, unutma", "TERİM · KLİNİK BULGU", "Terim açıklamalarını ve soru tarzını bölümüne göre ayarlarız.", "Tıp", "Uygulama dilini seç", "Zor", "görülebilir.", "hipertansiyon", "olarak tanımlanır.", "İleri"], en: [" days × ", " h", " hours", "After the first dose of alpha-1 blockers", "Increase", "Skip", "Sudden drop in blood pressure on standing; dizziness, fainting.", "Decrease", "Let's start", "Knew it", "Didn't know", "Tap a term you don't know to see its explanation. Select a sentence to read it in English, Persian or Arabic. The assistant answers only from your PDF — or, if you choose, with AI research too.", "How many hours a day on average?", "This is the interface language. The lecturer's PDF always stays as it is.", "Section checks, the end-of-course exam and the review schedule make the topic stick.", "Continue", "Caution", "Other", "Dentistry", "Tap, understand, translate", "Pharmacy", "Pick a realistic goal; your review schedule and reminders are set up around it.", "Weekly: ", "How many days a week can you study?", "Your weekly study plan", "Which department are you in?", "Nursing", "The lecturer's text, unchanged", "Orthostatic hypotension", "Upload your PDF; each slide becomes a readable card. Not a single word is changed.", "You can change the plan anytime later in Settings › Study plan.", "PAGE 5", "Health Sciences", "Systolic BP ≥140 mmHg and/or diastolic BP ≥90 mmHg", "Test, review, don't forget", "TERM · CLINICAL SIGN", "We tune term explanations and question style to your field.", "Medicine", "Choose app language", "Hard", "may occur.", "hypertension", "– that's the definition.", "Next"], fa: [" روز × ", " ساعت", " ساعت", "پس از دوز اول مسدودکننده‌های آلفا-1", "افزایش", "رد کردن", "افت ناگهانی فشار خون هنگام ایستادن؛ سرگیجه، غش.", "کاهش", "بزن بریم", "بلد بودم", "بلد نبودم", "روی اصطلاحی که نمی‌دانی بزن تا توضیحش باز شود. جمله را انتخاب کن و به انگلیسی، فارسی یا عربی بخوان. دستیار اگر بخواهی فقط از PDF خودت جواب می‌دهد و اگر بخواهی با جستجوی هوش مصنوعی هم.", "روزی به‌طور میانگین چند ساعت؟", "این زبان رابط کاربری است. PDF استاد همیشه همان‌طور که هست می‌ماند.", "بررسی بخش‌ها، امتحان پایان درس و تقویم مرور، موضوع را ماندگار می‌کنند.", "ادامه", "احتیاط", "سایر", "دندان‌پزشکی", "لمس کن، بفهم، ترجمه کن", "داروسازی", "یک هدف واقع‌بینانه انتخاب کن؛ برنامه مرور و یادآورها بر اساس آن تنظیم می‌شوند.", "هفته‌ای ", "هفته‌ای چند روز می‌تونی درس بخونی؟", "برنامه مطالعه هفتگی تو", "در چه رشته‌ای درس می‌خوانی؟", "پرستاری", "متن استاد، بدون هیچ تغییر", "افت فشار خون وضعیتی", "PDFت را آپلود کن؛ هر اسلاید به یک کارت خوانا تبدیل می‌شود. حتی یک کلمه هم تغییر نمی‌کند.", "هر وقت خواستی، چند هفته بعد هم می‌توانی برنامه را از تنظیمات › برنامه مطالعه تغییر دهی.", "صفحه 5", "علوم سلامت", "فشار سیستولیک ≥140 mmHg و/یا فشار دیاستولیک ≥90 mmHg", "امتحان بده، مرور کن، فراموش نکن", "اصطلاح · یافته بالینی", "توضیح اصطلاحات و سبک سؤال‌ها را با رشته‌ات تنظیم می‌کنیم.", "پزشکی", "زبان برنامه را انتخاب کن", "سخت", "ممکن است دیده شود.", "فشار خون بالا", "تعریف می‌شود.", "بعدی"], ar: [" أيام × ", " س", " ساعة", "بعد الجرعة الأولى من حاصرات ألفا-1", "زيادة", "تخطٍّ", "انخفاض مفاجئ في ضغط الدم عند الوقوف؛ دوخة، إغماء.", "تقليل", "لنبدأ", "عرفتها", "لم أعرفها", "اضغط على المصطلح الذي لا تعرفه لتظهر شرحه. اختر الجملة واقرأها بالإنجليزية أو الفارسية أو العربية. يجيب المساعد إن شئت من ملف PDF الخاص بك فقط، وإن شئت يستعين أيضًا ببحث الذكاء الاصطناعي.", "كم ساعة يومياً في المتوسط؟", "هذه لغة الواجهة. ملف PDF الخاص بالمحاضر يبقى كما هو دائماً.", "مراجعات الأقسام وامتحان نهاية المادة وجدول المراجعة تجعل الموضوع راسخاً.", "متابعة", "تنبيه", "أخرى", "طب الأسنان", "المس، افهم، ترجم", "الصيدلة", "اختر هدفًا واقعيًا؛ يُبنى جدول المراجعة والتذكيرات وفقًا له.", "أسبوعيًا ", "كم يومًا في الأسبوع يمكنك الدراسة؟", "خطة دراستك الأسبوعية", "في أي قسم تدرس؟", "التمريض", "نص الأستاذ، دون أي تغيير", "هبوط الضغط الانتصابي", "ارفع ملف PDF؛ تتحول كل شريحة إلى بطاقة مقروءة. لا تتغير ولا كلمة واحدة.", "يمكنك تغيير الخطة لاحقًا في أي وقت من الإعدادات › خطة الدراسة.", "صفحة 5", "العلوم الصحية", "الضغط الانقباضي ≥140 mmHg و/أو الضغط الانبساطي ≥90 mmHg", "اختبر، راجع، لا تنسَ", "مصطلح · علامة سريرية", "نضبط شرح المصطلحات وأسلوب الأسئلة حسب تخصصك.", "الطب", "اختر لغة التطبيق", "صعب", "قد يحدث.", "ارتفاع ضغط الدم", "– هذا هو التعريف.", "التالي"]};
+let _lang = 'tr', _M = null; const _TC = {};
+const _x = (s) => { if (_lang === 'tr' || !_I18N[_lang]) return s; if (!_M) { _M = {}; _I18N.k.forEach((k, i) => { _M[k] = i; }); } const i = _M[s]; return i == null ? s : _I18N[_lang][i]; };
+const _TK = {"k349": "Alfa-1 blokerlerin ilk dozundan sonra", "k425": "Ayağa kalkınca kan basıncının ani düşmesi; baş dönmesi, bayılma.", "k811": "Dikkat", "k1567": "Ortostatik hipotansiyon", "k1761": "SAYFA 5", "k1863": "Sistolik KB ≥140 mmHg ve/veya diyastolik KB ≥90 mmHg olması", "k1989": "TERİM · KLİNİK BULGU", "k2362": "görülebilir.", "k2368": "hipertansiyon", "k2392": "olarak tanımlanır."};
+const _PT = {};
+const _tt = () => { if (!_TC[_lang]) { const o = {}; Object.keys(_TK).forEach((k) => { o[k] = (_PT[k] && _lang !== 'tr') ? (_PT[k][_lang] || _x(_TK[k])) : _x(_TK[k]); }); _TC[_lang] = o; } return _TC[_lang]; };
+
+class Component extends DCLogic {
+  renderVals() { const _p = this.props || {}, _s = this.state || {}; _lang = _s.lang || _p.lang || 'tr'; const r = this._rv0(); if (r && typeof r === 'object') { r._t = _tt(); r._dir = (_lang === 'fa' || _lang === 'ar') ? 'rtl' : 'ltr'; r._ai = this._aiDark ? { bg: '#F2B33D', fg: '#241C14', tx: '#EFE8DC' } : { bg: '#9C2F3A', fg: '#FFF6E6', tx: '#2A2420' }; } return r; }
+  _rv0() {
+    const p = this.props, st = this.state || {};
+    const ios = (p.platform || 'ios') === 'ios';
+    const dark = p.theme === 'dark'; this._aiDark = dark;
+    const lang = p.lang || 'tr';
+    const c = dark
+      ? { bgGrad: 'linear-gradient(180deg, #1F1A16 0%, #15120F 45%)', bg: '#15120F', card: '#211C18', sub: '#2B2520', text: '#EFE8DC', text2: '#BDB2A4', text3: '#9A8F82', line: '#3A322B', pri: '#B23A47', priText: '#F09AA3', priSoft: '#3A2027', amb: '#F2B33D', ambText: '#F2C46E', ambSoft: '#3A2F1A', ok: '#5BC893', okSoft: '#173328', bad: '#F27A70', badSoft: '#3D1F1F', shadow: '0 1px 2px rgba(0,0,0,.35)' }
+      : { bgGrad: 'linear-gradient(180deg, #EDE3D2 0%, #F4EFE6 40%)', bg: '#F4EFE6', card: '#FFFCF6', sub: '#F1EBE0', text: '#2A2420', text2: '#6E645A', text3: '#776C60', line: '#E6DDCF', pri: '#9C2F3A', priText: '#9C2F3A', priSoft: '#F7E7E9', amb: '#F2B33D', ambText: '#83560A', ambSoft: '#FDF1D6', ok: '#1E7A4C', okSoft: '#E2F3E9', bad: '#C0352B', badSoft: '#FCE8E6', shadow: '0 1px 2px rgba(27,36,48,.05), 0 6px 20px rgba(27,36,48,.06)' };
+    const T = {
+      tr: { welcome: 'HOŞ GELDİN · WELCOME · خوش آمدی · أهلاً', langT: _x('Uygulama dilini seç'), langS: _x("Bu, arayüzün dilidir. Hocanın PDF'i her zaman olduğu gibi kalır."), cont: _x('Devam'), deptT: _x('Hangi bölümde okuyorsun?'), deptS: _x('Terim açıklamalarını ve soru tarzını bölümüne göre ayarlarız.'), depts: [_x('Eczacılık'), _x('Tıp'), _x('Diş Hekimliği'), _x('Hemşirelik'), _x('Sağlık Bilimleri'), _x('Diğer')], skip: _x('Atla'), next: _x('İleri'), start: _x('Başlayalım'), i1T: _x('Hocanın metni, hiç değişmeden'), i1S: _x("PDF'ini yükle; her slayt okunabilir bir karta dönüşür. Tek bir kelime bile değiştirilmez."), i2T: _x('Dokun, anla, çevir'), i2S: _x("Bilmediğin terime dokun, açıklaması açılsın. Cümleyi seç; İngilizce, Farsça ya da Arapça oku. Asistan istersen sadece senin PDF'inden, istersen yapay zekâ araştırmasıyla da cevap verir."), i3T: _x('Sına, tekrar et, unutma'), i3S: _x('Bölüm kontrolleri, ders sonu sınavı ve tekrar takvimi konuyu kalıcı hale getirir.'), b1: _x('Bilmedim'), b2: _x('Zor'), b3: _x('Bildim') },
+      en: { welcome: 'WELCOME · HOŞ GELDİN · خوش آمدی · أهلاً', langT: 'Choose your app language', langS: "This is the interface language. Your lecturer's PDF always stays exactly as it is.", cont: 'Continue', deptT: 'What do you study?', deptS: 'We tune term explanations and question style to your field.', depts: ['Pharmacy', 'Medicine', 'Dentistry', 'Nursing', 'Health Sciences', 'Other'], skip: 'Skip', next: 'Next', start: "Let's start", i1T: "Your lecturer's text, untouched", i1S: 'Upload the PDF and every slide becomes a readable card. Not a single word is changed.', i2T: 'Tap, understand, translate', i2S: 'Tap an unfamiliar term to see what it means. Select a sentence to read it in English, Persian or Arabic. The assistant answers only from your PDF.', i3T: 'Test, review, remember', i3S: 'Section checks, an end-of-lesson exam and a review calendar make it stick.', b1: "Didn't know", b2: 'Hard', b3: 'Knew it' },
+      fa: { welcome: 'خوش آمدی · HOŞ GELDİN · WELCOME · أهلاً', langT: 'زبان برنامه را انتخاب کن', langS: 'این زبان رابط کاربری است. PDF استاد همیشه همان‌طور که هست می‌ماند.', cont: 'ادامه', deptT: 'در چه رشته‌ای درس می‌خوانی؟', deptS: 'توضیح اصطلاحات و نوع سؤال‌ها را با رشته‌ات هماهنگ می‌کنیم.', depts: ['داروسازی', 'پزشکی', 'دندان‌پزشکی', 'پرستاری', 'علوم سلامت', 'سایر'], skip: 'رد شدن', next: 'بعدی', start: 'شروع کنیم', i1T: 'متن استاد، بدون هیچ تغییری', i1S: 'PDF را بارگذاری کن؛ هر اسلاید به یک کارت خواندنی تبدیل می‌شود. حتی یک کلمه هم تغییر نمی‌کند.', i2T: 'لمس کن، بفهم، ترجمه کن', i2S: 'روی اصطلاح ناآشنا بزن تا توضیحش باز شود. جمله را انتخاب کن و به انگلیسی، فارسی یا عربی بخوان. دستیار فقط از PDF تو پاسخ می‌دهد.', i3T: 'آزمون بده، مرور کن، فراموش نکن', i3S: 'آزمونک هر بخش، آزمون پایان درس و تقویم مرور، مطلب را ماندگار می‌کنند.', b1: 'نمی‌دانستم', b2: 'سخت', b3: 'می‌دانستم' },
+      ar: { welcome: 'أهلاً · HOŞ GELDİN · WELCOME · خوش آمدی', langT: 'اختر لغة التطبيق', langS: 'هذه لغة الواجهة. يبقى ملف PDF الخاص بأستاذك كما هو دائمًا.', cont: 'متابعة', deptT: 'ما تخصصك؟', deptS: 'نضبط شرح المصطلحات ونوع الأسئلة حسب تخصصك.', depts: ['الصيدلة', 'الطب', 'طب الأسنان', 'التمريض', 'العلوم الصحية', 'أخرى'], skip: 'تخطٍّ', next: 'التالي', start: 'لنبدأ', i1T: 'نص أستاذك دون أي تغيير', i1S: 'ارفع ملف PDF فتتحول كل شريحة إلى بطاقة قابلة للقراءة. لا تتغير كلمة واحدة.', i2T: 'المس، افهم، ترجم', i2S: 'المس المصطلح غير المألوف لترى شرحه. حدّد الجملة لتقرأها بالإنجليزية أو الفارسية أو العربية. يجيب المساعد من ملفك فقط.', i3T: 'اختبر، راجع، لا تنسَ', i3S: 'اختبارات الأقسام واختبار نهاية الدرس وتقويم المراجعة تثبّت المعلومة.', b1: 'لم أعرف', b2: 'صعب', b3: 'عرفت' }
+    };
+    const P = {
+      tr: { planT: _x('Haftalık çalışma planın'), planS: _x('Gerçekçi bir hedef seç; tekrar takvimi ve hatırlatmalar buna göre kurulur.'), daysQ: _x('Haftada kaç gün çalışabilirsin?'), hoursQ: _x('Bir günde ortalama kaç saat?'), less: _x('Azalt'), more: _x('Artır'), planNote: _x('Planı birkaç hafta sonra Ayarlar › Çalışma planı bölümünden istediğin zaman değiştirebilirsin.'), h: (x) => String(x).replace('.', ',') + _x(' sa'), sum: (d, h, t) => _x('Haftada ') + d + _x(' gün × ') + h + ' ≈ ' + String(t).replace('.', ',') + _x(' saat') },
+      en: { planT: 'Your weekly study plan', planS: 'Pick a realistic goal; your review calendar and reminders are built around it.', daysQ: 'How many days a week can you study?', hoursQ: 'About how many hours a day?', less: 'Less', more: 'More', planNote: 'You can change this anytime later in Settings › Study plan.', h: (x) => x + ' h', sum: (d, h, t) => d + ' days × ' + h + ' ≈ ' + t + ' h a week' },
+      fa: { planT: 'برنامهٔ مطالعهٔ هفتگی', planS: 'هدفی واقع‌بینانه انتخاب کن؛ تقویم مرور و یادآورها بر اساس آن ساخته می‌شوند.', daysQ: 'هفته‌ای چند روز می‌توانی درس بخوانی؟', hoursQ: 'روزی به‌طور میانگین چند ساعت؟', less: 'کمتر', more: 'بیشتر', planNote: 'هر زمان خواستی می‌توانی از تنظیمات › برنامهٔ مطالعه آن را تغییر دهی.', h: (x) => x + ' ساعت', sum: (d, h, t) => 'هفته‌ای ' + d + ' روز × ' + h + ' ≈ ' + t + ' ساعت' },
+      ar: { planT: 'خطة دراستك الأسبوعية', planS: 'اختر هدفًا واقعيًا؛ يُبنى تقويم المراجعة والتذكيرات عليه.', daysQ: 'كم يومًا في الأسبوع يمكنك الدراسة؟', hoursQ: 'كم ساعة يوميًا في المتوسط؟', less: 'أقل', more: 'أكثر', planNote: 'يمكنك تغييرها لاحقًا في أي وقت من الإعدادات › خطة الدراسة.', h: (x) => x + ' ساعة', sum: (d, h, t) => d + ' أيام × ' + h + ' ≈ ' + t + ' ساعة أسبوعيًا' }
+    };
+    const s = Object.assign({}, T[lang] || T.tr, P[lang] || P.tr);
+    const steps = ['lang', 'plan', 'dept', 'intro1', 'intro2', 'intro3'];
+    const days = st.days || p.planDays || 4;
+    const hours = st.hours || p.planHours || 1.5;
+    const savePlan = (d, h) => { this.setState({ days: d, hours: h }); if (p.setPref) p.setPref({ planDays: d, planHours: h }); };
+    const dayOpts = [1, 2, 3, 4, 5, 6, 7].map((n) => {
+      const on = n === days;
+      return { n, on: on ? 'true' : 'false', bg: on ? c.pri : c.sub, fg: on ? '#FFFCF6' : c.text, border: on ? '0' : '1px solid ' + c.line, pick: () => savePlan(n, hours) };
+    });
+    const cur = st.step || p.variant || 'lang';
+    const idx = Math.max(0, steps.indexOf(cur));
+    const v = {}; steps.forEach((k) => { v[k] = k === cur; });
+    const isIntro = idx >= 3;
+    const go = (a, b, k) => { if (p.go) p.go(a, b, k); };
+    const selLang = st.selLang || lang;
+    const langs = [
+      { id: 'tr', code: 'TR', name: 'Türkçe', note: 'LTR' },
+      { id: 'en', code: 'EN', name: 'English', note: 'LTR' },
+      { id: 'fa', code: 'FA', name: 'فارسی', note: 'RTL' },
+      { id: 'ar', code: 'AR', name: 'العربية', note: 'RTL' }
+    ].map((o) => {
+      const on = o.id === selLang;
+      return Object.assign(o, {
+        on: on ? 'true' : 'false',
+        border: on ? '2px solid ' + c.pri : '1px solid ' + c.line,
+        ring: on ? '2px solid ' + c.pri : '1.5px solid ' + c.text3,
+        dot: on ? c.pri : 'transparent',
+        chipBg: on ? c.priSoft : c.sub, chipFg: on ? c.priText : c.text2,
+        pick: () => { this.setState({ selLang: o.id }); if (p.setPref) p.setPref({ lang: o.id }); }
+      });
+    });
+    const icons = [
+      'M9 3h6 M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3 M7 15h10',
+      'M5 3H4v6a5 5 0 0 0 10 0V3h-1 M9 14v1a5 5 0 0 0 10 0v-3 M19 8a2 2 0 1 1 0 4 2 2 0 0 1 0-4z',
+      'M7 3c-2.5 0-4 2-4 4.5 0 3 1.5 4.5 2 7 .5 3 1 6.5 2.5 6.5S9 16 12 16s3 5 4.5 5 2-3.5 2.5-6.5c.5-2.5 2-4 2-7C21 5 19.5 3 17 3c-2 0-3 1-5 1S9 3 7 3z',
+      'M12 5v14 M5 12h14',
+      'M3 12h4l2-5 4 10 2-5h6',
+      'M6 12h.01 M12 12h.01 M18 12h.01'
+    ];
+    const selDept = st.dept == null ? 0 : st.dept;
+    const depts = s.depts.map((name, i) => {
+      const on = i === selDept;
+      return {
+        name, d: icons[i], on: on ? 'true' : 'false',
+        bg: on ? c.priSoft : c.card,
+        border: on ? '2px solid ' + c.pri : '1px solid ' + c.line,
+        chipBg: on ? c.pri : c.sub, chipFg: on ? '#FFFCF6' : c.text2,
+        pick: () => this.setState({ dept: i })
+      };
+    });
+    const miniCal = [];
+    for (let i = 0; i < 21; i++) {
+      const studied = [0, 1, 2, 4, 5, 6, 7, 8, 9, 11].indexOf(i) >= 0;
+      miniCal.push({ bg: i === 3 || i === 10 ? c.amb : (studied ? c.text3 : c.line), ring: i === 15 ? '2px solid ' + c.bad : '0' });
+    }
+    const dots = steps.map((k, i) => ({ w: i === idx ? 22 : 6, bg: i === idx ? c.pri : c.line }));
+    return {
+      c, s, v, lang, dir: (lang === 'fa' || lang === 'ar') ? 'rtl' : 'ltr',
+      W: ios ? 390 : 412, H: ios ? 844 : 915, topH: ios ? 54 : 36, bottomPad: ios ? 40 : 28,
+      r: 22, btnR: 100, btnH: 58,
+      isIntro, notIntro: !isIntro, stepNo: idx + 1,
+      langs, depts, miniCal, dots, dayOpts,
+      hoursLabel: s.h(hours), planSum: s.sum(days, s.h(hours), Math.round(days * hours * 10) / 10),
+      hoursDown: () => savePlan(days, Math.max(0.5, hours - 0.5)),
+      hoursUp: () => savePlan(days, Math.min(8, hours + 0.5)),
+      introT: s['i' + (idx - 2) + 'T'] || '', introS: s['i' + (idx - 2) + 'S'] || '',
+      nextLabel: idx === 5 ? s.start : (isIntro ? s.next : s.cont),
+      next: () => { if (idx >= 5) go('courses', 'setup'); else this.setState({ step: steps[idx + 1] }); },
+      skip: () => go('home')
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Kavis Study · Android prototip</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 412px; height: 915px; overflow: hidden; background: #11161D; font-family: Poppins, Vazirmatn, system-ui, sans-serif; color: #E8ECF1">
+<dc-import name="Main" platform="android" theme="{{theme}}" lang="{{lang}}" start="{{start}}" hint-size="412px,915px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"dark"},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"start":{"editor":"enum","options":["onboarding","home","reader","assistant","quiz","result","progress","cards","paywall","settings"],"default":"home"},"$preview":{"width":412,"height":915}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props;
+    return { theme: p.theme || 'dark', lang: p.lang || 'tr', start: p.start || 'home' };
+  }
+}
+</script>
+</body>
+</html>

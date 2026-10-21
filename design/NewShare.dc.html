@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Yeni stil · Paylaş</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+<style>[dir=rtl] .dc-back{transform:scaleX(-1)}[dir=rtl],[dir=rtl] *{letter-spacing:0 !important}</style>
+</helmet>
+<div dir="{{_dir}}" style="width: {{W}}px; height: {{H}}px; box-sizing: border-box; position: relative; overflow: hidden; background: {{c.bgGrad}}; color: {{c.text}}; font-family: Poppins, Vazirmatn, system-ui, sans-serif; display: flex; flex-direction: column">
+<div style="height: {{topH}}px; flex: none"></div>
+<div style="flex: none; display: flex; align-items: center; gap: 12px; padding: 6px 20px 10px">
+<button onClick="{{back}}" aria-label="{{_t.k1052}}" style="width: 46px; height: 46px; border-radius: 23px; border: 1px solid {{c.line}}; background: {{c.card}}; color: {{c.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none"><svg class="dc-back" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5 M11 6l-6 6 6 6"></path></svg></button>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0"><h1 style="margin: 0; font-size: 18px; font-weight: 600">{{title}}</h1><span style="font-size: 12px; color: {{c.text2}}">{{sub}}</span></span>
+</div>
+
+<sc-if value="{{isSend}}" hint-placeholder-val="{{ true }}">
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 4px 20px 30px; display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 14px; font-weight: 600">{{_t.k1484}}</span>
+<sc-for list="{{items}}" as="it" hint-placeholder-count="4"><button role="checkbox" aria-checked="{{it.on}}" onClick="{{it.pick}}" style="border-radius: 20px; border: {{it.border}}; background: {{it.bg}}; color: {{c.text}}; padding: 12px 14px; display: flex; align-items: center; gap: 12px; font-family: inherit; text-align: start; cursor: pointer"><span style="width: 24px; height: 24px; border-radius: 7px; border: {{it.boxBorder}}; background: {{it.boxBg}}; color: #FFFCF6; display: flex; align-items: center; justify-content: center; flex: none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{it.chk}}"></path></svg></span><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 500">{{it.t}}</span><span style="font-size: 12px; color: {{c.text2}}">{{it.s}}</span></span></button></sc-for>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px"><sc-for list="{{ways}}" as="w" hint-placeholder-count="3"><button onClick="{{w.tap}}" style="height: 72px; border-radius: 18px; border: 1px solid {{c.line}}; background: {{c.card}}; color: {{c.text}}; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; font-family: inherit; font-size: 12px; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{w.d}}"></path></svg>{{w.t}}</button></sc-for></div>
+<sc-if value="{{linkOn}}" hint-placeholder-val="{{ false }}"><div style="border-radius: 16px; border: 1px dashed {{c.line}}; padding: 10px 14px; display: flex; align-items: center; gap: 10px"><span style="flex: 1; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 13px">kavis.study/s/4821</span><span style="font-size: 11px; color: {{c.text2}}">{{_t.k266}}</span></div></sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{isRecv}}" hint-placeholder-val="{{ false }}">
+<div style="flex: none; display: flex; gap: 4px; padding: 0 20px 12px"><sc-for list="{{steps}}" as="s" hint-placeholder-count="5"><button onClick="{{s.pick}}" aria-current="{{s.cur}}" style="flex: 1; border: 0; background: transparent; padding: 0; display: flex; flex-direction: column; gap: 5px; font-family: inherit; cursor: pointer"><span style="height: 4px; border-radius: 2px; background: {{s.bar}}"></span><span style="font-size: 10px; color: {{s.fg}}; font-weight: {{s.fw}}">{{s.l}}</span></button></sc-for></div>
+<div style="flex: 1; min-height: 0; overflow-y: auto; padding: 4px 20px 30px; display: flex; flex-direction: column; gap: 14px">
+
+<sc-if value="{{r.msg}}" hint-placeholder-val="{{ true }}">
+<span style="align-self: center; font-size: 11px; color: {{c.text2}}">{{_t.k1444}}</span>
+<div style="align-self: flex-start; max-width: 86%; border-radius: 18px 18px 18px 6px; background: {{c.card}}; border: 1px solid {{c.line}}; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; line-height: 1.5">{{_t.k2188}}</span>
+<button onClick="{{next}}" style="border-radius: 14px; border: 1px solid {{c.line}}; background: {{c.bg}}; color: {{c.text}}; padding: 10px; display: flex; align-items: center; gap: 10px; font-family: inherit; text-align: start; cursor: pointer"><img src="./icon_star.png" alt="" style="width: 42px; height: 42px; border-radius: 10px"><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 13px; font-weight: 600">{{_t.k906}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text2}}">kavis.study/s/4821</span></span></button>
+<span style="align-self: flex-end; font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.text2}}">21:04</span>
+</div>
+<span style="align-self: center; font-size: 12px; color: {{c.text2}}">{{_t.k473}}</span>
+</sc-if>
+
+<sc-if value="{{r.web}}" hint-placeholder-val="{{ false }}">
+<div style="border-radius: 26px; background: {{c.card}}; border: 1px solid {{c.line}}; padding: 22px 18px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center">
+<span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 11px; color: {{c.text2}}">kavis.study/s/4821</span>
+<img src="./icon_star.png" alt="Kavis Study" style="width: 84px; height: 84px; border-radius: 20px">
+<span style="font-size: 20px; font-weight: 600; line-height: 1.3">{{_t.k905}}</span>
+<span style="border-radius: 14px; background: {{c.sub}}; padding: 8px 14px; font-size: 13px">{{_t.k1198}}</span>
+<span style="font-size: 13px; line-height: 1.5; color: {{c.text2}}">{{_t.k438}}</span>
+<button onClick="{{next}}" style="width: 100%; height: 52px; border-radius: 26px; border: 0; background: #9C2F3A; color: #FFFCF6; font-family: inherit; font-size: 15px; font-weight: 500; cursor: pointer">{{storeL}}</button>
+</div>
+</sc-if>
+
+<sc-if value="{{r.signup}}" hint-placeholder-val="{{ false }}">
+<div style="border-radius: 26px; background: {{c.card}}; border: 1px solid {{c.line}}; padding: 20px 18px; display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 20px; font-weight: 600">{{_t.k1171}}</span>
+<span style="font-size: 13px; line-height: 1.5; color: {{c.text2}}">{{_t.k907}}</span>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: {{c.text2}}">{{_t.k324}}<input placeholder="Ayşe Demir" style="height: 48px; border-radius: 16px; border: 1px solid {{c.line}}; background: {{c.bg}}; color: {{c.text}}; padding: 0 14px; font-family: inherit; font-size: 15px; outline: none"></label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: {{c.text2}}">{{_t.k876}}<input type="email" placeholder="ayse@ogrenci.edu.tr" style="height: 48px; border-radius: 16px; border: 1px solid {{c.line}}; background: {{c.bg}}; color: {{c.text}}; padding: 0 14px; font-family: inherit; font-size: 15px; outline: none"></label>
+<button onClick="{{next}}" style="height: 52px; border-radius: 26px; border: 0; background: #9C2F3A; color: #FFFCF6; font-family: inherit; font-size: 15px; font-weight: 500; cursor: pointer">{{_t.k1175}}</button>
+<button onClick="{{next}}" style="height: 48px; border-radius: 24px; border: 1px solid {{c.line}}; background: transparent; color: {{c.text}}; font-family: inherit; font-size: 14px; cursor: pointer">{{socialL}}</button>
+</div>
+</sc-if>
+
+<sc-if value="{{r.lock}}" hint-placeholder-val="{{ false }}">
+<div style="position: relative; border-radius: 26px; background: {{c.card}}; border: 1px solid {{c.line}}; padding: 18px; overflow: hidden">
+<div aria-hidden="true" style="filter: blur(5px); display: flex; flex-direction: column; gap: 10px; opacity: .7"><span style="font-size: 18px; font-weight: 600">{{_t.k1197}}</span><sc-for list="{{topics}}" as="tp" hint-placeholder-count="4"><span style="font-size: 14px">{{tp.n}}. {{tp.t}}</span></sc-for></div>
+<div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px"><span style="width: 52px; height: 52px; border-radius: 26px; background: #9C2F3A; color: #FFFCF6; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 11V8a6 6 0 0 1 12 0v3 M5 11h14v10H5z"></path></svg></span><span style="font-size: 12px; font-weight: 600">{{_t.k1380}}</span></div>
+</div>
+<span style="font-size: 20px; font-weight: 600">{{_t.k557}}</span>
+<span style="font-size: 13px; line-height: 1.55; color: {{c.text2}}">{{_t.k1624}}</span>
+<button onClick="{{next}}" style="height: 52px; border-radius: 26px; border: 0; background: #9C2F3A; color: #FFFCF6; font-family: inherit; font-size: 15px; font-weight: 500; cursor: pointer">{{_t.k1664}}</button>
+<button onClick="{{later}}" style="height: 46px; border-radius: 23px; border: 1px solid {{c.line}}; background: transparent; color: {{c.text}}; font-family: inherit; font-size: 14px; cursor: pointer">{{_t.k2630}}</button>
+</sc-if>
+
+<sc-if value="{{r.open}}" hint-placeholder-val="{{ false }}">
+<div style="border-radius: 26px; background: {{c.card}}; border: 1px solid {{c.line}}; padding: 18px; display: flex; flex-direction: column; gap: 10px">
+<span style="align-self: flex-start; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 10px; background: {{c.goodSoft}}; color: {{c.good}}">{{_t.k446}}</span>
+<span style="font-size: 18px; font-weight: 600">{{_t.k1197}}</span>
+<sc-for list="{{topics}}" as="tp" hint-placeholder-count="4"><div style="display: flex; gap: 10px; padding: 8px 0; border-top: 1px solid {{c.line}}"><span style="width: 26px; height: 26px; border-radius: 13px; background: {{c.priSoft}}; color: {{c.priText}}; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex: none">{{tp.n}}</span><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 500">{{tp.t}}</span><span style="font-family: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace; font-size: 10px; color: {{c.text2}}">{{tp.src}}</span></span></div></sc-for>
+<button onClick="{{addMine}}" style="height: 50px; border-radius: 25px; border: 0; background: #9C2F3A; color: #FFFCF6; font-family: inherit; font-size: 15px; font-weight: 500; cursor: pointer">{{_t.k792}}</button>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div role="status" aria-live="polite" style="position: absolute; left: 50%; bottom: 40px; transform: translateX(-50%); z-index: 50; width: 86%; box-sizing: border-box; padding: 12px 18px; border-radius: 22px; background: #2E2721; color: #FBEFD6; font-family: Poppins, Vazirmatn, system-ui, sans-serif; font-size: 13px; line-height: 1.4; text-align: center; box-shadow: 0 12px 30px rgba(42,36,32,.28); pointer-events: none">{{toastMsg}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"platform":{"editor":"enum","options":["ios","android"],"default":"ios"},"variant":{"editor":"enum","options":["send","recv"],"default":"send"},"go":{"editor":null},"lang":{"editor":"enum","options":["tr","en","fa","ar"],"default":"tr"},"$preview":{"width":390,"height":844}}'>
+const _I18N = {k: ["12 kart · tekrar için", "6 soru · cevaplar ve nedenleri", "7 gün geçerli", "ACE inhibitörleri yan etkileri", "Ad soyad", "Alıcı nasıl görür?", "App Store'dan indir", "Apple ile devam et", "Açmak için Kavis Study uygulaması gerekli.", "Açıldı", "Açıldı · Elif'ten geldi", "Bağlantı kopyalandı · istediğin kişiye gönderebilirsin", "Bağlantıya dokun", "Bağlantıyı kopyala", "Bu ders Premium'a özel", "Ders gelen kutunda bekliyor · Premium olunca açılır", "Ders özeti", "Derslerime ekle", "Diğer", "E-posta", "Elif Yıldız sana bir ders gönderdi", "Elif sana bir ders gönderdi", "Elif'in gönderdiği ders, hesabını oluşturunca seni bekliyor olacak.", "Gebelikte hipertansiyon", "Geri", "Google Play'den indir", "Google ile devam et", "Hesabını oluştur", "Hesap", "Hesap oluştur", "Hesap oluşturuldu · Ayşe", "Hipertansif kriz", "Hipertansiyon · 5 konu · kaynak sayfalarıyla", "Hipertansiyon · Ders özeti", "Hipertansiyon · Ders özeti · 5 konu", "Hipertansiyon · Farmakoterapi", "Hipertansiyon özeti Derslerim klasörüne eklendi", "Hipertansiyon.pdf · el yazısı notlarınla", "Kavis Study yüklendi", "Kartlar", "KİLİTLİ", "Mesaj", "Mesajla gönder", "Mesajlar açılıyor · bağlantı eklendi", "Mesajlar · Elif Yıldız", "Ne paylaşmak istiyorsun?", "Okuma sayfası açılır", "PDF ve notlarım", "Paylaş", "Paylaşılan dersler yalnızca Premium hesaplarda açılır. 3 gün ücretsiz dene, istediğin zaman iptal et.", "Paylaşım menüsü açılıyor", "Premium olmayan bir arkadaşın için adım adım", "Premium · 3 günlük ücretsiz deneme başladı", "Premium'a geç · 3 gün ücretsiz", "S. 12", "S. 13", "S. 14", "S. 14 · hoca: \"sınavda soruyorum\"", "S. 21 · zayıf konu", "Sınava özel sorular", "Tiyazid kontrendikasyonları", "Vize için Hipertansiyon özetini gönderdim, bir bak.", "Önce paylaşmak istediğin şeyi seç", "İlk basamak ilaçlar", "İndir", "Şimdi değil"], en: ["12 cards · for review", "6 questions · answers and reasons", "Valid for 7 days", "ACE inhibitor side effects", "Full name", "How will the recipient see it?", "Download on the App Store", "Continue with Apple", "You need the Kavis Study app to open this.", "Opened", "Opened · from Elif", "Link copied · you can send it to anyone", "Tap the link", "Copy link", "This course is Premium-only", "Lesson is waiting in your inbox · unlocks with Premium", "Lesson summary", "Add to My Courses", "Other", "Email", "Elif Yıldız sent you a course", "Elif sent you a course", "The course Elif sent will be waiting for you once you create your account.", "Hypertension in pregnancy", "Back", "Get it on Google Play", "Continue with Google", "Create your account", "Account", "Create account", "Account created · Ayşe", "Hypertensive crisis", "Hypertension · 5 topics · with source pages", "Hypertension · Lecture summary", "Hypertension · Lecture summary · 5 topics", "Hypertension · Pharmacotherapy", "Hypertension summary added to My Courses folder", "Hypertension.pdf · with your handwritten notes", "Kavis Study installed", "Cards", "LOCKED", "Message", "Send by message", "Opening messages · link added", "Messages · Elif Yıldız", "What do you want to share?", "Reading page opens", "PDF and my notes", "Share", "Shared courses only open on Premium accounts. Try 3 days free, cancel anytime.", "Opening share menu", "Step by step for a friend without Premium", "Premium · 3-day free trial started", "Go Premium · 3 days free", "p. 12", "p. 13", "p. 14", "p. 14 · prof: \"I ask this in exams\"", "p. 21 · weak topic", "Exam-focused questions", "Thiazide contraindications", "I sent the Hypertension summary for the midterm, take a look.", "First pick what you want to share", "First-line drugs", "Download", "Not now"], fa: ["12 کارت · برای مرور", "6 سؤال · پاسخ‌ها و دلیل‌ها", "7 روز معتبر", "عوارض جانبی مهارکننده‌های ACE", "نام و نام خانوادگی", "گیرنده چطور می‌بیند؟", "دانلود از App Store", "ادامه با Apple", "برای باز کردن، برنامهٔ Kavis Study لازم است.", "باز شد", "باز شد · از طرف Elif", "لینک کپی شد · می‌توانی برای هر کسی بفرستی", "روی لینک بزن", "کپی لینک", "این درس مخصوص Premium است", "درس در صندوق ورودی‌ات منتظر است · با Premium باز می‌شود", "خلاصه درس", "افزودن به درس‌های من", "سایر", "ایمیل", "Elif Yıldız برایت یک درس فرستاد", "Elif برایت یک درس فرستاد", "درسی که Elif فرستاده، بعد از ساختن حسابت منتظرت خواهد بود.", "فشار خون بالا در بارداری", "بازگشت", "دریافت از Google Play", "ادامه با Google", "حسابت را بساز", "حساب", "ساخت حساب", "حساب ساخته شد · Ayşe", "بحران فشار خون بالا", "فشار خون بالا · 5 مبحث · با صفحات منبع", "فشار خون بالا · خلاصه درس", "فشار خون بالا · خلاصه درس · 5 مبحث", "فشار خون بالا · دارودرمانی", "خلاصه فشار خون بالا به پوشه درس‌های من اضافه شد", "فشار_خون_بالا.pdf · با یادداشت‌های دست‌نویست", "Kavis Study نصب شد", "کارت‌ها", "قفل", "پیام", "با پیام بفرست", "پیام‌ها باز می‌شود · لینک اضافه شد", "پیام‌ها · Elif Yıldız", "چه چیزی می‌خواهی به اشتراک بگذاری؟", "صفحهٔ خواندن باز می‌شود", "PDF و یادداشت‌هایم", "اشتراک‌گذاری", "درس‌های اشتراکی فقط در حساب‌های Premium باز می‌شوند. 3 روز رایگان امتحان کن، هر وقت خواستی لغو کن.", "منوی اشتراک‌گذاری باز می‌شود", "قدم‌به‌قدم برای دوستی که Premium ندارد", "Premium · آزمایش رایگان 3 روزه شروع شد", "ارتقا به Premium · 3 روز رایگان", "ص. 12", "ص. 13", "ص. 14", "ص. 14 · استاد: «این را در امتحان می‌پرسم»", "ص. 21 · مبحث ضعیف", "سؤال‌های ویژه امتحان", "منع مصرف تیازیدها", "خلاصه فشار خون بالا را برای میان‌ترم فرستادم، یک نگاه بنداز.", "اول چیزی را که می‌خواهی به اشتراک بگذاری انتخاب کن", "داروهای خط اول", "دانلود", "الان نه"], ar: ["12 بطاقة · للمراجعة", "6 أسئلة · الإجابات وأسبابها", "صالح لمدة 7 أيام", "الآثار الجانبية لمثبطات ACE", "الاسم الكامل", "كيف يراه المستلم؟", "حمّله من App Store", "المتابعة مع Apple", "تحتاج إلى تطبيق Kavis Study لفتحه.", "تم الفتح", "تم الفتح · من Elif", "تم نسخ الرابط · يمكنك إرساله لمن تريد", "اضغط على الرابط", "نسخ الرابط", "هذه المادة خاصة بـ Premium", "الدرس ينتظر في صندوق الوارد · يُفتح مع Premium", "ملخص الدرس", "أضف إلى موادي", "أخرى", "البريد الإلكتروني", "أرسلت لك Elif Yıldız درسًا", "أرسلت لك Elif درسًا", "الدرس الذي أرسلته Elif سيكون بانتظارك بعد إنشاء حسابك.", "ارتفاع ضغط الدم في الحمل", "رجوع", "احصل عليه من Google Play", "المتابعة باستخدام Google", "أنشئ حسابك", "الحساب", "إنشاء حساب", "تم إنشاء الحساب · Ayşe", "أزمة ارتفاع ضغط الدم", "ارتفاع ضغط الدم · 5 مواضيع · مع صفحات المصدر", "ارتفاع ضغط الدم · ملخص الدرس", "ارتفاع ضغط الدم · ملخص الدرس · 5 مواضيع", "ارتفاع ضغط الدم · العلاج الدوائي", "أُضيف ملخص ارتفاع ضغط الدم إلى مجلد موادي", "ارتفاع_ضغط_الدم.pdf · مع ملاحظاتك المكتوبة بخط اليد", "تم تثبيت Kavis Study", "البطاقات", "مقفل", "رسالة", "أرسل برسالة", "جارٍ فتح الرسائل · أُضيف الرابط", "الرسائل · Elif Yıldız", "ماذا تريد أن تشارك؟", "تُفتح صفحة القراءة", "PDF وملاحظاتي", "مشاركة", "الدروس المشتركة تُفتح فقط في حسابات Premium. جرّب 3 أيام مجانًا، وألغِ متى شئت.", "جارٍ فتح قائمة المشاركة", "خطوة بخطوة لصديق ليس لديه Premium", "Premium · بدأت التجربة المجانية 3 أيام", "انتقل إلى Premium · 3 أيام مجانًا", "ص. 12", "ص. 13", "ص. 14", "ص. 14 · الأستاذ: \"أسأل عن هذا في الامتحان\"", "ص. 21 · موضوع ضعيف", "أسئلة خاصة بالامتحان", "مضادات استطباب الثيازيدات", "أرسلت ملخص ارتفاع ضغط الدم للنصفي، ألقِ نظرة.", "اختر أولًا ما تريد مشاركته", "أدوية الخط الأول", "تنزيل", "ليس الآن"]};
+let _lang = 'tr', _M = null; const _TC = {};
+const _x = (s) => { if (_lang === 'tr' || !_I18N[_lang]) return s; if (!_M) { _M = {}; _I18N.k.forEach((k, i) => { _M[k] = i; }); } const i = _M[s]; return i == null ? s : _I18N[_lang][i]; };
+const _TK = {"k266": "7 gün geçerli", "k324": "Ad soyad", "k438": "Açmak için Kavis Study uygulaması gerekli.", "k446": "Açıldı · Elif'ten geldi", "k473": "Bağlantıya dokun", "k557": "Bu ders Premium'a özel", "k792": "Derslerime ekle", "k876": "E-posta", "k905": "Elif Yıldız sana bir ders gönderdi", "k906": "Elif sana bir ders gönderdi", "k907": "Elif'in gönderdiği ders, hesabını oluşturunca seni bekliyor olacak.", "k1052": "Geri", "k1171": "Hesabını oluştur", "k1175": "Hesap oluştur", "k1197": "Hipertansiyon · Ders özeti", "k1198": "Hipertansiyon · Ders özeti · 5 konu", "k1380": "KİLİTLİ", "k1444": "Mesajlar · Elif Yıldız", "k1484": "Ne paylaşmak istiyorsun?", "k1624": "Paylaşılan dersler yalnızca Premium hesaplarda açılır. 3 gün ücretsiz dene, istediğin zaman iptal et.", "k1664": "Premium'a geç · 3 gün ücretsiz", "k2188": "Vize için Hipertansiyon özetini gönderdim, bir bak.", "k2630": "Şimdi değil"};
+const _PT = {};
+const _tt = () => { if (!_TC[_lang]) { const o = {}; Object.keys(_TK).forEach((k) => { o[k] = (_PT[k] && _lang !== 'tr') ? (_PT[k][_lang] || _x(_TK[k])) : _x(_TK[k]); }); _TC[_lang] = o; } return _TC[_lang]; };
+
+class Component extends DCLogic {
+  renderVals() { const _p = this.props || {}, _s = this.state || {}; _lang = _s.lang || _p.lang || 'tr'; const r = this._rv0(); if (r && typeof r === 'object') { r._t = _tt(); r._dir = (_lang === 'fa' || _lang === 'ar') ? 'rtl' : 'ltr'; r._ai = this._aiDark ? { bg: '#F2B33D', fg: '#241C14', tx: '#EFE8DC' } : { bg: '#9C2F3A', fg: '#FFF6E6', tx: '#2A2420' }; } return r; }
+  componentWillUnmount() { clearTimeout(this._tt); }
+  _rv0() {
+    const p = this.props; const st = this.state || {}; const dark = p.theme === 'dark'; const ios = (p.platform || 'ios') === 'ios';
+    const say = (m) => { this.setState({ toast: m }); clearTimeout(this._tt); this._tt = setTimeout(() => this.setState({ toast: '' }), 1900); };
+    const c = dark
+      ? { bgGrad: 'linear-gradient(180deg, #1F1A16 0%, #15120F 45%)', bg: '#15120F', card: '#211C18', chrome: '#211C18', sub: '#2B2520', seg: '#2B2520', line: '#3A322B', text: '#EFE8DC', text2: '#BDB2A4', priText: '#F09AA3', priSoft: '#3A2224', ambSoft: '#3A2E18', ambFg: '#F2C66D', ambLine: '#6B5426', goodSoft: '#1F3328', good: '#8FD3A8', violet: '#B9B4F0', violetSoft: '#2C2A3A', pill: '#463C33', trackOff: '#4A4038', hero: 'linear-gradient(135deg,#4A3520,#6B4A22)', onHero: '#FBEFD6', heroBtn: '#F2B33D', heroBtnFg: '#2A2420', heroShadow: 'none', paper: '#1D1915', ink: '#E6DDCF', compBorder: '#4A3A1C', badSoft: '#3D1F1F', bad: '#F27A70' }
+      : { bgGrad: 'linear-gradient(180deg, #EDE3D2 0%, #F4EFE6 40%)', bg: '#F4EFE6', card: '#FFFCF6', chrome: '#FFFCF6', sub: '#F1EBE0', seg: '#EAE1D2', line: '#E6DDCF', text: '#2A2420', text2: '#6E645A', priText: '#9C2F3A', priSoft: '#F5E3E2', ambSoft: '#FBEBC8', ambFg: '#A86F0E', ambLine: '#E8C77E', goodSoft: '#E3F1E7', good: '#2E7D4F', violet: '#4A3F9A', violetSoft: '#E8E6F6', pill: '#FFFCF6', trackOff: '#D9CFBE', hero: 'linear-gradient(135deg,#FBE9BD,#F5C76A)', onHero: '#2A2420', heroBtn: '#9C2F3A', heroBtnFg: '#FFFCF6', heroShadow: '0 14px 30px rgba(232,146,90,.22)', paper: '#FBF5E8', ink: '#3B3226', compBorder: '#F2D9A8', badSoft: '#FCE8E6', bad: '#C0352B' };
+    const mode = st.mode || (p.variant === 'recv' ? 'recv' : 'send');
+    const sel = st.sel || { sum: true };
+    const items = [['sum', _x('Ders özeti'), _x('Hipertansiyon · 5 konu · kaynak sayfalarıyla')], ['cards', _x('Kartlar'), _x('12 kart · tekrar için')], ['quiz', _x('Sınava özel sorular'), _x('6 soru · cevaplar ve nedenleri')], ['pdf', _x('PDF ve notlarım'), _x('Hipertansiyon.pdf · el yazısı notlarınla')]].map((k) => { const on = !!sel[k[0]]; return { t: k[1], s: k[2], on: on ? 'true' : 'false', border: on ? '1.5px solid #9C2F3A' : '1px solid ' + c.line, bg: on ? c.priSoft : c.card, boxBorder: on ? '0' : '1.5px solid ' + c.text2, boxBg: on ? '#9C2F3A' : 'transparent', chk: on ? 'M5 12l5 5 9-10' : '', pick: () => this.setState({ sel: Object.assign({}, sel, { [k[0]]: !on }) }) }; });
+    const nSel = Object.keys(sel).filter((k) => sel[k]).length;
+    const need = () => { if (!nSel) { say(_x('Önce paylaşmak istediğin şeyi seç')); return false; } return true; };
+    const ways = [[_x('Bağlantıyı kopyala'), 'M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1 M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1', _x('Bağlantı kopyalandı · istediğin kişiye gönderebilirsin')], [_x('Mesajla gönder'), 'M4 5h16v11H9l-5 4z', _x('Mesajlar açılıyor · bağlantı eklendi')], [_x('Diğer'), 'M5 12h.01 M12 12h.01 M19 12h.01', _x('Paylaşım menüsü açılıyor')]].map((w) => ({ t: w[0], d: w[1], tap: () => { if (need()) { this.setState({ linkOn: true }); say(w[2]); } } }));
+    const STEPS = ['msg', 'web', 'signup', 'lock', 'open']; const LBL = [_x('Mesaj'), _x('İndir'), _x('Hesap'), 'Premium', _x('Açıldı')];
+    const si = st.si || 0;
+    const steps = STEPS.map((s, i) => ({ l: LBL[i], cur: i === si ? 'step' : 'false', bar: i <= si ? '#9C2F3A' : c.line, fg: i === si ? c.text : c.text2, fw: i === si ? 600 : 400, pick: () => this.setState({ si: i }) }));
+    const r = {}; STEPS.forEach((s, i) => { r[s] = i === si; });
+    const nextMsg = ['', ios ? _x('Kavis Study yüklendi') : _x('Kavis Study yüklendi'), _x('Hesap oluşturuldu · Ayşe'), _x('Premium · 3 günlük ücretsiz deneme başladı'), ''];
+    const topics = [[_x('Hipertansif kriz'), _x('S. 21 · zayıf konu')], [_x('ACE inhibitörleri yan etkileri'), _x('S. 13')], [_x('Tiyazid kontrendikasyonları'), _x('S. 14 · hoca: "sınavda soruyorum"')], [_x('Gebelikte hipertansiyon'), _x('S. 14')], [_x('İlk basamak ilaçlar'), _x('S. 12')]].map((t, i) => ({ n: i + 1, t: t[0], src: t[1] }));
+    const isSend = mode === 'send';
+    return { c, items, ways, steps, r, topics, isSend, isRecv: !isSend, linkOn: !!st.linkOn,
+      title: isSend ? _x('Paylaş') : _x('Alıcı nasıl görür?'), sub: isSend ? _x('Hipertansiyon · Farmakoterapi') : _x('Premium olmayan bir arkadaşın için adım adım'),
+      storeL: ios ? _x("App Store'dan indir") : _x("Google Play'den indir"), socialL: ios ? _x('Apple ile devam et') : _x('Google ile devam et'),
+      next: () => { if (si < 4) { this.setState({ si: si + 1 }); if (nextMsg[si + 1]) say(nextMsg[si + 1]); } },
+      later: () => say(_x('Ders gelen kutunda bekliyor · Premium olunca açılır')),
+      addMine: () => say(_x('Hipertansiyon özeti Derslerim klasörüne eklendi')),
+      toRecv: () => { if (need()) this.setState({ mode: 'recv', si: 0 }); },
+      W: ios ? 390 : 412, H: ios ? 844 : 915, topH: ios ? 54 : 36, toastOn: !!st.toast, toastMsg: st.toast || '',
+      back: () => { if (!isSend && p.variant !== 'recv') { this.setState({ mode: 'send' }); return; } if (p.go) p.go('reader'); else say(_x('Okuma sayfası açılır')); } };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Molekül görüntüleyici</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; font-family: Poppins, system-ui, sans-serif; color: {{c.text}}">
+<sc-if value="{{full}}" hint-placeholder-val="{{ true }}"><div style="display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap"><span style="font-size: 17px; font-weight: 600">{{m.name}}</span><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: {{c.text2}}">{{m.formula}} · {{m.mw}}</span><span style="font-size: 11px; color: {{c.text2}}">{{m.cls}}</span></div></sc-if>
+<div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap">
+<div role="img" aria-label="{{aria}}" style="position: relative; width: {{S}}px; height: {{S}}px; flex: none; border-radius: 18px; background: {{c.canvas}}; border: 1px solid {{c.line}}; overflow: hidden">
+<svg aria-hidden="true" width="{{S}}" height="{{S}}" viewBox="0 0 300 300" style="position: absolute; left: 0; top: 0">
+<path d="{{hlD}}" stroke="{{c.hl}}" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-opacity=".55"></path>
+<path d="{{bondD}}" stroke="{{c.bond}}" stroke-width="{{bw}}" stroke-linecap="round" fill="none"></path>
+</svg>
+<sc-for list="{{atoms}}" as="a" hint-placeholder-count="6"><span style="position: absolute; left: {{a.x}}px; top: {{a.y}}px; transform: translate(-50%, -50%); min-width: {{a.d}}px; height: {{a.d}}px; padding: 0 {{a.pad}}px; box-sizing: border-box; border-radius: {{a.d}}px; background: {{a.bg}}; color: {{a.fg}}; border: {{a.border}}; display: flex; align-items: center; justify-content: center; font-size: {{a.fs}}px; font-weight: 700; line-height: 1; white-space: nowrap; box-shadow: {{a.shadow}}">{{a.t}}</span></sc-for>
+</div>
+<sc-if value="{{full}}" hint-placeholder-val="{{ true }}"><div style="flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 8px">
+<div role="radiogroup" aria-label="Görünüm" style="display: flex; gap: 4px; padding: 3px; border-radius: 18px; background: {{c.seg}}">
+<sc-for list="{{views}}" as="v" hint-placeholder-count="2"><button role="radio" aria-checked="{{v.on}}" onClick="{{v.pick}}" style="flex: 1; height: 32px; border: 0; border-radius: 16px; background: {{v.bg}}; color: {{c.text}}; font-family: inherit; font-size: 12px; font-weight: {{v.fw}}; cursor: pointer">{{v.l}}</button></sc-for>
+</div>
+<button onClick="{{rotate}}" style="height: 34px; border-radius: 17px; border: 1px solid {{c.line}}; background: transparent; color: {{c.text}}; font-family: inherit; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.7 M20 4v5h-5"></path></svg>Döndür · {{deg}}°</button>
+<span style="font-size: 11px; color: {{c.text2}}">Gruba dokun, ne işe yaradığını gör:</span>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{groups}}" as="g" hint-placeholder-count="3"><button onClick="{{g.pick}}" aria-pressed="{{g.on}}" style="height: 30px; padding: 0 10px; border-radius: 15px; border: {{g.border}}; background: {{g.bg}}; color: {{c.text}}; font-family: inherit; font-size: 11px; font-weight: 500; cursor: pointer">{{g.l}}</button></sc-for>
+</div>
+</div></sc-if>
+</div>
+<sc-if value="{{hasNote}}" hint-placeholder-val="{{ true }}"><div style="border-radius: 14px; background: {{c.noteBg}}; padding: 10px 12px; font-size: 12px; line-height: 1.5"><b style="font-weight: 600">{{note.t}}:</b> {{note.s}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mol":{"editor":"enum","options":["captopril","paracetamol"],"default":"captopril"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"size":{"editor":"enum","options":["full","mini"],"default":"full"},"mark":{"editor":"enum","options":["","thiol","proline","amide","phenol","acetamide","ring"],"default":""},"$preview":{"width":520,"height":330}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props; const st = this.state || {}; const dark = p.theme === 'dark';
+    const full = (p.size || 'full') === 'full';
+    const c = dark
+      ? { text: '#EFE8DC', text2: '#BDB2A4', line: '#3A322B', seg: '#2B2520', pill: '#463C33', canvas: '#1D1915', bond: '#E6DDCF', hl: '#F2B33D', noteBg: '#3A2E18', mask: '#1D1915' }
+      : { text: '#2A2420', text2: '#6E645A', line: '#E6DDCF', seg: '#EAE1D2', pill: '#FFFCF6', canvas: '#FFFDF8', bond: '#2A2420', hl: '#F2B33D', noteBg: '#FBEBC8', mask: '#FFFDF8' };
+    // coordinates in a 300x300 box
+    const MOLS = {
+      captopril: {
+        name: 'Kaptopril', formula: 'C9H15NO3S', mw: '217,3 g/mol', cls: 'ACE inhibitörü',
+        atoms: { S: [34, 160, 'S', 'HS'], C1: [72, 138, 'C'], C2: [110, 160, 'C'], Me: [110, 204, 'C'], C3: [148, 138, 'C'], O3: [148, 94, 'O', 'O'], N: [186, 160, 'N', 'N'], Ca: [218, 138, 'C'], Cb: [250, 162, 'C'], Cc: [238, 198, 'C'], Cd: [198, 198, 'C'], Cx: [218, 96, 'C'], Ox1: [254, 78, 'O', 'O'], Ox2: [184, 78, 'O', 'OH'] },
+        bonds: [['S', 'C1'], ['C1', 'C2'], ['C2', 'Me'], ['C2', 'C3'], ['C3', 'O3', 2, 1], ['C3', 'N'], ['N', 'Ca'], ['Ca', 'Cb'], ['Cb', 'Cc'], ['Cc', 'Cd'], ['Cd', 'N'], ['Ca', 'Cx'], ['Cx', 'Ox1', 2, -1], ['Cx', 'Ox2']],
+        groups: [
+          ['thiol', 'Tiyol (–SH)', ['S'], [['S', 'C1']], "ACE'nin aktif bölgesindeki çinkoya bağlanır. Kaptoprile özgü tat bozukluğu ve döküntü bu gruptan kaynaklanır."],
+          ['proline', 'Prolin + karboksil', ['N', 'Ca', 'Cb', 'Cc', 'Cd', 'Cx', 'Ox1', 'Ox2'], [['N', 'Ca'], ['Ca', 'Cb'], ['Cb', 'Cc'], ['Cc', 'Cd'], ['Cd', 'N'], ['Ca', 'Cx'], ['Cx', 'Ox1'], ['Cx', 'Ox2']], 'Enzimin bağlandığı peptit ucunu taklit eder; ilacın ACE\'ye oturmasını sağlar.'],
+          ['amide', 'Amit (C=O)', ['C3', 'O3', 'N'], [['C3', 'O3'], ['C3', 'N']], 'Enzimle hidrojen bağı kurar; prolin halkasını yan zincire bağlar.']
+        ]
+      },
+      paracetamol: {
+        name: 'Parasetamol', formula: 'C8H9NO2', mw: '151,2 g/mol', cls: 'Analjezik / antipiretik',
+        atoms: { v0: [186, 150, 'C'], v1: [168, 181, 'C'], v2: [132, 181, 'C'], v3: [114, 150, 'C'], v4: [132, 119, 'C'], v5: [168, 119, 'C'], O: [72, 150, 'O', 'HO'], N: [224, 150, 'N', 'NH'], Cam: [256, 128, 'C'], Oam: [256, 86, 'O', 'O'], Me: [288, 150, 'C'] },
+        bonds: [['v0', 'v1', 2, 0], ['v1', 'v2'], ['v2', 'v3', 2, 0], ['v3', 'v4'], ['v4', 'v5', 2, 0], ['v5', 'v0'], ['v3', 'O'], ['v0', 'N'], ['N', 'Cam'], ['Cam', 'Oam', 2, 1], ['Cam', 'Me']],
+        center: [150, 150],
+        groups: [
+          ['phenol', 'Fenolik –OH', ['O'], [['v3', 'O']], 'Karaciğerde glukuronid ve sülfatla bağlanıp güvenli yoldan atılır.'],
+          ['acetamide', 'Asetamid', ['N', 'Cam', 'Oam', 'Me'], [['v0', 'N'], ['N', 'Cam'], ['Cam', 'Oam'], ['Cam', 'Me']], "Az bir kısmı CYP2E1 ile toksik NAPQI'ye döner. Glutatyon bitince karaciğer hasarı olur; antidot N-asetilsistein."],
+          ['ring', 'Benzen halkası', ['v0', 'v1', 'v2', 'v3', 'v4', 'v5'], [['v0', 'v1'], ['v1', 'v2'], ['v2', 'v3'], ['v3', 'v4'], ['v4', 'v5'], ['v5', 'v0']], 'p-Aminofenol iskeleti; iki grubu karşılıklı (para) konumda taşır.']
+        ]
+      }
+    };
+    const m = MOLS[p.mol] || MOLS.captopril;
+    const deg = st.deg || 0; const ball = st.view === 'ball';
+    const mark = st.mark != null ? st.mark : (p.mark || '');
+    const rad = deg * Math.PI / 180, cs = Math.cos(rad), sn = Math.sin(rad);
+    const P = {}; Object.keys(m.atoms).forEach((k) => { const a = m.atoms[k]; const x = a[0] - 150, y = a[1] - 150; P[k] = [150 + x * cs - y * sn, 150 + x * sn + y * cs]; });
+    const cen = m.center ? (() => { const x = m.center[0] - 150, y = m.center[1] - 150; return [150 + x * cs - y * sn, 150 + x * sn + y * cs]; })() : null;
+    const f = (n) => n.toFixed(1);
+    let d = '';
+    m.bonds.forEach((b) => {
+      const a = P[b[0]], z = P[b[1]];
+      d += 'M' + f(a[0]) + ' ' + f(a[1]) + ' L' + f(z[0]) + ' ' + f(z[1]) + ' ';
+      if (b[2] === 2 && !ball) {
+        const dx = z[0] - a[0], dy = z[1] - a[1], L = Math.hypot(dx, dy); let nx = -dy / L, ny = dx / L;
+        let s = b[3] || 1;
+        if (b[3] === 0 && cen) { const mx = (a[0] + z[0]) / 2, my = (a[1] + z[1]) / 2; s = ((cen[0] - mx) * nx + (cen[1] - my) * ny) > 0 ? 1 : -1; }
+        const o = 7 * s, sh = b[3] === 0 ? 0.18 : 0;
+        const ax = a[0] + dx * sh + nx * o, ay = a[1] + dy * sh + ny * o, zx = z[0] - dx * sh + nx * o, zy = z[1] - dy * sh + ny * o;
+        d += 'M' + f(ax) + ' ' + f(ay) + ' L' + f(zx) + ' ' + f(zy) + ' ';
+      }
+    });
+    const grp = m.groups.find((g) => g[0] === mark);
+    let hl = '';
+    if (grp) grp[3].forEach((b) => { const a = P[b[0]], z = P[b[1]]; hl += 'M' + f(a[0]) + ' ' + f(a[1]) + ' L' + f(z[0]) + ' ' + f(z[1]) + ' '; });
+    if (grp && grp[3].length === 0) grp[2].forEach((k) => { const a = P[k]; hl += 'M' + f(a[0]) + ' ' + f(a[1]) + ' l0.1 0 '; });
+    const S = full ? 240 : (p.size === 'mini' ? 170 : 200);
+    const k = S / 300;
+    const EL = { O: ['#C0352B', '#FFFCF6'], N: ['#2F5E9C', '#FFFCF6'], S: ['#C99A12', '#2A2420'], C: [dark ? '#8C8073' : '#6E645A', '#FFFCF6'] };
+    const atoms = [];
+    Object.keys(m.atoms).forEach((key) => {
+      const a = m.atoms[key]; const el = a[2]; const pos = P[key]; const inG = grp && grp[2].indexOf(key) >= 0;
+      if (ball) {
+        const r = el === 'C' ? 16 : 22;
+        atoms.push({ x: f(pos[0] * k), y: f(pos[1] * k), d: Math.round(r * k * 1.4), pad: 0, bg: 'radial-gradient(circle at 35% 30%, rgba(255,255,255,.55), ' + EL[el][0] + ' 60%)', fg: EL[el][1], border: inG ? '2px solid #F2B33D' : '0', fs: Math.max(8, Math.round(11 * k * 1.3)), t: el === 'C' ? '' : el, shadow: '0 2px 4px rgba(0,0,0,.25)' });
+      } else if (a[3]) {
+        atoms.push({ x: f(pos[0] * k), y: f(pos[1] * k), d: Math.round(26 * k * 1.25), pad: 2, bg: inG ? (dark ? '#5A4518' : '#F8DB8E') : c.mask, fg: EL[el][0] === '#C99A12' ? (dark ? '#F2C66D' : '#8A6A08') : EL[el][0], border: '0', fs: Math.max(9, Math.round(19 * k * 1.15)), t: a[3], shadow: 'none' });
+      }
+    });
+    const views = [['line', 'Çizgi'], ['ball', 'Top-çubuk']].map((v) => { const on = (st.view || 'line') === v[0]; return { l: v[1], on: on ? 'true' : 'false', bg: on ? c.pill : 'transparent', fw: on ? 600 : 400, pick: () => this.setState({ view: v[0] }) }; });
+    const groups = m.groups.map((g) => { const on = g[0] === mark; return { l: g[1], on: on ? 'true' : 'false', bg: on ? (dark ? '#3A2E18' : '#FBEBC8') : 'transparent', border: on ? '1.5px solid #F2B33D' : '1px solid ' + c.line, pick: () => this.setState({ mark: on ? '' : g[0] }) }; });
+    return {
+      c, m, full, S, atoms, views, groups, deg,
+      bondD: d, hlD: hl || 'M0 0', bw: ball ? 7 : 3,
+      hasNote: !!grp, note: grp ? { t: grp[1], s: grp[4] } : { t: '', s: '' },
+      aria: m.name + ' molekül yapısı' + (grp ? ' · işaretli: ' + grp[1] : ''),
+      rotate: () => this.setState({ deg: (deg + 90) % 360 })
+    };
+  }
+}
+</script>
+</body>
+</html>
