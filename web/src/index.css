@@ -3,7 +3,7 @@
 :root {
   --font-ui: Poppins, Vazirmatn, system-ui, sans-serif;
   --font-read: Lora, Vazirmatn, Georgia, serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-mono: 'JetBrains Mono', Vazirmatn, ui-monospace, monospace;
   --radius-card: 22px;
   --radius-card-lg: 30px;
 }
@@ -124,4 +124,23 @@ a {
 /* Arrows point the other way in right-to-left languages. */
 [dir='rtl'] .flip-rtl {
   transform: scaleX(-1);
+}
+
+/* Round assistant button with the amber star (design: star_btn.png on a bordo gradient). */
+.star-btn {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border: 0;
+  border-radius: 22px;
+  background: url(/star_btn.png) center / 88% no-repeat,
+    radial-gradient(circle at 50% 30%, #b8404d 0%, #9c2f3a 45%, #7a2230 100%);
+  box-shadow: 0 6px 16px rgba(156, 47, 58, 0.3);
+  cursor: pointer;
+}
+
+/* Persian/Arabic letters must stay joined: no letter-spacing (same rule as the design files). */
+[dir='rtl'],
+[dir='rtl'] * {
+  letter-spacing: 0 !important;
 }

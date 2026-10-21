@@ -38,6 +38,11 @@
   --bad-soft: #FCE8E6;
   --bad-line: #F0C9C5;
   --bad-btn: #C0352B;
+  --teal-fg: #1F6E75;
+  --paper: #FBF6EC;
+  --ink: #2A2420;
+  --tag: #F5E3E2;
+  --tag-fg: #9C2F3A;
 }
 
 :root[data-theme="dark"] {
@@ -78,4 +83,9 @@
   --bad-soft: #3D1F1F;
   --bad-line: #5A2A2A;
   --bad-btn: #B23A47;
+  --teal-fg: #8CCFD6;
+  --paper: #211C18;
+  --ink: #EFE8DC;
+  --tag: #3A2224;
+  --tag-fg: #F09AA3;
 }

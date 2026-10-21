@@ -8,6 +8,9 @@ const ThemeContext = createContext<ThemeCtx | null>(null);
 const STORAGE_KEY = 'kavis.theme';
 
 function initialTheme(): Theme {
+  // A link can set the theme: ?theme=dark
+  const fromUrl = new URLSearchParams(location.search).get('theme');
+  if (fromUrl === 'light' || fromUrl === 'dark') return fromUrl;
   try {
     const v = localStorage.getItem(STORAGE_KEY);
     if (v === 'light' || v === 'dark') return v;

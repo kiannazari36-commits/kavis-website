@@ -1,0 +1,548 @@
+.main {
+  padding: 28px 34px;
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+.left {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.hello {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.hello span {
+  color: var(--text2);
+  font-weight: 400;
+}
+
+/* Review hero */
+.review {
+  border-radius: 28px;
+  background: var(--hero);
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  color: var(--on-hero);
+}
+
+.reviewIcon {
+  width: 60px;
+  height: 60px;
+  flex: none;
+  border-radius: 30px;
+  background: rgba(255, 252, 246, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:global([data-theme='dark']) .reviewIcon {
+  background: rgba(255, 252, 246, 0.12);
+}
+
+.reviewText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.reviewText b {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.reviewText span {
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+.reviewBtns {
+  display: flex;
+  gap: 10px;
+}
+
+.reviewGo,
+.reviewLater {
+  height: 50px;
+  border-radius: 25px;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.reviewGo {
+  padding: 0 24px;
+  border: 0;
+  background: var(--hero-btn);
+  color: #2a2420;
+  font-weight: 600;
+}
+
+.reviewLater {
+  padding: 0 22px;
+  border: 1.5px solid var(--on-hero);
+  background: transparent;
+  color: var(--on-hero);
+  font-weight: 500;
+}
+
+/* Upload row */
+.uploads {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.upload {
+  height: 64px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.uploadPri {
+  border: 0;
+  background: var(--pri);
+  color: #fffcf6;
+}
+
+/* Tools row */
+.tools {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.tool {
+  height: 72px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 18px;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.toolIcon {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chev {
+  margin-inline-start: auto;
+  color: var(--text3);
+}
+
+.upload:hover,
+.tool:hover,
+.pdfCard:hover {
+  border-color: var(--text3);
+}
+
+/* Recent PDFs */
+.coursesHead {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.coursesHead h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.count {
+  font-size: 22px;
+  color: var(--text2);
+}
+
+.folderLink {
+  margin-inline-start: auto;
+  font-size: 14px;
+  color: var(--pri-t);
+}
+
+.recent {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.pdfCard {
+  border-radius: 24px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pdfBadge {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.pdfCard b {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.pdfCourse {
+  font-size: 13px;
+  color: var(--text2);
+}
+
+.bar {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--sub);
+  display: flex;
+  overflow: hidden;
+}
+
+.pdfFoot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.level {
+  flex: 1;
+  height: 26px;
+  border-radius: 13px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.device {
+  font-size: 10px;
+  color: var(--text3);
+  border-radius: 8px;
+  background: var(--sub);
+  padding: 5px 8px;
+}
+
+/* Right column */
+.right {
+  width: 330px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: sticky;
+  top: 28px;
+  min-height: calc(100vh - 56px);
+}
+
+.panel {
+  border-radius: 26px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.panelHead {
+  display: flex;
+  align-items: center;
+}
+
+.panelHead h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.badge {
+  margin-inline-start: auto;
+  width: 26px;
+  height: 26px;
+  border-radius: 13px;
+  background: var(--pri);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.planRow {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+}
+
+.time {
+  font-size: 12px;
+  color: var(--text3);
+  width: 42px;
+  padding-top: 2px;
+}
+
+.planText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.planText b {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.planText span {
+  font-size: 12px;
+  color: var(--text2);
+}
+
+.check {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border-radius: 11px;
+  border: 1.5px solid var(--line);
+  background: transparent;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+}
+
+.checkOn {
+  border-color: var(--good);
+  background: var(--good);
+}
+
+.countdown {
+  border-radius: 16px;
+  background: var(--amb-soft);
+  padding: 12px 14px;
+  font-size: 13px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.countdown b {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--amb-t);
+}
+
+.assistant {
+  flex: 1;
+}
+
+.asstHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.asstTitle {
+  display: flex;
+  flex-direction: column;
+}
+
+.asstTitle b {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.asstTitle span {
+  font-size: 11px;
+  color: var(--text3);
+}
+
+.bubble {
+  align-self: flex-start;
+  max-width: 92%;
+  border-radius: 18px 18px 18px 6px;
+  background: var(--sub);
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+:global([dir='rtl']) .bubble {
+  border-radius: 18px 18px 6px 18px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chips button {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: transparent;
+  font-size: 12px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.chips button:hover {
+  background: var(--sub);
+}
+
+.grow {
+  flex: 1;
+}
+
+.ask {
+  height: 48px;
+  border-radius: 24px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-inline: 16px 6px;
+}
+
+.ask:focus-within {
+  border-color: var(--pri);
+}
+
+.ask input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  font-size: 13px;
+  outline: none;
+}
+
+.ask input::placeholder {
+  color: var(--text3);
+}
+
+.ask button {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: 18px;
+  border: 0;
+  background: var(--pri);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+:global([dir='rtl']) .hello {
+  letter-spacing: 0;
+}
+
+/* Narrower screens */
+@media (max-width: 1240px) {
+  .main {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .right {
+    width: auto;
+    position: static;
+    min-height: 0;
+    flex-direction: row;
+    align-items: stretch;
+  }
+  .right > * {
+    flex: 1;
+  }
+}
+
+@media (max-width: 900px) {
+  .main {
+    padding: 20px 16px 32px;
+  }
+  .right {
+    flex-direction: column;
+  }
+  .uploads {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .tools,
+  .recent {
+    grid-template-columns: 1fr;
+  }
+  .review {
+    flex-wrap: wrap;
+    padding: 20px;
+  }
+  .reviewText {
+    min-width: 180px;
+  }
+}
+
+@media (max-width: 640px) {
+  .hello {
+    font-size: 28px;
+  }
+  .upload {
+    height: 56px;
+    font-size: 14px;
+  }
+}
