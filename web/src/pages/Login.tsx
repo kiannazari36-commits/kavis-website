@@ -6,6 +6,7 @@ import Wordmark from '../components/Wordmark';
 import LangThemeSwitch from '../components/LangThemeSwitch';
 import Icon, { AppleLogo, GoogleLogo } from '../components/Icon';
 import { logIn, resendCode, signUp, socialLogIn, verifyEmail, type Provider } from '../api/auth';
+import { checkDeviceLimit } from '../api/devices';
 import s from './Login.module.css';
 
 // Design: design/DeskApp.dc.html screen "login" (layout) + design/NewSignup.dc.html (sign up / log in / verify flow).
@@ -13,6 +14,13 @@ type Mode = 'signup' | 'login' | 'verify';
 
 const DEMO_CODE = '481920';
 const RESEND_SECONDS = 42;
+// Mock: open the login page with ?devices=full to see the 3rd-device screen after login.
+const DEVICES_FULL = new URLSearchParams(location.search).get('devices') === 'full';
+
+/** After login: if the account is already on 2 devices, choose one to sign out first. */
+async function afterLogin(navigate: (to: string) => void) {
+  navigate((await checkDeviceLimit(DEVICES_FULL)) ? '/devices' : '/home');
+}
 
 // 0–4 bars: length, mixed case, digit, symbol.
 function passwordScore(pw: string) {
@@ -47,7 +55,7 @@ export default function Login() {
   const social = async (p: Provider) => {
     setBusy(true);
     await socialLogIn(p);
-    navigate('/home');
+    await afterLogin(navigate);
   };
 
   const submit = async (e: FormEvent) => {
@@ -65,7 +73,7 @@ export default function Login() {
       setMode('verify');
     } else {
       await logIn(email, password);
-      navigate('/home');
+      await afterLogin(navigate);
     }
   };
 
@@ -255,7 +263,7 @@ function Verify({ email, name, onBack }: { email: string; name: string; onBack: 
     }
     setBusy(true);
     await verifyEmail(email, name, code);
-    navigate('/home');
+    await afterLogin(navigate);
   };
 
   const resend = async () => {

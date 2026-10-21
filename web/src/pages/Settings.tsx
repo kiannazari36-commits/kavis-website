@@ -12,15 +12,19 @@ import { useContentLang, useSettings } from '../settings/SettingsProvider';
 import { currentUser } from '../api/auth';
 import { deleteAccount, requestMyData, saveProfile } from '../api/account';
 import { useTrial } from '../trial/TrialProvider';
+import DeviceList from '../components/DeviceList';
+import { listDevices, type Device } from '../api/devices';
+import { useAsync } from '../hooks/useAsync';
 import s from './Settings.module.css';
 
 // Design: design/DeskApp.dc.html screen "settings" (web layout: section menu + cards),
 // section contents from design/NewIPad.dc.html "Profil ve ayarlar". "Content language" is new (CLAUDE.md).
 
-const SECTIONS = ['account', 'plan', 'look', 'lang', 'notif', 'offline', 'privacy', 'help'] as const;
+const SECTIONS = ['account', 'devices', 'plan', 'look', 'lang', 'notif', 'offline', 'privacy', 'help'] as const;
 type Section = (typeof SECTIONS)[number];
 const SECTION_KEY: Record<Section, string> = {
   account: 'k129',
+  devices: 'devTitle',
   plan: 'k130',
   look: 'k131',
   lang: 'k132',
@@ -61,6 +65,9 @@ export default function Settings() {
   const navigate = useNavigate();
   const { settings, patch, setContentLang } = useSettings();
   const { trial } = useTrial();
+  const loaded = useAsync(listDevices, []);
+  const [removed, setRemoved] = useState<string[]>([]);
+  const devices: Device[] = (loaded ?? []).filter((d) => !removed.includes(d.id));
   const contentLang = useContentLang({ id: '', language: 'tr' });
   const user = currentUser() ?? { name: 'Elif Yıldız', email: 'elif@ogrenci.edu.tr' };
   const [active, setActive] = useState<Section>('look');
@@ -152,6 +159,13 @@ export default function Settings() {
               </button>
             </form>
           )}
+
+          {/* My devices (CLAUDE.md: max 2, the web counts as one) */}
+          <section id="set-devices" className={s.card}>
+            <h2>{t('devTitle')}</h2>
+            <p className={s.cardHint}>{t('devHint')}</p>
+            <DeviceList devices={devices} onSignedOut={(id) => setRemoved([...removed, id])} />
+          </section>
 
           {/* Study plan */}
           <section id="set-plan" className={s.card}>

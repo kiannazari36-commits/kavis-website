@@ -23,7 +23,8 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Check the 100-page limit when a PDF is uploaded (upload screen not built yet)
 
 ## Devices
-- [ ] Device limit on the server (max 2 devices, the web counts as one); real device list and sign-out
+- [ ] Device limit on the server (max 2 devices, the web counts as one); real device list and sign-out. The web UI is ready with mock data: Settings → My devices, and the 3rd-device screen `/devices` (try login with `?devices=full`)
+- [ ] Real device names from the apps (the web name comes from the browser)
 
 ## Sharing
 - [ ] Real share links for app-made content (quizzes, summaries, cards — never the PDF)

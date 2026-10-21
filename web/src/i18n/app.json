@@ -54,7 +54,16 @@
   "premiumOnly": "Premium'a özel",
   "trialFree": "DENEME · 3 GÜN",
   "trialPdfs2": "2 PDF",
-  "trialQ60": "60 soru"
+  "trialQ60": "60 soru",
+  "devTitle": "Cihazlarım",
+  "devHint": "Bir hesapla en fazla 2 cihazda oturum açabilirsin; web de bir cihaz sayılır.",
+  "devThis": "Bu cihaz",
+  "devSignOut": "Oturumu kapat",
+  "devSignedOut": "{name} cihazında oturum kapatıldı",
+  "devActiveNow": "Şu an aktif",
+  "devLastUsed": "Son kullanım: {t}",
+  "devFullTitle": "2 cihazda oturum açıksın. Çıkış yapılacak birini seç.",
+  "devFullSub": "Sonra bu cihazda devam edersin."
  },
  "en": {
   "pdfs": "PDFs",
@@ -111,7 +120,16 @@
   "premiumOnly": "Premium only",
   "trialFree": "TRIAL · 3 DAYS",
   "trialPdfs2": "2 PDFs",
-  "trialQ60": "60 questions"
+  "trialQ60": "60 questions",
+  "devTitle": "My devices",
+  "devHint": "You can be signed in on up to 2 devices; the web counts as one.",
+  "devThis": "This device",
+  "devSignOut": "Sign out",
+  "devSignedOut": "Signed out on {name}",
+  "devActiveNow": "Active now",
+  "devLastUsed": "Last used: {t}",
+  "devFullTitle": "You're signed in on 2 devices. Choose one to sign out.",
+  "devFullSub": "Then you can continue on this device."
  },
  "fa": {
   "pdfs": "PDFها",
@@ -168,7 +186,16 @@
   "premiumOnly": "ویژهٔ پریمیوم",
   "trialFree": "آزمایشی · ۳ روز",
   "trialPdfs2": "۲ PDF",
-  "trialQ60": "۶۰ سؤال"
+  "trialQ60": "۶۰ سؤال",
+  "devTitle": "دستگاه‌های من",
+  "devHint": "با یک حساب حداکثر روی ۲ دستگاه می‌توانی وارد شوی؛ وب هم یک دستگاه حساب می‌شود.",
+  "devThis": "این دستگاه",
+  "devSignOut": "خروج از حساب",
+  "devSignedOut": "از {name} خارج شدی",
+  "devActiveNow": "اکنون فعال",
+  "devLastUsed": "آخرین استفاده: {t}",
+  "devFullTitle": "روی ۲ دستگاه وارد شده‌ای. یکی را برای خروج انتخاب کن.",
+  "devFullSub": "بعد از آن روی این دستگاه ادامه می‌دهی."
  },
  "ar": {
   "pdfs": "ملفات PDF",
@@ -225,6 +252,15 @@
   "premiumOnly": "خاص ببريميوم",
   "trialFree": "تجربة · 3 أيام",
   "trialPdfs2": "ملفا PDF",
-  "trialQ60": "60 سؤالًا"
+  "trialQ60": "60 سؤالًا",
+  "devTitle": "أجهزتي",
+  "devHint": "يمكنك تسجيل الدخول على جهازين كحد أقصى؛ ويُحسب الويب جهازًا واحدًا.",
+  "devThis": "هذا الجهاز",
+  "devSignOut": "تسجيل الخروج",
+  "devSignedOut": "تم تسجيل الخروج من {name}",
+  "devActiveNow": "نشط الآن",
+  "devLastUsed": "آخر استخدام: {t}",
+  "devFullTitle": "أنت مسجّل الدخول على جهازين. اختر واحدًا لتسجيل الخروج منه.",
+  "devFullSub": "بعدها تتابع على هذا الجهاز."
  }
 }
