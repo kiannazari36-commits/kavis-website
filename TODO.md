@@ -18,7 +18,8 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Apple in-app purchase in the iPhone app (the only way to buy Premium)
 - [ ] Server check of the Apple subscription so Premium also unlocks the web
 - [ ] Prices come from the App Store (never hardcoded) — web shows "Price in the App Store"
-- [ ] Android payment later (Google Play or a web payment) — no Android app yet
+- [ ] Android payment later (Google Play or a web payment) — no Android app yet. The web tells Android users (Premium page, share link page, Google Play button) to use the web with the free trial
+- [ ] Android app (later); then update the Google Play button and the Android notes
 - [ ] Trial limits enforced on the server (3 days, 2 PDFs, 60 questions, 100 pages per PDF). The web shows the limits and locks Premium-only actions with mock data (`web/src/api/trial.ts`; try `?trial=active|full|ended`)
 - [ ] Check the 100-page limit when a PDF is uploaded (upload screen not built yet)
 

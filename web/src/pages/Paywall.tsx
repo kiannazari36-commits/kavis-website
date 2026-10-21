@@ -5,6 +5,7 @@ import Icon from '../components/Icon';
 import AppStoreButton from '../components/AppStoreButton';
 import { getPremiumOffer } from '../api/premium';
 import { useAsync } from '../hooks/useAsync';
+import { isAndroid } from '../config';
 import s from './Paywall.module.css';
 
 // Design: design/NewIPad.dc.html Premium sheet ("pw"), shown as its own page on the web.
@@ -73,11 +74,17 @@ export default function Paywall() {
           </>
         )}
 
-        <div className={s.iphone}>
-          <b>{t('pwIphone')}</b>
-          <span>{t('pwIphoneSub')}</span>
-          <AppStoreButton />
-        </div>
+        {isAndroid() ? (
+          <div className={s.iphone}>
+            <span>{t('androidNote')}</span>
+          </div>
+        ) : (
+          <div className={s.iphone}>
+            <b>{t('pwIphone')}</b>
+            <span>{t('pwIphoneSub')}</span>
+            <AppStoreButton />
+          </div>
+        )}
         <div className={s.links}>
           <button onClick={close}>{t('back')}</button>
         </div>

@@ -4,6 +4,7 @@ import AppStoreButton from '../components/AppStoreButton';
 import Icon from '../components/Icon';
 import { currentUser } from '../api/auth';
 import { isPremium } from '../api/premium';
+import { isAndroid } from '../config';
 import s from './ShareLink.module.css';
 
 // Page behind a share link (/s/:id). CLAUDE.md: no preview of the content, only "download the app".
@@ -19,7 +20,7 @@ export default function ShareLink() {
         <Wordmark size={26} />
         <h1>{t('shareOpenTitle')}</h1>
         <p>{t('shareOpenSub')}</p>
-        <AppStoreButton />
+        {isAndroid() ? <span className={s.android}>{t('androidNote')}</span> : <AppStoreButton />}
         {signedInFree && (
           <span className={s.premium}>
             <Icon name="lock" size={15} />

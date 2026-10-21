@@ -64,7 +64,7 @@ export default function Landing() {
                 <b>App Store</b>
               </span>
             </button>
-            <button className={s.store} onClick={store}>
+            <button className={s.store} onClick={() => toast(t('androidSoon'))}>
               <PlayLogo size={20} />
               <span className={s.storeText}>
                 <small>{t('k13')}</small>

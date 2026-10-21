@@ -81,7 +81,9 @@
   "shareOpenTitle": "Bunu açmak için Kavis Study uygulamasını indir",
   "shareOpenSub": "Bir arkadaşın seninle Kavis Study'de hazırlanmış bir ders paylaştı.",
   "sharePremiumOnly": "Bu ders yalnızca Premium ile açılabilir.",
-  "shareNoPdf": "Yalnızca Kavis'in hazırladıkları paylaşılır; hocanın PDF'i asla paylaşılmaz."
+  "shareNoPdf": "Yalnızca Kavis'in hazırladıkları paylaşılır; hocanın PDF'i asla paylaşılmaz.",
+  "androidNote": "Android uygulaması henüz yok. Web'de ücretsiz denemeyle çalışabilirsin; Android için Premium yakında gelecek.",
+  "androidSoon": "Android uygulaması henüz yok · web'de ücretsiz denemeyle başlayabilirsin"
  },
  "en": {
   "pdfs": "PDFs",
@@ -165,7 +167,9 @@
   "shareOpenTitle": "To open this, download the Kavis Study app",
   "shareOpenSub": "A friend shared a lesson made in Kavis Study with you.",
   "sharePremiumOnly": "This lesson can only be opened with Premium.",
-  "shareNoPdf": "Only what Kavis made is shared; the lecturer's PDF is never shared."
+  "shareNoPdf": "Only what Kavis made is shared; the lecturer's PDF is never shared.",
+  "androidNote": "There is no Android app yet. You can study on the web with the free trial; Premium for Android is coming later.",
+  "androidSoon": "No Android app yet · you can start on the web with the free trial"
  },
  "fa": {
   "pdfs": "PDFها",
@@ -249,7 +253,9 @@
   "shareOpenTitle": "برای باز کردن این، اپلیکیشن Kavis Study را دانلود کن",
   "shareOpenSub": "یکی از دوستانت درسی را که در Kavis Study ساخته شده با تو به اشتراک گذاشته است.",
   "sharePremiumOnly": "این درس فقط با پریمیوم باز می‌شود.",
-  "shareNoPdf": "فقط آنچه Kavis ساخته به اشتراک گذاشته می‌شود؛ PDF استاد هرگز به اشتراک گذاشته نمی‌شود."
+  "shareNoPdf": "فقط آنچه Kavis ساخته به اشتراک گذاشته می‌شود؛ PDF استاد هرگز به اشتراک گذاشته نمی‌شود.",
+  "androidNote": "اپلیکیشن اندروید هنوز آماده نیست. می‌توانی در وب با دورهٔ آزمایشی رایگان درس بخوانی؛ پریمیوم برای اندروید بعداً می‌آید.",
+  "androidSoon": "اپلیکیشن اندروید هنوز نیست · می‌توانی در وب با دورهٔ آزمایشی رایگان شروع کنی"
  },
  "ar": {
   "pdfs": "ملفات PDF",
@@ -333,6 +339,8 @@
   "shareOpenTitle": "لفتح هذا، نزّل تطبيق Kavis Study",
   "shareOpenSub": "شارك معك صديق درسًا أُعدّ في Kavis Study.",
   "sharePremiumOnly": "لا يمكن فتح هذا الدرس إلا مع بريميوم.",
-  "shareNoPdf": "تتم مشاركة ما أعدّه Kavis فقط؛ لا تتم مشاركة ملف PDF الخاص بالأستاذ أبدًا."
+  "shareNoPdf": "تتم مشاركة ما أعدّه Kavis فقط؛ لا تتم مشاركة ملف PDF الخاص بالأستاذ أبدًا.",
+  "androidNote": "لا يوجد تطبيق Android بعد. يمكنك الدراسة على الويب بالتجربة المجانية؛ وبريميوم لأجهزة Android سيأتي لاحقًا.",
+  "androidSoon": "لا يوجد تطبيق Android بعد · يمكنك البدء على الويب بالتجربة المجانية"
  }
 }
