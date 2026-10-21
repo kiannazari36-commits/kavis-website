@@ -23,7 +23,8 @@
   "menu": "Menü",
   "logout": "Çıkış yap",
   "noResults": "Sonuç yok",
-  "notifs": "Bildirimler"
+  "notifs": "Bildirimler",
+  "addPdfShort": "PDF ekle"
  },
  "en": {
   "pdfs": "PDFs",
@@ -49,7 +50,8 @@
   "menu": "Menu",
   "logout": "Log out",
   "noResults": "No results",
-  "notifs": "Notifications"
+  "notifs": "Notifications",
+  "addPdfShort": "Add PDF"
  },
  "fa": {
   "pdfs": "PDFها",
@@ -75,7 +77,8 @@
   "menu": "منو",
   "logout": "خروج",
   "noResults": "نتیجه‌ای نیست",
-  "notifs": "اعلان‌ها"
+  "notifs": "اعلان‌ها",
+  "addPdfShort": "افزودن PDF"
  },
  "ar": {
   "pdfs": "ملفات PDF",
@@ -101,6 +104,7 @@
   "menu": "القائمة",
   "logout": "تسجيل الخروج",
   "noResults": "لا نتائج",
-  "notifs": "الإشعارات"
+  "notifs": "الإشعارات",
+  "addPdfShort": "إضافة PDF"
  }
 }

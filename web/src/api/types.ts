@@ -22,6 +22,8 @@ export type Course = {
   short?: L10n;
   color: CourseColor;
   exam: L10n;
+  /** ISO date of the next exam. */
+  examDate?: string;
   /** Rank among classmates. */
   rank: number;
   pdfs: Pdf[];

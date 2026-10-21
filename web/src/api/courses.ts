@@ -23,3 +23,10 @@ export function courseStats(c: Course) {
   const readPages = c.pdfs.reduce((a, p) => a + (p.pages * p.read) / 100, 0);
   return { minutes, pages, pct: pages ? Math.round((readPages / pages) * 100) : 0 };
 }
+
+/** "Today" for the mock data: one week before the first midterm, as in the design. */
+export const MOCK_TODAY = '2026-10-12';
+
+export function daysUntil(iso: string, today = MOCK_TODAY) {
+  return Math.round((Date.parse(iso) - Date.parse(today)) / 86_400_000);
+}

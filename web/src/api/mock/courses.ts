@@ -18,6 +18,7 @@ export const COURSES: Course[] = [
       "fa": "میان‌ترم · 19 اکتبر",
       "ar": "النصفي · 19 أكتوبر"
     },
+    "examDate": "2026-10-19",
     "rank": 3,
     "pdfs": [
       {
@@ -85,6 +86,7 @@ export const COURSES: Course[] = [
       "fa": "میان‌ترم · 20 اکتبر",
       "ar": "النصفي · 20 أكتوبر"
     },
+    "examDate": "2026-10-20",
     "rank": 5,
     "pdfs": [
       {
@@ -141,6 +143,7 @@ export const COURSES: Course[] = [
       "fa": "میان‌ترم · 21 اکتبر",
       "ar": "النصفي · 21 أكتوبر"
     },
+    "examDate": "2026-10-21",
     "rank": 2,
     "pdfs": [
       {
@@ -196,6 +199,7 @@ export const COURSES: Course[] = [
       "fa": "میان‌ترم · 22 اکتبر",
       "ar": "النصفي · 22 أكتوبر"
     },
+    "examDate": "2026-10-22",
     "rank": 7,
     "pdfs": [
       {
@@ -239,6 +243,7 @@ export const COURSES: Course[] = [
       "fa": "میان‌ترم · 23 اکتبر",
       "ar": "النصفي · 23 أكتوبر"
     },
+    "examDate": "2026-10-23",
     "rank": 9,
     "pdfs": [
       {

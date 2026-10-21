@@ -1,0 +1,283 @@
+.main {
+  padding: 28px 34px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.titleBox {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+.title span {
+  color: var(--text2);
+  font-weight: 400;
+}
+
+.summary {
+  font-size: 14px;
+  color: var(--text2);
+  min-height: 21px;
+}
+
+.filters {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.chip {
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 19px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.chipOn {
+  border-color: var(--text);
+  background: var(--text);
+  color: var(--bg);
+}
+
+.grow {
+  flex: 1;
+}
+
+.add {
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 22px;
+  border: 0;
+  background: var(--pri);
+  color: #fffcf6;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.card {
+  border-radius: 26px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stripe {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 6px;
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.folder {
+  width: 50px;
+  height: 50px;
+  flex: none;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardTitle {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cardTitle b {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.cardHead:hover b {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.cardTitle span {
+  font-size: 11px;
+  color: var(--text3);
+}
+
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bar {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--sub);
+  display: flex;
+  overflow: hidden;
+}
+
+.progress b {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text2);
+}
+
+.tags span {
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 14px;
+  background: var(--sub);
+  display: flex;
+  align-items: center;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+.continue,
+.prep {
+  height: 42px;
+  border-radius: 21px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.continue {
+  flex: 1;
+  border: 0;
+  background: var(--pri);
+  color: #fffcf6;
+  font-weight: 600;
+}
+
+.prep {
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+}
+
+.prep:hover {
+  background: var(--sub);
+}
+
+.empty {
+  grid-column: 1 / -1;
+  padding: 24px;
+  text-align: center;
+  color: var(--text2);
+}
+
+.drop {
+  border-radius: 26px;
+  border: 2px dashed var(--line);
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--text2);
+  font-size: 14px;
+  min-height: 230px;
+  cursor: pointer;
+}
+
+.drop small {
+  font-size: 12px;
+  color: var(--text3);
+}
+
+.drop:hover,
+.dropOn {
+  border-color: var(--pri);
+  background: var(--pri-soft);
+}
+
+.dropIcon {
+  width: 52px;
+  height: 52px;
+  border-radius: 26px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+}
+
+@media (max-width: 1180px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .main {
+    padding: 20px 16px 32px;
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .title {
+    font-size: 28px;
+  }
+  .drop {
+    min-height: 160px;
+  }
+}

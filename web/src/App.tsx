@@ -7,6 +7,8 @@ import Placeholder from './pages/Placeholder';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Home from './pages/Home';
+import Courses from './pages/Courses';
+import CourseFolder from './pages/CourseFolder';
 
 export default function App() {
   return (
@@ -20,8 +22,8 @@ export default function App() {
               {/* Pages with the sidebar */}
               <Route element={<AppShell />}>
                 <Route path="/home" element={<Home />} />
-                <Route path="/courses" element={<Placeholder name="courses" />} />
-                <Route path="/courses/:courseId" element={<Placeholder name="course" />} />
+                <Route path="/courses" element={<Courses />} />
+                <Route path="/courses/:courseId" element={<CourseFolder />} />
                 <Route path="/reader" element={<Placeholder name="reader" />} />
                 <Route path="/assistant" element={<Placeholder name="assistant" />} />
                 <Route path="/quiz" element={<Placeholder name="quiz" />} />
