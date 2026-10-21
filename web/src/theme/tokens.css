@@ -46,6 +46,10 @@
   --term: #9C2F3A;
   --term-bg: rgba(242, 179, 61, 0.28);
   --seg: #E8DEC9;
+  --pill: #FFFCF6;
+  --amb-line: #E8C77E;
+  --comp-border: #F2D9A8;
+  --ai-bg: radial-gradient(circle at 50% 35%, #F7E2C2 0%, #F1E9DA 60%);
 }
 
 :root[data-theme="dark"] {
@@ -94,4 +98,8 @@
   --term: #E8925A;
   --term-bg: rgba(242, 179, 61, 0.16);
   --seg: #2B2520;
+  --pill: #463C33;
+  --amb-line: #6B5426;
+  --comp-border: #4A3A1C;
+  --ai-bg: radial-gradient(circle at 50% 35%, #3A2A1E 0%, #1D1915 60%);
 }

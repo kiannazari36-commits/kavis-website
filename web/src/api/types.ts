@@ -64,3 +64,50 @@ export type ReaderDoc = {
   sampleSentence: string;
   sampleTranslations: Record<string, { l: string; dir: 'ltr' | 'rtl'; lit: string; nat: string }>;
 };
+
+/** A course (or "all courses") the assistant can answer about. */
+export type AssistantTopic = {
+  id: string;
+  name: L10n;
+  sub: L10n;
+  color: string;
+  /** Course id for "open the course folder", "all" for My Courses, null if none. */
+  folder: string | null;
+  sample: { q: L10n; a: L10n; src: L10n };
+};
+
+export type AttachmentKind = 'pdf' | 'photo' | 'audio';
+
+export type Attachment = {
+  tag: L10n;
+  name: L10n;
+  meta: L10n;
+  /** Topic the app guesses the file belongs to. */
+  topic: string;
+  why: L10n;
+};
+
+export type ExamTopic = {
+  title: L10n;
+  tag: L10n;
+  kind: 'weak' | 'imp' | 'base';
+  src: L10n;
+  points: L10n[];
+  teacher?: L10n;
+  molecule?: 'captopril';
+};
+
+export type QuizQuestion = {
+  kind: L10n;
+  text: L10n;
+  options: L10n[];
+  /** Index of the right option. */
+  answer: number;
+  why: L10n;
+  src: L10n;
+  hints: L10n[];
+  molecule?: 'captopril';
+};
+
+export type FlashCard = { q: L10n; a: L10n; note: L10n; page: number };
+export type CardRating = 'again' | 'hard' | 'good';

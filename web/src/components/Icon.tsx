@@ -42,6 +42,14 @@ const PATHS = {
   expand: 'M4 9V4h5 M20 9V4h-5 M4 15v5h5 M20 15v5h-5',
   shrink: 'M9 4v5H4 M15 4v5h5 M9 20v-5H4 M15 20v-5h5',
   pause: 'M8 5v14 M16 5v14',
+  headphones: 'M4 14v-2a8 8 0 0 1 16 0v2 M4 14a2 2 0 0 1 2-2h1v7H6a2 2 0 0 1-2-2z M20 14a2 2 0 0 0-2-2h-1v7h1a2 2 0 0 0 2-2z',
+  lines: 'M5 6h14 M5 10h14 M5 14h9 M5 18h6',
+  checklist: 'M9 5h10 M9 12h10 M9 19h10 M4 5l1 1 2-2 M4 12l1 1 2-2 M4 19l1 1 2-2',
+  target: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M12 12h.01',
+  solve: 'M9 11l3 3L22 4 M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11',
+  file: 'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z M14 3v5h5',
+  bulb: 'M9 18h6 M10 21h4 M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z',
+  rotate: 'M20 12a8 8 0 1 1-2.3-5.7 M20 4v5h-5',
 };
 
 export type IconName = keyof typeof PATHS;
