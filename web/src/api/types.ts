@@ -140,4 +140,5 @@ export type CourseRank = {
 
 export type WeakTopic = { title: L10n; pdf: L10n; mastery: number; color: string };
 
-export type PremiumPlan = { id: 'year' | 'term' | 'month'; title: L10n; price: string; old: string; sub: L10n; tag?: L10n };
+/** A Premium plan. No price: it comes from the App Store for the student's country. */
+export type PremiumPlan = { id: 'year' | 'term' | 'month'; title: L10n; tag?: L10n };

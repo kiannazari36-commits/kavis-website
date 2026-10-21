@@ -1,4 +1,5 @@
-// Premium (paywall) mock data from design/NewIPad.dc.html: free vs Premium table and the three plans (prices in TL as in the design).
+// Premium (paywall) mock data from design/NewIPad.dc.html: free vs Premium table and the three plans.
+// No prices here: Apple sets the local price per country (CLAUDE.md).
 import type { L10n, PremiumPlan } from '../types';
 
 export const COMPARE_ROWS: [L10n, L10n, L10n][] = [
@@ -133,14 +134,6 @@ export const PREMIUM_PLANS: PremiumPlan[] = [
       "fa": "سالانه",
       "ar": "سنوي"
     },
-    "price": "1.999,99 TL",
-    "old": "3.599,88 TL",
-    "sub": {
-      "tr": "Ayda ~167 TL · %44 tasarruf",
-      "en": "About 167 TL/month · save 44%",
-      "fa": "حدود ۱۶۷ لیر در ماه · ۴۴٪ صرفه‌جویی",
-      "ar": "حوالي 167 ليرة شهريًا · توفير 44%"
-    },
     "tag": {
       "tr": "En avantajlı",
       "en": "Best value",
@@ -155,14 +148,6 @@ export const PREMIUM_PLANS: PremiumPlan[] = [
       "en": "5-month term",
       "fa": "ترمی · ۵ ماه",
       "ar": "فصلي · 5 أشهر"
-    },
-    "price": "1.199,99 TL",
-    "old": "1.499,95 TL",
-    "sub": {
-      "tr": "Ayda ~240 TL · %20 tasarruf",
-      "en": "About 240 TL/month · save 20%",
-      "fa": "حدود ۲۴۰ لیر در ماه · ۲۰٪ صرفه‌جویی",
-      "ar": "حوالي 240 ليرة شهريًا · توفير 20%"
     }
   },
   {
@@ -172,14 +157,6 @@ export const PREMIUM_PLANS: PremiumPlan[] = [
       "en": "Monthly",
       "fa": "ماهانه",
       "ar": "شهري"
-    },
-    "price": "299,99 TL",
-    "old": "",
-    "sub": {
-      "tr": "İlk aboneler bu fiyatta kalır",
-      "en": "Early subscribers keep this price",
-      "fa": "مشترکان اول با همین قیمت می‌مانند",
-      "ar": "المشتركون الأوائل يبقون على هذا السعر"
     },
     "tag": {
       "tr": "Lansmana özel",

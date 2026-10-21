@@ -1,26 +1,22 @@
-import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useI18n } from '../i18n/I18nProvider';
-import { useToast } from '../components/Toast';
 import Wordmark from '../components/Wordmark';
 import Icon from '../components/Icon';
-import { getPremiumOffer, restorePurchases, startTrial } from '../api/premium';
+import AppStoreButton from '../components/AppStoreButton';
+import { getPremiumOffer } from '../api/premium';
 import { useAsync } from '../hooks/useAsync';
-import type { PremiumPlan } from '../api/types';
 import s from './Paywall.module.css';
 
 // Design: design/NewIPad.dc.html Premium sheet ("pw"), shown as its own page on the web.
+// Rule (CLAUDE.md): the web never sells Premium and shows no prices — it points to the iPhone app.
 // ?why=share|offline shows why Premium was opened.
 
 export default function Paywall() {
   const { t, lang } = useI18n();
-  const toast = useToast();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const why = params.get('why');
   const offer = useAsync(getPremiumOffer, []);
-  const [plan, setPlan] = useState<PremiumPlan['id']>('year');
-  const [busy, setBusy] = useState(false);
 
   const close = () => (window.history.length > 1 ? navigate(-1) : navigate('/home'));
 
@@ -65,45 +61,26 @@ export default function Paywall() {
             </div>
             <span className={s.fair}>{t('pwFair')}</span>
 
-            <div role="radiogroup" className={s.plans}>
+            <div className={s.plans}>
               {offer.plans.map((p) => (
-                <button key={p.id} role="radio" aria-checked={plan === p.id} className={plan === p.id ? `${s.plan} ${s.planOn}` : s.plan} onClick={() => setPlan(p.id)}>
+                <div key={p.id} className={s.plan}>
                   {p.tag && <span className={p.id === 'year' ? `${s.tag} ${s.tagAmb}` : s.tag}>{p.tag[lang]}</span>}
                   <b>{p.title[lang]}</b>
-                  <span className={s.prices}>
-                    <span dir="ltr" className={s.price}>
-                      {p.price}
-                    </span>
-                    {p.old && (
-                      <span dir="ltr" className={s.old}>
-                        {p.old}
-                      </span>
-                    )}
-                  </span>
-                  <span className={s.planSub}>{p.sub[lang]}</span>
-                </button>
+                  <span className={s.planSub}>{t('pwPriceStore')}</span>
+                </div>
               ))}
             </div>
           </>
         )}
 
-        <button
-          className={s.start}
-          disabled={busy}
-          onClick={async () => {
-            setBusy(true);
-            await startTrial(plan);
-            toast(t('pwStarted'));
-            navigate('/home');
-          }}
-        >
-          {t('pwStart')}
-        </button>
-        <div className={s.links}>
-          <button onClick={() => restorePurchases().then(() => toast(t('pwRestored')))}>{t('pwRestore')}</button>
-          <button onClick={close}>{t('pwContinueFree')}</button>
+        <div className={s.iphone}>
+          <b>{t('pwIphone')}</b>
+          <span>{t('pwIphoneSub')}</span>
+          <AppStoreButton />
         </div>
-        <span className={s.note}>{t('pwNote')}</span>
+        <div className={s.links}>
+          <button onClick={close}>{t('back')}</button>
+        </div>
       </section>
     </div>
   );

@@ -160,12 +160,6 @@
   flex-direction: column;
   gap: 4px;
   text-align: start;
-  cursor: pointer;
-}
-
-.planOn {
-  border: 2px solid var(--pri);
-  background: var(--pri-soft);
 }
 
 .tag {
@@ -192,41 +186,32 @@
   font-weight: 600;
 }
 
-.prices {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.price {
-  unicode-bidi: isolate;
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
-.old {
-  unicode-bidi: isolate;
-  font-size: 13px;
-  color: var(--text3);
-  text-decoration: line-through;
-}
-
 .planSub {
   font-size: 12px;
   color: var(--text2);
 }
 
-.start {
-  height: 52px;
-  border-radius: 26px;
-  border: 0;
-  background: var(--pri);
-  color: #fffcf6;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
+/* Buy in the iPhone app */
+.iphone {
+  border-radius: 22px;
+  background: var(--amb-soft);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.iphone > b {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.iphone > span {
+  font-size: 13px;
+  color: var(--text2);
+  margin-bottom: 6px;
 }
 
 .links {
@@ -242,13 +227,6 @@
   color: var(--text2);
   font-size: 12px;
   cursor: pointer;
-}
-
-.note {
-  font-size: 11px;
-  line-height: 1.45;
-  color: var(--text2);
-  text-align: center;
 }
 
 @media (max-width: 640px) {

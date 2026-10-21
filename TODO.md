@@ -17,7 +17,7 @@ Everything that is not finished yet. Updated after every step.
 ## Payments and plans
 - [ ] Apple in-app purchase in the iPhone app (the only way to buy Premium)
 - [ ] Server check of the Apple subscription so Premium also unlocks the web
-- [ ] Prices come from the App Store (never hardcoded)
+- [ ] Prices come from the App Store (never hardcoded) — web shows "Price in the App Store"
 - [ ] Android payment later (Google Play or a web payment) — no Android app yet
 - [ ] Trial limits enforced on the server (3 days, 2 PDFs, 60 questions, 100 pages per PDF)
 
@@ -35,7 +35,7 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Live audio lesson, "Let me explain" (teach-back), solve a question photo
 - [ ] Pen / handwritten notes on the PDF, full PDF page view
 - [ ] Lesson summary / review pages ("Bugünün tekrarı", exam center)
-- [ ] Real App Store link (now a placeholder)
+- [ ] Real App Store link: set `APP_STORE_URL` in `web/src/config.ts` (now empty → buttons show a message)
 
 ## Texts and legal
 - [ ] Legal check of all texts: terms of use, KVKK / privacy notice, Premium and trial texts, delete-account texts

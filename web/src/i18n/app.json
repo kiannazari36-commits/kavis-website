@@ -38,7 +38,10 @@
   "delMail": "Onay için e-postana bir bağlantı göndereceğiz. 30 gün içinde fikrini değiştirebilirsin.",
   "delCancel": "Vazgeç",
   "delSent": "Hesabı silmek için e-postana onay bağlantısı gönderdik",
-  "expSent": "Hesap bilgilerin hazırlanıyor · e-postana gönderilecek"
+  "expSent": "Hesap bilgilerin hazırlanıyor · e-postana gönderilecek",
+  "pwIphone": "Premium'a Kavis Study iPhone uygulamasından geç",
+  "pwIphoneSub": "iPhone'da aldığın Premium, aynı hesapla web'de de açılır.",
+  "pwPriceStore": "Fiyat App Store'da"
  },
  "en": {
   "pdfs": "PDFs",
@@ -79,7 +82,10 @@
   "delMail": "We will email you a confirmation link. You can change your mind within 30 days.",
   "delCancel": "Cancel",
   "delSent": "We sent a confirmation link to your email",
-  "expSent": "Preparing your data · it will be emailed to you"
+  "expSent": "Preparing your data · it will be emailed to you",
+  "pwIphone": "Upgrade to Premium in the Kavis Study iPhone app",
+  "pwIphoneSub": "Premium bought on iPhone also works on the web with the same account.",
+  "pwPriceStore": "Price in the App Store"
  },
  "fa": {
   "pdfs": "PDFها",
@@ -120,7 +126,10 @@
   "delMail": "برای تأیید، لینکی به ایمیلت می‌فرستیم. تا ۳۰ روز می‌توانی منصرف شوی.",
   "delCancel": "انصراف",
   "delSent": "لینک تأیید حذف حساب به ایمیلت فرستاده شد",
-  "expSent": "اطلاعات حسابت آماده می‌شود · به ایمیلت فرستاده می‌شود"
+  "expSent": "اطلاعات حسابت آماده می‌شود · به ایمیلت فرستاده می‌شود",
+  "pwIphone": "از اپلیکیشن آیفون Kavis Study به پریمیوم ارتقا بده",
+  "pwIphoneSub": "پریمیومی که در آیفون بخری، با همان حساب در وب هم فعال است.",
+  "pwPriceStore": "قیمت در App Store"
  },
  "ar": {
   "pdfs": "ملفات PDF",
@@ -161,6 +170,9 @@
   "delMail": "سنرسل رابط تأكيد إلى بريدك. يمكنك التراجع خلال 30 يومًا.",
   "delCancel": "إلغاء",
   "delSent": "أرسلنا رابط تأكيد الحذف إلى بريدك",
-  "expSent": "جارٍ تجهيز بياناتك · ستُرسل إلى بريدك"
+  "expSent": "جارٍ تجهيز بياناتك · ستُرسل إلى بريدك",
+  "pwIphone": "رقِّ إلى بريميوم من تطبيق Kavis Study على iPhone",
+  "pwIphoneSub": "بريميوم الذي تشتريه على iPhone يعمل أيضًا على الويب بالحساب نفسه.",
+  "pwPriceStore": "السعر في App Store"
  }
 }
