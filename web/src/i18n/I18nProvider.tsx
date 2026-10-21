@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import desk from './desk.json';
 import auth from './auth.json';
 import app from './app.json';
+import reader from './reader.json';
 
 export type Lang = 'tr' | 'en' | 'fa' | 'ar';
 export const LANGS: Lang[] = ['tr', 'en', 'fa', 'ar'];
@@ -9,10 +10,11 @@ export const LANG_NAMES: Record<Lang, string> = { tr: 'Türkçe', en: 'English',
 
 // desk.json: texts from design/DeskApp.dc.html (keys k0, k1, … as in the design).
 // auth.json: sign-up / login texts from design/NewSignup.dc.html.
+// reader.json: reader texts from design/NewIPad.dc.html (the PDF text itself lives in src/api/mock).
 // app.json: course folder texts from design/NewCourses.dc.html, plus a few added for the web.
 type Dict = Record<string, string>;
 const dicts = Object.fromEntries(
-  LANGS.map((l) => [l, { ...(desk as Record<Lang, Dict>)[l], ...(auth as Record<Lang, Dict>)[l], ...(app as Record<Lang, Dict>)[l] }]),
+  LANGS.map((l) => [l, { ...(desk as Record<Lang, Dict>)[l], ...(auth as Record<Lang, Dict>)[l], ...(app as Record<Lang, Dict>)[l], ...(reader as Record<Lang, Dict>)[l] }]),
 ) as Record<Lang, Dict>;
 
 type I18n = {

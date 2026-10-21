@@ -33,6 +33,14 @@ const PATHS = {
   send: 'M5 12h14 M13 6l6 6-6 6',
   menu: 'M4 7h16 M4 12h16 M4 17h16',
   close: 'M6 6l12 12 M18 6L6 18',
+  share: 'M12 3v12 M8 7l4-4 4 4 M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6',
+  panel: 'M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z M15 5v14',
+  molecule: 'M12 3l7.8 4.5v9L12 21l-7.8-4.5v-9z M12 8l3.5 2v4L12 16l-3.5-2v-4z',
+  question: 'M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3 M12 17h.01 M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z',
+  pen: 'M4 20l1-4L16 5l3 3L8 19z M14 7l3 3',
+  speaker: 'M4 9h4l5-4v14l-5-4H4z M16.5 8.5a5 5 0 0 1 0 7',
+  expand: 'M4 9V4h5 M20 9V4h-5 M4 15v5h5 M20 15v5h-5',
+  pause: 'M8 5v14 M16 5v14',
 };
 
 export type IconName = keyof typeof PATHS;

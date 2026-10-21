@@ -9,6 +9,7 @@ import Login from './pages/Login';
 import Home from './pages/Home';
 import Courses from './pages/Courses';
 import CourseFolder from './pages/CourseFolder';
+import Reader from './pages/Reader';
 
 export default function App() {
   return (
@@ -24,7 +25,7 @@ export default function App() {
                 <Route path="/home" element={<Home />} />
                 <Route path="/courses" element={<Courses />} />
                 <Route path="/courses/:courseId" element={<CourseFolder />} />
-                <Route path="/reader" element={<Placeholder name="reader" />} />
+                <Route path="/reader" element={<Reader />} />
                 <Route path="/assistant" element={<Placeholder name="assistant" />} />
                 <Route path="/quiz" element={<Placeholder name="quiz" />} />
                 <Route path="/cards" element={<Placeholder name="cards" />} />
