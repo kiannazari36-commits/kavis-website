@@ -98,7 +98,12 @@ final class FlowTests: XCTestCase {
         app.buttons["Next"].tap()
         app.buttons["Next"].tap()
         app.buttons["Let's start"].tap()
-        XCTAssertTrue(app.staticTexts["This screen comes in the next step"].waitForExistence(timeout: 3), "course setup (next commit)")
+        // The term courses: add one more suggestion, then create the folder and land on home.
+        XCTAssertTrue(app.staticTexts["2026–2027 Fall term"].waitForExistence(timeout: 3), "course setup")
+        XCTAssertTrue(app.buttons["Create my folder · 5 courses"].exists)
+        app.buttons.containing(NSPredicate(format: "label CONTAINS 'Biopharmaceutics'")).firstMatch.tap()
+        app.buttons["Create my folder · 6 courses"].tap()
+        XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'shall we study'")).firstMatch.waitForExistence(timeout: 5), "home")
     }
 
     func testSkippingTheIntroGoesHome() {

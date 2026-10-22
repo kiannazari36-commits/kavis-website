@@ -1,6 +1,27 @@
 import Foundation
 
+/// The courses a student takes this term (chosen after sign up). Mock: kept on the phone until the server exists.
+struct TermSetup: Codable, Equatable {
+    /// Course names as the design writes them (Turkish) or as the student typed them.
+    var courses: [String]
+    /// Courses the student has already studied (the assistant suggests a short placement test for these).
+    var started: [String]
+}
+
 enum CoursesAPI {
+    private static let termKey = "kavis.termSetup"
+
+    static func loadTermSetup() -> TermSetup? {
+        guard let data = UserDefaults.standard.data(forKey: termKey) else { return nil }
+        return try? JSONDecoder().decode(TermSetup.self, from: data)
+    }
+
+    /// Creates the term's course folders.
+    static func createTermFolders(_ setup: TermSetup) async -> TermSetup {
+        if let data = try? JSONEncoder().encode(setup) { UserDefaults.standard.set(data, forKey: termKey) }
+        return await fakeRequest(setup)
+    }
+
     /// Mock data copied from the web (`mock-courses.json`).
     private static let all: [Course] = MockData.load("mock-courses")
 

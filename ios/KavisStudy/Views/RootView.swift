@@ -21,7 +21,7 @@ struct RootView: View {
             case .onboarding:
                 OnboardingView()
             case .courseSetup:
-                Color.clear.overlay(Text(prefs.t("k165")))
+                CourseSetupView()
             case .home:
                 HomeView()
             case .profile:

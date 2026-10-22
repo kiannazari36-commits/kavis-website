@@ -32,6 +32,7 @@ enum KIconName: String {
     case cross = "M12 5v14 M5 12h14"
     case pulse = "M3 12h4l2-5 4 10 2-5h6"
     case dots = "M6 12h.01 M12 12h.01 M18 12h.01"
+    case info = "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z M12 8h.01 M11 12h1v5h1"
     case chat = "M4 5h16v11H9l-5 4z"
     case bellSmall = "M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z M10 20a2 2 0 0 0 4 0"
     case spark = "M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"
