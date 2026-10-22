@@ -42,8 +42,15 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Same for Google Play (`PLAY_STORE_URL`) and the Mac App Store (`MAC_STORE_URL`) when those apps exist; then update the line under the store buttons (`storesSoon`)
 
 ## iOS app (`ios/`, SwiftUI + XcodeGen)
-- [ ] iPhone app first (started; see the plan in the chat: skeleton → languages + mock API → screens → StoreKit / devices / sharing)
-- [ ] iPad version later (wide layouts from `design/NewIPad.dc.html`)
+- [x] Step 1: project skeleton (`ios/project.yml`; run `xcodegen generate` in `ios/`, then open `KavisStudy.xcodeproj`), colors, fonts, light/dark, RTL, app icon
+- [x] Step 2: texts in tr/en/fa/ar (copied from the web) and the fake API in `ios/KavisStudy/API/` (auth, account, courses, trial, devices, settings, premium, share). After the web texts or mock data change, run `node ios/scripts/sync-from-web.mjs`
+- [ ] Step 3: screens (login/signup, onboarding, home, course folder, reader, assistant, quiz, cards, plan, progress, upload, settings, paywall). The big mock data (reader PDF, assistant, quiz, cards, plan, progress) is added to the sync script together with each screen
+- [ ] Step 4: StoreKit (Apple in-app purchase, prices from the App Store), trial limits, 2-device screen, share links, delete account
+- [ ] Set the Apple developer team and the final bundle id (now `study.kavis.app`) before TestFlight / App Store
+- [ ] Remove the mock test switches (`-kavis.trial`, `-kavis.devices`, `-kavis.premium`, `-kavis.lang`, `-kavis.theme`) and the temporary `DesignCheckView` before the public launch
+- [ ] Fonts do not scale with the system text size yet (fixed sizes like the design); decide on Dynamic Type later
+- [ ] iPad version later (wide layouts from `design/NewIPad.dc.html`; now `TARGETED_DEVICE_FAMILY` is iPhone only)
+- [ ] Check text conflict: `offFreeT` ("Offline use · Premium") and `pwWhyOffline` ("Offline reading is Premium-only") in `web/src/i18n/pages.json` say offline is Premium-only, but CLAUDE.md says offline use is in every plan
 
 ## Texts and legal
 - [ ] Legal check of all texts: terms of use, KVKK / privacy notice, Premium and trial texts, delete-account texts

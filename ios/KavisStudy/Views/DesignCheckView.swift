@@ -5,6 +5,8 @@ import SwiftUI
 struct DesignCheckView: View {
     @Environment(AppPrefs.self) private var prefs
     @Environment(\.colorScheme) private var scheme
+    @State private var courses: [Course] = []
+    @State private var trial: TrialStatus?
 
     private let swatches: [(String, Color)] = [
         ("bg", KColor.bg), ("card", KColor.card), ("line", KColor.line), ("text", KColor.text),
@@ -34,6 +36,8 @@ struct DesignCheckView: View {
                     }
                     .pickerStyle(.segmented)
                 }
+
+                apiCard(lang)
 
                 card {
                     label("Fonts", lang)
@@ -67,6 +71,37 @@ struct DesignCheckView: View {
             .padding(.vertical, 24)
         }
         .background(KGradient.landing.ignoresSafeArea())
+        .task {
+            courses = await CoursesAPI.listCourses()
+            trial = await TrialAPI.getTrial()
+        }
+    }
+
+    /// Texts come from the shared JSON, data from the fake API (both in the chosen language).
+    private func apiCard(_ lang: Lang) -> some View {
+        card {
+            label("Mock API", lang)
+            if let trial {
+                Text(trial.ended ? prefs.t("trialEnded") : "\(prefs.t("trialTitle")) · \(prefs.t("trialDaysLeft", ["n": String(trial.daysLeft)]))")
+                    .font(KFont.ui(15, .semibold, lang: lang)).foregroundStyle(KColor.priText)
+                Text("\(trial.questionsUsed)/\(TrialLimits.questions) · \(prefs.t("trialQuestions"))")
+                    .font(KFont.ui(13, lang: lang)).foregroundStyle(KColor.text2)
+                if trial.ended {
+                    Text(prefs.t("trialLocked")).font(KFont.ui(13, lang: lang)).foregroundStyle(KColor.text2)
+                }
+            }
+            ForEach(courses) { c in
+                HStack(spacing: 10) {
+                    Circle().fill(c.color.color).frame(width: 10, height: 10)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(c.name[lang]).font(KFont.ui(15, .semibold, lang: lang)).foregroundStyle(KColor.text)
+                        Text(c.exam[lang]).font(KFont.ui(12, lang: lang)).foregroundStyle(KColor.text3)
+                    }
+                    Spacer()
+                    Text("\(CoursesAPI.stats(c).percent)%").font(KFont.mono(14)).foregroundStyle(KColor.text2)
+                }
+            }
+        }
     }
 
     private func header(_ lang: Lang) -> some View {

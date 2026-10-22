@@ -30,6 +30,11 @@ final class AppPrefs {
         didSet { UserDefaults.standard.set(theme.rawValue, forKey: Self.themeKey) }
     }
 
+    /// Text in the current interface language: `prefs.t("trialTitle")`, `prefs.t("trialDaysLeft", ["n": "2"])`.
+    func t(_ key: String, _ vars: [String: String] = [:]) -> String {
+        Strings.text(key, lang, vars)
+    }
+
     init() {
         let d = UserDefaults.standard
         lang = d.string(forKey: Self.langKey).flatMap(Lang.init(rawValue:)) ?? .tr

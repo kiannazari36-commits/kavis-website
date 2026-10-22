@@ -26,3 +26,16 @@ extension View {
             .overlay(RoundedRectangle(cornerRadius: radius, style: .continuous).stroke(KColor.line, lineWidth: 1))
     }
 }
+
+extension CourseColor {
+    /// Dot / ring color of a course.
+    var color: Color {
+        switch self {
+        case .red: KColor.pri
+        case .amb: KColor.amb
+        case .vio: KColor.vio
+        case .grn: KColor.good
+        case .teal: KColor.tealText
+        }
+    }
+}
