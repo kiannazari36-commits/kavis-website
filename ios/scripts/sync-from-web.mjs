@@ -25,4 +25,7 @@ write('mock-courses.json', COURSES);
 const { COMPARE_ROWS, PREMIUM_PLANS } = await load('premium.ts');
 write('mock-premium.json', { rows: COMPARE_ROWS, plans: PREMIUM_PLANS });
 
+const { HYPERTENSION_DOC } = await load('readerDoc.ts');
+write('mock-reader.json', HYPERTENSION_DOC);
+
 console.log(`Synced to ${out}`);

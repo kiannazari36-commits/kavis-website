@@ -28,6 +28,10 @@ struct RootView: View {
                 ProfileView()
             case .upload(let kind):
                 UploadView(kind: kind)
+            case .reader(let id):
+                ReaderView(docID: id)
+            case .assistant:
+                Color.clear.overlay(Text(prefs.t("k165")))
             }
         }
         .animation(.easeInOut(duration: 0.25), value: app.route)

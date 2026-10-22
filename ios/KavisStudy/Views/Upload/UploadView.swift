@@ -623,8 +623,9 @@ struct UploadView: View {
         try? await Task.sleep(for: .milliseconds(700))
         if Task.isCancelled { return }
         if !trial.status.premium { trial.status.pdfsUsed += 1 }
-        toast.show(prefs.t("k165")) // the reading page opens here in the next step
+        // Mock server: every lesson opens the sample lesson until the PDF processing exists (see TODO.md).
         app.reset(to: .home)
+        app.go(.reader("hypertension"))
     }
 
     // MARK: "This PDF is too long" sheet

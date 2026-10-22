@@ -120,8 +120,8 @@ final class FlowTests: XCTestCase {
         XCTAssertTrue(app.buttons["Dersi hazırla · 4 sayfa"].waitForExistence(timeout: 3), "photo page")
         app.buttons["Dersi hazırla · 4 sayfa"].tap()
         XCTAssertTrue(app.staticTexts["Ders hazırlanıyor…"].waitForExistence(timeout: 3), "processing")
-        // The mock server finishes in about 5 seconds, then the student is back home.
-        XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'çalışalım'")).firstMatch.waitForExistence(timeout: 15), "home")
+        // The mock server finishes in about 5 seconds, then the reading page opens.
+        XCTAssertTrue(app.staticTexts["Hipertansiyon"].waitForExistence(timeout: 15), "reader")
     }
 
     func testTooLongPdfSheetThenProcessing() {
@@ -137,5 +137,32 @@ final class FlowTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Ders PDF'ini seç"].waitForExistence(timeout: 5))
         app.buttons["Kapat"].tap()
         XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'çalışalım'")).firstMatch.waitForExistence(timeout: 5))
+    }
+
+    func testReaderSectionsTranslateAndAssistantButton() {
+        let app = launch(["-kavis.route", "reader"])
+        XCTAssertTrue(app.staticTexts["Hipertansiyon"].waitForExistence(timeout: 5), "lesson title")
+        XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'Diüretikler'")).firstMatch.exists, "the teacher's text")
+        // Reading theme.
+        app.buttons.containing(NSPredicate(format: "label CONTAINS 'Koyu'")).firstMatch.tap()
+        // Another section from the menu.
+        app.descendants(matching: .any)["Bölümler"].firstMatch.tap()
+        app.buttons["3 · Özel durumlar"].tap()
+        XCTAssertTrue(app.staticTexts["Özel durumlar"].waitForExistence(timeout: 3), "section 3")
+        // Translate the first card.
+        app.buttons["Çevir"].firstMatch.tap()
+        XCTAssertTrue(app.staticTexts["Çeviri"].waitForExistence(timeout: 3), "translation sheet")
+        app.buttons["Kapat"].tap()
+        // The star button opens the assistant.
+        app.buttons["Asistan"].tap()
+        XCTAssertTrue(app.staticTexts["Bu ekran sıradaki adımda"].waitForExistence(timeout: 3), "assistant screen comes next")
+    }
+
+    func testReaderSampleSentenceIsTranslated() {
+        let app = launch(["-kavis.route", "reader", "-kavis.lang", "en"])
+        XCTAssertTrue(app.staticTexts["Hipertansiyon"].waitForExistence(timeout: 5))
+        // The sample lesson translates the sentence of page 12 (section 2, the second card is page 13).
+        app.buttons["Translate"].firstMatch.tap()
+        XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'first-line treatment'")).firstMatch.waitForExistence(timeout: 3), "English translation")
     }
 }

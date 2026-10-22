@@ -20,6 +20,8 @@ struct Settings: Codable, Equatable {
     var studyHours = 1.5
     /// Default reading paper and text size in the reader.
     var readerPaper: ReaderPaper = .sepia
+    /// False until the student picks a reading theme; before that the reader follows light / dark mode.
+    var readerPaperChosen = false
     var readerFontSize = 20
     var translationStyle: TranslationStyle = .natural
     var pushNotifications = true
@@ -40,6 +42,7 @@ struct Settings: Codable, Equatable {
         studyDays = try c.decodeIfPresent(Int.self, forKey: .studyDays) ?? studyDays
         studyHours = try c.decodeIfPresent(Double.self, forKey: .studyHours) ?? studyHours
         readerPaper = try c.decodeIfPresent(ReaderPaper.self, forKey: .readerPaper) ?? readerPaper
+        readerPaperChosen = try c.decodeIfPresent(Bool.self, forKey: .readerPaperChosen) ?? readerPaperChosen
         readerFontSize = try c.decodeIfPresent(Int.self, forKey: .readerFontSize) ?? readerFontSize
         translationStyle = try c.decodeIfPresent(TranslationStyle.self, forKey: .translationStyle) ?? translationStyle
         pushNotifications = try c.decodeIfPresent(Bool.self, forKey: .pushNotifications) ?? pushNotifications

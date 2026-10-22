@@ -15,6 +15,8 @@ enum Route: Equatable {
     case home
     case profile
     case upload(UploadKind)
+    case reader(String)
+    case assistant
 }
 
 /// Where the app is (screen) and who is signed in. Mock session until the server exists.
@@ -27,7 +29,7 @@ final class AppModel {
 
     init() {
         user = AuthAPI.currentUser()
-        // Test switch: `-kavis.route welcome | login | signup | verify | onboarding | setup | home | profile | upload | uploadPhoto | uploadAudio`
+        // Test switch: `-kavis.route welcome | login | signup | verify | onboarding | setup | home | profile | upload | uploadPhoto | uploadAudio | reader | assistant`
         // jumps to a screen (removed before launch, see TODO.md).
         switch MockFlag.value("route") {
         case "welcome": route = .welcome
@@ -40,6 +42,8 @@ final class AppModel {
         case "upload": route = .upload(.pdf)
         case "uploadPhoto": route = .upload(.photo)
         case "uploadAudio": route = .upload(.audio)
+        case "reader": route = .reader("hypertension")
+        case "assistant": route = .assistant
         default: route = .splash
         }
     }
