@@ -19,7 +19,7 @@ extension Color {
         self.init(UIColor { $0.userInterfaceStyle == .dark ? UIColor(dark) : UIColor(light) })
     }
 
-    fileprivate static func pair(_ light: UInt32, _ dark: UInt32) -> Color {
+    static func pair(_ light: UInt32, _ dark: UInt32) -> Color {
         Color(light: Color(hex: light), dark: Color(hex: dark))
     }
 }

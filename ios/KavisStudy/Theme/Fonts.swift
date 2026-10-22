@@ -30,3 +30,30 @@ enum KFont {
         }
     }
 }
+
+extension KFont {
+    /// Extra space between lines so a text gets the design's CSS `line-height` (a multiple of the font size).
+    static func lineSpacing(_ multiple: CGFloat, size: CGFloat, lang: Lang) -> CGFloat {
+        let natural = UIFont(name: lang.isRTL ? "Vazirmatn" : "Poppins-Regular", size: size)?.lineHeight ?? size * 1.5
+        return multiple * size - natural
+    }
+}
+
+enum KLayout {
+    /// Height of the status bar / Dynamic Island area.
+    static var safeTop: CGFloat {
+        UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first?.keyWindow?.safeAreaInsets.top ?? 47
+    }
+
+    /// The design measures from the very top of a 390 × 844 screen. Inside the safe area, that is this much padding.
+    static func top(_ fromScreenTop: CGFloat, minimum: CGFloat = 8) -> CGFloat {
+        max(fromScreenTop - safeTop, minimum)
+    }
+}
+
+extension View {
+    /// CSS letter-spacing in em. Persian and Arabic letters are never spaced (as in the design).
+    func kTracking(_ em: CGFloat, size: CGFloat, lang: Lang) -> some View {
+        tracking(lang.isRTL ? 0 : em * size)
+    }
+}
