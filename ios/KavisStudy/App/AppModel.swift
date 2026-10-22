@@ -3,6 +3,13 @@ import Observation
 
 enum AuthMode { case signup, login }
 
+/// A chat with the assistant: which course, the first question (may be empty) and whether "AI + research" is on.
+struct AssistantChatTarget: Equatable {
+    var topicId: String
+    var question: String = ""
+    var ai = false
+}
+
 /// What the student uploads (the three start buttons on home).
 enum UploadKind: Equatable { case pdf, photo, audio }
 
@@ -17,6 +24,7 @@ enum Route: Equatable {
     case upload(UploadKind)
     case reader(String)
     case assistant
+    case assistantChat(AssistantChatTarget)
 }
 
 /// Where the app is (screen) and who is signed in. Mock session until the server exists.
@@ -29,7 +37,7 @@ final class AppModel {
 
     init() {
         user = AuthAPI.currentUser()
-        // Test switch: `-kavis.route welcome | login | signup | verify | onboarding | setup | home | profile | upload | uploadPhoto | uploadAudio | reader | assistant`
+        // Test switch: `-kavis.route welcome | login | signup | verify | onboarding | setup | home | profile | upload | uploadPhoto | uploadAudio | reader | assistant | chat`
         // jumps to a screen (removed before launch, see TODO.md).
         switch MockFlag.value("route") {
         case "welcome": route = .welcome
@@ -44,6 +52,7 @@ final class AppModel {
         case "uploadAudio": route = .upload(.audio)
         case "reader": route = .reader("hypertension")
         case "assistant": route = .assistant
+        case "chat": route = .assistantChat(AssistantChatTarget(topicId: "hypertension"))
         default: route = .splash
         }
     }

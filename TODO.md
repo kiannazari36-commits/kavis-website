@@ -42,23 +42,36 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Same for Google Play (`PLAY_STORE_URL`) and the Mac App Store (`MAC_STORE_URL`) when those apps exist; then update the line under the store buttons (`storesSoon`)
 
 ## iOS app (`ios/`, SwiftUI + XcodeGen)
-- [x] Step 1: project skeleton (`ios/project.yml`; run `xcodegen generate` in `ios/`, then open `KavisStudy.xcodeproj`), colors, fonts, light/dark, RTL, app icon
-- [x] Step 2: texts in tr/en/fa/ar (copied from the web) and the fake API in `ios/KavisStudy/API/` (auth, account, courses, trial, devices, settings, premium, share). After the web texts or mock data change, run `node ios/scripts/sync-from-web.mjs`
-- [x] Step 3a-c: splash, welcome, sign up / log in / email code, home (design NewSplash, NewWelcome, NewSignup, NewHome). Texts of the phone designs come from `node ios/scripts/extract-design-texts.mjs` (the corrected web translations win)
-- [ ] Step 3 rest: onboarding, course folder, reader, assistant, quiz, cards, plan, progress, upload, profile / settings, paywall, notifications, "Bugünün tekrarı" review flow. The big mock data (reader PDF, assistant, quiz, cards, plan, progress) is added to the sync script together with each screen
-- [ ] After sign up the design goes to onboarding (language, plan days/hours, courses); for now sign up goes straight to home
-- [ ] Real "Sign in with Apple" and Google sign-in, real email code (now every account uses the demo code 481920 and "Kodu e-postadan yapıştır" fills it)
-- [ ] 3rd-device screen: after login with `-kavis.devices full` only a toast is shown (screen comes in step 4)
-- [ ] Home: the profile pill opens a temporary menu (language, appearance, log out) until the profile / settings screens exist; the three course chips and "Güz dönemi · 5 ders…" are fixed design texts until real course data
-- [ ] Home buttons without a screen yet show the toast "Bu ekran sıradaki adımda" (upload, assistant, notifications, tiles, tab bar, plan items)
-- [ ] Exact line height (`.lineHeight`) needs iOS 26; on iOS 17–25 lines are a little looser than the design. Decide the minimum iOS version before release (now 17)
-- [ ] Never read `UIApplication` / `safeAreaInsets` inside a SwiftUI body (it froze the home screen); use `KLayout.top`
-- [ ] Step 4: StoreKit (Apple in-app purchase, prices from the App Store), trial limits, 2-device screen, share links, delete account
-- [ ] Set the Apple developer team and the final bundle id (now `study.kavis.app`) before TestFlight / App Store
-- [ ] Remove the mock test switches (`-kavis.trial`, `-kavis.devices`, `-kavis.premium`, `-kavis.lang`, `-kavis.theme`, `-kavis.route`, `-kavis.offline`) before the public launch
+Done and checked in the simulator (each screen follows its design file and has UI tests):
+- [x] Splash, welcome, sign up / log in / email code, home, profile (+ "Hesap bilgilerim" edit), onboarding (language, weekly plan, department, 3 intro cards), term course setup, upload (PDF / photos / audio / processing / OCR error / 100-page sheet), reader, assistant start + chat
+- [x] Texts of the phone designs come from `node ios/scripts/extract-design-texts.mjs` (corrected web translations win); web data from `node ios/scripts/sync-from-web.mjs`. Screens read design texts with `prefs.d("Turkish design text")`; a unit test checks that every such text exists in 4 languages
+
+Still to build (screens):
+- [ ] **Settings** (language, appearance, study plan, notifications, offline, privacy, devices). Language and theme can only be changed in the onboarding (language) and by the phone's own dark mode until this exists
+- [ ] Course folder ("Derslerim") + course page, quiz, cards, study plan, progress, paywall (Apple in-app purchase, prices from the App Store), notifications, "Bugünün tekrarı" review flow, exam center, share sheet, placement test after upload
+- [ ] Reader extras: molecule viewer, audio per page, notes with Apple Pencil, section check quiz ("Başla"), translations of sentences other than the sample one (needs the server)
+- [ ] Assistant extras: "Ben anlatayım" (teach-back), voice mode, easy explanation, "Soruyu çözdür", conversation history, real "Sürekli dinle" (speech recognition), real AI answers (now a mock that knows a few lesson answers and says "bulamadım" otherwise)
+- [ ] Upload extras: real camera and microphone capture (permission texts), the trial-limit sheet and fair-use sheet of the design (the lock dialog is used now); processing is a mock and always opens the sample lesson
+- [ ] Step 4: StoreKit, trial limits on the server, 3rd-device screen (after login with `-kavis.devices full` only a toast is shown), share links, delete account
+- [ ] Onboarding: course suggestions are the design's pharmacy list for every department; the chosen courses are only saved on the phone
+- [ ] Real "Sign in with Apple" and Google sign-in; real email code (every account uses the demo code 481920 and "Kodu e-postadan yapıştır" fills it)
+- [ ] Profile photo picker (now a toast); profile and settings are saved on the phone, not in the account
+- [ ] Home: the three course chips and "Güz dönemi · 5 ders…" are fixed design texts until real course data
+
+Known differences from the designs (decided on purpose):
+- The designs still show the old free plan ("Bu ay 2 dersten 1'i kullanıldı", "BU AY 1/2 ÜCRETSİZ DERS"). The app shows the 3-day trial (2 PDFs, 60 questions) instead, as in CLAUDE.md
+- The home screen shows the remaining trial limits (the design has no place for it)
+- Offline use is in every plan; the design files still contain the old "Premium-only" offline text (not copied)
+
+Technical notes and decisions:
+- [ ] Texts I wrote myself (not from the design) need a native-speaker check: the Persian / Arabic "not found in your PDF" message, "Erkek sesi" labels, the 100-page sheet texts of the design were copied as they are
+- [ ] Minimum iOS version is 17. The exact line height of the design (`.lineHeight`) needs iOS 26; on iOS 17–25 lines are a little looser
+- [ ] Remove the mock test switches before the public launch: `-kavis.trial`, `-kavis.devices`, `-kavis.premium`, `-kavis.lang`, `-kavis.theme`, `-kavis.offline`, `-kavis.route` (welcome, login, signup, verify, onboarding, setup, home, profile, profileEdit, upload, uploadPhoto, uploadAudio, reader, assistant, chat), `-kavis.onboardingStep`, `-kavis.uploadMode`, `-kavis.readerTerm`, `-kavis.readerSheet`, `-kavis.assistantPanel`
 - [ ] Fonts do not scale with the system text size yet (fixed sizes like the design); decide on Dynamic Type later
+- [ ] Never read `UIApplication` / `safeAreaInsets` inside a SwiftUI body (it froze the home screen); use `KLayout.top`. Shapes are mirrored by SwiftUI in right-to-left layouts by default; `SVGShape` turns that off, only arrows opt in (`flipsInRTL`)
+- [ ] Set the Apple developer team and the final bundle id (now `study.kavis.app`) before TestFlight / App Store
 - [ ] iPad version later (wide layouts from `design/NewIPad.dc.html`; now `TARGETED_DEVICE_FAMILY` is iPhone only)
-- [x] Offline use is in every plan (free included): fixed `offFreeT`, `offFreeS`, removed `pwWhyOffline` (web + iOS). The old design files in `design/` (DeskApp, ScrSettings, ScrPaywall, NewIPad) still contain the old "Premium-only" offline text; they are not changed, so do not copy offline texts from them
+- [x] Offline use is in every plan (free included): fixed `offFreeT`, `offFreeS`, removed `pwWhyOffline` (web + iOS)
 
 ## Texts and legal
 - [ ] Legal check of all texts: terms of use, KVKK / privacy notice, Premium and trial texts, delete-account texts

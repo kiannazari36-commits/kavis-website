@@ -505,12 +505,16 @@ final class Speaker: NSObject, AVSpeechSynthesizerDelegate {
         synthesizer.delegate = self
     }
 
-    func speak(_ text: String, language: String) {
+    /// `rate` is a speed factor (1 = normal); `female` picks a female voice when the phone has one.
+    func speak(_ text: String, language: String, rate: Float = 0.95, female: Bool? = nil) {
         synthesizer.stopSpeaking(at: .immediate)
         let utterance = AVSpeechUtterance(string: text)
         let tags = ["tr": "tr-TR", "en": "en-US", "fa": "fa-IR", "ar": "ar-SA"]
-        utterance.voice = AVSpeechSynthesisVoice(language: tags[language] ?? language)
-        utterance.rate = AVSpeechUtteranceDefaultSpeechRate * 0.95
+        let code = tags[language] ?? language
+        let voices = AVSpeechSynthesisVoice.speechVoices().filter { $0.language == code }
+        let wanted: AVSpeechSynthesisVoiceGender? = female.map { $0 ? .female : .male }
+        utterance.voice = voices.first { wanted != nil && $0.gender == wanted } ?? AVSpeechSynthesisVoice(language: code)
+        utterance.rate = AVSpeechUtteranceDefaultSpeechRate * rate
         speaking = true
         synthesizer.speak(utterance)
     }

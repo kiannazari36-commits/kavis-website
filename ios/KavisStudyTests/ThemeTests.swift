@@ -27,7 +27,7 @@ final class ThemeTests: XCTestCase {
     func testEveryIconParses() {
         let icons: [KIconName] = [.lock, .upload, .list, .checklist, .cards, .mic, .back, .check, .mail, .eye, .eyeOff, .book, .bell,
                                   .refresh, .play, .camera, .help, .chevron, .chevronDown, .chevronLeft, .folder, .close, .send, .clock,
-                                  .calendar, .trash, .chart, .sliders, .apple, .star, .arrowRight, .wifiOff, .sync, .syncHalf, .person, .chat, .bellSmall, .spark, .plus, .minus, .flask, .stethoscope, .tooth, .cross, .pulse, .dots, .info, .shield, .image, .wave, .fileX, .audioFile, .pill, .pen, .speaker, .pause, .copy]
+                                  .calendar, .trash, .chart, .sliders, .apple, .star, .arrowRight, .wifiOff, .sync, .syncHalf, .person, .chat, .bellSmall, .spark, .plus, .minus, .flask, .stethoscope, .tooth, .cross, .pulse, .dots, .info, .shield, .image, .wave, .fileX, .audioFile, .pill, .pen, .speaker, .pause, .copy, .paperPlane, .sparkle, .menuLines, .file, .globe, .headphones, .lines, .target, .solve]
         for icon in icons {
             let r = SVGPathParser.parse(icon.rawValue).boundingRect
             XCTAssertFalse(r.isNull || (r.width == 0 && r.height == 0), "\(icon) is empty") // a straight line has no height

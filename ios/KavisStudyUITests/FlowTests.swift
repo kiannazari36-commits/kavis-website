@@ -155,7 +155,7 @@ final class FlowTests: XCTestCase {
         app.buttons["Kapat"].tap()
         // The star button opens the assistant.
         app.buttons["Asistan"].tap()
-        XCTAssertTrue(app.staticTexts["Bu ekran sıradaki adımda"].waitForExistence(timeout: 3), "assistant screen comes next")
+        XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'yardım edeyim'")).firstMatch.waitForExistence(timeout: 3), "assistant start")
     }
 
     func testReaderSampleSentenceIsTranslated() {
@@ -164,5 +164,32 @@ final class FlowTests: XCTestCase {
         // The sample lesson translates the sentence of page 12 (section 2, the second card is page 13).
         app.buttons["Translate"].firstMatch.tap()
         XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'first-line treatment'")).firstMatch.waitForExistence(timeout: 3), "English translation")
+    }
+
+    func testAssistantNeedsACourseThenAnswersFromTheLesson() {
+        let app = launch(["-kavis.route", "home"])
+        app.buttons["Asistan"].tap()
+        XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'yardım edeyim'")).firstMatch.waitForExistence(timeout: 5))
+        // Sending without a course asks for one (the course picker opens).
+        app.buttons["Gönder"].tap()
+        XCTAssertTrue(app.staticTexts["Önce sorunun hangi dersle ilgili olduğunu seç"].waitForExistence(timeout: 3), "needs a course")
+        app.buttons.containing(NSPredicate(format: "label BEGINSWITH 'Hipertansiyon'")).firstMatch.tap()
+        let field = app.textFields.firstMatch
+        field.tap()
+        field.typeText("ACE inhibitörleri neden gebelikte kullanılmaz?")
+        app.buttons["Gönder"].tap()
+        XCTAssertTrue(app.staticTexts["Asistan"].waitForExistence(timeout: 5), "chat")
+        XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'kontrendike'")).firstMatch.waitForExistence(timeout: 8), "answer from the lesson")
+        XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'SAYFA 14'")).firstMatch.exists, "source chip")
+    }
+
+    func testAssistantAdmitsWhenThePdfDoesNotContainTheAnswer() {
+        let app = launch(["-kavis.route", "chat"])
+        XCTAssertTrue(app.staticTexts["Asistan"].waitForExistence(timeout: 5))
+        let field = app.textFields.firstMatch
+        field.tap()
+        field.typeText("Futbolda ofsayt nedir?")
+        app.buttons["Gönder"].tap()
+        XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", "bulamadım")).firstMatch.waitForExistence(timeout: 8), "honest answer")
     }
 }

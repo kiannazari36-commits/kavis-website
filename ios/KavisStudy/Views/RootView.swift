@@ -31,7 +31,9 @@ struct RootView: View {
             case .reader(let id):
                 ReaderView(docID: id)
             case .assistant:
-                Color.clear.overlay(Text(prefs.t("k165")))
+                AssistantHomeView()
+            case .assistantChat(let target):
+                AssistantChatView(target: target)
             }
         }
         .animation(.easeInOut(duration: 0.25), value: app.route)

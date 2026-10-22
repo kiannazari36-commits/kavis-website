@@ -2674,5 +2674,791 @@
   "en": "Explain my key and weak topics",
   "fa": "مباحث مهم و ضعیفم را توضیح بده",
   "ar": "اشرح مواضيعي المهمة والضعيفة"
+ },
+ " bu sistemde yer alıyor ama öksürüğe yol açmıyor. İpucu istersen “ipucu” yaz.": {
+  "tr": " bu sistemde yer alıyor ama öksürüğe yol açmıyor. İpucu istersen “ipucu” yaz.",
+  "en": " is part of this system but doesn't cause cough. Want a hint? Type “hint”.",
+  "fa": " در این سیستم نقش دارد اما سرفه ایجاد نمی‌کند. اگر راهنمایی می‌خواهی بنویس «راهنمایی».",
+  "ar": " جزء من هذا النظام لكنه لا يسبب السعال. إن أردت تلميحًا اكتب «تلميح»."
+ },
+ " dersindeki PDF'lerine ve ses kayıtlarına dayanarak cevap veriyorum.": {
+  "tr": " dersindeki PDF'lerine ve ses kayıtlarına dayanarak cevap veriyorum.",
+  "en": " — I answer from this course's PDFs and audio recordings.",
+  "fa": " — بر اساس PDFها و ضبط‌های صوتی این درس جواب می‌دهم.",
+  "ar": " — أجيب بالاعتماد على ملفات PDF والتسجيلات الصوتية لهذه المادة."
+ },
+ " · Hipertansiyon.pdf": {
+  "tr": " · Hipertansiyon.pdf",
+  "en": " · Hypertension.pdf",
+  "fa": " · فشار_خون_بالا.pdf",
+  "ar": " · ارتفاع_ضغط_الدم.pdf"
+ },
+ " · asistan hazırlıyor…": {
+  "tr": " · asistan hazırlıyor…",
+  "en": " · assistant is preparing…",
+  "fa": " · دستیار در حال آماده‌سازی…",
+  "ar": " · المساعد يحضّر…"
+ },
+ "(s. 12)": {
+  "tr": "(s. 12)",
+  "en": "(p. 12)",
+  "fa": "(ص. 12)",
+  "ar": "(ص 12)"
+ },
+ "(s. 13)": {
+  "tr": "(s. 13)",
+  "en": "(p. 13)",
+  "fa": "(ص. 13)",
+  "ar": "(ص 13)"
+ },
+ "(s. 14)": {
+  "tr": "(s. 14)",
+  "en": "(p. 14)",
+  "fa": "(ص. 14)",
+  "ar": "(ص 14)"
+ },
+ ". Gebelikte kontrendike olanlar ACE inhibitörleri ve ARB'ler.": {
+  "tr": ". Gebelikte kontrendike olanlar ACE inhibitörleri ve ARB'ler.",
+  "en": ". In pregnancy, ACE inhibitors and ARBs are contraindicated.",
+  "fa": ". در بارداری مهارکننده‌های ACE و ARBها منع مصرف دارند.",
+  "ar": ". في الحمل تُمنع مثبطات ACE وARBs."
+ },
+ "1. Diüretikler: vücuttaki fazla tuzu ve suyu idrarla atar. Damardaki sıvı azalınca tansiyon düşer.": {
+  "tr": "1. Diüretikler: vücuttaki fazla tuzu ve suyu idrarla atar. Damardaki sıvı azalınca tansiyon düşer.",
+  "en": "1. Diuretics: flush extra salt and water out through urine. Less fluid in the vessels lowers blood pressure.",
+  "fa": "1. دیورتیک‌ها: نمک و آب اضافی بدن را از راه ادرار دفع می‌کنند. با کم شدن مایع داخل رگ، فشار خون پایین می‌آید.",
+  "ar": "1. مدرات البول: تطرح الملح والماء الزائدين مع البول. عندما يقل السائل في الأوعية ينخفض الضغط."
+ },
+ "2. ACE inhibitörleri ve 3. ARB'ler: damarı daraltan bir hormonun (anjiyotensin II) etkisini durdurur. Damar gevşer.": {
+  "tr": "2. ACE inhibitörleri ve 3. ARB'ler: damarı daraltan bir hormonun (anjiyotensin II) etkisini durdurur. Damar gevşer.",
+  "en": "2. ACE inhibitors and 3. ARBs: block the effect of a vessel-narrowing hormone (angiotensin II). Vessels relax.",
+  "fa": "2. مهارکننده‌های ACE و 3. ARBها: اثر هورمونی را که رگ را تنگ می‌کند (آنژیوتانسین II) متوقف می‌کنند. رگ شل می‌شود.",
+  "ar": "2. مثبطات ACE و3. ARBs: توقف تأثير هرمون يضيّق الأوعية (الأنجيوتنسين II). فتسترخي الأوعية."
+ },
+ "3 ipucunun hepsini gördün": {
+  "tr": "3 ipucunun hepsini gördün",
+  "en": "You've seen all 3 hints",
+  "fa": "هر 3 راهنمایی را دیدی",
+  "ar": "رأيت التلميحات الـ3 كلها"
+ },
+ "3 ipucunun hepsini gördün · cevabı görmek için “cevap” yaz": {
+  "tr": "3 ipucunun hepsini gördün · cevabı görmek için “cevap” yaz",
+  "en": "You've seen all 3 hints · type “answer” to see the answer",
+  "fa": "هر 3 راهنمایی را دیدی · برای دیدن جواب بنویس «جواب»",
+  "ar": "رأيت التلميحات الـ3 كلها · اكتب «إجابة» لرؤية الإجابة"
+ },
+ "4. Kalsiyum kanal blokerleri: damar duvarındaki kasın kasılmasını azaltır.": {
+  "tr": "4. Kalsiyum kanal blokerleri: damar duvarındaki kasın kasılmasını azaltır.",
+  "en": "4. Calcium channel blockers: reduce contraction of the muscle in the vessel wall.",
+  "fa": "4. مسدودکننده‌های کانال کلسیم: انقباض عضلهٔ دیوارهٔ رگ را کم می‌کنند.",
+  "ar": "4. حاصرات قنوات الكالسيوم: تقلل انقباض العضلات في جدار الوعاء الدموي."
+ },
+ "ACE enzimi bradikinini de yıkar. ACE inhibe edilince bradikinin birikir ve kuru öksürük yapar. Öksürük olursa ARB'ye geçilir.": {
+  "tr": "ACE enzimi bradikinini de yıkar. ACE inhibe edilince bradikinin birikir ve kuru öksürük yapar. Öksürük olursa ARB'ye geçilir.",
+  "en": "ACE also breaks down bradykinin. When ACE is inhibited, bradykinin builds up and causes a dry cough. If cough occurs, switch to an ARB.",
+  "fa": "ACE برادی‌کینین را هم تجزیه می‌کند. با مهار ACE برادی‌کینین تجمع می‌یابد و سرفهٔ خشک ایجاد می‌کند. اگر سرفه شد، به ARB تغییر می‌دهند.",
+  "ar": "يكسّر إنزيم ACE البراديكينين أيضًا. عند تثبيطه يتراكم البراديكينين ويسبب سعالًا جافًا. إذا حدث السعال يُنتقل إلى ARB."
+ },
+ "ACE inhibitörleri neden gebelikte kullanılmaz?": {
+  "tr": "ACE inhibitörleri neden gebelikte kullanılmaz?",
+  "en": "Why aren't ACE inhibitors used in pregnancy?",
+  "fa": "چرا مهارکننده‌های ACE در بارداری مصرف نمی‌شوند؟",
+  "ar": "لماذا لا تُستخدم مثبطات ACE أثناء الحمل؟"
+ },
+ "ACE inhibitörleri neden kuru öksürük yapar?": {
+  "tr": "ACE inhibitörleri neden kuru öksürük yapar?",
+  "en": "Why do ACE inhibitors cause dry cough?",
+  "fa": "چرا مهارکننده‌های ACE سرفهٔ خشک ایجاد می‌کنند؟",
+  "ar": "لماذا تسبب مثبطات ACE سعالًا جافًا؟"
+ },
+ "ACE inhibitörlerinin kuru öksürük yaptığı doğru.": {
+  "tr": "ACE inhibitörlerinin kuru öksürük yaptığı doğru.",
+  "en": "It's true that ACE inhibitors cause dry cough.",
+  "fa": "درست است که مهارکننده‌های ACE سرفهٔ خشک ایجاد می‌کنند.",
+  "ar": "صحيح أن مثبطات ACE تسبب سعالًا جافًا."
+ },
+ "ACE inhibitörüne düşük dozla başlanır, birkaç haftada bir yavaşça artırılır. Kısaca: suyu at, hormonu durdur, kası gevşet.": {
+  "tr": "ACE inhibitörüne düşük dozla başlanır, birkaç haftada bir yavaşça artırılır. Kısaca: suyu at, hormonu durdur, kası gevşet.",
+  "en": "ACE inhibitors start at a low dose and are slowly increased every few weeks. In short: flush the water, stop the hormone, relax the muscle.",
+  "fa": "مهارکنندهٔ ACE با دوز پایین شروع و هر چند هفته آرام افزایش می‌یابد. خلاصه: آب را دفع کن، هورمون را متوقف کن، عضله را شل کن.",
+  "ar": "يُبدأ مثبط ACE بجرعة منخفضة ويُزاد ببطء كل بضعة أسابيع. باختصار: تخلّص من الماء، أوقف الهرمون، أرخِ العضلة."
+ },
+ "ARB'ler ve kalsiyum kanal blokerlerini atladın": {
+  "tr": "ARB'ler ve kalsiyum kanal blokerlerini atladın",
+  "en": "You skipped ARBs and calcium channel blockers",
+  "fa": "ARBها و مسدودکننده‌های کانال کلسیم را جا انداختی",
+  "ar": "تخطيت ARBs وحاصرات قنوات الكالسيوم"
+ },
+ "Aldosteron": {
+  "tr": "Aldosteron",
+  "en": "Aldosterone",
+  "fa": "آلدوسترون",
+  "ar": "الألدوستيرون"
+ },
+ "Alfa-1 blokerlerin ortostatik hipotansiyon riskinden söz etmedin": {
+  "tr": "Alfa-1 blokerlerin ortostatik hipotansiyon riskinden söz etmedin",
+  "en": "You didn't mention the orthostatic hypotension risk of alpha-1 blockers",
+  "fa": "به خطر افت فشار وضعیتی مسدودکننده‌های آلفا-1 اشاره نکردی",
+  "ar": "لم تذكر خطر هبوط الضغط الانتصابي مع حاصرات ألفا-1"
+ },
+ "Anladım": {
+  "tr": "Anladım",
+  "en": "Got it",
+  "fa": "فهمیدم",
+  "ar": "فهمت"
+ },
+ "Asistan bu sayfadan 3 kolay soru hazırlıyor…": {
+  "tr": "Asistan bu sayfadan 3 kolay soru hazırlıyor…",
+  "en": "The assistant is preparing 3 easy questions from this page…",
+  "fa": "دستیار از این صفحه 3 سؤال آسان آماده می‌کند…",
+  "ar": "يُعد المساعد 3 أسئلة سهلة من هذه الصفحة…"
+ },
+ "Asistan cevap yazıyor…": {
+  "tr": "Asistan cevap yazıyor…",
+  "en": "Assistant is typing…",
+  "fa": "دستیار در حال نوشتن پاسخ…",
+  "ar": "المساعد يكتب…"
+ },
+ "Asistan şu an cevap veremiyor. İndirilmiş hazır sorularla çalışmaya devam edebilirsin.": {
+  "tr": "Asistan şu an cevap veremiyor. İndirilmiş hazır sorularla çalışmaya devam edebilirsin.",
+  "en": "The assistant can't answer right now. You can keep studying with the downloaded ready-made questions.",
+  "fa": "دستیار الان نمی‌تواند پاسخ دهد. می‌توانی با سؤال‌های آمادهٔ دانلودشده ادامه دهی.",
+  "ar": "لا يستطيع المساعد الرد الآن. يمكنك متابعة الدراسة بالأسئلة الجاهزة التي نزّلتها."
+ },
+ "Atropin muskarinik belirtileri (salya, bronş salgısı, bradikardi) düzeltir. Pralidoksim kolinesterazı yeniden aktive eder; erken verilmelidir.": {
+  "tr": "Atropin muskarinik belirtileri (salya, bronş salgısı, bradikardi) düzeltir. Pralidoksim kolinesterazı yeniden aktive eder; erken verilmelidir.",
+  "en": "Atropine reverses muscarinic signs (salivation, bronchial secretions, bradycardia). Pralidoxime reactivates cholinesterase; it must be given early.",
+  "fa": "آتروپین علائم موسکارینی (بزاق، ترشحات برونش، برادی‌کاردی) را اصلاح می‌کند. پرالیدوکسیم کولین‌استراز را دوباره فعال می‌کند؛ باید زود داده شود.",
+  "ar": "يصحح الأتروبين الأعراض المسكارينية (اللعاب، الإفرازات القصبية، بطء القلب). البراليدوكسيم يعيد تنشيط الكولينستراز؛ ويجب إعطاؤه مبكرًا."
+ },
+ "Ağır böbrek yetmezliğinde (eGFR 30 altında) kullanılmaz; laktik asidoz riski artar.": {
+  "tr": "Ağır böbrek yetmezliğinde (eGFR 30 altında) kullanılmaz; laktik asidoz riski artar.",
+  "en": "Not used in severe renal failure (eGFR below 30); risk of lactic acidosis increases.",
+  "fa": "در نارسایی شدید کلیه (eGFR زیر 30) مصرف نمی‌شود؛ خطر اسیدوز لاکتیک بالا می‌رود.",
+  "ar": "لا يُستخدم في القصور الكلوي الشديد (eGFR أقل من 30)؛ يزداد خطر الحماض اللبني."
+ },
+ "BEN ANLATAYIM · SAYFA 12–14": {
+  "tr": "BEN ANLATAYIM · SAYFA 12–14",
+  "en": "LET ME EXPLAIN · PAGES 12–14",
+  "fa": "من توضیح می‌دهم · صفحه 12–14",
+  "ar": "دعني أشرح · الصفحات 12–14"
+ },
+ "Bana 3 soru sor": {
+  "tr": "Bana 3 soru sor",
+  "en": "Ask me 3 questions",
+  "fa": "از من 3 سؤال بپرس",
+  "ar": "اسألني 3 أسئلة"
+ },
+ "Bana soru sor": {
+  "tr": "Bana soru sor",
+  "en": "Quiz me",
+  "fa": "از من سؤال بپرس",
+  "ar": "اسألني سؤالاً"
+ },
+ "Bağlantı yok": {
+  "tr": "Bağlantı yok",
+  "en": "No connection",
+  "fa": "اتصال برقرار نیست",
+  "ar": "لا يوجد اتصال"
+ },
+ "Bir bahçe hortumu düşün. İçinden çok su geçerse ya da hortum daralırsa basınç artar.": {
+  "tr": "Bir bahçe hortumu düşün. İçinden çok su geçerse ya da hortum daralırsa basınç artar.",
+  "en": "Think of a garden hose. If too much water flows through it or the hose narrows, the pressure rises.",
+  "fa": "یک شلنگ باغچه را تصور کن. اگر آب زیادی از آن رد شود یا شلنگ تنگ شود، فشار بالا می‌رود.",
+  "ar": "تخيّل خرطوم حديقة. إذا مرّ فيه ماء كثير أو ضاق الخرطوم، يرتفع الضغط."
+ },
+ "Bir ipucu daha": {
+  "tr": "Bir ipucu daha",
+  "en": "One more hint",
+  "fa": "یک راهنمایی دیگر",
+  "ar": "تلميح آخر"
+ },
+ "Bir ipucu daha istersen yine “ipucu” yaz · cevabı görmek için “cevap” yaz": {
+  "tr": "Bir ipucu daha istersen yine “ipucu” yaz · cevabı görmek için “cevap” yaz",
+  "en": "For another hint type “hint” again · type “answer” to see the answer",
+  "fa": "برای راهنمایی بیشتر دوباره “راهنمایی” بنویس · برای دیدن جواب “جواب” بنویس",
+  "ar": "لتلميح آخر اكتب “تلميح” مجدداً · لرؤية الإجابة اكتب “إجابة”"
+ },
+ "Biyokimya_Enzimler.pdf · s. 6": {
+  "tr": "Biyokimya_Enzimler.pdf · s. 6",
+  "en": "Biochemistry_Enzymes.pdf · p. 6",
+  "fa": "بیوشیمی_آنزیم‌ها.pdf · ص. 6",
+  "ar": "الكيمياء_الحيوية_الإنزيمات.pdf · ص. 6"
+ },
+ "Bradikinin": {
+  "tr": "Bradikinin",
+  "en": "Bradykinin",
+  "fa": "برادی‌کینین",
+  "ar": "البراديكينين"
+ },
+ "Bu ders hakkında sor…": {
+  "tr": "Bu ders hakkında sor…",
+  "en": "Ask about this course…",
+  "fa": "درباره‌ی این درس بپرس…",
+  "ar": "اسأل عن هذه المادة…"
+ },
+ "Bu hafta en çok neye çalışmalıyım?": {
+  "tr": "Bu hafta en çok neye çalışmalıyım?",
+  "en": "What should I study most this week?",
+  "fa": "این هفته بیشتر روی چه کار کنم؟",
+  "ar": "على ماذا أركز أكثر هذا الأسبوع؟"
+ },
+ "Bu madde damarları genişleten bir peptittir ve öksürük refleksini uyarır. Adı \"B\" harfiyle başlıyor.": {
+  "tr": "Bu madde damarları genişleten bir peptittir ve öksürük refleksini uyarır. Adı \"B\" harfiyle başlıyor.",
+  "en": "This substance is a peptide that widens blood vessels and triggers the cough reflex. Its name starts with \"B\".",
+  "fa": "این ماده پپتیدی است که رگ‌ها را گشاد می‌کند و رفلکس سرفه را تحریک می‌کند. اسمش با حرف \"B\" شروع می‌شود.",
+  "ar": "هذه المادة ببتيد يوسّع الأوعية الدموية ويحفّز منعكس السعال. يبدأ اسمها بحرف \"B\"."
+ },
+ "Bu sayfayı anlat": {
+  "tr": "Bu sayfayı anlat",
+  "en": "Explain this page",
+  "fa": "این صفحه را توضیح بده",
+  "ar": "اشرح هذه الصفحة"
+ },
+ "Bu sayfayı kolay dille anlat": {
+  "tr": "Bu sayfayı kolay dille anlat",
+  "en": "Explain this page simply",
+  "fa": "این صفحه را ساده توضیح بده",
+  "ar": "اشرح هذه الصفحة بلغة بسيطة"
+ },
+ "Bu sayfayı oku": {
+  "tr": "Bu sayfayı oku",
+  "en": "Read this page",
+  "fa": "این صفحه را بخوان",
+  "ar": "اقرأ هذه الصفحة"
+ },
+ "Buradan sona oku": {
+  "tr": "Buradan sona oku",
+  "en": "Read from here to the end",
+  "fa": "از اینجا تا آخر بخوان",
+  "ar": "اقرأ من هنا إلى النهاية"
+ },
+ "Cevabı göster": {
+  "tr": "Cevabı göster",
+  "en": "Show answer",
+  "fa": "نمایش جواب",
+  "ar": "أظهر الإجابة"
+ },
+ "Cevabı hemen söylemeyeyim, birlikte bulalım. ACE enzimi anjiyotensin I'i dönüştürmenin yanında başka bir maddeyi de yıkar. Sence hangisi? (s. 13)": {
+  "tr": "Cevabı hemen söylemeyeyim, birlikte bulalım. ACE enzimi anjiyotensin I'i dönüştürmenin yanında başka bir maddeyi de yıkar. Sence hangisi? (s. 13)",
+  "en": "I won't tell you the answer right away, let's find it together. Besides converting angiotensin I, the ACE enzyme also breaks down another substance. Which one do you think? (p. 13)",
+  "fa": "جواب را فوراً نمی‌گویم، بیا با هم پیدایش کنیم. آنزیم ACE علاوه بر تبدیل آنژیوتانسین I، ماده‌ی دیگری را هم تجزیه می‌کند. به نظرت کدام؟ (ص. 13)",
+  "ar": "لن أقول الإجابة فوراً، لنجدها معاً. إنزيم ACE بالإضافة إلى تحويل الأنجيوتنسين I يحلّل مادة أخرى أيضاً. برأيك ما هي؟ (ص. 13)"
+ },
+ "Cevabını ya da “ipucu” yaz…": {
+  "tr": "Cevabını ya da “ipucu” yaz…",
+  "en": "Type your answer or “hint”…",
+  "fa": "جوابت یا “راهنمایی” را بنویس…",
+  "ar": "اكتب إجابتك أو “تلميح”…"
+ },
+ "Cevabını yaz ya da aşağıdan seç. İpucu istersen “ipucu” yaz.": {
+  "tr": "Cevabını yaz ya da aşağıdan seç. İpucu istersen “ipucu” yaz.",
+  "en": "Type your answer or pick one below. For a hint type “hint”.",
+  "fa": "جوابت را بنویس یا از پایین انتخاب کن. برای راهنمایی “راهنمایی” بنویس.",
+  "ar": "اكتب إجابتك أو اختر من الأسفل. للتلميح اكتب “تلميح”."
+ },
+ "Cevap sesli okunuyor…": {
+  "tr": "Cevap sesli okunuyor…",
+  "en": "Reading the answer aloud…",
+  "fa": "جواب در حال خوانده شدن است…",
+  "ar": "جارٍ قراءة الإجابة بصوت عالٍ…"
+ },
+ "Cevap ver": {
+  "tr": "Cevap ver",
+  "en": "Answer",
+  "fa": "جواب بده",
+  "ar": "أجب"
+ },
+ "Cevap yeniden hazırlanıyor…": {
+  "tr": "Cevap yeniden hazırlanıyor…",
+  "en": "Regenerating the answer…",
+  "fa": "جواب دوباره در حال آماده شدن است…",
+  "ar": "جارٍ إعادة تحضير الإجابة…"
+ },
+ "Cevap: bradikinin. ACE inhibe edilince bradikinin birikir ve kuru öksürük yapar; ARB'ler bunu yapmaz. (s. 13)": {
+  "tr": "Cevap: bradikinin. ACE inhibe edilince bradikinin birikir ve kuru öksürük yapar; ARB'ler bunu yapmaz. (s. 13)",
+  "en": "Answer: bradykinin. When ACE is inhibited, bradykinin accumulates and causes a dry cough; ARBs don't do this. (p. 13)",
+  "fa": "جواب: برادی‌کینین. با مهار ACE، برادی‌کینین تجمع می‌یابد و سرفه‌ی خشک ایجاد می‌کند؛ ARBها این کار را نمی‌کنند. (ص. 13)",
+  "ar": "الإجابة: البراديكينين. عند تثبيط ACE يتراكم البراديكينين ويسبب سعالاً جافاً؛ حاصرات ARB لا تفعل ذلك. (ص. 13)"
+ },
+ "DERS · ": {
+  "tr": "DERS · ",
+  "en": "COURSE · ",
+  "fa": "درس · ",
+  "ar": "المادة · "
+ },
+ "DOĞRU ANLATTIKLARIN": {
+  "tr": "DOĞRU ANLATTIKLARIN",
+  "en": "WHAT YOU EXPLAINED CORRECTLY",
+  "fa": "آنچه درست توضیح دادی",
+  "ar": "ما شرحته بشكل صحيح"
+ },
+ "Ders kaydı · 14 Ekim · 22. dk": {
+  "tr": "Ders kaydı · 14 Ekim · 22. dk",
+  "en": "Lecture recording · Oct 14 · min 22",
+  "fa": "ضبط کلاس · 14 اکتبر · دقیقه 22",
+  "ar": "تسجيل المحاضرة · 14 أكتوبر · الدقيقة 22"
+ },
+ "Dersin klasörünü aç": {
+  "tr": "Dersin klasörünü aç",
+  "en": "Open the course folder",
+  "fa": "پوشه درس را باز کن",
+  "ar": "افتح مجلد المادة"
+ },
+ "Digitalis lanata (yünlü yüksükotu) yapraklarından elde edilir.": {
+  "tr": "Digitalis lanata (yünlü yüksükotu) yapraklarından elde edilir.",
+  "en": "Obtained from the leaves of Digitalis lanata (woolly foxglove).",
+  "fa": "از برگ‌های Digitalis lanata (گل انگشتانه پشمی) به دست می‌آید.",
+  "ar": "يُستخلص من أوراق Digitalis lanata (قمعية صوفية)."
+ },
+ "Digoksin hangi bitkiden elde edilir?": {
+  "tr": "Digoksin hangi bitkiden elde edilir?",
+  "en": "Which plant is digoxin obtained from?",
+  "fa": "دیگوکسین از کدام گیاه به دست می‌آید؟",
+  "ar": "من أي نبات يُستخلص الديجوكسين؟"
+ },
+ "Dinliyorum…": {
+  "tr": "Dinliyorum…",
+  "en": "Listening…",
+  "fa": "گوش می‌دهم…",
+  "ar": "أستمع…"
+ },
+ "Dinliyorum… sorunu söyle": {
+  "tr": "Dinliyorum… sorunu söyle",
+  "en": "Listening… say your question",
+  "fa": "گوش می‌دهم… سؤالت را بگو",
+  "ar": "أستمع… قل سؤالك"
+ },
+ "Diyabet.pdf · s. 9": {
+  "tr": "Diyabet.pdf · s. 9",
+  "en": "Diabetes.pdf · p. 9",
+  "fa": "دیابت.pdf · ص. 9",
+  "ar": "السكري.pdf · ص. 9"
+ },
+ "Diüretik hortumdaki suyu azaltır. ACE inhibitörü, ARB ve kalsiyum kanal blokeri hortumu genişletir.": {
+  "tr": "Diüretik hortumdaki suyu azaltır. ACE inhibitörü, ARB ve kalsiyum kanal blokeri hortumu genişletir.",
+  "en": "A diuretic reduces the water in the hose. ACE inhibitors, ARBs and calcium channel blockers widen the hose.",
+  "fa": "دیورتیک آب داخل شلنگ را کم می‌کند. مهارکننده ACE، ARB و مسدودکننده کانال کلسیم شلنگ را گشاد می‌کنند.",
+  "ar": "مدر البول يقلل الماء في الخرطوم. مثبط ACE وARB وحاصر قنوات الكالسيوم توسّع الخرطوم."
+ },
+ "Durdur": {
+  "tr": "Durdur",
+  "en": "Stop",
+  "fa": "توقف",
+  "ar": "إيقاف"
+ },
+ "EKSİKLER": {
+  "tr": "EKSİKLER",
+  "en": "GAPS",
+  "fa": "کمبودها",
+  "ar": "النواقص"
+ },
+ "En zayıf konuların: hipertansif kriz (%38) ve ACE inhibitörlerinin yan etkileri. Vizeye 11 gün var; bu ikisine bu hafta 2 kısa tekrar ekledim.": {
+  "tr": "En zayıf konuların: hipertansif kriz (%38) ve ACE inhibitörlerinin yan etkileri. Vizeye 11 gün var; bu ikisine bu hafta 2 kısa tekrar ekledim.",
+  "en": "Your weakest topics: hypertensive crisis (38%) and side effects of ACE inhibitors. 11 days to the midterm; I added 2 short reviews for these two this week.",
+  "fa": "ضعیف‌ترین مبحث‌هایت: بحران فشار خون (38%) و عوارض جانبی مهارکننده‌های ACE. 11 روز تا میان‌ترم مانده؛ این هفته 2 مرور کوتاه برای این دو اضافه کردم.",
+  "ar": "أضعف مواضيعك: أزمة ارتفاع ضغط الدم (38%) والآثار الجانبية لمثبطات ACE. بقي 11 يومًا على الامتحان النصفي؛ أضفت مراجعتين قصيرتين لهما هذا الأسبوع."
+ },
+ "Evet, aferin! ACE bradikinini de yıkar. ACE inhibe edilince bradikinin birikir ve kuru öksürüğe yol açar. Bu yüzden öksürük olursa ARB'ye geçilir. (s. 13)": {
+  "tr": "Evet, aferin! ACE bradikinini de yıkar. ACE inhibe edilince bradikinin birikir ve kuru öksürüğe yol açar. Bu yüzden öksürük olursa ARB'ye geçilir. (s. 13)",
+  "en": "Yes, well done! ACE also breaks down bradykinin. When ACE is inhibited, bradykinin builds up and causes dry cough. That's why patients with cough are switched to an ARB. (p. 13)",
+  "fa": "بله، آفرین! ACE برادی‌کینین را هم تجزیه می‌کند. وقتی ACE مهار شود، برادی‌کینین جمع می‌شود و سرفه خشک ایجاد می‌کند. برای همین اگر سرفه پیش بیاید به ARB تغییر می‌دهند. (ص. 13)",
+  "ar": "نعم، أحسنت! ACE يحلّل البراديكينين أيضًا. عند تثبيط ACE يتراكم البراديكينين ويسبب سعالًا جافًا. لذلك يُنتقل إلى ARB عند حدوث السعال. (ص. 13)"
+ },
+ "Farmakognozi.pdf · s. 17": {
+  "tr": "Farmakognozi.pdf · s. 17",
+  "en": "Pharmacognosy.pdf · p. 17",
+  "fa": "فارماکوگنوزی.pdf · ص. 17",
+  "ar": "علم_العقاقير.pdf · ص. 17"
+ },
+ "Gut öyküsü olan hastalarda. Tiyazidler serum ürik asit düzeyini artırır": {
+  "tr": "Gut öyküsü olan hastalarda. Tiyazidler serum ürik asit düzeyini artırır",
+  "en": "In patients with a history of gout. Thiazides raise serum uric acid levels",
+  "fa": "در بیماران با سابقه نقرس. تیازیدها سطح اسید اوریک سرم را بالا می‌برند",
+  "ar": "لدى المرضى ذوي سوابق النقرس. ترفع الثيازيدات مستوى حمض اليوريك في المصل"
+ },
+ "Harika! Bu sayfayı \"anladım\" olarak işaretledim": {
+  "tr": "Harika! Bu sayfayı \"anladım\" olarak işaretledim",
+  "en": "Great! I marked this page as \"got it\"",
+  "fa": "عالی! این صفحه را «فهمیدم» علامت زدم",
+  "ar": "رائع! علّمت هذه الصفحة بـ\"فهمت\""
+ },
+ "Hazır sorularla devam et": {
+  "tr": "Hazır sorularla devam et",
+  "en": "Continue with ready questions",
+  "fa": "با سؤال‌های آماده ادامه بده",
+  "ar": "تابع بالأسئلة الجاهزة"
+ },
+ "Hipertansiyon.pdf · s. 13": {
+  "tr": "Hipertansiyon.pdf · s. 13",
+  "en": "Hypertension.pdf · p. 13",
+  "fa": "فشار_خون_بالا.pdf · ص. 13",
+  "ar": "ارتفاع_ضغط_الدم.pdf · ص. 13"
+ },
+ "Hâlâ anlamadım": {
+  "tr": "Hâlâ anlamadım",
+  "en": "I still don't get it",
+  "fa": "هنوز نفهمیدم",
+  "ar": "ما زلت لا أفهم"
+ },
+ "Hâlâ anlamadım, daha basit anlat": {
+  "tr": "Hâlâ anlamadım, daha basit anlat",
+  "en": "I still don't get it, explain more simply",
+  "fa": "هنوز نفهمیدم، ساده‌تر توضیح بده",
+  "ar": "ما زلت لا أفهم، اشرح بشكل أبسط"
+ },
+ "Hızlı işlemler": {
+  "tr": "Hızlı işlemler",
+  "en": "Quick actions",
+  "fa": "کارهای سریع",
+  "ar": "إجراءات سريعة"
+ },
+ "Islak granülasyonun avantajı nedir?": {
+  "tr": "Islak granülasyonun avantajı nedir?",
+  "en": "What is the advantage of wet granulation?",
+  "fa": "مزیت گرانولاسیون مرطوب چیست؟",
+  "ar": "ما ميزة التحبيب الرطب؟"
+ },
+ "KAYNAK ·": {
+  "tr": "KAYNAK ·",
+  "en": "SOURCE ·",
+  "fa": "منبع ·",
+  "ar": "المصدر ·"
+ },
+ "KOLAY ANLATIM · S. 12": {
+  "tr": "KOLAY ANLATIM · S. 12",
+  "en": "EASY EXPLANATION · P. 12",
+  "fa": "توضیح ساده · ص. 12",
+  "ar": "شرح مبسّط · ص. 12"
+ },
+ "Kadın sesi": {
+  "tr": "Kadın sesi",
+  "en": "Female voice",
+  "fa": "صدای زن",
+  "ar": "صوت أنثى"
+ },
+ "Km değeri neyi gösterir?": {
+  "tr": "Km değeri neyi gösterir?",
+  "en": "What does the Km value show?",
+  "fa": "مقدار Km چه چیزی را نشان می‌دهد؟",
+  "ar": "ماذا تُظهر قيمة Km؟"
+ },
+ "Merhaba! ": {
+  "tr": "Merhaba! ",
+  "en": "Hi! ",
+  "fa": "سلام! ",
+  "ar": "مرحبًا! "
+ },
+ "Merhaba! Tüm derslerindeki PDF, ses kaydı ve sınav sonuçlarına bakarak cevap veriyorum.": {
+  "tr": "Merhaba! Tüm derslerindeki PDF, ses kaydı ve sınav sonuçlarına bakarak cevap veriyorum.",
+  "en": "Hi! I answer using the PDFs, recordings and exam results from all your courses.",
+  "fa": "سلام! با نگاه به PDFها، ضبط‌های صوتی و نتایج آزمون همهٔ درس‌هایت جواب می‌دهم.",
+  "ar": "مرحبًا! أجيب بالاعتماد على ملفات PDF والتسجيلات الصوتية ونتائج الاختبارات في جميع موادك."
+ },
+ "Merhaba! Yalnızca “Hipertansiyon” PDF'ine dayanarak cevap veriyorum. Şu an sayfa 12'desin.": {
+  "tr": "Merhaba! Yalnızca “Hipertansiyon” PDF'ine dayanarak cevap veriyorum. Şu an sayfa 12'desin.",
+  "en": "Hi! I answer based only on the “Hypertension” PDF. You're on page 12 now.",
+  "fa": "سلام! فقط بر اساس PDF «فشار خون بالا» جواب می‌دهم. الان در صفحهٔ 12 هستی.",
+  "ar": "مرحبًا! أجيب بالاعتماد فقط على ملف PDF «ارتفاع ضغط الدم». أنت الآن في الصفحة 12."
+ },
+ "Metformin hangi hastada kullanılmaz?": {
+  "tr": "Metformin hangi hastada kullanılmaz?",
+  "en": "In which patient is metformin not used?",
+  "fa": "متفورمین در کدام بیمار مصرف نمی‌شود؟",
+  "ar": "في أي مريض لا يُستخدم الميتفورمين؟"
+ },
+ "Okuma durduruldu": {
+  "tr": "Okuma durduruldu",
+  "en": "Reading stopped",
+  "fa": "خواندن متوقف شد",
+  "ar": "توقفت القراءة"
+ },
+ "Okuma hızı: ": {
+  "tr": "Okuma hızı: ",
+  "en": "Reading speed: ",
+  "fa": "سرعت خواندن: ",
+  "ar": "سرعة القراءة: "
+ },
+ "Organofosfat zehirlenmesinde antidot nedir?": {
+  "tr": "Organofosfat zehirlenmesinde antidot nedir?",
+  "en": "What is the antidote for organophosphate poisoning?",
+  "fa": "پادزهر مسمومیت با ارگانوفسفات چیست؟",
+  "ar": "ما هو ترياق التسمم بالفوسفات العضوية؟"
+ },
+ "PDF'inde (s. 14) ACE inhibitörleri ve ARB'lerin gebelikte kontrendike olduğu yazıyor. Nedeni bu derste anlatılmamış; bu yüzden PDF dışından bilgi eklemiyorum.": {
+  "tr": "PDF'inde (s. 14) ACE inhibitörleri ve ARB'lerin gebelikte kontrendike olduğu yazıyor. Nedeni bu derste anlatılmamış; bu yüzden PDF dışından bilgi eklemiyorum.",
+  "en": "Your PDF (p. 14) says ACE inhibitors and ARBs are contraindicated in pregnancy. The reason isn't covered in this lesson, so I'm not adding info from outside the PDF.",
+  "fa": "در PDFت (ص. 14) نوشته که مهارکننده‌های ACE و ARBها در بارداری منع مصرف دارند. دلیلش در این درس گفته نشده؛ برای همین اطلاعاتی از بیرون PDF اضافه نمی‌کنم.",
+  "ar": "في ملف PDF الخاص بك (ص. 14) مكتوب أن مثبطات ACE وARBs موانع استعمال في الحمل. السبب لم يُشرح في هذا الدرس، لذا لا أضيف معلومات من خارج PDF."
+ },
+ "Prototip: örnek cevap gösteriliyor": {
+  "tr": "Prototip: örnek cevap gösteriliyor",
+  "en": "Prototype: showing a sample answer",
+  "fa": "نمونه اولیه: پاسخ نمونه نمایش داده می‌شود",
+  "ar": "نموذج أولي: تُعرض إجابة نموذجية"
+ },
+ "Reaksiyon hızının en yüksek hızın yarısına ulaştığı substrat derişimidir. Km düşükse enzimin substrata ilgisi yüksektir.": {
+  "tr": "Reaksiyon hızının en yüksek hızın yarısına ulaştığı substrat derişimidir. Km düşükse enzimin substrata ilgisi yüksektir.",
+  "en": "The substrate concentration at which the reaction rate reaches half its maximum. A low Km means the enzyme has high affinity for the substrate.",
+  "fa": "غلظتی از سوبسترا که در آن سرعت واکنش به نصف سرعت بیشینه می‌رسد. Km پایین یعنی میل آنزیم به سوبسترا زیاد است.",
+  "ar": "هو تركيز الركيزة الذي تصل عنده سرعة التفاعل إلى نصف السرعة القصوى. Km المنخفض يعني ألفة عالية للإنزيم تجاه الركيزة."
+ },
+ "Renin": {
+  "tr": "Renin",
+  "en": "Renin",
+  "fa": "رنین",
+  "ar": "الرينين"
+ },
+ "SORU · S. 13": {
+  "tr": "SORU · S. 13",
+  "en": "QUESTION · P. 13",
+  "fa": "سؤال · ص. 13",
+  "ar": "سؤال · ص. 13"
+ },
+ "Sayfa 12 okunuyor": {
+  "tr": "Sayfa 12 okunuyor",
+  "en": "Reading page 12",
+  "fa": "در حال خواندن صفحه 12",
+  "ar": "جارٍ قراءة الصفحة 12"
+ },
+ "Sayfa 12'nin özü:": {
+  "tr": "Sayfa 12'nin özü:",
+  "en": "Page 12 in a nutshell:",
+  "fa": "خلاصه صفحه 12:",
+  "ar": "خلاصة الصفحة 12:"
+ },
+ "Sayfa 14'e git": {
+  "tr": "Sayfa 14'e git",
+  "en": "Go to page 14",
+  "fa": "برو به صفحه 14",
+  "ar": "اذهب إلى الصفحة 14"
+ },
+ "Sayfaya dön": {
+  "tr": "Sayfaya dön",
+  "en": "Back to page",
+  "fa": "برگشت به صفحه",
+  "ar": "العودة إلى الصفحة"
+ },
+ "Sesli anlatım başladı · 5 kısa bölüm, ~6 dk. Uygulamadan çıksan da devam eder": {
+  "tr": "Sesli anlatım başladı · 5 kısa bölüm, ~6 dk. Uygulamadan çıksan da devam eder",
+  "en": "Audio lesson started · 5 short parts, ~6 min. It keeps playing even if you leave the app",
+  "fa": "توضیح صوتی شروع شد · 5 بخش کوتاه، ~6 دقیقه. حتی اگر از برنامه خارج شوی ادامه می‌دهد",
+  "ar": "بدأ الشرح الصوتي · 5 أجزاء قصيرة، ~6 دقائق. يستمر حتى لو خرجت من التطبيق"
+ },
+ "Sohbete dön": {
+  "tr": "Sohbete dön",
+  "en": "Back to chat",
+  "fa": "برگشت به گفتگو",
+  "ar": "العودة إلى المحادثة"
+ },
+ "Son ipucu: ACE'nin diğer adı kininaz II'dir. Yani kinin grubundan bir maddeyi yıkar.": {
+  "tr": "Son ipucu: ACE'nin diğer adı kininaz II'dir. Yani kinin grubundan bir maddeyi yıkar.",
+  "en": "Last hint: ACE is also called kininase II. So it breaks down a substance from the kinin group.",
+  "fa": "راهنمایی آخر: نام دیگر ACE کینیناز II است. یعنی ماده‌ای از گروه کینین‌ها را تجزیه می‌کند.",
+  "ar": "تلميح أخير: الاسم الآخر لـ ACE هو كيناز II. أي أنه يفكك مادة من مجموعة الكينينات."
+ },
+ "Su azalınca ya da hortum genişleyince basınç düşer. Tansiyon ilaçları da böyle çalışır.": {
+  "tr": "Su azalınca ya da hortum genişleyince basınç düşer. Tansiyon ilaçları da böyle çalışır.",
+  "en": "When the water drops or the hose widens, pressure falls. Blood pressure drugs work the same way.",
+  "fa": "وقتی آب کم شود یا شلنگ گشاد شود، فشار پایین می‌آید. داروهای فشار خون هم همین‌طور کار می‌کنند.",
+  "ar": "عندما يقل الماء أو يتسع الخرطوم ينخفض الضغط. أدوية ضغط الدم تعمل بالطريقة نفسها."
+ },
+ "Sürekli dinle": {
+  "tr": "Sürekli dinle",
+  "en": "Always listen",
+  "fa": "همیشه گوش بده",
+  "ar": "استمع دائمًا"
+ },
+ "Tablet_Formulasyonu.pdf · s. 5": {
+  "tr": "Tablet_Formulasyonu.pdf · s. 5",
+  "en": "Tablet_Formulation.pdf · p. 5",
+  "fa": "فرمولاسیون_قرص.pdf · ص. 5",
+  "ar": "تركيب_الأقراص.pdf · ص. 5"
+ },
+ "Tam değil. ": {
+  "tr": "Tam değil. ",
+  "en": "Not quite. ",
+  "fa": "کاملاً درست نیست. ",
+  "ar": "ليس تمامًا. "
+ },
+ "Tansiyon yüksekse kalp ve damarlar fazla zorlanır. İlk basamakta 4 ilaç grubu var ve hepsi tansiyonu farklı bir yoldan düşürür:": {
+  "tr": "Tansiyon yüksekse kalp ve damarlar fazla zorlanır. İlk basamakta 4 ilaç grubu var ve hepsi tansiyonu farklı bir yoldan düşürür:",
+  "en": "When blood pressure is high, the heart and vessels are overworked. First-line has 4 drug groups, each lowering blood pressure in a different way:",
+  "fa": "وقتی فشار خون بالاست، قلب و عروق بیش از حد تحت فشارند. در خط اول 4 گروه دارویی هست و هرکدام از راهی متفاوت فشار خون را پایین می‌آورند:",
+  "ar": "عند ارتفاع ضغط الدم يُجهَد القلب والأوعية. في الخط الأول 4 مجموعات دوائية، كلٌّ منها يخفض الضغط بطريقة مختلفة:"
+ },
+ "Tekrar anlat": {
+  "tr": "Tekrar anlat",
+  "en": "Explain again",
+  "fa": "دوباره توضیح بده",
+  "ar": "اشرح مجددًا"
+ },
+ "Tekrar anlat · dinliyorum": {
+  "tr": "Tekrar anlat · dinliyorum",
+  "en": "Explain again · listening",
+  "fa": "دوباره توضیح بده · گوش می‌دهم",
+  "ar": "اشرح مجددًا · أستمع"
+ },
+ "Tekrar dene": {
+  "tr": "Tekrar dene",
+  "en": "Try again",
+  "fa": "دوباره امتحان کن",
+  "ar": "حاول مجددًا"
+ },
+ "Tiyazidler kimde zorunlu kontrendike?": {
+  "tr": "Tiyazidler kimde zorunlu kontrendike?",
+  "en": "Who has a compelling contraindication to thiazides?",
+  "fa": "تیازیدها در چه کسی منع مصرف قطعی دارند؟",
+  "ar": "من لديه مضاد استطباب مطلق للثيازيدات؟"
+ },
+ "Tiyazidlerin zorunlu kontrendikasyonu gebelik değil, gut": {
+  "tr": "Tiyazidlerin zorunlu kontrendikasyonu gebelik değil, gut",
+  "en": "The compelling contraindication of thiazides is gout, not pregnancy",
+  "fa": "منع مصرف قطعی تیازیدها نقرس است، نه بارداری",
+  "ar": "مضاد الاستطباب المطلق للثيازيدات هو النقرس لا الحمل"
+ },
+ "Tozun akışını ve sıkıştırılabilirliğini iyileştirir; etkin maddenin karışımda homojen dağılmasını sağlar.": {
+  "tr": "Tozun akışını ve sıkıştırılabilirliğini iyileştirir; etkin maddenin karışımda homojen dağılmasını sağlar.",
+  "en": "Improves powder flow and compressibility; ensures the active ingredient is evenly distributed in the mix.",
+  "fa": "جریان‌پذیری و تراکم‌پذیری پودر را بهبود می‌دهد؛ باعث توزیع یکنواخت ماده مؤثره در مخلوط می‌شود.",
+  "ar": "يحسّن انسيابية المسحوق وقابليته للانضغاط؛ ويضمن توزّع المادة الفعالة بتجانس في الخليط."
+ },
+ "TÜM DERSLERİN": {
+  "tr": "TÜM DERSLERİN",
+  "en": "ALL YOUR COURSES",
+  "fa": "همه درس‌هایت",
+  "ar": "كل موادك"
+ },
+ "YANLIŞLAR": {
+  "tr": "YANLIŞLAR",
+  "en": "MISTAKES",
+  "fa": "اشتباهات",
+  "ar": "الأخطاء"
+ },
+ "Yalnızca PDF'teki bilgilere göre değerlendirildi": {
+  "tr": "Yalnızca PDF'teki bilgilere göre değerlendirildi",
+  "en": "Graded only on what's in the PDF",
+  "fa": "فقط بر اساس اطلاعات PDF ارزیابی شد",
+  "ar": "تم التقييم بالاعتماد على معلومات PDF فقط"
+ },
+ "Yeni soru hazırlanıyor · ipucuyla ilerleyeceğiz": {
+  "tr": "Yeni soru hazırlanıyor · ipucuyla ilerleyeceğiz",
+  "en": "Preparing a new question · we'll go with hints",
+  "fa": "در حال آماده کردن سؤال جدید · با راهنمایی پیش می‌رویم",
+  "ar": "جارٍ تحضير سؤال جديد · سنتقدم بالتلميحات"
+ },
+ "Yeni soru sor": {
+  "tr": "Yeni soru sor",
+  "en": "Ask a new question",
+  "fa": "سؤال جدید بپرس",
+  "ar": "اطرح سؤالًا جديدًا"
+ },
+ "ipucu": {
+  "tr": "ipucu",
+  "en": "hint",
+  "fa": "راهنمایی",
+  "ar": "تلميح"
+ },
+ "soru sor": {
+  "tr": "soru sor",
+  "en": "ask a question",
+  "fa": "سؤال بپرس",
+  "ar": "اطرح سؤالًا"
+ },
+ "ÖRNEKLE · S. 12": {
+  "tr": "ÖRNEKLE · S. 12",
+  "en": "WITH EXAMPLE · P. 12",
+  "fa": "با مثال · ص. 12",
+  "ar": "مع مثال · ص. 12"
+ },
+ "Önce bir şey yaz": {
+  "tr": "Önce bir şey yaz",
+  "en": "Write something first",
+  "fa": "اول چیزی بنویس",
+  "ar": "اكتب شيئًا أولًا"
+ },
+ "Özetle": {
+  "tr": "Özetle",
+  "en": "Summarize",
+  "fa": "خلاصه کن",
+  "ar": "لخّص"
+ },
+ "İPUCU ": {
+  "tr": "İPUCU ",
+  "en": "HINT ",
+  "fa": "راهنمایی ",
+  "ar": "تلميح "
+ },
+ "İlerleme verilerin · 5 ders": {
+  "tr": "İlerleme verilerin · 5 ders",
+  "en": "Your progress data · 5 courses",
+  "fa": "داده‌های پیشرفتت · 5 درس",
+  "ar": "بيانات تقدمك · 5 دروس"
+ },
+ "İlk basamak tedavide Diüretikler, ACE inhibitörleri, anjiyotensin reseptör blokerleri (ARB) ve kalsiyum kanal blokerleri kullanılır.": {
+  "tr": "İlk basamak tedavide Diüretikler, ACE inhibitörleri, anjiyotensin reseptör blokerleri (ARB) ve kalsiyum kanal blokerleri kullanılır.",
+  "en": "First-line treatment uses diuretics, ACE inhibitors, angiotensin receptor blockers (ARBs) and calcium channel blockers.",
+  "fa": "در درمان خط اول از دیورتیک‌ها، مهارکننده‌های ACE، مسدودکننده‌های گیرنده آنژیوتانسین (ARB) و مسدودکننده‌های کانال کلسیم استفاده می‌شود.",
+  "ar": "يُستخدم في علاج الخط الأول مدرات البول ومثبطات ACE وحاصرات مستقبلات الأنجيوتنسين (ARB) وحاصرات قنوات الكالسيوم."
+ },
+ "İlk basamakta diüretikler ve ACE inhibitörleri kullanılır.": {
+  "tr": "İlk basamakta diüretikler ve ACE inhibitörleri kullanılır.",
+  "en": "First line uses diuretics and ACE inhibitors.",
+  "fa": "در خط اول از دیورتیک‌ها و مهارکننده‌های ACE استفاده می‌شود.",
+  "ar": "يُستخدم في الخط الأول مدرات البول ومثبطات ACE."
+ },
+ "İlk basamakta diüretikler ve ACE inhibitörleri kullanılır. ACE inhibitörleri kuru öksürük yapar. Tiyazidler gebelikte kesinlikle kullanılmaz.": {
+  "tr": "İlk basamakta diüretikler ve ACE inhibitörleri kullanılır. ACE inhibitörleri kuru öksürük yapar. Tiyazidler gebelikte kesinlikle kullanılmaz.",
+  "en": "First line uses diuretics and ACE inhibitors. ACE inhibitors cause dry cough. Thiazides are strictly not used in pregnancy.",
+  "fa": "در خط اول از دیورتیک‌ها و مهارکننده‌های ACE استفاده می‌شود. مهارکننده‌های ACE سرفه خشک ایجاد می‌کنند. تیازیدها در بارداری به هیچ وجه استفاده نمی‌شوند.",
+  "ar": "يُستخدم في الخط الأول مدرات البول ومثبطات ACE. تسبب مثبطات ACE سعالًا جافًا. لا تُستخدم الثيازيدات إطلاقًا في الحمل."
+ },
+ "İpucu ver (Sokratik)": {
+  "tr": "İpucu ver (Sokratik)",
+  "en": "Give a hint (Socratic)",
+  "fa": "راهنمایی بده (سقراطی)",
+  "ar": "أعطِ تلميحًا (سقراطي)"
+ },
+ "İpuçları bitti": {
+  "tr": "İpuçları bitti",
+  "en": "No hints left",
+  "fa": "راهنمایی‌ها تمام شد",
+  "ar": "انتهت التلميحات"
+ },
+ "İyi bir başlangıç": {
+  "tr": "İyi bir başlangıç",
+  "en": "A good start",
+  "fa": "شروع خوبی است",
+  "ar": "بداية جيدة"
+ },
+ "“ARB'ler de öksürük yapar mı…”": {
+  "tr": "“ARB'ler de öksürük yapar mı…”",
+  "en": "“Do ARBs also cause cough…”",
+  "fa": "«آیا ARBها هم سرفه ایجاد می‌کنند…»",
+  "ar": "“هل تسبب ARB السعال أيضًا…”"
+ },
+ "• ACE inhibitörlerine düşük dozla başlanır (ramipril 2,5 mg/gün), doz 2–4 haftada bir artırılır.": {
+  "tr": "• ACE inhibitörlerine düşük dozla başlanır (ramipril 2,5 mg/gün), doz 2–4 haftada bir artırılır.",
+  "en": "• ACE inhibitors are started at a low dose (ramipril 2.5 mg/day), increased every 2–4 weeks.",
+  "fa": "• مهارکننده‌های ACE با دوز کم شروع می‌شوند (رامی‌پریل 2.5 mg/روز)، دوز هر 2–4 هفته افزایش می‌یابد.",
+  "ar": "• تُبدأ مثبطات ACE بجرعة منخفضة (راميبريل 2.5 mg/يوم)، وتُزاد الجرعة كل 2–4 أسابيع."
+ },
+ "• İlk basamakta 4 ilaç grubu var: diüretikler, ACE inhibitörleri, ARB'ler ve kalsiyum kanal blokerleri.": {
+  "tr": "• İlk basamakta 4 ilaç grubu var: diüretikler, ACE inhibitörleri, ARB'ler ve kalsiyum kanal blokerleri.",
+  "en": "• There are 4 first-line drug groups: diuretics, ACE inhibitors, ARBs and calcium channel blockers.",
+  "fa": "• در خط اول 4 گروه دارویی هست: دیورتیک‌ها، مهارکننده‌های ACE، ARBها و مسدودکننده‌های کانال کلسیم.",
+  "ar": "• هناك 4 مجموعات دوائية في الخط الأول: مدرات البول ومثبطات ACE وARB وحاصرات قنوات الكالسيوم."
+ },
+ "↗ SAYFA 14": {
+  "tr": "↗ SAYFA 14",
+  "en": "↗ PAGE 14",
+  "fa": "↗ صفحه 14",
+  "ar": "↗ صفحة 14"
+ },
+ "Sorun kaydedildi · internete bağlanınca cevaplayacağım": {
+  "tr": "Sorun kaydedildi · internete bağlanınca cevaplayacağım",
+  "en": "Question saved · I'll answer when you're back online",
+  "fa": "سؤالت ذخیره شد · وقتی به اینترنت وصل شدی جواب می‌دهم",
+  "ar": "حُفظ سؤالك · سأجيب عند الاتصال بالإنترنت"
  }
 }

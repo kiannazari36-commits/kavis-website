@@ -78,7 +78,7 @@ struct HomeView: View {
         HStack(spacing: 10) {
             profileButton
             Spacer()
-            Button { trial.perform(.question, run: soon) } label: {
+            Button { app.go(.assistant) } label: {
                 ZStack {
                     Circle().fill(RadialGradient(
                         colors: [Color(hex: 0xB8404D), Color(hex: 0x9C2F3A), Color(hex: 0x7A2230)],
