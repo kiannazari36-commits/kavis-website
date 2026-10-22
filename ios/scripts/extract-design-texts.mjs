@@ -9,6 +9,9 @@ import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const SCREENS = { splash: 'NewSplash', welcome: 'NewWelcome', signup: 'NewSignup', home: 'NewHome' };
+// Screens whose texts are looked up by their Turkish design text: `prefs.d("Hesap bilgilerim")` (see Strings.design).
+// The design script writes every text as _x('Turkish text'), so this table needs no hand-made keys.
+const DESIGN_FILES = ['NewProfile', 'ScrOnboarding', 'NewCourses', 'NewPlacement', 'ScrUpload', 'NewReader', 'NewAssistant'];
 
 // "<screen>.<name>": Turkish text exactly as written in the design script (_x('...')).
 const EXTRA = {
@@ -106,6 +109,33 @@ for (const [key, turkish] of Object.entries(out.tr)) {
   for (const l of ['en', 'fa', 'ar']) if (out[l][key] !== w[l]) { out[l][key] = w[l]; fixed++; }
 }
 console.log(`Used the web's translation for ${fixed} texts`);
+
+// Texts looked up by Turkish design text (all design files listed in DESIGN_FILES).
+const byTurkish = {};
+for (const file of DESIGN_FILES) {
+  const src = readFileSync(join(root, 'design', `${file}.dc.html`), 'utf8');
+  const table = literal(src, '_I18N');
+  if (!table.k) continue;
+  const pt = literal(src, '_PT');
+  const tk = literal(src, '_TK');
+  table.k.forEach((turkish, i) => {
+    const entry = byTurkish[turkish] ?? (byTurkish[turkish] = { tr: turkish });
+    for (const l of ['en', 'fa', 'ar']) entry[l] ??= table[l][i];
+  });
+  // Texts the design translates differently in one place (the key is the design key, e.g. p0a).
+  for (const [k, langs] of Object.entries(pt)) {
+    const turkish = tk[k];
+    if (turkish && byTurkish[turkish]) Object.assign(byTurkish[turkish], langs);
+  }
+}
+let fixedDesign = 0;
+for (const [turkish, entry] of Object.entries(byTurkish)) {
+  const w = web.get(turkish);
+  if (!w) continue;
+  for (const l of ['en', 'fa', 'ar']) if (entry[l] !== w[l]) { entry[l] = w[l]; fixedDesign++; }
+}
+writeFileSync(join(root, 'ios', 'KavisStudy', 'Resources', 'Data', 'i18n-design.json'), JSON.stringify(byTurkish, null, 1) + '\n');
+console.log(`Wrote ${Object.keys(byTurkish).length} design texts (${fixedDesign} fixed from the web)`);
 
 const target = join(root, 'ios', 'KavisStudy', 'Resources', 'Data', 'i18n-phone.json');
 writeFileSync(target, JSON.stringify(out, null, 1) + '\n');

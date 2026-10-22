@@ -76,7 +76,7 @@ struct HomeView: View {
 
     private var topBar: some View {
         HStack(spacing: 10) {
-            profileMenu
+            profileButton
             Spacer()
             Button { trial.perform(.question, run: soon) } label: {
                 ZStack {
@@ -106,21 +106,8 @@ struct HomeView: View {
         .padding(.top, KLayout.top(60, minimum: 6))
     }
 
-    /// Stand-in for the profile screen: language, appearance and sign out live here until Settings is built.
-    private var profileMenu: some View {
-        @Bindable var prefs = prefs
-        return Menu {
-            Picker(t("language"), selection: $prefs.lang) {
-                ForEach(Lang.allCases) { Text($0.name).tag($0) }
-            }
-            Picker(t("k131"), selection: $prefs.theme) {
-                Text(t("light")).tag(ThemeChoice.light)
-                Text(t("dark")).tag(ThemeChoice.dark)
-            }
-            Button(role: .destructive) { Task { await app.signOut() } } label: {
-                Label(t("logout"), systemImage: "rectangle.portrait.and.arrow.right")
-            }
-        } label: {
+    private var profileButton: some View {
+        Button { app.go(.profile) } label: {
             HStack(spacing: 8) {
                 Text(initials)
                     .font(KFont.ui(13, .semibold, lang: lang))

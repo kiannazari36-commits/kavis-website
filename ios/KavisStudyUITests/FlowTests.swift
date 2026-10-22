@@ -28,7 +28,8 @@ final class FlowTests: XCTestCase {
 
         app.buttons["Kodu e-postadan yapıştır"].tap()
         app.buttons["Doğrula ve devam et"].tap()
-        XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'çalışalım'")).firstMatch.waitForExistence(timeout: 5), "home")
+        // A new account goes to the onboarding before home (the onboarding screens come in the next commit).
+        XCTAssertTrue(app.staticTexts["Bu ekran sıradaki adımda"].waitForExistence(timeout: 5), "onboarding placeholder")
     }
 
     func testEndedTrialLocksNewPdf() {
@@ -54,5 +55,26 @@ final class FlowTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Tekrar yarına ertelendi"].waitForExistence(timeout: 3))
         app.buttons["Geri al"].tap()
         XCTAssertTrue(app.staticTexts["Bugün tekrar günü"].waitForExistence(timeout: 3), "review card is back")
+    }
+
+    func testProfileEditAndLogOut() {
+        let app = launch(["-kavis.route", "home"])
+        app.buttons["Profilim"].tap()
+        XCTAssertTrue(app.staticTexts["Elif Yıldız"].waitForExistence(timeout: 5), "profile screen")
+        XCTAssertTrue(app.staticTexts["Ücretsiz deneme"].exists, "the plan card shows the trial")
+        app.buttons.containing(NSPredicate(format: "label BEGINSWITH 'Hesap bilgilerim'")).firstMatch.tap()
+        XCTAssertTrue(app.buttons["Kaydet"].waitForExistence(timeout: 3), "edit page")
+        app.buttons["Kaydet"].tap()
+        XCTAssertTrue(app.staticTexts["Bilgilerin kaydedildi"].waitForExistence(timeout: 3), "saved message")
+        app.buttons["Çıkış yap"].tap()
+        XCTAssertTrue(app.buttons["Başlayalım"].waitForExistence(timeout: 5), "back at the welcome screen")
+    }
+
+    func testProfileBackGoesHome() {
+        let app = launch(["-kavis.route", "home"])
+        app.buttons["Profilim"].tap()
+        XCTAssertTrue(app.staticTexts["Elif Yıldız"].waitForExistence(timeout: 5))
+        app.buttons["Geri"].tap()
+        XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'çalışalım'")).firstMatch.waitForExistence(timeout: 5))
     }
 }

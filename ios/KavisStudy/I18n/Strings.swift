@@ -39,4 +39,25 @@ enum Strings {
         for (name, value) in vars { s = s.replacingOccurrences(of: "{\(name)}", with: value) }
         return s
     }
+
+    /// Design texts by their Turkish wording: `{ "Hesap bilgilerim": { "tr": …, "en": …, "fa": …, "ar": … } }`.
+    /// Filled by `ios/scripts/extract-design-texts.mjs` from the design files, so screens can use the design's own words.
+    static let designTable: [String: [String: String]] = {
+        guard let url = Bundle(for: BundleToken.self).url(forResource: "i18n-design", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let table = try? JSONDecoder().decode([String: [String: String]].self, from: data)
+        else {
+            assertionFailure("Missing i18n-design.json — run `node ios/scripts/extract-design-texts.mjs`")
+            return [:]
+        }
+        return table
+    }()
+
+    /// The design text `turkish` in `lang`. Texts typed by the student (a course name, a university) and texts that
+    /// are not in the design come back unchanged. Falls back to English when a language is missing.
+    static func design(_ turkish: String, _ lang: Lang) -> String {
+        if lang == .tr { return turkish }
+        guard let entry = designTable[turkish] else { return turkish }
+        return entry[lang.rawValue] ?? entry["en"] ?? turkish
+    }
 }

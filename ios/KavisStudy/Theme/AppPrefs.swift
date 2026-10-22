@@ -35,6 +35,11 @@ final class AppPrefs {
         Strings.text(key, lang, vars)
     }
 
+    /// A text of the design by its Turkish wording: `prefs.d("Hesap bilgilerim")`.
+    func d(_ turkish: String) -> String {
+        Strings.design(turkish, lang)
+    }
+
     init() {
         let d = UserDefaults.standard
         lang = d.string(forKey: Self.langKey).flatMap(Lang.init(rawValue:)) ?? .tr

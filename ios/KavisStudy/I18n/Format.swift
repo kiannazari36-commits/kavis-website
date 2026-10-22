@@ -19,4 +19,14 @@ enum Format {
         default: "\(n)%"
         }
     }
+
+    /// "3. sınıf", "Year 3", "سال ۳", "السنة 3".
+    static func yearLabel(_ n: Int, _ lang: Lang) -> String {
+        switch lang {
+        case .tr: "\(n). sınıf"
+        case .en: "Year \(n)"
+        case .fa: "سال \(num(n, lang))"
+        case .ar: "السنة \(n)"
+        }
+    }
 }

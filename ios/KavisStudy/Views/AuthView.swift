@@ -40,7 +40,7 @@ struct AuthView: View {
         VStack(spacing: 0) {
             header
             if mode == .verify {
-                VerifyView(email: pending.email, name: pending.name, busy: $busy, onSignedIn: finish)
+                VerifyView(email: pending.email, name: pending.name, busy: $busy, onSignedIn: { await finish($0, isNew: true) })
             } else {
                 form
                 footer
@@ -317,25 +317,26 @@ struct AuthView: View {
             busy = false
             mode = .verify
         } else {
-            await finish(await AuthAPI.logIn(email: email, password: password))
+            await finish(await AuthAPI.logIn(email: email, password: password), isNew: false)
         }
     }
 
     private func social(_ provider: AuthProvider) async {
         guard !busy else { return }
         busy = true
-        await finish(await AuthAPI.socialLogIn(provider))
+        await finish(await AuthAPI.socialLogIn(provider), isNew: signup)
     }
 
     /// After a login: an account that is already on 2 devices must sign one out first (screen comes in step 4).
-    private func finish(_ user: User) async {
+    /// A new account goes on to the onboarding, an existing one goes home.
+    private func finish(_ user: User, isNew: Bool) async {
         if await DevicesAPI.checkDeviceLimit() != nil {
             busy = false
             toast.show(t("devFullTitle"))
             return
         }
         busy = false
-        app.signedIn(user)
+        app.signedIn(user, isNew: isNew)
     }
 }
 

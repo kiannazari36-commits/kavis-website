@@ -13,13 +13,17 @@ struct RootView: View {
                 SplashView { if app.route == .splash { app.finishSplash() } }
             case .welcome:
                 WelcomeView(
-                    onStart: { app.route = .auth(.signup) },
-                    onLogin: { app.route = .auth(.login) }
+                    onStart: { app.go(.auth(.signup)) },
+                    onLogin: { app.go(.auth(.login)) }
                 )
             case .auth(let start):
-                AuthView(start: start, onBack: { app.route = .welcome })
+                AuthView(start: start, onBack: { app.back(fallback: .welcome) })
+            case .onboarding, .courseSetup:
+                Color.clear.overlay(Text(prefs.t("k165")))
             case .home:
                 HomeView()
+            case .profile:
+                ProfileView()
             }
         }
         .animation(.easeInOut(duration: 0.25), value: app.route)
