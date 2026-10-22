@@ -1,0 +1,62 @@
+# XcodeGen spec. Run `xcodegen generate` in this folder to (re)create KavisStudy.xcodeproj.
+# The .xcodeproj is generated and not committed; this file is the source of truth.
+name: KavisStudy
+options:
+  bundleIdPrefix: study.kavis
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  KavisStudy:
+    type: application
+    platform: iOS
+    sources:
+      - path: KavisStudy
+        excludes:
+          - Info.plist
+    info:
+      path: KavisStudy/Info.plist
+      properties:
+        CFBundleDisplayName: Kavis Study
+        CFBundleDevelopmentRegion: tr
+        CFBundleLocalizations: [tr, en, fa, ar]
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UIAppFonts:
+          - Poppins-Regular.ttf
+          - Poppins-Medium.ttf
+          - Poppins-SemiBold.ttf
+          - Poppins-Bold.ttf
+          - Lora.ttf
+          - Lora-Italic.ttf
+          - JetBrainsMono.ttf
+          - Vazirmatn.ttf
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: study.kavis.app
+        TARGETED_DEVICE_FAMILY: "1" # iPhone only for now; iPad later (see TODO.md)
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        GENERATE_INFOPLIST_FILE: NO
+  KavisStudyTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - KavisStudyTests
+    dependencies:
+      - target: KavisStudy
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  KavisStudy:
+    build:
+      targets:
+        KavisStudy: all
+    test:
+      targets:
+        - KavisStudyTests
