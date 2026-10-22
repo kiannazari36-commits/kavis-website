@@ -108,3 +108,19 @@ final class TrialRulesTests: XCTestCase {
         XCTAssertNil(active.lockedKey)
     }
 }
+
+final class OnboardingRulesTests: XCTestCase {
+    func testDepartmentsAreDesignTexts() {
+        XCTAssertEqual(OnboardingView.departments.count, 6)
+        for name in OnboardingView.departments {
+            for lang in Lang.allCases { XCTAssertFalse(Strings.design(name, lang).isEmpty) }
+        }
+        XCTAssertEqual(Strings.design("Eczacılık", .en), "Pharmacy")
+    }
+
+    func testYearLabels() {
+        XCTAssertEqual(Format.yearLabel(3, .tr), "3. sınıf")
+        XCTAssertEqual(Format.yearLabel(3, .en), "Year 3")
+        XCTAssertEqual(Format.yearLabel(3, .fa), "سال ۳")
+    }
+}

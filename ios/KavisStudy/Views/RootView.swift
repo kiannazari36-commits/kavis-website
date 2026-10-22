@@ -18,7 +18,9 @@ struct RootView: View {
                 )
             case .auth(let start):
                 AuthView(start: start, onBack: { app.back(fallback: .welcome) })
-            case .onboarding, .courseSetup:
+            case .onboarding:
+                OnboardingView()
+            case .courseSetup:
                 Color.clear.overlay(Text(prefs.t("k165")))
             case .home:
                 HomeView()

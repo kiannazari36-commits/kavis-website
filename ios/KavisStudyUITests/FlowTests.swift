@@ -28,8 +28,8 @@ final class FlowTests: XCTestCase {
 
         app.buttons["Kodu e-postadan yapıştır"].tap()
         app.buttons["Doğrula ve devam et"].tap()
-        // A new account goes to the onboarding before home (the onboarding screens come in the next commit).
-        XCTAssertTrue(app.staticTexts["Bu ekran sıradaki adımda"].waitForExistence(timeout: 5), "onboarding placeholder")
+        // A new account goes to the onboarding before home.
+        XCTAssertTrue(app.staticTexts["Uygulama dilini seç"].waitForExistence(timeout: 5), "onboarding")
     }
 
     func testEndedTrialLocksNewPdf() {
@@ -75,6 +75,35 @@ final class FlowTests: XCTestCase {
         app.buttons["Profilim"].tap()
         XCTAssertTrue(app.staticTexts["Elif Yıldız"].waitForExistence(timeout: 5))
         app.buttons["Geri"].tap()
+        XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'çalışalım'")).firstMatch.waitForExistence(timeout: 5))
+    }
+
+    func testOnboardingSteps() {
+        let app = launch(["-kavis.route", "onboarding"])
+        // Step 1: the language changes at once.
+        XCTAssertTrue(app.staticTexts["Uygulama dilini seç"].waitForExistence(timeout: 5))
+        app.buttons.containing(NSPredicate(format: "label CONTAINS 'English'")).firstMatch.tap()
+        XCTAssertTrue(app.staticTexts["Choose app language"].waitForExistence(timeout: 3), "English interface")
+        app.buttons["Continue"].tap()
+        // Step 2: weekly plan.
+        XCTAssertTrue(app.staticTexts["Your weekly study plan"].waitForExistence(timeout: 3))
+        app.buttons["Increase"].tap()
+        app.buttons["Continue"].tap()
+        // Step 3: department.
+        XCTAssertTrue(app.staticTexts["Which department are you in?"].waitForExistence(timeout: 3))
+        app.buttons.containing(NSPredicate(format: "label CONTAINS 'Medicine'")).firstMatch.tap()
+        app.buttons["Continue"].tap()
+        // Steps 4-6: intro cards, then the term courses.
+        XCTAssertTrue(app.buttons["Skip"].waitForExistence(timeout: 3), "intro cards have Skip")
+        app.buttons["Next"].tap()
+        app.buttons["Next"].tap()
+        app.buttons["Let's start"].tap()
+        XCTAssertTrue(app.staticTexts["This screen comes in the next step"].waitForExistence(timeout: 3), "course setup (next commit)")
+    }
+
+    func testSkippingTheIntroGoesHome() {
+        let app = launch(["-kavis.route", "onboarding", "-kavis.onboardingStep", "3"])
+        app.buttons["Atla"].tap()
         XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'çalışalım'")).firstMatch.waitForExistence(timeout: 5))
     }
 }
