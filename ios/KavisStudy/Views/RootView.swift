@@ -19,7 +19,7 @@ struct RootView: View {
             case .auth(let start):
                 AuthView(start: start, onBack: { app.route = .welcome })
             case .home:
-                Color.clear.overlay(Text(prefs.t("k165")))
+                HomeView()
             }
         }
         .animation(.easeInOut(duration: 0.25), value: app.route)

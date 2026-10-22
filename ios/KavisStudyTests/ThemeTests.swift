@@ -27,7 +27,7 @@ final class ThemeTests: XCTestCase {
     func testEveryIconParses() {
         let icons: [KIconName] = [.lock, .upload, .list, .checklist, .cards, .mic, .back, .check, .mail, .eye, .eyeOff, .book, .bell,
                                   .refresh, .play, .camera, .help, .chevron, .chevronDown, .chevronLeft, .folder, .close, .send, .clock,
-                                  .calendar, .trash, .chart, .sliders, .apple, .star]
+                                  .calendar, .trash, .chart, .sliders, .apple, .star, .arrowRight, .wifiOff, .sync, .syncHalf, .person]
         for icon in icons {
             let r = SVGPathParser.parse(icon.rawValue).boundingRect
             XCTAssertFalse(r.isNull || r.isEmpty, "\(icon) is empty")

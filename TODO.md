@@ -44,10 +44,18 @@ Everything that is not finished yet. Updated after every step.
 ## iOS app (`ios/`, SwiftUI + XcodeGen)
 - [x] Step 1: project skeleton (`ios/project.yml`; run `xcodegen generate` in `ios/`, then open `KavisStudy.xcodeproj`), colors, fonts, light/dark, RTL, app icon
 - [x] Step 2: texts in tr/en/fa/ar (copied from the web) and the fake API in `ios/KavisStudy/API/` (auth, account, courses, trial, devices, settings, premium, share). After the web texts or mock data change, run `node ios/scripts/sync-from-web.mjs`
-- [ ] Step 3: screens (login/signup, onboarding, home, course folder, reader, assistant, quiz, cards, plan, progress, upload, settings, paywall). The big mock data (reader PDF, assistant, quiz, cards, plan, progress) is added to the sync script together with each screen
+- [x] Step 3a-c: splash, welcome, sign up / log in / email code, home (design NewSplash, NewWelcome, NewSignup, NewHome). Texts of the phone designs come from `node ios/scripts/extract-design-texts.mjs` (the corrected web translations win)
+- [ ] Step 3 rest: onboarding, course folder, reader, assistant, quiz, cards, plan, progress, upload, profile / settings, paywall, notifications, "Bugünün tekrarı" review flow. The big mock data (reader PDF, assistant, quiz, cards, plan, progress) is added to the sync script together with each screen
+- [ ] After sign up the design goes to onboarding (language, plan days/hours, courses); for now sign up goes straight to home
+- [ ] Real "Sign in with Apple" and Google sign-in, real email code (now every account uses the demo code 481920 and "Kodu e-postadan yapıştır" fills it)
+- [ ] 3rd-device screen: after login with `-kavis.devices full` only a toast is shown (screen comes in step 4)
+- [ ] Home: the profile pill opens a temporary menu (language, appearance, log out) until the profile / settings screens exist; the three course chips and "Güz dönemi · 5 ders…" are fixed design texts until real course data
+- [ ] Home buttons without a screen yet show the toast "Bu ekran sıradaki adımda" (upload, assistant, notifications, tiles, tab bar, plan items)
+- [ ] Exact line height (`.lineHeight`) needs iOS 26; on iOS 17–25 lines are a little looser than the design. Decide the minimum iOS version before release (now 17)
+- [ ] Never read `UIApplication` / `safeAreaInsets` inside a SwiftUI body (it froze the home screen); use `KLayout.top`
 - [ ] Step 4: StoreKit (Apple in-app purchase, prices from the App Store), trial limits, 2-device screen, share links, delete account
 - [ ] Set the Apple developer team and the final bundle id (now `study.kavis.app`) before TestFlight / App Store
-- [ ] Remove the mock test switches (`-kavis.trial`, `-kavis.devices`, `-kavis.premium`, `-kavis.lang`, `-kavis.theme`) and the temporary `DesignCheckView` before the public launch
+- [ ] Remove the mock test switches (`-kavis.trial`, `-kavis.devices`, `-kavis.premium`, `-kavis.lang`, `-kavis.theme`, `-kavis.route`, `-kavis.offline`) before the public launch
 - [ ] Fonts do not scale with the system text size yet (fixed sizes like the design); decide on Dynamic Type later
 - [ ] iPad version later (wide layouts from `design/NewIPad.dc.html`; now `TARGETED_DEVICE_FAMILY` is iPhone only)
 - [x] Offline use is in every plan (free included): fixed `offFreeT`, `offFreeS`, removed `pwWhyOffline` (web + iOS). The old design files in `design/` (DeskApp, ScrSettings, ScrPaywall, NewIPad) still contain the old "Premium-only" offline text; they are not changed, so do not copy offline texts from them

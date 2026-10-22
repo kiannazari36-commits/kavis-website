@@ -160,8 +160,17 @@ enum SVGPathParser {
 struct SVGShape: Shape {
     let d: String
     var viewBox: CGFloat = 24
+    /// Draw the path mirrored left to right (arrows and chevrons in right-to-left languages).
+    var mirrored = false
+
+    /// SwiftUI mirrors shapes in right-to-left layouts by itself. The design only mirrors arrows and chevrons
+    /// (`mirrored`), so every other icon (file, camera, Apple logo…) must keep its shape.
+    var layoutDirectionBehavior: LayoutDirectionBehavior { .fixed }
 
     func path(in rect: CGRect) -> Path {
-        SVGPathParser.parse(d).applying(CGAffineTransform(scaleX: rect.width / viewBox, y: rect.height / viewBox))
+        let scale = CGAffineTransform(scaleX: rect.width / viewBox, y: rect.height / viewBox)
+        let path = SVGPathParser.parse(d).applying(scale)
+        guard mirrored else { return path }
+        return path.applying(CGAffineTransform(scaleX: -1, y: 1).translatedBy(x: -rect.width, y: 0))
     }
 }

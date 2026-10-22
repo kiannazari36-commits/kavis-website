@@ -31,6 +31,18 @@ enum KFont {
     }
 }
 
+extension View {
+    /// The design's CSS `line-height` (a multiple of the font size). From iOS 26 the line height is exact.
+    /// Before that SwiftUI cannot make lines tighter than the font's own height, so only looser lines are possible.
+    @ViewBuilder func kLineHeight(_ multiple: CGFloat, size: CGFloat, lang: Lang) -> some View {
+        if #available(iOS 26, *) {
+            lineHeight(.exact(points: multiple * size))
+        } else {
+            lineSpacing(max(0, KFont.lineSpacing(multiple, size: size, lang: lang)))
+        }
+    }
+}
+
 extension KFont {
     /// Extra space between lines so a text gets the design's CSS `line-height` (a multiple of the font size).
     static func lineSpacing(_ multiple: CGFloat, size: CGFloat, lang: Lang) -> CGFloat {
@@ -40,14 +52,14 @@ extension KFont {
 }
 
 enum KLayout {
-    /// Height of the status bar / Dynamic Island area.
-    static var safeTop: CGFloat {
-        UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first?.keyWindow?.safeAreaInsets.top ?? 47
-    }
+    /// Status bar height of the design's 390 × 844 screens.
+    static let designStatusBar: CGFloat = 47
 
-    /// The design measures from the very top of a 390 × 844 screen. Inside the safe area, that is this much padding.
+    /// The design measures from the very top of the screen. Screens here start below the status bar / Dynamic Island,
+    /// so that is the measure minus the status bar. Do not read `UIApplication` / `safeAreaInsets` for this inside a view:
+    /// that creates an AttributeGraph cycle and SwiftUI stops updating the screen.
     static func top(_ fromScreenTop: CGFloat, minimum: CGFloat = 8) -> CGFloat {
-        max(fromScreenTop - safeTop, minimum)
+        max(fromScreenTop - designStatusBar, minimum)
     }
 }
 

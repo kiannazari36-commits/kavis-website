@@ -265,7 +265,7 @@ struct AuthView: View {
                         .frame(width: 22, height: 22)
                         consentText
                             .font(KFont.ui(12, lang: lang))
-                            .lineSpacing(KFont.lineSpacing(1.5, size: 12, lang: lang))
+                            .kLineHeight(1.5, size: 12, lang: lang)
                             .multilineTextAlignment(.leading)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
@@ -379,7 +379,7 @@ private struct VerifyView: View {
                 (Text("\(t("signup.k257")) ") + Text(email).fontWeight(.semibold).foregroundStyle(KPhone.text) + Text(" \(t("signup.k2343"))"))
                     .font(KFont.ui(14, lang: lang))
                     .foregroundStyle(KPhone.text2)
-                    .lineSpacing(KFont.lineSpacing(1.55, size: 14, lang: lang))
+                    .kLineHeight(1.55, size: 14, lang: lang)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                 codeBoxes.padding(.top, 10)

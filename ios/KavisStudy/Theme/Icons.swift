@@ -3,7 +3,7 @@ import SwiftUI
 /// Line icons of the design (24 × 24, round caps). Paths are copied from the design files / web/src/components/Icon.tsx.
 enum KIconName: String {
     case lock = "M6 11h12v9H6z M8 11V8a4 4 0 0 1 8 0v3"
-    case upload = "M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z M14 3v5h5 M12 18v-6 M9 15l3-3 3 3"
+    case upload = "M6 3h8l5 5v13H6z M14 3v5h5 M12 18v-6 M9.5 14.5L12 12l2.5 2.5"
     case list = "M9 6h11 M9 12h11 M9 18h11 M4 6h.01 M4 12h.01 M4 18h.01"
     case checklist = "M9 5h10 M9 12h10 M9 19h10 M4 5l1 1 2-2 M4 12l1 1 2-2 M4 19h.01"
     case cards = "M5 7h11a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z M7 3.5h12a2 2 0 0 1 2 2V17"
@@ -14,15 +14,20 @@ enum KIconName: String {
     case eye = "M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"
     case eyeOff = "M3 3l18 18 M10.6 5.1A10 10 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3 3.9 M6.6 6.6C3.7 8.4 2 12 2 12s3.5 7 10 7a9.6 9.6 0 0 0 5.4-1.6 M9.9 9.9a3 3 0 0 0 4.2 4.2"
     case book = "M3 5.5c2.5-1 5.5-1 9 1v13c-3.5-2-6.5-2-9-1z M21 5.5c-2.5-1-5.5-1-9 1v13c3.5-2 6.5-2 9-1z"
-    case bell = "M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8 M10 20a2 2 0 0 0 4 0"
+    case bell = "M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z M10 21h4"
     case refresh = "M20 12a8 8 0 1 1-2.3-5.7 M20 4v5h-5"
     case play = "M8 5v14l11-7z"
-    case camera = "M4 8h3l2-3h6l2 3h3v11H4z M12 16.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"
-    case help = "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14 M12 17h.01"
+    case camera = "M4 8h3l2-3h6l2 3h3v11H4z M12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"
+    case help = "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6 M12 17h.01"
     case chevron = "M9 6l6 6-6 6"
     case chevronDown = "M6 9l6 6 6-6"
     case chevronLeft = "M15 6l-6 6 6 6"
-    case folder = "M3 7h7l2 2h9v10H3z"
+    case arrowRight = "M9 5l7 7-7 7"
+    case wifiOff = "M3 3l18 18 M5 9.5a14 14 0 0 1 4-2.6 M19 9.5a14 14 0 0 0-6.5-3.2 M8.5 13a7 7 0 0 1 3-1.5 M12 18h.01"
+    case sync = "M4 12a8 8 0 0 1 14-5.3L20 9 M20 4v5h-5 M20 12a8 8 0 0 1-14 5.3L4 15 M4 20v-5h5"
+    case syncHalf = "M4 12a8 8 0 0 1 14-5.3L20 9 M20 4v5h-5"
+    case person = "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M4 21a8 8 0 0 1 16 0"
+    case folder = "M3 6.5A1.5 1.5 0 0 1 4.5 5H9l2 2.5h8.5A1.5 1.5 0 0 1 21 9v9.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z"
     case close = "M6 6l12 12 M18 6L6 18"
     case send = "M5 12h14 M13 6l6 6-6 6"
     case clock = "M12 7v5l3 2 M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"
@@ -48,16 +53,16 @@ struct KIcon: View {
     @Environment(\.layoutDirection) private var direction
 
     var body: some View {
+        let mirrored = flipsInRTL && direction == .rightToLeft
         Group {
             if name.isFilled {
-                SVGShape(d: name.rawValue).fill(style: FillStyle())
+                SVGShape(d: name.rawValue, mirrored: mirrored).fill(style: FillStyle())
             } else {
-                SVGShape(d: name.rawValue)
+                SVGShape(d: name.rawValue, mirrored: mirrored)
                     .stroke(style: StrokeStyle(lineWidth: width * size / 24, lineCap: .round, lineJoin: .round))
             }
         }
         .frame(width: size, height: size)
-        .scaleEffect(x: flipsInRTL && direction == .rightToLeft ? -1 : 1, y: 1)
         .accessibilityHidden(true)
     }
 }

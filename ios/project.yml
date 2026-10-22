@@ -52,6 +52,16 @@ targets:
     settings:
       base:
         GENERATE_INFOPLIST_FILE: YES
+  KavisStudyUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - KavisStudyUITests
+    dependencies:
+      - target: KavisStudy
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
 schemes:
   KavisStudy:
     build:
@@ -60,3 +70,4 @@ schemes:
     test:
       targets:
         - KavisStudyTests
+        - KavisStudyUITests

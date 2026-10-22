@@ -73,3 +73,38 @@ final class APITests: XCTestCase {
         }
     }
 }
+
+final class TrialRulesTests: XCTestCase {
+    func testLockReasons() {
+        let active = TrialModel(status: TrialStatus(premium: false, ended: false, daysLeft: 2, pdfsUsed: 1, questionsUsed: 23))
+        XCTAssertNil(active.lockReason(for: .pdf))
+        XCTAssertNil(active.lockReason(for: .question))
+        XCTAssertEqual(active.lockReason(for: .share), "pwWhyShare", "sharing is Premium only")
+
+        let full = TrialModel(status: TrialStatus(premium: false, ended: false, daysLeft: 1, pdfsUsed: 2, questionsUsed: 60))
+        XCTAssertEqual(full.lockReason(for: .pdf), "trialPdfFull")
+        XCTAssertEqual(full.lockReason(for: .question), "trialQFull")
+        XCTAssertNil(full.lockReason(for: .generate))
+
+        let ended = TrialModel(status: TrialStatus(premium: false, ended: true, daysLeft: 0, pdfsUsed: 2, questionsUsed: 41))
+        for action in [TrialAction.pdf, .question, .generate, .share] {
+            XCTAssertNotNil(ended.lockReason(for: action), "\(action) must be locked after the trial")
+        }
+        XCTAssertEqual(ended.lockReason(for: .pdf), "trialLocked")
+
+        let premium = TrialModel(status: TrialStatus(premium: true, ended: true, daysLeft: 0, pdfsUsed: 9, questionsUsed: 999))
+        for action in [TrialAction.pdf, .question, .generate, .share] { XCTAssertNil(premium.lockReason(for: action)) }
+    }
+
+    func testPerformRunsOnlyWhenAllowed() {
+        var ran = 0
+        let ended = TrialModel(status: TrialStatus(premium: false, ended: true, daysLeft: 0, pdfsUsed: 2, questionsUsed: 41))
+        ended.perform(.pdf) { ran += 1 }
+        XCTAssertEqual(ran, 0)
+        XCTAssertEqual(ended.lockedKey, "trialLocked")
+        let active = TrialModel(status: TrialStatus(premium: false, ended: false, daysLeft: 2, pdfsUsed: 0, questionsUsed: 0))
+        active.perform(.pdf) { ran += 1 }
+        XCTAssertEqual(ran, 1)
+        XCTAssertNil(active.lockedKey)
+    }
+}
