@@ -55,8 +55,8 @@
   "reminderVal": "09:00 · 1 saat önce + tam saatinde",
   "cheerNotif": "Tebrik bildirimleri",
   "cheerNotifS": "Bir dersinde ortalaman %10'dan fazla artınca, uygulama kapalıyken de",
-  "offFreeT": "Çevrimdışı kullanım · Premium",
-  "offFreeS": "Çalıştığın PDF'ler cihazına kaydedilir, internet yokken de açılır. Ders paylaşma da Premium'a özel.",
+  "offFreeT": "Çevrimdışı kullanım · Her planda",
+  "offFreeS": "Çalıştığın PDF'ler cihazına kaydedilir, internet yokken de açılır. Ücretsiz dahil her planda var.",
   "offTitle": "Çevrimdışı kullanım",
   "offModeT": "Çevrimdışı mod",
   "offModeS": "İnternet olmadan kayıtlı derslerinle çalış",
@@ -144,8 +144,7 @@
   "dlOff": "Otomatik indirme kapatıldı",
   "dlOn": "Açtığın PDF'ler cihazına kaydedilecek",
   "manageToast": "Hipertansiyon, Diyabet, Tablet Formülasyonu cihazında · istediğini silebilirsin",
-  "pwWhyShare": "Paylaşmak Premium'a özel",
-  "pwWhyOffline": "Çevrimdışı okuma Premium'a özel"
+  "pwWhyShare": "Paylaşmak Premium'a özel"
  },
  "en": {
   "planA": "My study",
@@ -203,8 +202,8 @@
   "reminderVal": "09:00 · 1 hour before + on time",
   "cheerNotif": "Congratulation notifications",
   "cheerNotifS": "When your average in a course rises by more than 10%, even when the app is closed",
-  "offFreeT": "Offline use · Premium",
-  "offFreeS": "The PDFs you study are saved to your device and open without internet. Sharing courses is Premium-only too.",
+  "offFreeT": "Offline use · every plan",
+  "offFreeS": "The PDFs you study are saved to your device and open without internet. Included in every plan, free too.",
   "offTitle": "Offline use",
   "offModeT": "Offline mode",
   "offModeS": "Study your saved courses without internet",
@@ -292,8 +291,7 @@
   "dlOff": "Auto-download turned off",
   "dlOn": "PDFs you open will be saved to your device",
   "manageToast": "Hypertension, Diabetes, Tablet Formulation on your device · delete any you want",
-  "pwWhyShare": "Sharing is Premium-only",
-  "pwWhyOffline": "Offline reading is Premium-only"
+  "pwWhyShare": "Sharing is Premium-only"
  },
  "fa": {
   "planA": "برنامهٔ",
@@ -351,8 +349,8 @@
   "reminderVal": "09:00 · 1 ساعت قبل + سر ساعت",
   "cheerNotif": "اعلان‌های تبریک",
   "cheerNotifS": "وقتی میانگینت در یک درس بیش از 10% بالا برود، حتی وقتی برنامه بسته است",
-  "offFreeT": "استفاده آفلاین · Premium",
-  "offFreeS": "PDFهایی که می‌خوانی روی دستگاهت ذخیره می‌شوند و بدون اینترنت هم باز می‌شوند. اشتراک‌گذاری درس هم مخصوص Premium است.",
+  "offFreeT": "استفاده آفلاین · در همهٔ طرح‌ها",
+  "offFreeS": "PDFهایی که می‌خوانی روی دستگاهت ذخیره می‌شوند و بدون اینترنت هم باز می‌شوند. در همهٔ طرح‌ها، از جمله رایگان، در دسترس است.",
   "offTitle": "استفاده آفلاین",
   "offModeT": "حالت آفلاین",
   "offModeS": "بدون اینترنت با درس‌های ذخیره‌شده‌ات بخوان",
@@ -440,8 +438,7 @@
   "dlOff": "دانلود خودکار خاموش شد",
   "dlOn": "PDFهایی که باز می‌کنی روی دستگاهت ذخیره می‌شوند",
   "manageToast": "فشار خون بالا، دیابت، فرمولاسیون قرص روی دستگاهت · هرکدام را خواستی پاک کن",
-  "pwWhyShare": "اشتراک‌گذاری مخصوص Premium است",
-  "pwWhyOffline": "خواندن آفلاین مخصوص Premium است"
+  "pwWhyShare": "اشتراک‌گذاری مخصوص Premium است"
  },
  "ar": {
   "planA": "خطة",
@@ -499,8 +496,8 @@
   "reminderVal": "09:00 · قبل ساعة + في الموعد",
   "cheerNotif": "إشعارات التهنئة",
   "cheerNotifS": "عندما يرتفع معدلك في مادة بأكثر من 10%، حتى والتطبيق مغلق",
-  "offFreeT": "الاستخدام دون اتصال · Premium",
-  "offFreeS": "تُحفظ ملفات PDF التي تدرسها على جهازك وتفتح حتى دون إنترنت. ومشاركة الدروس خاصة بـ Premium أيضًا.",
+  "offFreeT": "الاستخدام دون اتصال · في كل الخطط",
+  "offFreeS": "تُحفظ ملفات PDF التي تدرسها على جهازك وتفتح حتى دون إنترنت. متاح في كل الخطط، ومنها المجانية.",
   "offTitle": "الاستخدام دون اتصال",
   "offModeT": "وضع عدم الاتصال",
   "offModeS": "ادرس بدروسك المحفوظة دون إنترنت",
@@ -588,7 +585,6 @@
   "dlOff": "تم إيقاف التنزيل التلقائي",
   "dlOn": "ستُحفظ ملفات PDF التي تفتحها على جهازك",
   "manageToast": "ارتفاع ضغط الدم، السكري، تركيب الأقراص على جهازك · احذف ما تشاء",
-  "pwWhyShare": "المشاركة حصرية لـ Premium",
-  "pwWhyOffline": "القراءة دون اتصال خاصة بـ Premium"
+  "pwWhyShare": "المشاركة حصرية لـ Premium"
  }
 }

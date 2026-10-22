@@ -31,4 +31,13 @@ final class StringsTests: XCTestCase {
             "Deneme süren doldu. Çalıştığın PDF'ler seninle kalıyor; yeni PDF yüklemek için Premium'a geç."
         )
     }
+
+    /// CLAUDE.md: offline use is in every plan, free included — no text may call it Premium-only.
+    func testOfflineIsNotPremiumOnly() {
+        XCTAssertNil(Strings.dicts[.en]?["pwWhyOffline"])
+        for lang in Lang.allCases {
+            XCTAssertFalse(Strings.text("offFreeT", lang).contains("Premium"), "offFreeT (\(lang)) calls offline Premium")
+            XCTAssertFalse(Strings.text("offFreeS", lang).contains("Premium"), "offFreeS (\(lang)) mentions Premium")
+        }
+    }
 }

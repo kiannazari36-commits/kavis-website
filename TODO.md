@@ -50,7 +50,7 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Remove the mock test switches (`-kavis.trial`, `-kavis.devices`, `-kavis.premium`, `-kavis.lang`, `-kavis.theme`) and the temporary `DesignCheckView` before the public launch
 - [ ] Fonts do not scale with the system text size yet (fixed sizes like the design); decide on Dynamic Type later
 - [ ] iPad version later (wide layouts from `design/NewIPad.dc.html`; now `TARGETED_DEVICE_FAMILY` is iPhone only)
-- [ ] Check text conflict: `offFreeT` ("Offline use · Premium") and `pwWhyOffline` ("Offline reading is Premium-only") in `web/src/i18n/pages.json` say offline is Premium-only, but CLAUDE.md says offline use is in every plan
+- [x] Offline use is in every plan (free included): fixed `offFreeT`, `offFreeS`, removed `pwWhyOffline` (web + iOS). The old design files in `design/` (DeskApp, ScrSettings, ScrPaywall, NewIPad) still contain the old "Premium-only" offline text; they are not changed, so do not copy offline texts from them
 
 ## Texts and legal
 - [ ] Legal check of all texts: terms of use, KVKK / privacy notice, Premium and trial texts, delete-account texts

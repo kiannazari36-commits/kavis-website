@@ -10,7 +10,7 @@ import s from './Paywall.module.css';
 
 // Design: design/NewIPad.dc.html Premium sheet ("pw"), shown as its own page on the web.
 // Rule (CLAUDE.md): the web never sells Premium and shows no prices — it points to the iPhone app.
-// ?why=share|offline shows why Premium was opened.
+// ?why=share shows why Premium was opened. (Offline use is in every plan, so there is no offline reason.)
 
 export default function Paywall() {
   const { t, lang } = useI18n();
@@ -32,10 +32,10 @@ export default function Paywall() {
               <span className={s.badge}>PREMIUM</span>
             </span>
             <span className={s.sub}>{t('pwSub')}</span>
-            {why && (
+            {why === 'share' && (
               <span className={s.why}>
                 <Icon name="lock" size={15} />
-                {t(why === 'share' ? 'pwWhyShare' : 'pwWhyOffline')}
+                {t('pwWhyShare')}
               </span>
             )}
           </span>
