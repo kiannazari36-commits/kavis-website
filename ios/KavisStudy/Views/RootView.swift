@@ -26,6 +26,8 @@ struct RootView: View {
                 HomeView()
             case .profile:
                 ProfileView()
+            case .upload(let kind):
+                UploadView(kind: kind)
             }
         }
         .animation(.easeInOut(duration: 0.25), value: app.route)

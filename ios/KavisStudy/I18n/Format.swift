@@ -29,4 +29,15 @@ enum Format {
         case .ar: "السنة \(n)"
         }
     }
+
+    /// "48 sayfa · 6,2 MB", "48 pages · 6.2 MB", …
+    static func fileMeta(pages: Int, megabytes: Double, _ lang: Lang) -> String {
+        let mb = String(format: "%.1f", megabytes)
+        switch lang {
+        case .tr: return "\(pages) sayfa · \(mb.replacingOccurrences(of: ".", with: ",")) MB"
+        case .en: return "\(pages) pages · \(mb) MB"
+        case .fa: return "\(num(pages, lang)) صفحه · \(num(mb.replacingOccurrences(of: ".", with: "٫"), lang)) مگابایت"
+        case .ar: return "\(pages) صفحة · \(mb) ميغابايت"
+        }
+    }
 }

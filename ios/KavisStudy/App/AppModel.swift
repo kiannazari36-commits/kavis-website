@@ -3,6 +3,9 @@ import Observation
 
 enum AuthMode { case signup, login }
 
+/// What the student uploads (the three start buttons on home).
+enum UploadKind: Equatable { case pdf, photo, audio }
+
 enum Route: Equatable {
     case splash
     case welcome
@@ -11,6 +14,7 @@ enum Route: Equatable {
     case courseSetup
     case home
     case profile
+    case upload(UploadKind)
 }
 
 /// Where the app is (screen) and who is signed in. Mock session until the server exists.
@@ -23,7 +27,7 @@ final class AppModel {
 
     init() {
         user = AuthAPI.currentUser()
-        // Test switch: `-kavis.route welcome | login | signup | verify | onboarding | setup | home | profile`
+        // Test switch: `-kavis.route welcome | login | signup | verify | onboarding | setup | home | profile | upload | uploadPhoto | uploadAudio`
         // jumps to a screen (removed before launch, see TODO.md).
         switch MockFlag.value("route") {
         case "welcome": route = .welcome
@@ -33,6 +37,9 @@ final class AppModel {
         case "setup": route = .courseSetup
         case "home": route = .home
         case "profile", "profileEdit": route = .profile
+        case "upload": route = .upload(.pdf)
+        case "uploadPhoto": route = .upload(.photo)
+        case "uploadAudio": route = .upload(.audio)
         default: route = .splash
         }
     }

@@ -111,4 +111,31 @@ final class FlowTests: XCTestCase {
         app.buttons["Atla"].tap()
         XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'çalışalım'")).firstMatch.waitForExistence(timeout: 5))
     }
+
+    func testUploadPhotosThroughProcessingToHome() {
+        let app = launch(["-kavis.route", "home"])
+        app.buttons["PDF yükle"].tap()
+        XCTAssertTrue(app.staticTexts["Ders PDF'ini seç"].waitForExistence(timeout: 5), "upload screen")
+        app.buttons.containing(NSPredicate(format: "label BEGINSWITH 'PDF yok mu'")).firstMatch.tap()
+        XCTAssertTrue(app.buttons["Dersi hazırla · 4 sayfa"].waitForExistence(timeout: 3), "photo page")
+        app.buttons["Dersi hazırla · 4 sayfa"].tap()
+        XCTAssertTrue(app.staticTexts["Ders hazırlanıyor…"].waitForExistence(timeout: 3), "processing")
+        // The mock server finishes in about 5 seconds, then the student is back home.
+        XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'çalışalım'")).firstMatch.waitForExistence(timeout: 15), "home")
+    }
+
+    func testTooLongPdfSheetThenProcessing() {
+        let app = launch(["-kavis.route", "upload", "-kavis.uploadMode", "long"])
+        XCTAssertTrue(app.staticTexts["Bu PDF çok uzun"].waitForExistence(timeout: 5), "100 page sheet")
+        app.buttons["Devam et"].tap()
+        XCTAssertTrue(app.staticTexts["Ders hazırlanıyor…"].waitForExistence(timeout: 3))
+    }
+
+    func testCloseButtonReturnsHome() {
+        let app = launch(["-kavis.route", "home"])
+        app.buttons["PDF yükle"].tap()
+        XCTAssertTrue(app.staticTexts["Ders PDF'ini seç"].waitForExistence(timeout: 5))
+        app.buttons["Kapat"].tap()
+        XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'çalışalım'")).firstMatch.waitForExistence(timeout: 5))
+    }
 }

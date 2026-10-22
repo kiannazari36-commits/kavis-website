@@ -160,14 +160,16 @@ struct HomeView: View {
     }
 
     private var uploadButtons: some View {
-        // Uploading is Premium-only after the trial and needs internet; the upload screen comes later.
-        let upload = {
-            if offline { toast.show(t("home.uploadOffline")) } else { trial.perform(.pdf, run: soon) }
+        // Uploading is Premium-only after the trial and needs internet.
+        func open(_ kind: UploadKind) -> () -> Void {
+            {
+                if offline { toast.show(t("home.uploadOffline")) } else { trial.perform(.pdf) { app.go(.upload(kind)) } }
+            }
         }
         return HStack(spacing: 8) {
-            uploadButton(.upload, "PDF", label: t("home.k1586"), primary: true, action: upload)
-            uploadButton(.camera, t("home.k1013"), label: t("home.k1016"), action: upload)
-            uploadButton(.mic, t("home.k1832"), label: t("home.k1832"), action: upload)
+            uploadButton(.upload, "PDF", label: t("home.k1586"), primary: true, action: open(.pdf))
+            uploadButton(.camera, t("home.k1013"), label: t("home.k1016"), action: open(.photo))
+            uploadButton(.mic, t("home.k1832"), label: t("home.k1832"), action: open(.audio))
             uploadButton(.help, t("home.k1905"), label: t("home.k1903"), action: { offline ? toast.show(t("home.uploadOffline")) : soon() })
         }
     }
