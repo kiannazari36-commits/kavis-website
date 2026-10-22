@@ -41,6 +41,10 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Turn on the App Store button when the iPhone app is live: put the link in `APP_STORE_URL` (`web/src/config.ts`). Until then every store button shows "Yakında" and cannot be clicked (landing, Premium page, share link page)
 - [ ] Same for Google Play (`PLAY_STORE_URL`) and the Mac App Store (`MAC_STORE_URL`) when those apps exist; then update the line under the store buttons (`storesSoon`)
 
+## iOS app (`ios/`, SwiftUI + XcodeGen)
+- [ ] iPhone app first (started; see the plan in the chat: skeleton → languages + mock API → screens → StoreKit / devices / sharing)
+- [ ] iPad version later (wide layouts from `design/NewIPad.dc.html`)
+
 ## Texts and legal
 - [ ] Legal check of all texts: terms of use, KVKK / privacy notice, Premium and trial texts, delete-account texts
 - [ ] Native-speaker check of the English, Persian and Arabic translations (some design translations were wrong and were fixed)
