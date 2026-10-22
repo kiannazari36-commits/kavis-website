@@ -92,6 +92,21 @@ for (const [screen, file] of Object.entries(SCREENS)) {
     for (const l of LANGS) out[l][name] = say(turkish, l);
   }
 }
+// The web texts were checked and some design translations were fixed (e.g. "Tekrar hoş geldin" was "Review welcome").
+// When the web has the same Turkish text, its other languages win.
+const web = new Map();
+for (const file of ['desk', 'auth', 'app', 'reader', 'study', 'pages']) {
+  const d = JSON.parse(readFileSync(join(root, 'web', 'src', 'i18n', `${file}.json`), 'utf8'));
+  for (const [k, turkish] of Object.entries(d.tr)) if (!web.has(turkish)) web.set(turkish, Object.fromEntries(LANGS.map((l) => [l, d[l][k]])));
+}
+let fixed = 0;
+for (const [key, turkish] of Object.entries(out.tr)) {
+  const w = web.get(turkish);
+  if (!w) continue;
+  for (const l of ['en', 'fa', 'ar']) if (out[l][key] !== w[l]) { out[l][key] = w[l]; fixed++; }
+}
+console.log(`Used the web's translation for ${fixed} texts`);
+
 const target = join(root, 'ios', 'KavisStudy', 'Resources', 'Data', 'i18n-phone.json');
 writeFileSync(target, JSON.stringify(out, null, 1) + '\n');
 console.log(`Wrote ${Object.keys(out.en).length} texts x 4 languages to ${target}`);

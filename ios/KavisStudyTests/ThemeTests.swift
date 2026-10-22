@@ -51,3 +51,23 @@ final class ThemeTests: XCTestCase {
         XCTAssertEqual(Strings.text("welcome.k482", .en), "Let's start")
     }
 }
+
+final class AuthRulesTests: XCTestCase {
+    func testPasswordScoreMatchesTheWeb() {
+        XCTAssertEqual(AuthView.passwordScore(""), 0)
+        XCTAssertEqual(AuthView.passwordScore("abc"), 1)
+        XCTAssertEqual(AuthView.passwordScore("abcdefgh"), 1)
+        XCTAssertEqual(AuthView.passwordScore("Abcdefg1"), 3)
+        XCTAssertEqual(AuthView.passwordScore("Abcdefg1!"), 4)
+    }
+
+    func testAuthTextsExistInAllLanguages() {
+        for lang in Lang.allCases {
+            for key in ["signup.titleUp1", "signup.titleIn1", "signup.needConsent", "signup.needCode", "signup.k864", "signup.p0a", "devFullTitle", "k165"] {
+                XCTAssertNotEqual(Strings.text(key, lang), key, "\(key) missing in \(lang)")
+            }
+        }
+        XCTAssertEqual(Strings.text("signup.titleIn1", .en), "Welcome")
+        XCTAssertEqual(Strings.text("signup.titleIn2", .en), "back")
+    }
+}

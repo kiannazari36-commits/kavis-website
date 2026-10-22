@@ -18,11 +18,12 @@ final class AppModel {
 
     init() {
         user = AuthAPI.currentUser()
-        // Test switch: `-kavis.route welcome | login | signup | home` jumps to a screen (removed before launch, see TODO.md).
+        // Test switch: `-kavis.route welcome | login | signup | verify | home` jumps to a screen (removed before launch, see TODO.md).
         switch MockFlag.value("route") {
         case "welcome": route = .welcome
         case "login": route = .auth(.login)
-        case "signup": route = .auth(.signup)
+        case "signup", "verify": route = .auth(.signup) // verify: AuthView opens the code screen
+
         case "home": route = .home
         default: route = .splash
         }

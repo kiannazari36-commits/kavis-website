@@ -13,10 +13,12 @@ struct RootView: View {
                 SplashView { if app.route == .splash { app.finishSplash() } }
             case .welcome:
                 WelcomeView(
-                    onStart: { toast.show(prefs.t("k165")) },
-                    onLogin: { toast.show(prefs.t("k165")) }
+                    onStart: { app.route = .auth(.signup) },
+                    onLogin: { app.route = .auth(.login) }
                 )
-            case .auth, .home:
+            case .auth(let start):
+                AuthView(start: start, onBack: { app.route = .welcome })
+            case .home:
                 Color.clear.overlay(Text(prefs.t("k165")))
             }
         }
