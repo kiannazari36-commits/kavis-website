@@ -20,7 +20,12 @@ Everything that is not finished yet. Updated after every step.
   - [ ] Later: switch back to the 6-digit code of the design (`EMAIL_CODE = true` in `web/src/pages/Login.tsx` + `{{ .Token }}` in the "Confirm sign up" template); iOS needs the code anyway. Kavis-styled email texts in 4 languages
   - [ ] "Forgot password" (now a toast): reset with a 6-digit code
   - [ ] Sign in with Apple and Google (buttons now show "coming soon"): needs Apple developer account (Services ID + key) and a Google Cloud OAuth client, then enable both in Supabase → Authentication → Providers
-  - [ ] Profile and settings → devices (`register_device`) → courses and timetable → trial status (`access_status`)
+  - [x] Example data: `supabase/seed.sql` (re-runnable; fills the kiannazari36 account with 5 courses, 13 lessons, exams, timetable, reading progress, study time). Applied to the live project. Each newly connected area adds its rows there
+  - [x] Courses (menu, home "continue", My Courses, course folder, reader title), profile (name, school, department, year) and settings (`user_settings`, per-course content language) now come from Supabase. `web/src/api/mock/courses.ts` removed
+  - [ ] Still mock on these pages: reader text, cards, quiz, assistant, plan, progress, notifications, "today's plan" and review box on home → connect them next, with example rows in `seed.sql`
+  - [ ] Class rank on course cards ("Sıralama #3") has no data on the server; hidden until it exists
+  - [ ] App language and theme are still saved only in the browser (`profiles.app_lang`, `user_settings.app_theme` exist)
+  - [ ] Devices (`register_device`) → timetable screen → trial status (`access_status`)
 - [ ] Email sending for the 6-digit code: Supabase's built-in email is only for testing (few emails per hour); a real email provider (custom SMTP) before launch
 - [ ] Edge Functions (none built yet; list in `docs/BACKEND.md`); secrets only in Supabase secrets
 - [ ] Fill `course_catalog` per department (the design has the pharmacy list)

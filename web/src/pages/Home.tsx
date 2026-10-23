@@ -5,19 +5,18 @@ import { useToast } from '../components/Toast';
 import TopBar from '../components/TopBar';
 import Icon, { type IconName } from '../components/Icon';
 import { COURSE_COLOR } from '../components/courseColors';
-import type { CourseColor } from '../api/types';
+import { listCourses, recentPdfs } from '../api/courses';
+import { getProfile } from '../api/account';
+import { useAsync } from '../hooks/useAsync';
+import { courseCount } from '../i18n/format';
 import { useTrial } from '../trial/TrialProvider';
 import { usePanelPref } from '../hooks/usePanelPref';
 import s from './Home.module.css';
 
 // Design: design/DeskApp.dc.html, screen "home" (web).
 
-// "My Courses" cards on home: last opened PDFs (texts and numbers as in the design).
-const RECENT: { course: string; pdf: string; title: string; courseKey: string; pct: number; level: string; color: CourseColor }[] = [
-  { course: 'pharmacotherapy', pdf: 'hypertension', title: 'k77', courseKey: 'k53', pct: 62, level: 'k78', color: 'amb' },
-  { course: 'pharmacotherapy', pdf: 'diabetes', title: 'k80', courseKey: 'k53', pct: 8, level: 'k81', color: 'red' },
-  { course: 'pharm-tech-3', pdf: 'tablet-formulation', title: 'k82', courseKey: 'k55', pct: 96, level: 'k83', color: 'grn' },
-];
+// Level tag on a lesson card, from how much of it is read: Beginner / Good / Very good (k81 / k78 / k83).
+const levelKey = (pct: number) => (pct < 30 ? 'k81' : pct < 80 ? 'k78' : 'k83');
 
 const PLAN = [
   { time: '09:00', title: 'k85', sub: 'k86' },
@@ -26,9 +25,14 @@ const PLAN = [
 ];
 
 export default function Home() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const toast = useToast();
   const { guard } = useTrial();
+  const profile = useAsync(getProfile, []);
+  const courses = useAsync(listCourses, []);
+  // "My Courses" cards on home: the lessons read most recently.
+  const recent = useAsync(() => recentPdfs(3), []) ?? [];
+  const firstName = profile?.name.split(' ')[0] ?? '';
   const navigate = useNavigate();
   const upload = () => guard('pdf', () => toast(t('k165')));
   const [showReview, setShowReview] = useState(true);
@@ -61,7 +65,7 @@ export default function Home() {
         <div className={s.head}>
           <TopBar />
           <h1 className={s.hello}>
-            <span>{t('k63')}</span> {t('k64')}
+            <span>{firstName ? t('helloName').replace('{name}', firstName) : t('k63').split(' ')[0]}</span> {t('k64')}
           </h1>
         </div>
 
@@ -109,27 +113,27 @@ export default function Home() {
 
         <div className={s.coursesHead}>
           <h2>{t('k48')}</h2>
-          <span className={s.count}>{t('k75')}</span>
+          <span className={s.count}>{courses && `· ${courseCount(courses.length, lang)}`}</span>
           <Link to="/courses" className={s.folderLink}>
             {t('k76')}
           </Link>
         </div>
         <div className={s.recent}>
-          {RECENT.map((r) => {
-            const col = COURSE_COLOR[r.color];
+          {recent.map(({ course, pdf }) => {
+            const col = COURSE_COLOR[course.color];
             return (
-              <Link key={r.pdf} to={`/reader?course=${r.course}&pdf=${r.pdf}`} className={s.pdfCard}>
+              <Link key={pdf.id} to={`/reader?course=${course.id}&pdf=${pdf.id}`} className={s.pdfCard}>
                 <span className={`mono ${s.pdfBadge}`} style={{ background: col.soft, color: col.fg }}>
                   PDF
                 </span>
-                <b>{t(r.title)}</b>
-                <span className={s.pdfCourse}>{t(r.courseKey)}</span>
+                <b>{pdf.title}</b>
+                <span className={s.pdfCourse}>{course.short ?? course.name}</span>
                 <span className={s.bar}>
-                  <span style={{ width: `${r.pct}%`, background: col.main }} />
+                  <span style={{ width: `${pdf.read}%`, background: col.main }} />
                 </span>
                 <span className={s.pdfFoot}>
                   <span className={s.level} style={{ background: col.soft, color: col.fg }}>
-                    {t(r.level)}
+                    {t(levelKey(pdf.read))}
                   </span>
                   <span className={`mono ${s.device}`}>{t('k79')}</span>
                 </span>

@@ -91,7 +91,8 @@
   "sideCollapse": "Menüyü daralt",
   "sideExpand": "Menüyü genişlet",
   "comingSoon": "Yakında",
-  "storesSoon": "iPhone, iPad, Android ve Mac uygulamaları yakında · web şimdi kullanılabilir."
+  "storesSoon": "iPhone, iPad, Android ve Mac uygulamaları yakında · web şimdi kullanılabilir.",
+  "helloName": "Merhaba {name},"
  },
  "en": {
   "pdfs": "PDFs",
@@ -185,7 +186,8 @@
   "sideCollapse": "Collapse menu",
   "sideExpand": "Expand menu",
   "comingSoon": "Coming soon",
-  "storesSoon": "iPhone, iPad, Android and Mac apps are coming soon · the web works now."
+  "storesSoon": "iPhone, iPad, Android and Mac apps are coming soon · the web works now.",
+  "helloName": "Hi {name},"
  },
  "fa": {
   "pdfs": "PDFها",
@@ -279,7 +281,8 @@
   "sideCollapse": "جمع کردن منو",
   "sideExpand": "باز کردن منو",
   "comingSoon": "به‌زودی",
-  "storesSoon": "اپلیکیشن‌های آیفون، آیپد، اندروید و مک به‌زودی می‌آیند · نسخهٔ وب همین حالا کار می‌کند."
+  "storesSoon": "اپلیکیشن‌های آیفون، آیپد، اندروید و مک به‌زودی می‌آیند · نسخهٔ وب همین حالا کار می‌کند.",
+  "helloName": "سلام {name}،"
  },
  "ar": {
   "pdfs": "ملفات PDF",
@@ -373,6 +376,7 @@
   "sideCollapse": "طيّ القائمة",
   "sideExpand": "توسيع القائمة",
   "comingSoon": "قريبًا",
-  "storesSoon": "تطبيقات iPhone وiPad وAndroid وMac قريبًا · الويب يعمل الآن."
+  "storesSoon": "تطبيقات iPhone وiPad وAndroid وMac قريبًا · الويب يعمل الآن.",
+  "helloName": "مرحبًا {name}،"
  }
 }

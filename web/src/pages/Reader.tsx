@@ -32,7 +32,7 @@ const START_SECONDS = 1394; // study timer in the design starts at 23:14
 type Msg = { from: 'me' | 'ai'; text: string };
 
 export default function Reader() {
-  const { t, lang } = useI18n();
+  const { t } = useI18n();
   const { theme } = useTheme();
   const toast = useToast();
   const navigate = useNavigate();
@@ -103,7 +103,7 @@ export default function Reader() {
   if (!doc) return <main className={s.loading} />;
 
   const isSample = pdfInfo !== undefined && pdfInfo?.pdf.id !== doc.id;
-  const title = isSample && pdfInfo ? pdfInfo.pdf.title[lang] : doc.title;
+  const title = isSample && pdfInfo ? pdfInfo.pdf.title : doc.title;
   const section = doc.sections[sec];
   const fontSize = fontI === 0 ? settings.readerFontSize : FONT_SIZES[fontI];
   const clock = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
@@ -152,7 +152,7 @@ export default function Reader() {
           </button>
           <div className={s.titleBox}>
             <h1 lang={doc.language}>{title}</h1>
-            <span className="mono">{isSample && pdfInfo ? `${pdfInfo.course.name[lang]} · ${t('sampleNote')}` : t('pageInfo')}</span>
+            <span className="mono">{isSample && pdfInfo ? `${pdfInfo.course.name} · ${t('sampleNote')}` : t('pageInfo')}</span>
           </div>
           <div role="radiogroup" aria-label={t('readingTheme')} className={s.papers}>
             {PAPERS.map(([p, key, swatch]) => (

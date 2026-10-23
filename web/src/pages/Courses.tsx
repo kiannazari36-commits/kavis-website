@@ -1,7 +1,7 @@
 import { useState, type DragEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useI18n } from '../i18n/I18nProvider';
-import { duration, pdfCount, percent, rank, termSummary } from '../i18n/format';
+import { duration, examLabel, pdfCount, percent, rank, termSummary } from '../i18n/format';
 import { useToast } from '../components/Toast';
 import TopBar from '../components/TopBar';
 import Icon from '../components/Icon';
@@ -41,7 +41,7 @@ export default function Courses() {
 
   const all = courses ?? [];
   const shown = all.filter(matches[filter]).filter(
-    (c) => !q || c.name[lang].toLocaleLowerCase(lang).includes(q) || c.pdfs.some((p) => p.title[lang].toLocaleLowerCase(lang).includes(q)),
+    (c) => !q || c.name.toLocaleLowerCase(lang).includes(q) || c.pdfs.some((p) => p.title.toLocaleLowerCase(lang).includes(q)),
   );
   const totalPdfs = all.reduce((a, c) => a + c.pdfs.length, 0);
   const totalHours = Math.round(all.reduce((a, c) => a + courseStats(c).minutes, 0) / 60);
@@ -91,7 +91,7 @@ export default function Courses() {
                   <Icon name="folder" size={24} />
                 </span>
                 <span className={s.cardTitle}>
-                  <b>{c.name[lang]}</b>
+                  <b>{c.name}</b>
                   <span className="mono">
                     {pdfCount(c.pdfs.length, lang)} · {duration(st.minutes, lang)}
                   </span>
@@ -104,8 +104,8 @@ export default function Courses() {
                 <b>{percent(st.pct, lang)}</b>
               </div>
               <div className={s.tags}>
-                <span>{c.exam[lang]}</span>
-                <span>{rank(c.rank, lang)}</span>
+                {c.examDate && <span>{examLabel(c.examKind, c.examDate, lang)}</span>}
+                {c.rank !== undefined && <span>{rank(c.rank, lang)}</span>}
               </div>
               <div className={s.actions}>
                 <button className={s.continue} onClick={() => navigate(next ? `/reader?course=${c.id}&pdf=${next.id}` : `/courses/${c.id}`)}>

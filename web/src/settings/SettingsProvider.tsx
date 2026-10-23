@@ -1,6 +1,8 @@
-import { createContext, useCallback, useContext, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import { useI18n, type Lang } from '../i18n/I18nProvider';
-import { loadSettingsNow, saveSettings, type ContentLangChoice, type Settings } from '../api/settings';
+import { fetchSettings, loadSettingsNow, saveSettings, type ContentLangChoice, type Settings } from '../api/settings';
+import { setCourseContentLangOnServer } from '../api/courses';
+import { onSignedIn } from '../api/auth';
 import type { Course } from '../api/types';
 
 type Ctx = {
@@ -16,6 +18,13 @@ const SettingsContext = createContext<Ctx | null>(null);
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<Settings>(loadSettingsNow);
 
+  // Load the account's settings at start and after every sign-in.
+  useEffect(() => {
+    const load = () => fetchSettings().then((s) => s && setSettings(s));
+    load();
+    return onSignedIn(load);
+  }, []);
+
   const update = useCallback((next: Settings) => {
     setSettings(next);
     saveSettings(next);
@@ -30,9 +39,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       const courseContentLang = { ...settings.courseContentLang };
       if (c === null) delete courseContentLang[courseId];
       else courseContentLang[courseId] = c;
-      update({ ...settings, courseContentLang });
+      setSettings({ ...settings, courseContentLang });
+      setCourseContentLangOnServer(courseId, c);
     },
-    [settings, update],
+    [settings],
   );
 
   return <SettingsContext.Provider value={{ settings, patch, setContentLang, setCourseContentLang }}>{children}</SettingsContext.Provider>;

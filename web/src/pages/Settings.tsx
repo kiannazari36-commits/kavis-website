@@ -1,7 +1,7 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LANGS, LANG_NAMES, useI18n } from '../i18n/I18nProvider';
-import { hoursLabel, num } from '../i18n/format';
+import { hoursLabel, num, studyLine } from '../i18n/format';
 import { useTheme, type ThemePref } from '../theme/ThemeProvider';
 import { useToast } from '../components/Toast';
 import TopBar from '../components/TopBar';
@@ -10,7 +10,7 @@ import Icon from '../components/Icon';
 import ContentLangPicker from '../components/ContentLangPicker';
 import { useContentLang, useSettings } from '../settings/SettingsProvider';
 import { currentUser } from '../api/auth';
-import { deleteAccount, requestMyData, saveProfile } from '../api/account';
+import { deleteAccount, getProfile, requestMyData, saveProfile, type Profile } from '../api/account';
 import { useTrial } from '../trial/TrialProvider';
 import DeviceList from '../components/DeviceList';
 import { listDevices, type Device } from '../api/devices';
@@ -69,10 +69,13 @@ export default function Settings() {
   const [removed, setRemoved] = useState<string[]>([]);
   const devices: Device[] = (loaded ?? []).filter((d) => !removed.includes(d.id));
   const contentLang = useContentLang({ id: '', language: 'tr' });
-  const user = currentUser() ?? { name: 'Elif Yıldız', email: 'elif@ogrenci.edu.tr' };
+  const user = currentUser();
   const [active, setActive] = useState<Section>('look');
   const [editing, setEditing] = useState(false);
-  const [profile, setProfile] = useState({ name: user.name, email: user.email, school: 'Ankara Üniversitesi' });
+  const [profile, setProfile] = useState<Profile>({ name: user?.name ?? '', email: user?.email ?? '', school: '', department: '', classYear: null });
+  useEffect(() => {
+    getProfile().then((p) => p && setProfile(p));
+  }, []);
   const [delOpen, setDelOpen] = useState(false);
   const isMac = /Mac|iPhone|iPad/.test(navigator.platform);
 
@@ -116,7 +119,7 @@ export default function Settings() {
             <span className={s.avatar}>{initials}</span>
             <span className={s.profileText}>
               <b>{profile.name}</b>
-              <span>{t('profileSub')}</span>
+              <span>{[profile.email, profile.school, studyLine(profile.department, profile.classYear, lang)].filter(Boolean).join(' · ')}</span>
               <span className={s.planTag}>
                 {trial.premium
                   ? 'Premium'
@@ -137,9 +140,13 @@ export default function Settings() {
               className={`${s.card} ${s.editForm}`}
               onSubmit={async (e) => {
                 e.preventDefault();
-                await saveProfile(profile);
-                setEditing(false);
-                toast(t('saved'));
+                try {
+                  setProfile({ ...profile, ...(await saveProfile(profile)) });
+                  setEditing(false);
+                  toast(t('saved'));
+                } catch {
+                  toast(t('errOther'));
+                }
               }}
             >
               <label>

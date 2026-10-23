@@ -1,6 +1,6 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useI18n, type Lang } from '../i18n/I18nProvider';
-import { duration, num, percent } from '../i18n/format';
+import { duration, examLabel, num, percent } from '../i18n/format';
 import { useToast } from '../components/Toast';
 import Icon from '../components/Icon';
 import { COURSE_COLOR } from '../components/courseColors';
@@ -66,8 +66,8 @@ export default function CourseFolder() {
 
       <section className={s.hero} style={{ background: col.soft }}>
         <div className={s.heroText}>
-          <span style={{ color: col.fg }}>{course.exam[lang]}</span>
-          <h1>{course.name[lang]}</h1>
+          <span style={{ color: col.fg }}>{examLabel(course.examKind, course.examDate, lang)}</span>
+          <h1>{course.name}</h1>
         </div>
         <div className={s.stats}>
           <span>
@@ -116,7 +116,7 @@ export default function CourseFolder() {
                   <span className="mono">{num(p.read, lang)}</span>
                 </span>
                 <span className={s.pdfBody}>
-                  <b>{p.title[lang]}</b>
+                  <b>{p.title}</b>
                   <span className={s.timeRow}>
                     <span className={s.timeBar}>
                       <span style={{ width: `${Math.round((p.minutes / maxMin) * 100)}%` }} />

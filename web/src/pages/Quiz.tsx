@@ -66,10 +66,11 @@ export default function Quiz() {
   const score = (fromReader ? points : points + qs.length - qList.length).toLocaleString(lang === 'tr' ? 'tr' : lang === 'fa' ? 'fa' : 'en');
   const total = fromReader ? qList.length : qs.length;
 
-  const examCourse = courses.find((c) => c.id === 'pharmacotherapy');
+  // Course with the nearest exam.
+  const examCourse = [...courses].filter((c) => c.examDate).sort((a, b) => a.examDate!.localeCompare(b.examDate!))[0];
   const courseName = (id: string) => {
     const c = courses.find((x) => x.id === id);
-    return c ? (c.short ?? c.name)[lang] : id;
+    return c ? (c.short ?? c.name) : id;
   };
 
   const startQuiz = (only?: number[]) => {
@@ -117,7 +118,7 @@ export default function Quiz() {
           <h1>
             {t('examA')} <span>{t('examB')}</span>
           </h1>
-          <span className={s.sub}>{(examCourse?.name[lang] ?? '') + t('subSuffix')}</span>
+          <span className={s.sub}>{(examCourse?.name ?? '') + t('subSuffix')}</span>
           <span className={s.styleBadge}>
             <Icon name="spark" size={11} width={2} />
             {t('teacherStyle')}

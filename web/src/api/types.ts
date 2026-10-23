@@ -7,27 +7,33 @@ export type CourseColor = 'red' | 'amb' | 'vio' | 'grn' | 'teal';
 
 export type Pdf = {
   id: string;
-  title: L10n;
+  /** The student's own lesson title (not translated). */
+  title: string;
   /** Percent read, 0–100. */
   read: number;
   /** Minutes studied. */
   minutes: number;
   pages: number;
+  /** Last time the student read it (ISO), for "continue where you left off". */
+  lastRead?: string;
 };
+
+export type ExamKind = 'midterm' | 'final' | 'makeup' | 'quiz' | 'other';
 
 export type Course = {
   id: string;
-  name: L10n;
+  /** The student's own course name (not translated). */
+  name: string;
   /** Shorter name for the sidebar. */
-  short?: L10n;
+  short?: string;
   color: CourseColor;
   /** Language of the course PDFs (the teacher's material). */
   language: Lang;
-  exam: L10n;
-  /** ISO date of the next exam. */
+  /** Next exam of this course (ISO date) and its kind. */
   examDate?: string;
-  /** Rank among classmates. */
-  rank: number;
+  examKind?: ExamKind;
+  /** Rank among classmates (not on the server yet). */
+  rank?: number;
   pdfs: Pdf[];
 };
 

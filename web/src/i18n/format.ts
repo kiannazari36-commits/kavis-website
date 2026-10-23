@@ -62,3 +62,40 @@ export function hoursLabel(h: number, lang: Lang, t: (k: string) => string) {
   const v = h % 1 && (lang === 'tr' || lang === 'fa') ? String(h).replace('.', ',') : String(h);
   return num(v, lang) + t('hour');
 }
+
+const EXAM_KIND: Record<string, Record<Lang, string>> = {
+  midterm: { tr: 'Vize', en: 'Midterm', fa: 'میان‌ترم', ar: 'النصفي' },
+  final: { tr: 'Final', en: 'Final', fa: 'پایان‌ترم', ar: 'النهائي' },
+  makeup: { tr: 'Bütünleme', en: 'Make-up', fa: 'ترمیمی', ar: 'الإكمال' },
+  quiz: { tr: 'Quiz', en: 'Quiz', fa: 'کوئیز', ar: 'اختبار قصير' },
+  other: { tr: 'Sınav', en: 'Exam', fa: 'امتحان', ar: 'امتحان' },
+};
+// Gregorian calendar and Latin digits for Arabic; Persian keeps Persian digits (as in the design: "۱۹ اکتبر").
+const DATE_LOCALE: Record<Lang, string> = { tr: 'tr-TR', en: 'en-US', fa: 'fa-IR-u-ca-gregory', ar: 'ar-u-ca-gregory-nu-latn' };
+
+/** "2026-10-19" → "19 Ekim" (tr), "Oct 19" (en), "۱۹ اکتبر" (fa), "19 أكتوبر" (ar). */
+export function shortDate(iso: string, lang: Lang) {
+  return new Intl.DateTimeFormat(DATE_LOCALE[lang], { day: 'numeric', month: lang === 'en' ? 'short' : 'long', timeZone: 'UTC' }).format(
+    new Date(`${iso}T00:00:00Z`),
+  );
+}
+
+/** Next exam tag: "Vize · 19 Ekim" / "Midterm · Oct 19". */
+export function examLabel(kind: string | undefined, iso: string | undefined, lang: Lang) {
+  if (!iso) return '';
+  return `${EXAM_KIND[kind ?? 'other'][lang]} · ${shortDate(iso, lang)}`;
+}
+
+/** 4 → "4. sınıf" (tr), "year 4" (en), "سال ۴" (fa), "السنة 4" (ar). */
+export function classYear(n: number, lang: Lang) {
+  return { tr: `${n}. sınıf`, en: `year ${n}`, fa: `سال ${num(n, lang)}`, ar: `السنة ${n}` }[lang];
+}
+
+/** "Eczacılık · 4. sınıf" — the department is the student's own text. */
+export function studyLine(department: string, year: number | null, lang: Lang) {
+  return [department, year ? classYear(year, lang) : ''].filter(Boolean).join(' · ');
+}
+
+export function courseCount(n: number, lang: Lang) {
+  return { tr: `${n} ders`, en: n === 1 ? '1 course' : `${n} courses`, fa: `${num(n, lang)} درس`, ar: n === 1 ? 'درس واحد' : `${n} دروس` }[lang];
+}

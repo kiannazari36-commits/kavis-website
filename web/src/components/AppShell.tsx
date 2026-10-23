@@ -5,6 +5,8 @@ import { useTheme } from '../theme/ThemeProvider';
 import { useToast } from './Toast';
 import { listCourses } from '../api/courses';
 import { currentUser, logOut } from '../api/auth';
+import { clearProfile, getProfile } from '../api/account';
+import { studyLine } from '../i18n/format';
 import { useAsync } from '../hooks/useAsync';
 import { usePanelPref } from '../hooks/usePanelPref';
 import { COURSE_COLOR } from './courseColors';
@@ -39,7 +41,8 @@ export default function AppShell() {
   const location = useLocation();
   const courses = useAsync(listCourses, []);
   const user = currentUser();
-  const initials = (user?.name || user?.email || '?')
+  const profile = useAsync(getProfile, []);
+  const initials = (profile?.name || user?.name || user?.email || '?')
     .split(' ')
     .map((w) => w[0])
     .slice(0, 2)
@@ -103,7 +106,7 @@ export default function AppShell() {
         {courses?.slice(0, 4).map((c) => (
           <NavLink key={c.id} to={`/courses/${c.id}`} className={({ isActive }) => `${s.course} ${s.wideOnly} ${isActive ? s.courseOn : ''}`}>
             <span className={s.dot} style={{ background: COURSE_COLOR[c.color].main }} />
-            <span className={s.ellipsis}>{(c.short ?? c.name)[lang]}</span>
+            <span className={s.ellipsis}>{c.short ?? c.name}</span>
           </NavLink>
         ))}
         <span className={s.grow} />
@@ -116,13 +119,14 @@ export default function AppShell() {
             title={t('logout')}
             onClick={async () => {
               await logOut();
+              clearProfile();
               navigate('/');
             }}
           >
             <span className={s.avatar}>{initials}</span>
             <span className={`${s.profileText} ${s.label}`}>
-              <b>{user.name || user.email}</b>
-              <span>{t('k60')}</span>
+              <b>{profile?.name || user.name || user.email}</b>
+              <span>{profile && studyLine(profile.department, profile.classYear, lang)}</span>
             </span>
           </button>
           <button className={s.themeBtn} aria-label={t('theme')} onClick={toggle}>
