@@ -19,6 +19,7 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Edge Functions (none built yet; list in `docs/BACKEND.md`); secrets only in Supabase secrets
 - [ ] Fill `course_catalog` per department (the design has the pharmacy list)
 - [ ] Connect the iOS app (`supabase-swift`)
+- [ ] Next phase, after the web is connected: build the iOS and iPad app with the UI design at https://claude.ai/artifact/SoArzVrar1Yo8usieABRB3
 
 ## Server features (the web still uses mock data in `web/src/api/`)
 - [ ] Real backend: accounts, login (email + Apple + Google), email verification code

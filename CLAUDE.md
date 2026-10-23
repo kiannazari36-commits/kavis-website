@@ -67,4 +67,7 @@ Replace the mock functions in `web/src/api/` one area at a time, with `@supabase
 
 After each area: test it in the browser, commit, push, update `TODO.md`, and stop so I can check. Keep the screens exactly as designed.
 
+## Next phase (after the web is connected)
+Build the iOS **and iPad** app with the UI design at https://claude.ai/artifact/SoArzVrar1Yo8usieABRB3 (read it with the Artifact tool, not a web fetch). Use it together with `design/` for the iPhone/iPad screens.
+
 Do not change anything inside `design/`.
