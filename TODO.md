@@ -31,6 +31,8 @@ Everything that is not finished yet. Updated after every step.
   - [x] Study plan: this week from `study_plans` + `plan_items` (real dates, course colors, reasons from the plan), tick tasks (status/done_at), "Dünü kaçırdım" moves unfinished past tasks to the coming days with the least time. Home: today's plan (times from the reminder time), today's review box from `review_sessions` (start = done, later = tomorrow), days to the next exam. Example: a 6-day week around today with 2 missed tasks yesterday. `web/src/api/mock/plan.ts` removed
   - [ ] Edge Function `build-plan` / daily planner: make the weekly plan, basic → smart stage, "Bugün az vaktim var" (light day; now only shown, not saved), "add wrong answers to my plan"
   - [ ] Own plan ("Kendi planım"): not saved yet — needs a table (or user_settings JSON) the app may write
+  - [x] Progress: week minutes (`daily_minutes`), streak (`study_streak()`), last score + level and course ranking from graded `quiz_attempts`, growth and congratulation (>10%), best-hours tip (average score by 2-hour window), weak topics (`topic_progress`), words learned (`term_lookups`). Example: 12 graded tries over 30 days in 3 courses, 4 weak topics. `web/src/api/mock/progress.ts` removed
+  - [ ] Congratulation as a push notification when the app is closed: scheduled job `send-notifications`
   - [ ] Still mock on these pages: assistant, plan, progress, notifications, "today's plan" and review box on home → connect them next, with example rows in `seed.sql`
   - [ ] Class rank on course cards ("Sıralama #3") has no data on the server; hidden until it exists
   - [ ] App language and theme are still saved only in the browser (`profiles.app_lang`, `user_settings.app_theme` exist)

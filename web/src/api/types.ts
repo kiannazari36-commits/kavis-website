@@ -143,20 +143,5 @@ export type FlashCard = {
 };
 export type CardRating = 'again' | 'hard' | 'good';
 
-export type CourseRank = {
-  courseId: string;
-  name: L10n;
-  badge: L10n;
-  icon: 'star' | 'trend' | 'alert';
-  level: 'good' | 'mid' | 'low';
-  scores: number[];
-  note: L10n;
-  growth: { from: number; to: number; days: number };
-  cta: L10n;
-  toast?: L10n;
-};
-
-export type WeakTopic = { title: L10n; pdf: L10n; mastery: number; color: string };
-
 /** A Premium plan. No price: it comes from the App Store for the student's country. */
 export type PremiumPlan = { id: 'year' | 'term' | 'month'; title: L10n; tag?: L10n };

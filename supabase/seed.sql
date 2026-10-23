@@ -274,6 +274,49 @@ begin
          '{"summary": true, "cards": 6, "questions": 3, "reasons": ["weak", "forgetting"]}'::jsonb
   from public.materials ma where ma.user_id = uid and ma.title = 'Hipertansiyon';
 
+  -- ── Graded quiz history (score and level are written by the server: Edge Function grade-quiz) ──
+  -- One short review quiz per course, tried several times; morning tries score higher than late-night ones.
+  for m in
+    select * from (values
+      ('Farmakoterapi',            30, '23:10', 52, 'improving'),
+      ('Farmakoterapi',            20, '22:40', 58, 'improving'),
+      ('Farmakoterapi',            12, '19:30', 61, 'improving'),
+      ('Farmakoterapi',             6, '10:15', 64, 'improving'),
+      ('Farmakoterapi',             1, '09:40', 70, 'very_good'),
+      ('Toksikoloji',              20, '22:30', 64, 'improving'),
+      ('Toksikoloji',               9, '19:00', 74, 'very_good'),
+      ('Toksikoloji',               2, '10:20', 85, 'expert'),
+      ('Farmasötik Teknoloji III', 28, '09:20', 84, 'very_good'),
+      ('Farmasötik Teknoloji III', 21, '10:05', 88, 'expert'),
+      ('Farmasötik Teknoloji III', 14, '09:50', 92, 'expert'),
+      ('Farmasötik Teknoloji III',  3, '09:30', 96, 'expert')
+    ) as v(course, days_ago, at, score, lvl)
+  loop
+    select q.id into qid from public.quizzes q join public.courses co on co.id = q.course_id
+     where q.user_id = uid and q.kind = 'review' and co.name = m.course;
+    if qid is null then
+      insert into public.quizzes (user_id, course_id, kind, lang, teacher_style, options)
+      select uid, co.id, 'review', 'tr', true, '{"count": 10}' from public.courses co where co.user_id = uid and co.name = m.course
+      returning id into qid;
+    end if;
+    insert into public.quiz_attempts (quiz_id, user_id, started_at, finished_at, score, level)
+    values (qid, uid,
+            ((current_date - m.days_ago) + m.at::time) at time zone 'Europe/Istanbul',
+            ((current_date - m.days_ago) + m.at::time + interval '12 minutes') at time zone 'Europe/Istanbul',
+            m.score, m.lvl);
+    qid := null;
+  end loop;
+
+  -- More weak topics (from those quizzes): one in Diyabet, one in Ağır metaller.
+  insert into public.material_topics (material_id, user_id, title, page_from, page_to, importance, sort_order)
+  select ma.id, uid, v.title, v.p1, v.p2, 3, 0
+  from (values ('Diyabet', 'İnsülin türleri', 8, 11), ('Ağır metaller', 'Kurşun zehirlenmesi', 5, 9)) as v(lesson, title, p1, p2)
+  join public.materials ma on ma.user_id = uid and ma.title = v.lesson;
+  insert into public.topic_progress (user_id, topic_id, state, mastery)
+  select uid, t.id, 'weak', v.mastery
+  from (values ('İnsülin türleri', 61), ('Kurşun zehirlenmesi', 49)) as v(title, mastery)
+  join public.material_topics t on t.user_id = uid and t.title = v.title;
+
   -- ── School timetable (Monday = 1) ──
   insert into public.timetable_entries (user_id, course_id, title, weekday, start_time, end_time, room, teacher)
   select uid, co.id, t.title, t.weekday, t.start_time, t.end_time, t.room, t.teacher
