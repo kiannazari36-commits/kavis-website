@@ -143,3 +143,10 @@ function bestHours(all: { score: number; started_at: string }[]): BestHours | nu
   if (best && late.length) best.late = Math.round(late.reduce((x, a) => x + a.score, 0) / late.length);
   return best;
 }
+
+/** Days in a row with at least 5 minutes of study (for the flame button on the top bar). */
+export async function getStreak() {
+  const { data, error } = await supabase.rpc('study_streak');
+  if (error) console.error('study_streak', error);
+  return (data as number | null) ?? 0;
+}

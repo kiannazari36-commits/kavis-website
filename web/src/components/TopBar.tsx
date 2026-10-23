@@ -1,15 +1,19 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useI18n } from '../i18n/I18nProvider';
-import { useToast } from './Toast';
 import Icon from './Icon';
+import { hasUnread } from '../api/notifications';
+import { getStreak } from '../api/progress';
+import { useAsync } from '../hooks/useAsync';
+import { num } from '../i18n/format';
 import s from './TopBar.module.css';
 
 // Search + streak + notifications + assistant star (design/DeskApp.dc.html, top of home/courses).
 export default function TopBar() {
-  const { t } = useI18n();
-  const toast = useToast();
+  const { t, lang } = useI18n();
   const navigate = useNavigate();
+  const streak = useAsync(getStreak, []);
+  const unread = useAsync(hasUnread, []);
   const [params] = useSearchParams();
   const [q, setQ] = useState(params.get('q') ?? '');
   const input = useRef<HTMLInputElement>(null);
@@ -42,11 +46,11 @@ export default function TopBar() {
       <span className={s.grow} />
       <button className={s.streak} onClick={() => navigate('/progress')}>
         <Icon name="flame" size={16} />
-        {t('k62')}
+        {streak !== undefined && t('daysN').replace('{n}', num(streak, lang))}
       </button>
-      <button className={s.bell} aria-label={t('notifs')} onClick={() => toast(t('k165'))}>
+      <button className={s.bell} aria-label={t('notifs')} onClick={() => navigate('/notifications')}>
         <Icon name="bell" size={19} />
-        <span />
+        {unread && <span />}
       </button>
       <button className="star-btn" aria-label={t('k92')} onClick={() => navigate('/assistant')} />
     </div>

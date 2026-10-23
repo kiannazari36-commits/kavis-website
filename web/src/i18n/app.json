@@ -93,7 +93,13 @@
   "comingSoon": "Yakında",
   "storesSoon": "iPhone, iPad, Android ve Mac uygulamaları yakında · web şimdi kullanılabilir.",
   "helloName": "Merhaba {name},",
-  "daysUntilExam": "gün sonra sınav: {course}"
+  "daysUntilExam": "gün sonra sınav: {course}",
+  "nToday": "Bugün",
+  "nYesterday": "Dün",
+  "nThisWeek": "Bu hafta",
+  "nEarlier": "Daha önce",
+  "noNotifs": "Henüz bildirimin yok.",
+  "unread": "Okunmadı"
  },
  "en": {
   "pdfs": "PDFs",
@@ -189,7 +195,13 @@
   "comingSoon": "Coming soon",
   "storesSoon": "iPhone, iPad, Android and Mac apps are coming soon · the web works now.",
   "helloName": "Hi {name},",
-  "daysUntilExam": "days until the exam: {course}"
+  "daysUntilExam": "days until the exam: {course}",
+  "nToday": "Today",
+  "nYesterday": "Yesterday",
+  "nThisWeek": "This week",
+  "nEarlier": "Earlier",
+  "noNotifs": "No notifications yet.",
+  "unread": "Unread"
  },
  "fa": {
   "pdfs": "PDFها",
@@ -285,7 +297,13 @@
   "comingSoon": "به‌زودی",
   "storesSoon": "اپلیکیشن‌های آیفون، آیپد، اندروید و مک به‌زودی می‌آیند · نسخهٔ وب همین حالا کار می‌کند.",
   "helloName": "سلام {name}،",
-  "daysUntilExam": "روز تا امتحان: {course}"
+  "daysUntilExam": "روز تا امتحان: {course}",
+  "nToday": "امروز",
+  "nYesterday": "دیروز",
+  "nThisWeek": "این هفته",
+  "nEarlier": "قبل‌تر",
+  "noNotifs": "هنوز اعلانی نداری.",
+  "unread": "خوانده‌نشده"
  },
  "ar": {
   "pdfs": "ملفات PDF",
@@ -381,6 +399,12 @@
   "comingSoon": "قريبًا",
   "storesSoon": "تطبيقات iPhone وiPad وAndroid وMac قريبًا · الويب يعمل الآن.",
   "helloName": "مرحبًا {name}،",
-  "daysUntilExam": "أيام حتى امتحان: {course}"
+  "daysUntilExam": "أيام حتى امتحان: {course}",
+  "nToday": "اليوم",
+  "nYesterday": "أمس",
+  "nThisWeek": "هذا الأسبوع",
+  "nEarlier": "سابقًا",
+  "noNotifs": "لا توجد إشعارات بعد.",
+  "unread": "غير مقروء"
  }
 }

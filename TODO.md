@@ -33,7 +33,9 @@ Everything that is not finished yet. Updated after every step.
   - [ ] Own plan ("Kendi planım"): not saved yet — needs a table (or user_settings JSON) the app may write
   - [x] Progress: week minutes (`daily_minutes`), streak (`study_streak()`), last score + level and course ranking from graded `quiz_attempts`, growth and congratulation (>10%), best-hours tip (average score by 2-hour window), weak topics (`topic_progress`), words learned (`term_lookups`). Example: 12 graded tries over 30 days in 3 courses, 4 weak topics. `web/src/api/mock/progress.ts` removed
   - [ ] Congratulation as a push notification when the app is closed: scheduled job `send-notifications`
-  - [ ] Still mock: assistant (chat and the reader side panel), notifications, Premium page offer → connect them next, with example rows in `seed.sql`
+  - [x] Notifications: new web page `/notifications` (design ScrNotifications: Today / Yesterday / This week), from `notifications`; opening marks them read; the bell dot shows unread; the flame button shows the real streak. Example: 9 notifications matching the example data
+  - [ ] Scheduled job `send-notifications` (push, snooze) and the server writing notifications (planner, lesson ready, exam result, weekly report)
+  - [ ] Still mock: assistant (chat and the reader side panel), Premium page offer → connect them next, with example rows in `seed.sql`
   - [ ] Class rank on course cards ("Sıralama #3") has no data on the server; hidden until it exists
   - [ ] App language and theme are still saved only in the browser (`profiles.app_lang`, `user_settings.app_theme` exist)
   - [x] Trial card and Premium status from `access_status()`; devices: login registers the web (all browsers share install id `web` = one slot), My devices list, sign out, 3rd-device screen, signed-out-elsewhere check at start, log out frees the slot
@@ -78,7 +80,7 @@ Everything that is not finished yet. Updated after every step.
 ## Web app — not built yet
 - [ ] Upload screen (PDF, photo, audio recording)
 - [ ] Onboarding after sign-up (language, plan days/hours, courses)
-- [ ] Notifications screen, help & live support chat, school timetable
+- [ ] Help & live support chat, school timetable
 - [ ] Live audio lesson, "Let me explain" (teach-back), solve a question photo
 - [ ] Pen / handwritten notes on the PDF, full PDF page view
 - [ ] Lesson summary / review pages ("Bugünün tekrarı", exam center)

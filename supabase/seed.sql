@@ -35,6 +35,7 @@ begin
   delete from public.user_devices      where user_id = uid and install_id like 'seed-%';
   delete from public.study_plans       where user_id = uid;
   delete from public.review_sessions   where user_id = uid;
+  delete from public.notifications     where user_id = uid;
 
   -- ── Profile and settings ──
   update public.profiles
@@ -316,6 +317,27 @@ begin
   select uid, t.id, 'weak', v.mastery
   from (values ('İnsülin türleri', 61), ('Kurşun zehirlenmesi', 49)) as v(title, mastery)
   join public.material_topics t on t.user_id = uid and t.title = v.title;
+
+  -- ── Notifications (written by the server; a scheduled job sends them as push) ──
+  -- Times are Istanbul time, relative to today; today's ones are unread.
+  insert into public.notifications (user_id, kind, title, body, data, send_at, sent_at, read_at)
+  select uid, v.kind, v.title, v.body, jsonb_build_object('to', v.dest),
+         ((current_date + v.d) + v.at::time) at time zone 'Europe/Istanbul',
+         ((current_date + v.d) + v.at::time) at time zone 'Europe/Istanbul',
+         case when v.d < 0 then ((current_date + v.d) + v.at::time + interval '2 hours') at time zone 'Europe/Istanbul' end
+  from (values
+    ( 0, '09:00', 'start_now',       'Hadi başlayalım!',                       'Bugünkü planın hazır: Hipertansiyon tekrarı + 2 görev, 50 dk.',       '/plan'),
+    ( 0, '08:30', 'streak',          'Serin devam ediyor',               'Bugün bir bölüm okursan serin bir gün daha uzar.',                            '/progress'),
+    ( 0, '09:00', 'review_day',      'Bugün Hipertansiyon tekrar günü',        '8 dakikalık tekrar seni bekliyor: özet, 6 kart, 3 soru.',             '/cards'),
+    ( 0, '08:00', 'study_1h_before', '1 saat sonra ders çalışıyoruz',          'Saat 09:00''da Hipertansiyon tekrarı seni bekliyor. Hazırlan.',      '/plan'),
+    (-1, '20:00', 'class_tomorrow',  'Yarın 1 dersin var',                     '11:00 Farmasötik Kimya II · Amfi 3',                                 '/plan'),
+    (-1, '09:52', 'exam_result',     'Sınav sonucun: 70/100',                  '+6 puan ilerledin. Yeni seviye: Çok iyi.',                           '/progress'),
+    (-3, '18:00', 'review_day',      'Parasetamol toksisitesi tekrarı yaklaşıyor', '3 kart tekrar zamanında. 5 dakika yeter.',                     '/cards'),
+    (-4, '21:14', 'lesson_ready',    'Hipertansiyon dersin hazır',             '48 sayfa · 6 terim · 12 kart · 6 soru hazırlandı.',                  '/courses'),
+    (-5, '19:00', 'weekly_report',   'Haftalık özet: ' || (select coalesce(round(sum(minutes) / 60), 0) from public.study_sessions s where s.user_id = uid
+                                        and s.started_at >= date_trunc('week', current_date) - interval '7 days' and s.started_at < date_trunc('week', current_date)) || ' saat çalıştın',
+                                                                              'Hedefin 12 saatti. En çok: Farmakoterapi.',                           '/progress')
+  ) as v(d, at, kind, title, body, dest);
 
   -- ── School timetable (Monday = 1) ──
   insert into public.timetable_entries (user_id, course_id, title, weekday, start_time, end_time, room, teacher)
