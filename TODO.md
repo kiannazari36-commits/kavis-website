@@ -14,7 +14,12 @@ Everything that is not finished yet. Updated after every step.
 ## Backend (Supabase project "Kavis", `lnbfcfxxrqohcnkhlcur`) — details in `docs/BACKEND.md`
 - [x] Schema v1: 44 tables, RLS on all, 5 private buckets, 7 RPCs; both migrations applied live; 40 local behaviour tests pass
 - [x] Claude Code connected to the project (Supabase MCP connector)
-- [ ] Connect the web app (`web/src/api/`), one area at a time: auth (email + 6-digit code, then Apple and Google) → profile and settings → devices (`register_device`) → courses and timetable → trial status (`access_status`)
+- [ ] Connect the web app (`web/src/api/`), one area at a time:
+  - [x] Auth with email: sign up (name, email, password) → 6-digit code → signed in; log in; log out; app pages need a signed-in student. `web/src/api/supabase.ts` + `auth.ts`; keys in `web/.env.local` (git-ignored) and in the Vercel project settings
+  - [ ] Supabase dashboard: "Confirm sign up" email template must contain `{{ .Token }}` (the 6-digit code), and a Kavis-styled template in 4 languages later
+  - [ ] "Forgot password" (now a toast): reset with a 6-digit code
+  - [ ] Sign in with Apple and Google (buttons now show "coming soon"): needs Apple developer account (Services ID + key) and a Google Cloud OAuth client, then enable both in Supabase → Authentication → Providers
+  - [ ] Profile and settings → devices (`register_device`) → courses and timetable → trial status (`access_status`)
 - [ ] Email sending for the 6-digit code: Supabase's built-in email is only for testing (few emails per hour); a real email provider (custom SMTP) before launch
 - [ ] Edge Functions (none built yet; list in `docs/BACKEND.md`); secrets only in Supabase secrets
 - [ ] Fill `course_catalog` per department (the design has the pharmacy list)

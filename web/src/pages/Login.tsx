@@ -5,14 +5,13 @@ import { useToast } from '../components/Toast';
 import Wordmark from '../components/Wordmark';
 import LangThemeSwitch from '../components/LangThemeSwitch';
 import Icon, { AppleLogo, GoogleLogo } from '../components/Icon';
-import { logIn, resendCode, signUp, socialLogIn, verifyEmail, type Provider } from '../api/auth';
+import { AuthFail, logIn, resendCode, signUp, socialLogIn, verifyEmail, type Provider } from '../api/auth';
 import { checkDeviceLimit } from '../api/devices';
 import s from './Login.module.css';
 
 // Design: design/DeskApp.dc.html screen "login" (layout) + design/NewSignup.dc.html (sign up / log in / verify flow).
 type Mode = 'signup' | 'login' | 'verify';
 
-const DEMO_CODE = '481920';
 const RESEND_SECONDS = 42;
 // Mock: open the login page with ?devices=full to see the 3rd-device screen after login.
 const DEVICES_FULL = new URLSearchParams(location.search).get('devices') === 'full';
@@ -21,6 +20,9 @@ const DEVICES_FULL = new URLSearchParams(location.search).get('devices') === 'fu
 async function afterLogin(navigate: (to: string) => void) {
   navigate((await checkDeviceLimit(DEVICES_FULL)) ? '/devices' : '/home');
 }
+
+/** Text key for a failed auth call (see AuthFailReason in src/api/auth.ts). */
+const errKey = (e: unknown) => `err${e instanceof AuthFail ? e.reason : 'Other'}`;
 
 // 0–4 bars: length, mixed case, digit, symbol.
 function passwordScore(pw: string) {
@@ -33,7 +35,7 @@ function passwordScore(pw: string) {
 }
 
 export default function Login() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const toast = useToast();
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
@@ -46,7 +48,7 @@ export default function Login() {
   const [showPw, setShowPw] = useState(false);
   const [consent, setConsent] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [pending, setPending] = useState({ email: 'elif@ogrenci.edu.tr', name: 'Elif Yıldız' });
+  const [pending, setPending] = useState({ email: params.get('email') ?? '', name: '' });
 
   const signup = mode === 'signup';
   const blocked = signup && !consent;
@@ -54,8 +56,13 @@ export default function Login() {
 
   const social = async (p: Provider) => {
     setBusy(true);
-    await socialLogIn(p);
-    await afterLogin(navigate);
+    try {
+      await socialLogIn(p);
+      await afterLogin(navigate);
+    } catch (e) {
+      toast(t(errKey(e)));
+      setBusy(false);
+    }
   };
 
   const submit = async (e: FormEvent) => {
@@ -66,14 +73,25 @@ export default function Login() {
       return;
     }
     setBusy(true);
-    if (signup) {
-      const r = await signUp(name, email, password);
-      setPending({ email: r.pendingEmail, name: r.name });
+    try {
+      if (signup) {
+        const r = await signUp(name, email, password, lang);
+        setPending({ email: r.pendingEmail, name: r.name });
+        setBusy(false);
+        setMode('verify');
+      } else {
+        await logIn(email, password);
+        await afterLogin(navigate);
+      }
+    } catch (e) {
       setBusy(false);
-      setMode('verify');
-    } else {
-      await logIn(email, password);
-      await afterLogin(navigate);
+      // Account exists but the email was never confirmed: send a new code and open the code screen.
+      if (e instanceof AuthFail && e.reason === 'Unconfirmed') {
+        await resendCode(email.trim()).catch(() => {});
+        setPending({ email: email.trim(), name: '' });
+        setMode('verify');
+      }
+      toast(t(errKey(e)));
     }
   };
 
@@ -110,7 +128,7 @@ export default function Login() {
         </div>
 
         {mode === 'verify' ? (
-          <Verify email={pending.email} name={pending.name} onBack={() => setMode('signup')} />
+          <Verify email={pending.email} onBack={() => setMode('signup')} />
         ) : (
           <form className={s.form} onSubmit={submit} noValidate>
             <div role="tablist" aria-label={t('account')} className={s.tabs}>
@@ -226,7 +244,7 @@ export default function Login() {
   );
 }
 
-function Verify({ email, name, onBack }: { email: string; name: string; onBack: () => void }) {
+function Verify({ email, onBack }: { email: string; onBack: () => void }) {
   const { t } = useI18n();
   const toast = useToast();
   const navigate = useNavigate();
@@ -261,15 +279,34 @@ function Verify({ email, name, onBack }: { email: string; name: string; onBack: 
       toast(t('needCode'));
       return;
     }
+    if (busy) return;
     setBusy(true);
-    await verifyEmail(email, name, code);
-    await afterLogin(navigate);
+    try {
+      await verifyEmail(email, code);
+      await afterLogin(navigate);
+    } catch (e) {
+      setBusy(false);
+      toast(t(errKey(e)));
+    }
   };
 
   const resend = async () => {
     if (left > 0) return;
-    await resendCode(email);
-    setLeft(RESEND_SECONDS);
+    try {
+      await resendCode(email);
+      setLeft(RESEND_SECONDS);
+      toast(t('codeSent'));
+    } catch (e) {
+      toast(t(errKey(e)));
+    }
+  };
+
+  // "Paste the code from your email": reads a 6-digit code from the clipboard.
+  const pasteCode = async () => {
+    const text = await navigator.clipboard?.readText().catch(() => '');
+    const found = text?.match(/\d{6}/)?.[0];
+    if (found) setFrom(0, found);
+    else toast(t('noClipCode'));
   };
 
   return (
@@ -319,7 +356,7 @@ function Verify({ email, name, onBack }: { email: string; name: string; onBack: 
           />
         ))}
       </div>
-      <button type="button" className={s.paste} onClick={() => setFrom(0, DEMO_CODE)}>
+      <button type="button" className={s.paste} onClick={pasteCode}>
         {t('paste')}
       </button>
       <button type="button" className={s.resend} onClick={resend} disabled={left > 0}>

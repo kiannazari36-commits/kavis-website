@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n/I18nProvider';
 import { useTheme } from '../theme/ThemeProvider';
 import { useToast } from './Toast';
@@ -38,8 +38,8 @@ export default function AppShell() {
   const navigate = useNavigate();
   const location = useLocation();
   const courses = useAsync(listCourses, []);
-  const user = currentUser() ?? { name: 'Elif Yıldız' };
-  const initials = user.name
+  const user = currentUser();
+  const initials = (user?.name || user?.email || '?')
     .split(' ')
     .map((w) => w[0])
     .slice(0, 2)
@@ -52,6 +52,9 @@ export default function AppShell() {
 
   // Close the mobile menu after navigating.
   useEffect(() => setOpen(false), [location.pathname, location.search]);
+
+  // App pages need a signed-in student.
+  if (!user) return <Navigate to="/login?mode=login" replace />;
 
   return (
     <div className={focus ? `${s.shell} ${s.focus}` : s.shell}>
@@ -118,7 +121,7 @@ export default function AppShell() {
           >
             <span className={s.avatar}>{initials}</span>
             <span className={`${s.profileText} ${s.label}`}>
-              <b>{user.name}</b>
+              <b>{user.name || user.email}</b>
               <span>{t('k60')}</span>
             </span>
           </button>
