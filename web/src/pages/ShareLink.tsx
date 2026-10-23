@@ -3,7 +3,7 @@ import Wordmark from '../components/Wordmark';
 import AppStoreButton from '../components/AppStoreButton';
 import Icon from '../components/Icon';
 import { currentUser } from '../api/auth';
-import { isPremium } from '../api/premium';
+import { useTrial } from '../trial/TrialProvider';
 import { isAndroid } from '../config';
 import s from './ShareLink.module.css';
 
@@ -11,7 +11,8 @@ import s from './ShareLink.module.css';
 // A signed-in student without Premium also sees that shared lessons need Premium.
 export default function ShareLink() {
   const { t } = useI18n();
-  const signedInFree = !!currentUser() && !isPremium();
+  const { trial } = useTrial();
+  const signedInFree = !!currentUser() && !trial.premium;
 
   return (
     <div className={s.page}>

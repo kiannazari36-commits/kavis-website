@@ -25,7 +25,8 @@ Everything that is not finished yet. Updated after every step.
   - [ ] Still mock on these pages: reader text, cards, quiz, assistant, plan, progress, notifications, "today's plan" and review box on home → connect them next, with example rows in `seed.sql`
   - [ ] Class rank on course cards ("Sıralama #3") has no data on the server; hidden until it exists
   - [ ] App language and theme are still saved only in the browser (`profiles.app_lang`, `user_settings.app_theme` exist)
-  - [ ] Devices (`register_device`) → timetable screen → trial status (`access_status`)
+  - [x] Trial card and Premium status from `access_status()`; devices: login registers the web (all browsers share install id `web` = one slot), My devices list, sign out, 3rd-device screen, signed-out-elsewhere check at start, log out frees the slot
+  - [ ] Timetable screen (data is in the database already)
 - [ ] Email sending for the 6-digit code: Supabase's built-in email is only for testing (few emails per hour); a real email provider (custom SMTP) before launch
 - [ ] Edge Functions (none built yet; list in `docs/BACKEND.md`); secrets only in Supabase secrets
 - [ ] Fill `course_catalog` per department (the design has the pharmacy list)
@@ -51,11 +52,12 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Prices come from the App Store (never hardcoded) — web shows "Price in the App Store"
 - [ ] Android payment later (Google Play or a web payment) — no Android app yet. The web tells Android users (Premium page, share link page, Google Play button) to use the web with the free trial
 - [ ] Android app (later); then update the Google Play button and the Android notes
-- [ ] Trial limits enforced on the server (3 days, 2 PDFs, 60 questions, 100 pages per PDF). The web shows the limits and locks Premium-only actions with mock data (`web/src/api/trial.ts`; try `?trial=active|full|ended`)
+- [ ] Trial limits enforced on the server (3 days, 2 PDFs, 60 questions, 100 pages per PDF). The web reads the status from `access_status()` and locks Premium-only actions; the counters are raised by the server (Edge Functions, not built yet)
 - [ ] Check the 100-page limit when a PDF is uploaded (upload screen not built yet)
 
 ## Devices
-- [ ] Device limit on the server (max 2 devices, the web counts as one); real device list and sign-out. The web UI is ready with mock data: Settings → My devices, and the 3rd-device screen `/devices` (try login with `?devices=full`)
+- [x] Device limit on the server (max 2 devices, the web counts as one); real device list and sign-out on the web
+- [ ] Edge Function `sign-out-device`: also end the signed-out device's login at once (now the web notices on its next visit)
 - [ ] Real device names from the apps (the web name comes from the browser)
 
 ## Sharing
@@ -119,6 +121,6 @@ Technical notes and decisions:
 - [ ] Trial limits on the server (3 days, 2 PDFs, 60 assistant questions, 100 pages per PDF)
 - [ ] 2-device limit on the server (the web counts as one)
 - [ ] KVKK texts and privacy policy (and terms of use) written and checked by a lawyer; link them from sign-up and the site
-- [ ] Remove sample data: mock courses, PDFs, sample answers, `?trial=` / `?devices=` / `?lang=` test switches, the sample lesson in the reader
+- [ ] Remove sample data: sample answers, the `?lang=` test switch, the sample lesson in the reader, and the example rows of `supabase/seed.sql`
 - [ ] Then remove noindex: `web/public/robots.txt`, the robots meta tag in `web/index.html` and the `X-Robots-Tag` header in `web/vercel.json`
 - [ ] Custom domain (e.g. kavis.study) in Vercel

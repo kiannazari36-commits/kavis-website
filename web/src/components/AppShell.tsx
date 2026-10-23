@@ -6,6 +6,7 @@ import { useToast } from './Toast';
 import { listCourses } from '../api/courses';
 import { currentUser, logOut } from '../api/auth';
 import { clearProfile, getProfile } from '../api/account';
+import { checkThisDevice, signOutThisDevice } from '../api/devices';
 import { studyLine } from '../i18n/format';
 import { useAsync } from '../hooks/useAsync';
 import { usePanelPref } from '../hooks/usePanelPref';
@@ -55,6 +56,17 @@ export default function AppShell() {
 
   // Close the mobile menu after navigating.
   useEffect(() => setOpen(false), [location.pathname, location.search]);
+
+  // Once per visit: signed out from another device → back to login; account full → choose a device.
+  useEffect(() => {
+    if (!currentUser()) return;
+    checkThisDevice().then(({ signedOut, full }) => {
+      if (signedOut) {
+        clearProfile();
+        navigate('/login?mode=login', { replace: true });
+      } else if (full) navigate('/devices', { replace: true });
+    });
+  }, [navigate]);
 
   // App pages need a signed-in student.
   if (!user) return <Navigate to="/login?mode=login" replace />;
@@ -118,6 +130,7 @@ export default function AppShell() {
             className={s.profileMain}
             title={t('logout')}
             onClick={async () => {
+              await signOutThisDevice();
               await logOut();
               clearProfile();
               navigate('/');

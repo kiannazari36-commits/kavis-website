@@ -99,3 +99,15 @@ export function studyLine(department: string, year: number | null, lang: Lang) {
 export function courseCount(n: number, lang: Lang) {
   return { tr: `${n} ders`, en: n === 1 ? '1 course' : `${n} courses`, fa: `${num(n, lang)} درس`, ar: n === 1 ? 'درس واحد' : `${n} دروس` }[lang];
 }
+
+/** Last time a device was used: "Bugün 09:12" / "Today 09:12", "Dün 21:40", else "19 Ekim 21:40". */
+export function lastSeen(iso: string, lang: Lang) {
+  const d = new Date(iso);
+  const time = num(`${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`, lang);
+  const day = (x: Date) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+  const diff = Math.round((day(new Date()) - day(d)) / 86_400_000);
+  if (diff === 0) return `${{ tr: 'Bugün', en: 'Today', fa: 'امروز', ar: 'اليوم' }[lang]} ${time}`;
+  if (diff === 1) return `${{ tr: 'Dün', en: 'Yesterday', fa: 'دیروز', ar: 'أمس' }[lang]} ${time}`;
+  const date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  return `${shortDate(date, lang)} ${time}`;
+}

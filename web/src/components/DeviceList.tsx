@@ -2,6 +2,7 @@ import { useI18n } from '../i18n/I18nProvider';
 import { useToast } from './Toast';
 import Icon from './Icon';
 import { signOutDevice, type Device } from '../api/devices';
+import { lastSeen } from '../i18n/format';
 import s from './DeviceList.module.css';
 
 // Devices signed in to the account, each with a sign-out button (not for this device).
@@ -18,7 +19,7 @@ export default function DeviceList({ devices, onSignedOut }: { devices: Device[]
           </span>
           <span className={s.text}>
             <b dir="ltr">{d.name}</b>
-            <span>{d.current ? t('devThis') + ' · ' + t('devActiveNow') : d.lastUsed ? t('devLastUsed').replace('{t}', d.lastUsed[lang]) : ''}</span>
+            <span>{d.current ? t('devThis') + ' · ' + t('devActiveNow') : d.lastUsed ? t('devLastUsed').replace('{t}', lastSeen(d.lastUsed, lang)) : ''}</span>
           </span>
           {!d.current && (
             <button

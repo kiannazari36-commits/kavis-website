@@ -16,12 +16,10 @@ const RESEND_SECONDS = 42;
 // Sign-up confirmation: false = the email has a link (now), true = a 6-digit code (needs {{ .Token }} in the
 // Supabase "Confirm sign up" template). The code screen of the design stays here for later.
 const EMAIL_CODE = false;
-// Mock: open the login page with ?devices=full to see the 3rd-device screen after login.
-const DEVICES_FULL = new URLSearchParams(location.search).get('devices') === 'full';
 
 /** After login: if the account is already on 2 devices, choose one to sign out first. */
 async function afterLogin(navigate: (to: string) => void) {
-  navigate((await checkDeviceLimit(DEVICES_FULL)) ? '/devices' : '/home');
+  navigate((await checkDeviceLimit()) ? '/devices' : '/home');
 }
 
 /** Text key for a failed auth call (see AuthFailReason in src/api/auth.ts). */

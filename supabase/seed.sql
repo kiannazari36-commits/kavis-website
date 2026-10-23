@@ -29,6 +29,7 @@ begin
   delete from public.exam_periods      where user_id = uid;
   delete from public.courses           where user_id = uid;  -- cascades: course_exams; materials keep course_id null …
   delete from public.materials         where user_id = uid;  -- … so delete them too (cascades: reading_progress, content, …)
+  delete from public.user_devices      where user_id = uid and install_id like 'seed-%';
 
   -- ── Profile and settings ──
   update public.profiles
@@ -115,10 +116,15 @@ begin
   ) as t(course_name, title, weekday, start_time, end_time, room, teacher)
   join public.courses co on co.user_id = uid and co.name = t.course_name;
 
+  -- ── Devices: an iPhone used yesterday (the web registers itself at login; max 2 devices) ──
+  insert into public.user_devices (user_id, install_id, kind, name, app_version, last_seen_at)
+  values (uid, 'seed-iphone', 'iphone', 'iPhone 15', '1.0', date_trunc('minute', now() - interval '1 day 2 hours'));
+
   -- Inserting 13 lessons raised the trial and monthly counters (database triggers). Example data should not
   -- use up the trial: count one lesson, like a student who uploaded one PDF so far.
   update public.materials set counted_in_trial = false where user_id = uid;
-  insert into public.trial_usage (user_id, lessons) values (uid, 1)
-    on conflict (user_id) do update set lessons = 1;
+  -- 23 of 60 assistant questions used.
+  insert into public.trial_usage (user_id, lessons, assistant_questions) values (uid, 1, 23)
+    on conflict (user_id) do update set lessons = 1, assistant_questions = 23;
   delete from public.usage_monthly where user_id = uid;
 end $$;

@@ -11,7 +11,7 @@ import s from './DeviceLimit.module.css';
 export default function DeviceLimit() {
   const { t } = useI18n();
   const navigate = useNavigate();
-  const devices = useAsync(() => checkDeviceLimit(true), []);
+  const devices = useAsync(checkDeviceLimit, []);
 
   return (
     <div className={s.page}>
@@ -21,7 +21,14 @@ export default function DeviceLimit() {
         </span>
         <h1 id="dev-title">{t('devFullTitle')}</h1>
         <p>{t('devFullSub')}</p>
-        {devices && <DeviceList devices={devices} onSignedOut={() => navigate('/home', { replace: true })} />}
+        {devices && <DeviceList
+            devices={devices}
+            onSignedOut={async () => {
+              // A slot is free now: register this browser, then continue.
+              await checkDeviceLimit();
+              navigate('/home', { replace: true });
+            }}
+          />}
         {devices === null && (
           <button className={s.go} onClick={() => navigate('/home', { replace: true })}>
             {t('k47')}

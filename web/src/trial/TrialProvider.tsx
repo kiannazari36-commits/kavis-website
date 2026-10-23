@@ -1,8 +1,9 @@
-import { createContext, useCallback, useContext, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n/I18nProvider';
 import Icon from '../components/Icon';
-import { getTrialNow, TRIAL_LIMITS, type TrialStatus } from '../api/trial';
+import { getTrial, TRIAL_LIMITS, TRIAL_START, type TrialStatus } from '../api/trial';
+import { onSignedIn } from '../api/auth';
 import s from './TrialProvider.module.css';
 
 /**
@@ -23,7 +24,14 @@ const TrialContext = createContext<Ctx | null>(null);
 export function TrialProvider({ children }: { children: ReactNode }) {
   const { t } = useI18n();
   const navigate = useNavigate();
-  const [trial] = useState<TrialStatus>(getTrialNow);
+  const [trial, setTrial] = useState<TrialStatus>(TRIAL_START);
+
+  // From the server at start and after every sign-in.
+  useEffect(() => {
+    const load = () => getTrial().then((s) => s && setTrial(s));
+    load();
+    return onSignedIn(load);
+  }, []);
   const [locked, setLocked] = useState<string | null>(null);
 
   const guard = useCallback(
