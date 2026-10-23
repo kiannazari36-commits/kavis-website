@@ -1,7 +1,7 @@
 # Kavis Study
 
 ## Who I am
-- Pharmacy student, not a developer. Reply in the language I write in (English, Turkish or Persian), short and simple. Explain every command I have to run myself.
+- Pharmacy student, not a developer. **Always talk to me in Turkish** (since 23 Oct 2026), short and simple. Explain every command I have to run myself.
 - Make reasonable decisions yourself, then tell me briefly what you did. Ask only before something irreversible, something that costs money, or anything that changes the live database.
 
 ## What this app is
