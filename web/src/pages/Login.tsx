@@ -5,7 +5,7 @@ import { useToast } from '../components/Toast';
 import Wordmark from '../components/Wordmark';
 import LangThemeSwitch from '../components/LangThemeSwitch';
 import Icon, { AppleLogo, GoogleLogo } from '../components/Icon';
-import { AuthFail, logIn, resendCode, signUp, socialLogIn, verifyEmail, type Provider } from '../api/auth';
+import { AuthFail, logIn, onSignedIn, resendCode, signUp, socialLogIn, verifyEmail, type Provider } from '../api/auth';
 import { checkDeviceLimit } from '../api/devices';
 import s from './Login.module.css';
 
@@ -13,6 +13,9 @@ import s from './Login.module.css';
 type Mode = 'signup' | 'login' | 'verify';
 
 const RESEND_SECONDS = 42;
+// Sign-up confirmation: false = the email has a link (now), true = a 6-digit code (needs {{ .Token }} in the
+// Supabase "Confirm sign up" template). The code screen of the design stays here for later.
+const EMAIL_CODE = false;
 // Mock: open the login page with ?devices=full to see the 3rd-device screen after login.
 const DEVICES_FULL = new URLSearchParams(location.search).get('devices') === 'full';
 
@@ -259,6 +262,9 @@ function Verify({ email, onBack }: { email: string; onBack: () => void }) {
     refs.current[0]?.focus();
   }, []);
 
+  // Link mode: when the student opens the email link (often in a new tab), continue here too.
+  useEffect(() => (EMAIL_CODE ? undefined : onSignedIn(() => afterLogin(navigate))), [navigate]);
+
   useEffect(() => {
     if (left <= 0) return;
     const id = setTimeout(() => setLeft(left - 1), 1000);
@@ -295,7 +301,7 @@ function Verify({ email, onBack }: { email: string; onBack: () => void }) {
     try {
       await resendCode(email);
       setLeft(RESEND_SECONDS);
-      toast(t('codeSent'));
+      toast(t(EMAIL_CODE ? 'codeSent' : 'linkSent'));
     } catch (e) {
       toast(t(errKey(e)));
     }
@@ -322,50 +328,56 @@ function Verify({ email, onBack }: { email: string; onBack: () => void }) {
         {t('checkA')} <span>{t('checkB')}</span>
       </h1>
       <p className={s.verifyText}>
-        {t('code6')} <b dir="ltr">{email}</b> {t('sentTo')}
+        {EMAIL_CODE ? t('code6') : t('linkA')} <b dir="ltr">{email}</b> {EMAIL_CODE ? t('sentTo') : t('linkB')}
       </p>
-      <div className={s.code} dir="ltr">
-        {digits.map((d, i) => (
-          <input
-            key={i}
-            ref={(el) => {
-              refs.current[i] = el;
-            }}
-            className={`mono ${d || i === code.length ? s.codeOn : ''}`}
-            value={d}
-            inputMode="numeric"
-            autoComplete={i === 0 ? 'one-time-code' : 'off'}
-            aria-label={`${i + 1}/6`}
-            maxLength={6}
-            onChange={(e) => {
-              const v = e.target.value.replace(/\D/g, '');
-              if (!v) {
-                const next = [...digits];
-                next[i] = '';
-                setDigits(next);
-              } else setFrom(i, v);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Backspace' && !d && i > 0) refs.current[i - 1]?.focus();
-              if (e.key === 'Enter') go();
-            }}
-            onPaste={(e) => {
-              e.preventDefault();
-              setFrom(i, e.clipboardData.getData('text'));
-            }}
-          />
-        ))}
-      </div>
-      <button type="button" className={s.paste} onClick={pasteCode}>
-        {t('paste')}
-      </button>
+      {EMAIL_CODE && (
+        <>
+          <div className={s.code} dir="ltr">
+            {digits.map((d, i) => (
+              <input
+                key={i}
+                ref={(el) => {
+                  refs.current[i] = el;
+                }}
+                className={`mono ${d || i === code.length ? s.codeOn : ''}`}
+                value={d}
+                inputMode="numeric"
+                autoComplete={i === 0 ? 'one-time-code' : 'off'}
+                aria-label={`${i + 1}/6`}
+                maxLength={6}
+                onChange={(e) => {
+                  const v = e.target.value.replace(/\D/g, '');
+                  if (!v) {
+                    const next = [...digits];
+                    next[i] = '';
+                    setDigits(next);
+                  } else setFrom(i, v);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Backspace' && !d && i > 0) refs.current[i - 1]?.focus();
+                  if (e.key === 'Enter') go();
+                }}
+                onPaste={(e) => {
+                  e.preventDefault();
+                  setFrom(i, e.clipboardData.getData('text'));
+                }}
+              />
+            ))}
+          </div>
+          <button type="button" className={s.paste} onClick={pasteCode}>
+            {t('paste')}
+          </button>
+        </>
+      )}
       <button type="button" className={s.resend} onClick={resend} disabled={left > 0}>
-        {t('resend')}{' '}
+        {t(EMAIL_CODE ? 'resend' : 'resendLink')}{' '}
         {left > 0 && <span className="mono">0:{String(left).padStart(2, '0')}</span>}
       </button>
-      <button type="button" className={filled ? s.submit : `${s.submit} ${s.submitOff}`} aria-disabled={!filled || busy} onClick={go}>
-        {t('verifyGo')}
-      </button>
+      {EMAIL_CODE && (
+        <button type="button" className={filled ? s.submit : `${s.submit} ${s.submitOff}`} aria-disabled={!filled || busy} onClick={go}>
+          {t('verifyGo')}
+        </button>
+      )}
     </div>
   );
 }

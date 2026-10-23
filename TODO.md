@@ -15,8 +15,9 @@ Everything that is not finished yet. Updated after every step.
 - [x] Schema v1: 44 tables, RLS on all, 5 private buckets, 7 RPCs; both migrations applied live; 40 local behaviour tests pass
 - [x] Claude Code connected to the project (Supabase MCP connector)
 - [ ] Connect the web app (`web/src/api/`), one area at a time:
-  - [x] Auth with email: sign up (name, email, password) → 6-digit code → signed in; log in; log out; app pages need a signed-in student. `web/src/api/supabase.ts` + `auth.ts`; keys in `web/.env.local` (git-ignored) and in the Vercel project settings
-  - [ ] Supabase dashboard: "Confirm sign up" email template must contain `{{ .Token }}` (the 6-digit code), and a Kavis-styled template in 4 languages later
+  - [x] Auth with email: sign up (name, email, password) → confirmation **link** in the email → signed in (opens `/home`); log in; log out; app pages need a signed-in student. `web/src/api/supabase.ts` + `auth.ts`; keys in `web/.env.local` (git-ignored) and in the Vercel project settings
+  - [ ] Supabase dashboard → Authentication → URL Configuration: Site URL `https://kavis-website.vercel.app`, Redirect URLs `http://localhost:5173/**` and `https://kavis-website.vercel.app/**` (add the real domain later)
+  - [ ] Later: switch back to the 6-digit code of the design (`EMAIL_CODE = true` in `web/src/pages/Login.tsx` + `{{ .Token }}` in the "Confirm sign up" template); iOS needs the code anyway. Kavis-styled email texts in 4 languages
   - [ ] "Forgot password" (now a toast): reset with a 6-digit code
   - [ ] Sign in with Apple and Google (buttons now show "coming soon"): needs Apple developer account (Services ID + key) and a Google Cloud OAuth client, then enable both in Supabase → Authentication → Providers
   - [ ] Profile and settings → devices (`register_device`) → courses and timetable → trial status (`access_status`)

@@ -57,12 +57,15 @@ export function currentUser(): User | null {
   return user;
 }
 
-/** Creates the account; Supabase then emails a 6-digit code (the "Confirm sign up" template uses {{ .Token }}). */
+// Where the confirmation link in the sign-up email opens (must be in Supabase → Authentication → URL Configuration).
+const confirmRedirect = () => `${location.origin}/home`;
+
+/** Creates the account; Supabase then emails a confirmation link (or a 6-digit code if the template uses {{ .Token }}). */
 export async function signUp(name: string, email: string, password: string, lang: Lang) {
   const { data, error } = await supabase.auth.signUp({
     email: email.trim(),
     password,
-    options: { data: { full_name: name.trim(), app_lang: lang } },
+    options: { data: { full_name: name.trim(), app_lang: lang }, emailRedirectTo: confirmRedirect() },
   });
   if (error) fail(error);
   // An email that already has a confirmed account comes back with no identities and no email is sent.
@@ -79,7 +82,7 @@ export async function verifyEmail(email: string, code: string) {
 }
 
 export async function resendCode(email: string) {
-  const { error } = await supabase.auth.resend({ type: 'signup', email });
+  const { error } = await supabase.auth.resend({ type: 'signup', email, options: { emailRedirectTo: confirmRedirect() } });
   if (error) fail(error);
   return true;
 }
@@ -89,6 +92,14 @@ export async function logIn(email: string, password: string) {
   if (error) fail(error);
   user = toUser(data.session);
   return user;
+}
+
+/** Calls back when this browser gets signed in, e.g. after the email link was opened in another tab. */
+export function onSignedIn(cb: () => void) {
+  const { data } = supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session) cb();
+  });
+  return () => data.subscription.unsubscribe();
 }
 
 /** Sign in with Apple / Google: not set up yet (needs the Apple and Google developer settings). */
