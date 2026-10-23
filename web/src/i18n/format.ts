@@ -111,3 +111,10 @@ export function lastSeen(iso: string, lang: Lang) {
   const date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   return `${shortDate(date, lang)} ${time}`;
 }
+
+/** Page reference: "S. 12–13" (tr), "pp. 12–13" / "p. 14" (en), "ص. ۱۴" (fa), "ص. 14" (ar). */
+export function pagesShort(from: number, to: number, lang: Lang) {
+  const range = from === to ? num(from, lang) : `${num(from, lang)}–${num(to, lang)}`;
+  const word = { tr: 'S.', en: from === to ? 'p.' : 'pp.', fa: 'ص.', ar: 'ص.' }[lang];
+  return `${word} ${range}`;
+}

@@ -159,7 +159,19 @@
   "retryB1": " soru",
   "addPdfItem": "PDF ekle",
   "cardsDone": "Şimdilik tekrar edilecek kart kalmadı.",
-  "daysN": "{n} gün"
+  "daysN": "{n} gün",
+  "tagWeak": "zayıf konun · {p}",
+  "tagTeacher": "hoca {m} dk durdu · \"sınavda soruyorum\"",
+  "tagSamples": "sorularında {n} kez çıktı",
+  "tagBase": "temel konu · özet",
+  "style_case": "Hasta vakası",
+  "style_side_effects": "Yan etki",
+  "style_dose": "Mekanizma / doz",
+  "style_knowledge": "Bilgi",
+  "style_structure": "Yapı / yan etki",
+  "daysLeftN": "{n} gün kaldı",
+  "packSources": "ders PDF'in, ses kaydın, soruların ve zayıf konuların birleştirildi",
+  "noPack": "Bu dersin sınava özel paketi henüz hazır değil."
  },
  "en": {
   "heroA": "How can I",
@@ -321,7 +333,19 @@
   "retryB1": " question",
   "addPdfItem": "Add PDF",
   "cardsDone": "No cards left to review for now.",
-  "daysN": "{n} days"
+  "daysN": "{n} days",
+  "tagWeak": "weak topic · {p}",
+  "tagTeacher": "lecturer spent {m} min · \"I ask this in the exam\"",
+  "tagSamples": "came up {n}× in their questions",
+  "tagBase": "core topic · summary",
+  "style_case": "Patient case",
+  "style_side_effects": "Side effect",
+  "style_dose": "Mechanism / dose",
+  "style_knowledge": "Info",
+  "style_structure": "Structure / side effect",
+  "daysLeftN": "{n} days left",
+  "packSources": "your PDF, recording, questions and weak topics combined",
+  "noPack": "This course's exam pack is not ready yet."
  },
  "fa": {
   "heroA": "امروز چطور",
@@ -483,7 +507,19 @@
   "retryB1": " سؤال",
   "addPdfItem": "افزودن PDF",
   "cardsDone": "فعلاً کارتی برای مرور نمانده.",
-  "daysN": "{n} روز"
+  "daysN": "{n} روز",
+  "tagWeak": "مبحث ضعیف · {p}",
+  "tagTeacher": "استاد {m} دقیقه رویش ماند · \"در امتحان می‌پرسم\"",
+  "tagSamples": "{n} بار در سؤال‌هایش آمد",
+  "tagBase": "مبحث پایه · خلاصه",
+  "style_case": "مورد بیمار",
+  "style_side_effects": "عارضه جانبی",
+  "style_dose": "مکانیسم / دوز",
+  "style_knowledge": "اطلاعات",
+  "style_structure": "ساختار / عارضه جانبی",
+  "daysLeftN": "{n} روز مانده",
+  "packSources": "PDF درس، ضبط صوتی، سؤال‌ها و موضوعات ضعیفت ترکیب شدند",
+  "noPack": "بستهٔ امتحان این درس هنوز آماده نیست."
  },
  "ar": {
   "heroA": "كيف يمكنني اليوم",
@@ -645,6 +681,18 @@
   "retryB1": " سؤال",
   "addPdfItem": "إضافة PDF",
   "cardsDone": "لا توجد بطاقات للمراجعة الآن.",
-  "daysN": "{n} أيام"
+  "daysN": "{n} أيام",
+  "tagWeak": "موضوع ضعيف · {p}",
+  "tagTeacher": "توقف المحاضر {m} د · \"أسأل عنه في الامتحان\"",
+  "tagSamples": "ورد {n} مرات في أسئلته",
+  "tagBase": "موضوع أساسي · ملخص",
+  "style_case": "حالة مريض",
+  "style_side_effects": "أثر جانبي",
+  "style_dose": "الآلية / الجرعة",
+  "style_knowledge": "معلومات",
+  "style_structure": "البنية / الأثر الجانبي",
+  "daysLeftN": "بقي {n} أيام",
+  "packSources": "دُمج ملف PDF والتسجيل والأسئلة ونقاط ضعفك",
+  "noPack": "حزمة الامتحان لهذا المقرر غير جاهزة بعد."
  }
 }

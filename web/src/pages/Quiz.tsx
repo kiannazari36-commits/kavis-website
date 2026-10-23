@@ -1,16 +1,16 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useI18n } from '../i18n/I18nProvider';
-import { num } from '../i18n/format';
+import { examLabel, num, pagesShort, percent, shortDate } from '../i18n/format';
 import { useToast } from '../components/Toast';
 import Icon from '../components/Icon';
 import MolViewer from '../components/MolViewer';
-import { addWrongsToPlan, getExamPack, setStudyReminder } from '../api/quiz';
-import { listCourses } from '../api/courses';
+import { addWrongsToPlan, coursesWithPack, getExamPack, getSectionCheck, saveAttempt, setStudyReminder } from '../api/quiz';
+import { daysUntil, listCourses } from '../api/courses';
 import { useAsync } from '../hooks/useAsync';
-import { dirOf, useContentLang } from '../settings/SettingsProvider';
+import { dirOf } from '../settings/SettingsProvider';
 import type { Lang } from '../i18n/I18nProvider';
-import type { QuizQuestion } from '../api/types';
+import type { ExamTopic, QuizQuestion } from '../api/types';
 import { useTrial } from '../trial/TrialProvider';
 import s from './Quiz.module.css';
 
@@ -24,10 +24,17 @@ type Find = { mode: 'choose' | 'find' | 'show' | 'solved'; hints: number; bad: n
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E'];
 const TIMES = ['08:00', '09:00', '14:00', '19:00', '21:00'];
-// Questions used for the 2-question section check started from the reader (as in the design).
-const SECTION_CHECK = [1, 2];
-// Courses shown as chips; only the first has its exam pack ready in the design.
-const EXAM_COURSES = ['pharmacotherapy', 'toxicology', 'pharm-tech-3'];
+// Number of course chips (the courses with the nearest exams).
+const CHIPS = 3;
+
+/** Tag of a summary topic: why it is there. */
+function topicTag(x: ExamTopic, t: (k: string) => string, lang: Lang) {
+  const r = x.reason;
+  if (r.type === 'weak') return t('tagWeak').replace('{p}', percent(r.mastery, lang));
+  if (r.type === 'teacher') return t('tagTeacher').replace('{m}', num(r.minutes, lang));
+  if (r.type === 'samples') return t('tagSamples').replace('{n}', num(r.count, lang));
+  return t('tagBase');
+}
 
 export default function Quiz() {
   const { t, lang } = useI18n();
@@ -36,27 +43,50 @@ export default function Quiz() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const fromReader = params.get('from') === 'reader';
-  const pack = useAsync(() => getExamPack('pharmacotherapy'), []);
   const courses = useAsync(listCourses, []);
-  const cl = useContentLang(courses?.find((c) => c.id === 'pharmacotherapy'));
+  const ready = useAsync(coursesWithPack, []);
+  // Chips: the courses with the nearest exams. Selected: ?course=, else the first one whose pack is ready.
+  const chips = [...(courses ?? [])].filter((c) => c.examDate).sort((a, b) => a.examDate!.localeCompare(b.examDate!)).slice(0, CHIPS);
+  const [picked, setPicked] = useState<string | null>(params.get('course'));
+  const courseId = picked ?? chips.find((c) => ready?.includes(c.id))?.id ?? chips[0]?.id ?? '';
+  const pdfId = params.get('pdf') ?? '';
+  const pack = useAsync(() => (courseId ? getExamPack(courseId) : Promise.resolve(null)), [courseId]);
+  const check = useAsync(() => (fromReader && pdfId ? getSectionCheck(pdfId) : Promise.resolve(null)), [fromReader, pdfId]);
+  const cl: Lang = pack?.lang ?? 'tr';
   const cdir = dirOf(cl);
 
   const [tab, setTab] = useState<Tab>(params.get('tab') === 'quiz' || fromReader ? 'quiz' : 'sum');
   const [topic, setTopic] = useState(0);
-  const [list, setList] = useState<number[] | null>(fromReader ? SECTION_CHECK : null);
+  const [list, setList] = useState<number[] | null>(null);
   const [qi, setQi] = useState(0);
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [conf, setConf] = useState<Record<number, Confidence>>({});
   const [hints, setHints] = useState<Record<number, number>>({});
   const [finds, setFinds] = useState<Record<number, Find>>({});
   const [time, setTime] = useState('09:00');
+  const [savedRun, setSavedRun] = useState(-1);
+  const [run, setRun] = useState(0);
 
-  if (!pack || !courses) return <main className={s.main} />;
+  // A new course: start over on the summary.
+  useEffect(() => {
+    setTopic(0);
+    setList(null);
+    setQi(0);
+    setAnswers({});
+    setConf({});
+    setHints({});
+    setFinds({});
+  }, [courseId]);
 
-  const qs = pack.questions;
+  if (!courses || pack === undefined || (fromReader && check === undefined)) return <main className={s.main} />;
+
+  // From the reader: the lesson's section check; otherwise the course's exam pack.
+  const quizId = fromReader && check ? check.quizId : pack?.quizId;
+  const qs = (fromReader && check ? check.questions : pack?.questions) ?? [];
+  const topics = pack?.topics ?? [];
   const qList = list ?? qs.map((_, i) => i);
   const qIdx = qList[Math.min(qi, qList.length - 1)];
-  const Q = qs[qIdx];
+  const Q: QuizQuestion | undefined = qs[qIdx];
   const sel = answers[qIdx];
   const nH = hints[qIdx] ?? 0;
   const wrongs = qList.filter((k) => answers[k] !== qs[k].answer);
@@ -66,12 +96,15 @@ export default function Quiz() {
   const score = (fromReader ? points : points + qs.length - qList.length).toLocaleString(lang === 'tr' ? 'tr' : lang === 'fa' ? 'fa' : 'en');
   const total = fromReader ? qList.length : qs.length;
 
-  // Course with the nearest exam.
-  const examCourse = [...courses].filter((c) => c.examDate).sort((a, b) => a.examDate!.localeCompare(b.examDate!))[0];
-  const courseName = (id: string) => {
-    const c = courses.find((x) => x.id === id);
-    return c ? (c.short ?? c.name) : id;
-  };
+  const course = courses.find((c) => c.id === courseId);
+  const subtitle = course?.examDate
+    ? [
+        course.name,
+        examLabel(course.examKind, course.examDate, lang),
+        t('daysLeftN').replace('{n}', num(Math.max(0, daysUntil(course.examDate)), lang)),
+        t('packSources'),
+      ].join(' · ')
+    : (course?.name ?? '');
 
   const startQuiz = (only?: number[]) => {
     const lst = only ?? qs.map((_, i) => i);
@@ -83,7 +116,19 @@ export default function Quiz() {
     setFinds({});
     setList(lst);
     setQi(0);
+    setRun(run + 1);
     setTab('quiz');
+  };
+  // Saves the answers of this run once, when the results open.
+  const finishRun = () => {
+    if (quizId && savedRun !== run) {
+      setSavedRun(run);
+      saveAttempt(
+        quizId,
+        qList.filter((k) => answers[k] !== undefined).map((k) => ({ questionId: qs[k].id, chosen: answers[k], hints: hints[k] ?? 0, confidence: conf[k] })),
+      );
+    }
+    setTab('res');
   };
   const pickTab = (x: Tab) => {
     if (x === 'res' && Object.keys(answers).length === 0) {
@@ -97,7 +142,7 @@ export default function Quiz() {
       toast(t('pickFirst'));
       return;
     }
-    if (qi >= qList.length - 1) setTab('res');
+    if (qi >= qList.length - 1) finishRun();
     else setQi(qi + 1);
   };
   const addHint = () => {
@@ -118,22 +163,24 @@ export default function Quiz() {
           <h1>
             {t('examA')} <span>{t('examB')}</span>
           </h1>
-          <span className={s.sub}>{(examCourse?.name ?? '') + t('subSuffix')}</span>
+          <span className={s.sub}>{subtitle}</span>
           <span className={s.styleBadge}>
             <Icon name="spark" size={11} width={2} />
             {t('teacherStyle')}
           </span>
         </span>
         <div role="radiogroup" className={s.courses}>
-          {EXAM_COURSES.map((id, i) => (
+          {chips.map((c) => (
             <button
-              key={id}
+              key={c.id}
               role="radio"
-              aria-checked={i === 0}
-              className={i === 0 ? `${s.courseChip} ${s.courseOn}` : s.courseChip}
-              onClick={() => i > 0 && toast(courseName(id) + t('pkgA') + t(i === 1 ? 'd21' : 'd23') + t('pkgB'))}
+              aria-checked={c.id === courseId}
+              className={c.id === courseId ? `${s.courseChip} ${s.courseOn}` : s.courseChip}
+              onClick={() =>
+                ready?.includes(c.id) ? setPicked(c.id) : toast((c.short ?? c.name) + t('pkgA') + shortDate(c.examDate!, lang) + t('pkgB'))
+              }
             >
-              {courseName(id)}
+              {c.short ?? c.name}
             </button>
           ))}
         </div>
@@ -153,18 +200,20 @@ export default function Quiz() {
         ))}
       </div>
 
-      {tab === 'sum' && (
+      {tab === 'sum' && topics.length === 0 && <p className={s.muted}>{t('noPack')}</p>}
+
+      {tab === 'sum' && topics.length > 0 && (
         <div className={s.sumGrid}>
           <section className={s.panel}>
             <span className={`mono ${s.label}`}>{t('byImportance')}</span>
-            {pack.topics.map((x, i) => (
+            {topics.map((x, i) => (
               <button key={i} aria-current={i === topic} className={i === topic ? `${s.topic} ${s.topicOn}` : s.topic} onClick={() => setTopic(i)}>
                 <span className={`${s.topicNo} ${s[x.kind]}`}>{num(i + 1, lang)}</span>
                 <span className={s.topicText}>
                   <b lang={cl} dir={cdir}>
-                    {x.title[cl]}
+                    {x.title}
                   </b>
-                  <span className={s[`${x.kind}Fg`]}>{x.tag[lang]}</span>
+                  <span className={s[`${x.kind}Fg`]}>{topicTag(x, t, lang)}</span>
                 </span>
               </button>
             ))}
@@ -172,36 +221,36 @@ export default function Quiz() {
           <section className={s.paper}>
             <div className={s.paperTop}>
               <span className="mono">
-                {t('summaryPrefix')} {pack.topics[topic].src[cl]}
+                {t('summaryPrefix')} {pagesShort(topics[topic].pageFrom, topics[topic].pageTo, lang)}
               </span>
-              <span className={`${s.tag} ${s[pack.topics[topic].kind]}`}>{pack.topics[topic].tag[lang]}</span>
+              <span className={`${s.tag} ${s[topics[topic].kind]}`}>{topicTag(topics[topic], t, lang)}</span>
             </div>
             <h2 lang={cl} dir={cdir}>
-              {pack.topics[topic].title[cl]}
+              {topics[topic].title}
             </h2>
-            {pack.topics[topic].points.map((p, i) => (
+            {topics[topic].points.map((p, i) => (
               <p key={i} className={s.point} lang={cl} dir={cdir}>
                 <span>•</span>
-                <span>{p[cl]}</span>
+                <span>{p}</span>
               </p>
             ))}
-            {pack.topics[topic].teacher && (
+            {topics[topic].teacher && (
               <span className={s.teacher} lang={cl} dir={cdir}>
                 <span>
                   <Icon name="mic" size={14} />
                 </span>
-                {pack.topics[topic].teacher![cl]}
+                {topics[topic].teacher}
               </span>
             )}
-            {pack.topics[topic].molecule && (
+            {topics[topic].molecule && (
               <div className={s.mol}>
                 <span className={`mono ${s.label}`}>{t('molLabel')}</span>
                 <MolViewer size="full" mark="thiol" contentLang={cl} />
               </div>
             )}
             <div className={s.actions}>
-              <button className={s.ghost} onClick={() => setTopic((topic + 1) % pack.topics.length)}>
-                {topic < pack.topics.length - 1 ? t('nextTopic') + pack.topics[topic + 1].title[cl] : t('readAgain')}
+              <button className={s.ghost} onClick={() => setTopic((topic + 1) % topics.length)}>
+                {topic < topics.length - 1 ? t('nextTopic') + topics[topic + 1].title : t('readAgain')}
               </button>
               <button className={s.pri} onClick={() => startQuiz()}>
                 {t('startQuiz')}
@@ -211,13 +260,15 @@ export default function Quiz() {
         </div>
       )}
 
-      {tab === 'quiz' && (
+      {tab === 'quiz' && !Q && <p className={s.muted}>{t('noPack')}</p>}
+
+      {tab === 'quiz' && Q && (
         <section className={s.qCard}>
           <div className={s.qTop}>
             <span className={s.qNo}>
               {t('questionWord')} {num(qi + 1, lang)} / {num(qList.length, lang)}
             </span>
-            <span className={`${s.tag} ${s.weak}`}>{Q.kind[lang]}</span>
+            <span className={`${s.tag} ${s.weak}`}>{t(`style_${Q.style}`)}</span>
             <span className={`${s.tag} ${s.imp}`}>{t('inStyle')}</span>
             <span className={s.grow} />
             <span className={s.progress} aria-hidden="true">
@@ -225,7 +276,7 @@ export default function Quiz() {
             </span>
           </div>
           <p className={s.qText} lang={cl} dir={cdir}>
-            {Q.text[cl]}
+            {Q.text}
           </p>
           {Q.molecule && <MolViewer size="mini" mark="thiol" contentLang={cl} />}
           <div role="radiogroup" className={s.options} lang={cl} dir={cdir}>
@@ -238,7 +289,7 @@ export default function Quiz() {
                 onClick={() => setAnswers({ ...answers, [qIdx]: i })}
               >
                 <span className={s.letter}>{LETTERS[i]}</span>
-                {o[cl]}
+                {o}
               </button>
             ))}
           </div>
@@ -249,7 +300,7 @@ export default function Quiz() {
                   {t('hintTag')}
                   {i + 1} / 3
                 </span>
-                <span>{h[cl]}</span>
+                <span>{h}</span>
               </div>
             ))}
             <button className={nH > 0 ? s.hintBtn : `${s.hintBtn} ${s.hintBtnFirst}`} onClick={addHint}>
@@ -295,7 +346,7 @@ export default function Quiz() {
                 ? t('retryA') + num(wrongs.length, lang) + t(wrongs.length === 1 ? 'retryB1' : 'retryB')
                 : t('newA') + num(qs.length, lang) + t('retryB')}
             </button>
-            <button className={s.heroGhost} onClick={() => addWrongsToPlan(wrongs).then(() => toast(t('addedPlan')))}>
+            <button className={s.heroGhost} onClick={() => addWrongsToPlan(wrongs.map((k) => qs[k].id)).then((ok) => toast(t(ok ? 'addedPlan' : 'k165')))}>
               {t('addPlan')}
             </button>
             <span className={s.timeLabel}>{t('whatTime')}</span>
@@ -355,12 +406,12 @@ function Wrong({
 }) {
   const { t } = useI18n();
   const reveal = find.mode === 'show' || find.mode === 'solved';
-  const opt = (i: number) => `${LETTERS[i]}) ${q.options[i][cl]}`;
+  const opt = (i: number) => `${LETTERS[i]}) ${q.options[i]}`;
 
   return (
     <div className={s.wrong}>
       <span className={s.wrongQ} lang={cl} dir={dirOf(cl)}>
-        {q.text[cl]}
+        {q.text}
       </span>
       <div className={s.wrongTags}>
         <span className={s.bad}>
@@ -394,7 +445,7 @@ function Wrong({
                 {t('hintTag')}
                 {i + 1} / 3
               </span>
-              <span>{h[cl]}</span>
+              <span>{h}</span>
             </div>
           ))}
           <span className={s.muted}>{find.bad >= 0 ? t('notQuite') + (find.hints < 3 ? t('oneMoreHint') : t('orShow')) : t('readHint')}</span>
@@ -420,10 +471,10 @@ function Wrong({
         <>
           {find.mode === 'solved' && <span className={s.solved}>{t('solvedSelf')}</span>}
           <span className={s.whyText}>
-            <b>{t('why')}</b> {q.why[cl]}
+            <b>{t('why')}</b> {q.why}
           </span>
           <span className={`mono ${s.src}`}>
-            {t('sourcePrefix')} {q.src[cl]}
+            {t('sourcePrefix')} {[q.page !== null ? pagesShort(q.page, q.page, cl) : '', q.topic].filter(Boolean).join(' · ')}
           </span>
         </>
       )}

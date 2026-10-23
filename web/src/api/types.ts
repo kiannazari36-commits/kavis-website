@@ -89,25 +89,40 @@ export type Attachment = {
   why: L10n;
 };
 
+/** Why a topic is in the exam summary (shown as its tag). */
+export type TopicReason =
+  | { type: 'weak'; mastery: number }
+  | { type: 'teacher'; minutes: number }
+  | { type: 'samples'; count: number }
+  | { type: 'base' };
+
+/** One topic of the exam-prep summary (summaries.content.topics), in the content language. */
 export type ExamTopic = {
-  title: L10n;
-  tag: L10n;
+  title: string;
   kind: 'weak' | 'imp' | 'base';
-  src: L10n;
-  points: L10n[];
-  teacher?: L10n;
+  reason: TopicReason;
+  pageFrom: number;
+  pageTo: number;
+  points: string[];
+  /** What the lecturer said about it (from the lecture recording). */
+  teacher?: string;
   molecule?: 'captopril';
 };
 
+/** A question (quiz_questions), in the content language. */
 export type QuizQuestion = {
-  kind: L10n;
-  text: L10n;
-  options: L10n[];
+  id: string;
+  /** case | side_effects | dose | knowledge | structure — label in study.json (style_*). */
+  style: string;
+  text: string;
+  options: string[];
   /** Index of the right option. */
   answer: number;
-  why: L10n;
-  src: L10n;
-  hints: L10n[];
+  why: string;
+  page: number | null;
+  /** Topic title, for the source line. */
+  topic: string;
+  hints: string[];
   molecule?: 'captopril';
 };
 

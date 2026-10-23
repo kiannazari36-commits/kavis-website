@@ -19,6 +19,8 @@ declare
   mid   uuid;
   n     int;
   i     int;
+  qid   uuid;
+  qid2  uuid;
 begin
   select id into uid from auth.users where email = seed_email;
   if uid is null then raise exception 'No account with email %', seed_email; end if;
@@ -176,6 +178,50 @@ begin
             case when m.due = 'now' then null else now() - make_interval(days => greatest(1, 4 - m.due::int)) end);
     cid := null;
   end loop;
+
+  -- ── Exam prep for Farmakoterapi (made by the server: Edge Functions generate-summary / generate-quiz) ──
+  -- Topics of the Hipertansiyon lesson, the exam-prep summary (topics by importance) and questions in the lecturer's style.
+  select id into mid from public.materials where user_id = uid and title = 'Hipertansiyon';
+  select course_id into cid from public.materials where id = mid;
+  insert into public.material_topics (material_id, user_id, title, page_from, page_to, importance, teacher_minutes, teacher_said_exam, sort_order)
+  select mid, uid, v.* from (values
+      ('Hipertansif kriz', 16, 16, 3, null, false, 0),
+      ('ACE inhibitörleri yan etkileri', 12, 13, 3, null, false, 1),
+      ('Tiyazid kontrendikasyonları', 14, 14, 2, 9, true, 2),
+      ('Gebelikte hipertansiyon', 14, 14, 2, null, false, 3),
+      ('İlk basamak ilaçlar', 12, 12, 1, null, false, 4)
+  ) as v(title, page_from, page_to, importance, teacher_minutes, teacher_said_exam, sort_order);
+
+  -- Weak topics come from earlier quiz answers (topic_progress.mastery).
+  insert into public.topic_progress (user_id, topic_id, state, mastery)
+  select uid, t.id, 'weak', v.mastery from (values ('Hipertansif kriz', 38), ('ACE inhibitörleri yan etkileri', 54)) as v(title, mastery)
+  join public.material_topics t on t.material_id = mid and t.title = v.title;
+
+  insert into public.summaries (user_id, course_id, material_id, lang, kind, content)
+  values (uid, cid, mid, 'tr', 'exam_prep', '{"topics":[{"title":"Hipertansif kriz","kind":"weak","reason":{"type":"weak","mastery":38},"pageFrom":16,"pageTo":16,"points":["Kan basıncı 180/120 mmHg''nin üstündedir.","Organ hasarı varsa hipertansif acil durumdur; yoksa ivedi durumdur.","Acil durumda ilk saatte kan basıncı en fazla %25 düşürülür."]},{"title":"ACE inhibitörleri yan etkileri","kind":"weak","reason":{"type":"weak","mastery":54},"pageFrom":12,"pageTo":13,"points":["En sık yan etki kuru öksürüktür (bradikinin birikimi).","Nadiren anjiyoödem görülür; potasyumu yükseltebilir.","Öksürük olursa ARB''ye geçilir; ARB bradikinini artırmaz."],"molecule":"captopril"},{"title":"Tiyazid kontrendikasyonları","kind":"imp","reason":{"type":"teacher","minutes":9},"pageFrom":14,"pageTo":14,"points":["Tiyazidler serum ürik asit düzeyini artırır.","Gut, tiyazidler için zorunlu kontrendikasyondur.","Gebelik, metabolik sendrom ve glukoz intoleransı göreceli kontrendikasyonlardır."],"teacher":"Hoca derste bu konuda 9 dk durdu"},{"title":"Gebelikte hipertansiyon","kind":"imp","reason":{"type":"samples","count":4},"pageFrom":14,"pageTo":14,"points":["ACE inhibitörleri ve ARB''ler gebelikte kontrendikedir.","Metildopa ve labetalol tercih edilir; nifedipin de kullanılabilir."]},{"title":"İlk basamak ilaçlar","kind":"base","reason":{"type":"base"},"pageFrom":12,"pageTo":12,"points":["Dört grup: diüretikler, ACE inhibitörleri, ARB''ler ve kalsiyum kanal blokerleri.","ACE inhibitörlerine düşük dozla başlanır, doz 2–4 haftada bir artırılır."]}]}'::jsonb);
+
+  insert into public.quizzes (user_id, course_id, material_id, kind, lang, teacher_style, options)
+  values (uid, cid, mid, 'exam_prep', 'tr', true, '{"count": 6}')
+  returning id into qid;
+  insert into public.quiz_questions (quiz_id, user_id, topic_id, sort_order, kind, style_tag, text, options, answer_index, explanation, source_page, hints, molecule)
+  select qid, uid, t.id, v.ord, 'multiple_choice', v.style, v.text, v.opts, v.ans, v.why, v.page, v.hints, v.mol
+  from (values
+      (0, 'case', '32 yaşında, 24 haftalık gebe hastada KB 160/105 mmHg. Aşağıdakilerden hangisi kullanılmamalıdır?', '["Metildopa","Labetalol","Nifedipin","Enalapril","Hidralazin"]'::jsonb, 3, 'ACE inhibitörleri (enalapril) gebelikte kontrendikedir; fetüste böbrek hasarı ve oligohidramniyoza yol açabilir. Metildopa ve labetalol güvenli seçeneklerdir.', 14, '["Gebelikte fetüsün böbreklerine zarar veren bir ilaç grubunu düşün. (s. 14)","Bu grup renin-anjiyotensin sistemini baskılar; gebelikte fetüs bu sisteme ihtiyaç duyar.","Şıklardan birinin adı \"-pril\" ile bitiyor."]'::jsonb, null, 'Gebelikte hipertansiyon'),
+      (1, 'case', 'Gut öyküsü olan 60 yaşında hipertansif hastada hangi ilaç grubundan kaçınılmalıdır?', '["Tiyazid diüretikler","ACE inhibitörleri","ARB''ler","Kalsiyum kanal blokerleri","Beta blokerler"]'::jsonb, 0, 'Tiyazidler ürik asit düzeyini artırır ve gut atağını tetikleyebilir; gut zorunlu kontrendikasyondur. Hoca derste "sınavda soruyorum" dedi.', 14, '["Gut, kanda hangi maddenin yükselmesiyle ortaya çıkar? (s. 14)","Ürik asit atılımını azaltan bir ilaç grubu gut atağını tetikler.","Hocanın \"sınavda soruyorum\" dediği diüretik grubunu hatırla."]'::jsonb, null, 'Tiyazid kontrendikasyonları'),
+      (2, 'side_effects', 'Ramipril başlanan hastada 3 hafta sonra kuru öksürük gelişti. En uygun yaklaşım hangisidir?', '["Dozu artırmak","Kodein eklemek","ARB''ye geçmek","Tiyazid eklemek","Tedaviyi aynen sürdürmek"]'::jsonb, 2, 'Öksürük bradikinin birikimine bağlıdır. ARB''ler bradikinin yıkımını etkilemez, bu yüzden öksürük yapmaz.', 12, '["Öksürüğe yol açan madde bradikinin; ACE onu da yıkar. (s. 13)","Aynı sistemi etkileyen ama bradikinini etkilemeyen bir grup var.","Bu grup reseptörü bloke eder: Anjiyotensin Reseptör Blokeri."]'::jsonb, null, 'ACE inhibitörleri yan etkileri'),
+      (3, 'dose', 'Hipertansif acil durumda ilk saatte kan basıncı en fazla ne kadar düşürülmelidir?', '["%10","%25","%50","Hemen normale","%75"]'::jsonb, 1, 'Ani ve büyük düşüş organ perfüzyonunu bozar (inme, miyokard iskemisi). İlk saatte en fazla %25 düşürülür.', 16, '["Tansiyonu çok hızlı düşürmek beyne ve kalbe giden kanı azaltır. (s. 16)","Doğru cevap yarıdan az ama %10''dan fazla.","Bir çeyrek kadar düşün."]'::jsonb, null, 'Hipertansif kriz'),
+      (4, 'knowledge', 'Aşağıdakilerden hangisi hipertansiyonda ilk basamak ilaç gruplarından biri değildir?', '["Tiyazid diüretikler","ACE inhibitörleri","ARB''ler","Kalsiyum kanal blokerleri","Alfa-1 blokerler"]'::jsonb, 4, 'Alfa-1 blokerler ilk basamak değildir; ilk dozdan sonra ortostatik hipotansiyon yapabilir. İlk basamak 4 grup: diüretik, ACE inh., ARB, KKB.', 12, '["İlk basamaktaki 4 grubu say: diüretik, ACE inhibitörü, ARB, … (s. 12)","Listede olmayanı bul: ilk dozdan sonra baş dönmesi ve bayılma yapabilen grup.","Ortostatik hipotansiyon yapan, \"ilk doz etkisi\" olan grup."]'::jsonb, null, 'İlk basamak ilaçlar'),
+      (5, 'structure', 'Kaptopril yapısında işaretli grup (sarı) hangi yan etkiyle ilişkilidir?', '["Kuru öksürük","Tat bozukluğu ve döküntü","Hiperkalemi","Ortostatik hipotansiyon","Gut atağı"]'::jsonb, 1, 'İşaretli grup tiyol (–SH) grubudur. Kaptoprile özgü tat bozukluğu ve döküntü bu gruptan kaynaklanır. Kuru öksürük ise tüm ACE inhibitörlerinde bradikinin birikimine bağlıdır.', 12, '["İşaretli grup kükürt içerir: –SH (tiyol). (s. 13)","Kuru öksürük tüm ACE inhibitörlerinde görülür, yani bu gruba özgü değildir.","Bu yan etki ağızda hissedilir ve ciltte görülür."]'::jsonb, '{"name":"captopril"}'::jsonb, 'ACE inhibitörleri yan etkileri')
+  ) as v(ord, style, text, opts, ans, why, page, hints, mol, topic)
+  left join public.material_topics t on t.material_id = mid and t.title = v.topic;
+
+  -- Section check started from the reader ("Başla"): two questions of the same lesson.
+  insert into public.quizzes (user_id, course_id, material_id, kind, lang, teacher_style, options)
+  values (uid, cid, mid, 'section_check', 'tr', true, '{"count": 2}')
+  returning id into qid2;
+  insert into public.quiz_questions (quiz_id, user_id, topic_id, sort_order, kind, style_tag, text, options, answer_index, explanation, source_page, hints, molecule)
+  select qid2, uid, topic_id, sort_order - 1, kind, style_tag, text, options, answer_index, explanation, source_page, hints, molecule
+  from public.quiz_questions where quiz_id = qid and sort_order in (1, 2);
 
   -- ── School timetable (Monday = 1) ──
   insert into public.timetable_entries (user_id, course_id, title, weekday, start_time, end_time, room, teacher)

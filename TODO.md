@@ -26,7 +26,10 @@ Everything that is not finished yet. Updated after every step.
   - [ ] Reader still mock: the assistant side panel, molecule viewer, read aloud, pen
   - [x] Cards: today's round = cards due now (`flashcards` + `card_decks`, optional `?course=`); Bildim / Zor / Bilmedim saves the review state (simple spaced repetition: 1 min / 10 min / 4 days × ease). Example: Hipertansiyon (12) and Parasetamol toksisitesi (6) decks. `web/src/api/mock/cards.ts` removed
   - [ ] "Add to cards" from a hard word, and "add mistakes to cards": need the server (the app may not create cards)
-  - [ ] Still mock on these pages: quiz, assistant, plan, progress, notifications, "today's plan" and review box on home → connect them next, with example rows in `seed.sql`
+  - [x] Quiz ("Sınava özel"): exam-prep summary (`summaries` kind exam_prep: topics by importance with the reason), questions in the lecturer's style (`quizzes` + `quiz_questions`, hints, molecule), the reader's section check (`section_check`), course chips = nearest exams (pack ready or "ready 7 days before"); answers saved (`quiz_attempts` + `quiz_answers`); reminder time → `user_settings.notify_time`. Example: Farmakoterapi pack (5 topics, 6 questions) + 2-question section check. `web/src/api/mock/quiz.ts` removed
+  - [ ] Edge Function `grade-quiz`: set `quiz_answers.correct`, the attempt's score and level, update `topic_progress.mastery` (the page shows the score itself now, but the database has no score yet)
+  - [ ] "Add wrong answers to my plan" (now "comes in the next step"): plan area
+  - [ ] Still mock on these pages: assistant, plan, progress, notifications, "today's plan" and review box on home → connect them next, with example rows in `seed.sql`
   - [ ] Class rank on course cards ("Sıralama #3") has no data on the server; hidden until it exists
   - [ ] App language and theme are still saved only in the browser (`profiles.app_lang`, `user_settings.app_theme` exist)
   - [x] Trial card and Premium status from `access_status()`; devices: login registers the web (all browsers share install id `web` = one slot), My devices list, sign out, 3rd-device screen, signed-out-elsewhere check at start, log out frees the slot
