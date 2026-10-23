@@ -37,14 +37,16 @@ export type Course = {
   pdfs: Pdf[];
 };
 
-/** Part of a paragraph: plain text, or a hard word that opens an explanation. */
+/** Part of a paragraph: plain text, or a hard word (term key) that opens an explanation. */
 export type Segment = string | { term: string; text: string };
 
+/** Kind of a page block; the label is an app text (src/i18n/reader.json). */
+export type ReaderTag = 'definition' | 'dose' | 'side_effect' | 'special' | 'emergency';
+
 export type ReaderBlock = {
-  /** Keys in src/i18n/reader.json for the page label and tag. */
-  page: string;
-  tag: string;
-  tagStyle: 'vio' | 'red';
+  pageFrom: number;
+  pageTo: number;
+  tag: ReaderTag;
   heading?: string;
   /** A paragraph is a list of segments, or one sentence the student can select. */
   paragraphs: (Segment[] | { selectable: true; text: string })[];
@@ -52,25 +54,17 @@ export type ReaderBlock = {
   audio?: boolean;
 };
 
-export type ReaderSection = {
-  tab: string;
-  blocks: ReaderBlock[];
-  /** Key in reader.json for the "section finished" line. */
-  end: string;
-};
+export type ReaderSection = { title: string; blocks: ReaderBlock[] };
 
-export type ReaderDoc = {
+/** The reading page (material_content.reader_doc). The teacher's text is never changed. */
+export type ReaderDoc = { language: string; sections: ReaderSection[] };
+
+/** A hard word of the lesson (material_terms); explanation per app language. */
+export type ReaderTerm = {
   id: string;
-  /** Language of the teacher's PDF; the text is never changed. */
-  language: string;
-  title: string;
-  course: string;
-  pages: number;
-  page: number;
-  sections: ReaderSection[];
-  terms: Record<string, { page: number; en: string }>;
-  sampleSentence: string;
-  sampleTranslations: Record<string, { l: string; dir: 'ltr' | 'rtl'; lit: string; nat: string }>;
+  surface: string;
+  page: number | null;
+  explanation: Partial<Record<Lang, { name: string; kind: string; text: string }>>;
 };
 
 /** A course (or "all courses") the assistant can answer about. */

@@ -1,19 +1,20 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useNavigate, useOutletContext, useSearchParams } from 'react-router-dom';
-import { useI18n } from '../i18n/I18nProvider';
+import { LANG_NAMES, LANGS, useI18n, type Lang } from '../i18n/I18nProvider';
 import { useTheme } from '../theme/ThemeProvider';
 import { useToast } from '../components/Toast';
 import Icon from '../components/Icon';
 import Wordmark from '../components/Wordmark';
-import { getPdf } from '../api/courses';
-import { getReaderDoc, translate, type TranslationStyle } from '../api/reader';
+import { getPdf, recentPdfs } from '../api/courses';
+import { addHighlight, getLesson, markRead, saveStudyTime, tapTerm, translate, type TranslationStyle } from '../api/reader';
+import { num, percent } from '../i18n/format';
 import { useAsync } from '../hooks/useAsync';
 import { usePanelPref } from '../hooks/usePanelPref';
 import { enterFullscreen, exitFullscreen, fullscreenElement, onFullscreenChange } from '../hooks/fullscreen';
 import type { ShellContext } from '../components/AppShell';
-import { useSettings } from '../settings/SettingsProvider';
+import { dirOf, useSettings } from '../settings/SettingsProvider';
 import ShareDialog from '../components/ShareDialog';
-import type { ReaderBlock, ReaderDoc, Segment } from '../api/types';
+import type { ReaderBlock, ReaderDoc, ReaderTag, ReaderTerm, Segment } from '../api/types';
 import { useTrial } from '../trial/TrialProvider';
 import s from './Reader.module.css';
 
@@ -27,20 +28,42 @@ const PAPERS: [Paper, string, string][] = [
   ['dark', 'paperDark', '#1D1915'],
 ];
 const FONT_SIZES = [20, 23, 17];
-const START_SECONDS = 1394; // study timer in the design starts at 23:14
+// Label (key in reader.json) and color of each block kind.
+const TAGS: Record<ReaderTag, [string, 'vio' | 'red']> = {
+  definition: ['s1tag', 'vio'],
+  dose: ['tagDose', 'vio'],
+  side_effect: ['tagSide', 'red'],
+  special: ['s3tag', 'vio'],
+  emergency: ['s4tag', 'red'],
+};
+const blockPages = (b: ReaderBlock) => Array.from({ length: b.pageTo - b.pageFrom + 1 }, (_, i) => b.pageFrom + i);
 
 type Msg = { from: 'me' | 'ai'; text: string };
 
 export default function Reader() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { theme } = useTheme();
   const toast = useToast();
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const courseId = params.get('course') ?? 'pharmacotherapy';
-  const pdfId = params.get('pdf') ?? 'hypertension';
-  const doc = useAsync(() => getReaderDoc(courseId, pdfId), [courseId, pdfId]);
+  const courseId = params.get('course') ?? '';
+  const pdfId = params.get('pdf') ?? '';
+  const lesson = useAsync(() => (pdfId ? getLesson(pdfId) : Promise.resolve(null)), [pdfId]);
   const pdfInfo = useAsync(() => getPdf(courseId, pdfId), [courseId, pdfId]);
+  const doc = lesson?.doc;
+  const [pagesRead, setPagesRead] = useState<number[] | null>(null);
+  const [pct, setPct] = useState<number | null>(null);
+  const [highlights, setHighlights] = useState<string[]>([]);
+
+  // "/reader" without a lesson: open the lesson read most recently.
+  useEffect(() => {
+    if (pdfId) return;
+    recentPdfs(1).then(([r]) => r && navigate(`/reader?course=${r.course.id}&pdf=${r.pdf.id}`, { replace: true }));
+  }, [pdfId, navigate]);
+
+  useEffect(() => {
+    if (lesson) setHighlights(lesson.highlights);
+  }, [lesson]);
 
   const { settings } = useSettings();
   const [paper, setPaper] = useState<Paper | null>(null);
@@ -52,11 +75,12 @@ export default function Reader() {
   const [panel, setPanel] = usePanelPref('kavis.readerPanel', 1200);
   const [term, setTerm] = useState<string | null>(null);
   const [selected, setSelected] = useState(false);
-  const [highlighted, setHighlighted] = useState(false);
   const [trSource, setTrSource] = useState<string | null>(null);
   const [paused, setPaused] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
-  const [seconds, setSeconds] = useState(START_SECONDS);
+  const [seconds, setSeconds] = useState(0);
+  const secondsRef = useRef(0);
+  secondsRef.current = seconds;
   const scroller = useRef<HTMLDivElement>(null);
   const { guard } = useTrial();
   const { focus, setFocus } = useOutletContext<ShellContext>();
@@ -67,6 +91,28 @@ export default function Reader() {
     const id = setInterval(() => setSeconds((n) => n + 1), 1000);
     return () => clearInterval(id);
   }, [paused]);
+
+  // Study time is saved when leaving the lesson.
+  useEffect(() => {
+    setSeconds(0);
+    return () => {
+      if (courseId && pdfId) saveStudyTime(courseId, pdfId, secondsRef.current);
+    };
+  }, [courseId, pdfId]);
+
+  // Pages of the open section count as read.
+  useEffect(() => {
+    if (!lesson?.doc || !pdfInfo) return;
+    const pages = lesson.doc.sections[sec]?.blocks.flatMap(blockPages) ?? [];
+    if (!pages.length) return;
+    markRead(pdfId, pagesRead ?? lesson.pagesRead, pages, pdfInfo.pdf.pages).then((r) => {
+      if (r) {
+        setPagesRead(r.pagesRead);
+        setPct(r.percent);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lesson, pdfInfo, sec]);
 
   // Escape closes popups and leaves focus mode
   useEffect(() => {
@@ -100,11 +146,29 @@ export default function Reader() {
     [setFocus],
   );
 
-  if (!doc) return <main className={s.loading} />;
+  if (!lesson || pdfInfo === undefined) return <main className={s.loading} />;
+  if (!doc || !doc.sections.length) {
+    return (
+      <main className={s.loading}>
+        <div className={s.empty}>
+          <b>{pdfInfo?.pdf.title}</b>
+          <span>{t('noReaderDoc')}</span>
+          <button className={s.checkNext} onClick={() => navigate(courseId ? `/courses/${courseId}` : '/courses')}>
+            {t('back')}
+          </button>
+        </div>
+      </main>
+    );
+  }
 
-  const isSample = pdfInfo !== undefined && pdfInfo?.pdf.id !== doc.id;
-  const title = isSample && pdfInfo ? pdfInfo.pdf.title : doc.title;
-  const section = doc.sections[sec];
+  const title = pdfInfo?.pdf.title ?? '';
+  const sec_ = Math.min(sec, doc.sections.length - 1);
+  const section = doc.sections[sec_];
+  const lastPage = Math.max(lesson.lastPage, ...(pagesRead ?? []));
+  const pageInfo = pdfInfo
+    ? `${pdfInfo.course.name.toLocaleUpperCase(lang)} · ${t('pageOf').replace('{p}', num(lastPage, lang)).replace('{n}', num(pdfInfo.pdf.pages, lang))} · ${percent(pct ?? lesson.percent, lang)}`
+    : '';
+  const sectionEnd = sec_ === doc.sections.length - 1 ? t('s4end') : t('secEnd').replace('{n}', num(sec_ + 1, lang));
   const fontSize = fontI === 0 ? settings.readerFontSize : FONT_SIZES[fontI];
   const clock = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
 
@@ -152,7 +216,7 @@ export default function Reader() {
           </button>
           <div className={s.titleBox}>
             <h1 lang={doc.language}>{title}</h1>
-            <span className="mono">{isSample && pdfInfo ? `${pdfInfo.course.name} · ${t('sampleNote')}` : t('pageInfo')}</span>
+            <span className="mono">{pageInfo}</span>
           </div>
           <div role="radiogroup" aria-label={t('readingTheme')} className={s.papers}>
             {PAPERS.map(([p, key, swatch]) => (
@@ -175,8 +239,8 @@ export default function Reader() {
 
         <div role="tablist" aria-label={t('sections')} className={s.tabs} lang={doc.language}>
           {doc.sections.map((x, i) => (
-            <button key={x.tab} dir="auto" role="tab" aria-selected={i === sec} className={i === sec ? `${s.tab} ${s.tabOn}` : s.tab} onClick={() => goSection(i)}>
-              {x.tab}
+            <button key={x.title} dir="auto" role="tab" aria-selected={i === sec_} className={i === sec_ ? `${s.tab} ${s.tabOn}` : s.tab} onClick={() => goSection(i)}>
+              {x.title}
             </button>
           ))}
         </div>
@@ -185,9 +249,10 @@ export default function Reader() {
           <div className={s.column}>
             {section.blocks.map((b, i) => (
               <Block
-                key={`${sec}-${i}`}
+                key={`${sec_}-${i}`}
                 doc={doc}
                 block={b}
+                terms={lesson.terms}
                 fontSize={fontSize}
                 term={term}
                 onTerm={(id) => {
@@ -195,13 +260,13 @@ export default function Reader() {
                   setSelected(false);
                 }}
                 selected={selected}
-                highlighted={highlighted}
+                highlights={highlights}
                 onSelect={() => {
                   setSelected(!selected);
                   setTerm(null);
                 }}
                 selActs={[
-                  [t('actTranslate'), () => (setSelected(false), setTrSource(doc.sampleSentence))],
+                  [t('actTranslate'), () => (setSelected(false), setTrSource(sentenceOf(b)))],
                   [
                     t('actCopy'),
                     () => {
@@ -211,10 +276,21 @@ export default function Reader() {
                       toast(t('copied'));
                     },
                   ],
-                  [t('actHighlight'), () => (setSelected(false), setHighlighted(true), toast(t('highlighted')))],
+                  [
+                    t('actHighlight'),
+                    () => {
+                      setSelected(false);
+                      const text = sentenceOf(b);
+                      if (text && !highlights.includes(text)) {
+                        setHighlights([...highlights, text]);
+                        addHighlight(pdfId, b.pageFrom, text);
+                      }
+                      toast(t('highlighted'));
+                    },
+                  ],
                   [t('actAsk'), () => (setSelected(false), guard('question', () => (setPanel(true), toast(t('askedExplain')))))],
                 ]}
-                onTranslate={() => setTrSource(sec === 1 ? doc.sampleSentence : flatText(b))}
+                onTranslate={() => setTrSource(paraText(b.paragraphs[0]))}
               />
             ))}
 
@@ -224,13 +300,13 @@ export default function Reader() {
               </span>
               <span className={s.checkText}>
                 <b>{t('checkTitle')}</b>
-                <span>{t(section.end)}</span>
+                <span>{sectionEnd}</span>
               </span>
               <button className={s.checkGo} onClick={() => navigate(`/quiz?from=reader&course=${courseId}`)}>
                 {t('start')}
               </button>
               <button className={s.checkNext} onClick={nextSection}>
-                {sec === doc.sections.length - 1 ? t('lessonSummary') : t('nextSection')}
+                {sec_ === doc.sections.length - 1 ? t('lessonSummary') : t('nextSection')}
               </button>
             </section>
           </div>
@@ -263,10 +339,9 @@ export default function Reader() {
           </button>
         </div>
 
-        {term && (
+        {term && lesson.terms[term] && (
           <TermCard
-            id={term}
-            doc={doc}
+            term={lesson.terms[term]}
             onClose={() => setTerm(null)}
             onAsk={(name) => {
               setTerm(null);
@@ -282,39 +357,58 @@ export default function Reader() {
 
       {shareOpen && <ShareDialog pdfId={pdfId} onClose={() => setShareOpen(false)} />}
 
-      {trSource && <TranslateDialog doc={doc} source={trSource} onClose={() => setTrSource(null)} />}
+      {trSource && <TranslateDialog doc={doc} materialId={pdfId} source={trSource} onClose={() => setTrSource(null)} />}
     </div>
   );
 }
 
-function flatText(b: ReaderBlock) {
-  return b.paragraphs
-    .map((p) => (Array.isArray(p) ? p.map((x) => (typeof x === 'string' ? x : x.text)).join('') : p.text))
-    .join(' ');
+/** The selectable sentence of a block, if it has one. */
+function sentenceOf(b: ReaderBlock) {
+  const p = b.paragraphs.find((x) => !Array.isArray(x));
+  return p && !Array.isArray(p) ? p.text : null;
+}
+
+/** Plain text of one paragraph (hard words included). */
+function paraText(p: ReaderBlock['paragraphs'][number]) {
+  return Array.isArray(p) ? p.map((x) => (typeof x === 'string' ? x : x.text)).join('') : p.text;
 }
 
 type BlockProps = {
   doc: ReaderDoc;
   block: ReaderBlock;
+  terms: Record<string, ReaderTerm>;
   fontSize: number;
   term: string | null;
   onTerm: (id: string) => void;
   selected: boolean;
-  highlighted: boolean;
+  highlights: string[];
   onSelect: () => void;
   selActs: [string, () => void][];
   onTranslate: () => void;
 };
 
-function Block({ doc, block, fontSize, term, onTerm, selected, highlighted, onSelect, selActs, onTranslate }: BlockProps) {
-  const { t } = useI18n();
+function Block({ doc, block, terms, fontSize, term, onTerm, selected, highlights, onSelect, selActs, onTranslate }: BlockProps) {
+  const { t, lang } = useI18n();
   const toast = useToast();
+  const [tagKey, tagStyle] = TAGS[block.tag] ?? TAGS.definition;
+  const pageLabel =
+    block.pageFrom === block.pageTo
+      ? t('pageLabel').replace('{n}', num(block.pageFrom, lang))
+      : t('pagesLabel').replace('{a}', num(block.pageFrom, lang)).replace('{b}', num(block.pageTo, lang));
 
   const seg = (x: Segment, i: number) =>
     typeof x === 'string' ? (
       <span key={i}>{x}</span>
     ) : (
-      <button key={i} className={term === x.term ? `${s.term} ${s.termOn}` : s.term} aria-expanded={term === x.term} onClick={() => onTerm(x.term)}>
+      <button
+        key={i}
+        className={term === x.term ? `${s.term} ${s.termOn}` : s.term}
+        aria-expanded={term === x.term}
+        onClick={() => {
+          if (term !== x.term && terms[x.term]) tapTerm(terms[x.term].id);
+          onTerm(x.term);
+        }}
+      >
         {x.text}
       </button>
     );
@@ -322,8 +416,8 @@ function Block({ doc, block, fontSize, term, onTerm, selected, highlighted, onSe
   return (
     <article className={s.page}>
       <div className={s.pageTop}>
-        <span className="mono">{t(block.page)}</span>
-        <span className={block.tagStyle === 'red' ? `${s.tag} ${s.tagRed}` : s.tag}>{t(block.tag)}</span>
+        <span className="mono">{pageLabel}</span>
+        <span className={tagStyle === 'red' ? `${s.tag} ${s.tagRed}` : s.tag}>{t(tagKey)}</span>
         <span className={s.grow} />
         <button className={s.translate} onClick={onTranslate}>
           {t('translate')}
@@ -345,7 +439,7 @@ function Block({ doc, block, fontSize, term, onTerm, selected, highlighted, onSe
                 tabIndex={0}
                 title={t('selectSentence')}
                 aria-pressed={selected}
-                className={`${s.selectable} ${selected ? s.selOn : ''} ${highlighted ? s.highlight : ''}`}
+                className={`${s.selectable} ${selected ? s.selOn : ''} ${highlights.includes(p.text) ? s.highlight : ''}`}
                 onClick={onSelect}
                 onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), onSelect())}
               >
@@ -391,38 +485,37 @@ function Block({ doc, block, fontSize, term, onTerm, selected, highlighted, onSe
 }
 
 function TermCard({
-  id,
-  doc,
+  term,
   onClose,
   onAsk,
   onCard,
   onListen,
 }: {
-  id: string;
-  doc: ReaderDoc;
+  term: ReaderTerm;
   onClose: () => void;
   onAsk: (name: string) => void;
   onCard: (name: string) => void;
   onListen: (name: string) => void;
 }) {
-  const { t } = useI18n();
-  const info = doc.terms[id];
-  const name = t(`${id}name`);
+  const { t, lang } = useI18n();
+  // Explanation in the app language; a missing language is made later by the Edge Function "explain-term".
+  const ex = term.explanation[lang] ?? term.explanation.en ?? term.explanation.tr;
+  const name = ex?.name ?? term.surface;
   return (
     <div role="dialog" aria-label={t('termExpl')} className={s.termCard}>
       <div className={s.termTop}>
         <span className="mono">
-          {t('termPage')} {info?.page}
+          {t('termPage')} {term.page}
         </span>
-        <span className={s.tag}>{t(`${id}kind`)}</span>
+        {ex?.kind && <span className={s.tag}>{ex.kind}</span>}
         <span className={s.grow} />
         <button className={s.close} aria-label={t('close')} onClick={onClose}>
           <Icon name="close" size={16} />
         </button>
       </div>
       <b className={s.termName}>{name}</b>
-      <span className={s.termDef}>{t(`${id}def`)}</span>
-      <span className={s.termEn}>English: {info?.en}</span>
+      <span className={s.termDef}>{ex?.text}</span>
+      {term.explanation.en && <span className={s.termEn}>English: {term.explanation.en.name}</span>}
       <div className={s.termActs}>
         <button className={s.termAsk} onClick={() => onAsk(name)}>
           {t('askAssistant')}
@@ -434,15 +527,16 @@ function TermCard({
   );
 }
 
-function TranslateDialog({ doc, source, onClose }: { doc: ReaderDoc; source: string; onClose: () => void }) {
+function TranslateDialog({ doc, materialId, source, onClose }: { doc: ReaderDoc; materialId: string; source: string; onClose: () => void }) {
   const { t, lang } = useI18n();
   const toast = useToast();
-  const targets = Object.keys(doc.sampleTranslations);
-  const [target, setTarget] = useState(targets.includes(lang) ? lang : targets[0]);
+  // Every app language except the PDF's own.
+  const targets = LANGS.filter((l) => l !== doc.language);
+  const [target, setTarget] = useState<Lang>(targets.includes(lang) ? lang : targets[0]);
   const { settings } = useSettings();
   const [style, setStyle] = useState<TranslationStyle>(settings.translationStyle);
-  const text = useAsync(() => translate(doc, source, target, style), [source, target, style]);
-  const dir = doc.sampleTranslations[target]?.dir ?? 'ltr';
+  const text = useAsync(() => translate(materialId, source, target, style), [source, target, style]);
+  const dir = dirOf(target);
 
   return (
     <div className={s.modal}>
@@ -463,7 +557,7 @@ function TranslateDialog({ doc, source, onClose }: { doc: ReaderDoc; source: str
         <div role="tablist" aria-label={t('trLanguage')} className={s.seg}>
           {targets.map((k) => (
             <button key={k} role="tab" aria-selected={k === target} className={k === target ? s.segOn : ''} onClick={() => setTarget(k)}>
-              {doc.sampleTranslations[k].l}
+              {LANG_NAMES[k]}
             </button>
           ))}
         </div>

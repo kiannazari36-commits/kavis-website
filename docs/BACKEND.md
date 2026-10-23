@@ -78,6 +78,9 @@ The app never writes AI output, scores, usage counters, subscriptions or shares 
 | Feature | API |
 |---|---|
 | Open a lesson | `material_content.reader_doc`, `material_terms`, `annotations`, `reading_progress` |
+| `reader_doc` shape | `{ language, sections: [{ title, blocks: [{ pageFrom, pageTo, tag (definition / dose / side_effect / special / emergency), heading?, paragraphs: [segments \| { selectable, text }], molecule?, audio? }] }] }`; a segment is a string or `{ term: "<term_key>", text }` |
+| `material_terms.explanation` shape | `{ "tr": { name, kind, text }, "en": { … } }` — one entry per app language |
+| Translation lookup | `translations.source_hash` = SHA-256 (hex) of the sentence's UTF-8 text |
 | Tap a hard word | RPC `tap_term(term_id)`; explanation in `material_terms.explanation[lang]`, missing language → Edge `explain-term` |
 | Translate a sentence (literal / natural) | Edge `translate` (cached in `translations`) |
 | Highlights, notes, pen | `annotations` (+ `ink` bucket) |

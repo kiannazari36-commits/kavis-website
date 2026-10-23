@@ -946,3 +946,23 @@
   background: var(--pri);
   color: #fffcf6;
 }
+
+/* Lesson without a reading page yet */
+.empty {
+  max-width: 420px;
+  margin: 18vh auto 0;
+  padding: 28px;
+  border-radius: 26px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  color: var(--text2);
+}
+.empty b {
+  color: var(--text);
+  font-size: 20px;
+}
