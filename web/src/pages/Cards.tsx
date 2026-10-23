@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useI18n } from '../i18n/I18nProvider';
 import { num } from '../i18n/format';
 import Icon from '../components/Icon';
-import { DECK_SIZE, getDeck, rateCard } from '../api/cards';
+import { dueCards, goodInterval, rateCard } from '../api/cards';
 import { useAsync } from '../hooks/useAsync';
-import { listCourses } from '../api/courses';
-import { dirOf, useContentLang } from '../settings/SettingsProvider';
-import type { CardRating } from '../api/types';
+import { dirOf } from '../settings/SettingsProvider';
+import type { CardRating, FlashCard } from '../api/types';
 import s from './Cards.module.css';
 
 // Design: design/NewIPad.dc.html, screen "cards": flip a card, then rate it (next review time).
-// Keyboard: Space flips, 1 / 2 / 3 rate. Card text uses the content language (CLAUDE.md).
+// Keyboard: Space flips, 1 / 2 / 3 rate. Card text is in its deck's language (the content language, CLAUDE.md).
+// The cards due now form today's round; "Didn't know" and "Hard" come back at the end of the round.
 const RATES: [CardRating, string, string][] = [
   ['again', 'rateNo', 'rateNoT'],
   ['hard', 'rateHard', 'rateHardT'],
@@ -21,17 +21,32 @@ const RATES: [CardRating, string, string][] = [
 export default function Cards() {
   const { t, lang } = useI18n();
   const navigate = useNavigate();
-  const deck = useAsync(() => getDeck('pharmacotherapy', 'hypertension'), []);
-  const courses = useAsync(listCourses, []);
-  const cl = useContentLang(courses?.find((c) => c.id === 'pharmacotherapy'));
-  const [i, setI] = useState(0);
+  const [params] = useSearchParams();
+  const courseId = params.get('course') ?? undefined;
+  const loaded = useAsync(() => dueCards(courseId), [courseId]);
+  const [queue, setQueue] = useState<FlashCard[] | null>(null);
+  const [total, setTotal] = useState(0);
+  const [done, setDone] = useState(0);
   const [back, setBack] = useState(false);
   const [stats, setStats] = useState([0, 0, 0]);
 
+  useEffect(() => {
+    if (!loaded) return;
+    setQueue(loaded);
+    setTotal(loaded.length);
+    setDone(0);
+  }, [loaded]);
+
   const rate = (k: number) => {
-    rateCard(i, RATES[k][0]);
+    if (!queue?.length) return;
+    const [card, ...rest] = queue;
+    const rating = RATES[k][0];
+    rateCard(card, rating);
     setStats(stats.map((n, j) => (j === k ? n + 1 : n)));
-    setI(i + 1);
+    if (rating === 'good') {
+      setQueue(rest);
+      setDone(done + 1);
+    } else setQueue([...rest, { ...card, reps: 0, intervalDays: rating === 'again' ? 0 : card.intervalDays }]);
     setBack(false);
   };
 
@@ -47,10 +62,13 @@ export default function Cards() {
     return () => window.removeEventListener('keydown', onKey);
   });
 
-  if (!deck) return <main className={s.main} />;
+  if (!queue) return <main className={s.main} />;
 
-  const card = deck[i % deck.length];
-  const pos = (i % DECK_SIZE) + 1;
+  const card = queue[0];
+  const pos = Math.min(done + 1, total);
+  const cl = card?.lang ?? 'tr';
+  const nextLabel = (id: CardRating, key: string) =>
+    id === 'good' && card ? t('daysN').replace('{n}', num(goodInterval(card), lang)) : t(key);
 
   return (
     <main className={s.main}>
@@ -59,57 +77,71 @@ export default function Cards() {
           <Icon name="back" size={20} width={1.8} className="flip-rtl" />
         </button>
         <h1>
-          {t('cardsTitle')} <span>{t('cardsSub')}</span>
+          {t('cardsTitle')} {card?.deck && <span>· {card.deck}</span>}
         </h1>
         <span className={s.styleBadge}>
           <Icon name="spark" size={11} width={2} />
           {t('teacherStyle')}
         </span>
         <span className={s.count}>
-          {num(pos, lang)} / {num(DECK_SIZE, lang)}
+          {num(pos, lang)} / {num(total, lang)}
         </span>
       </div>
       <span className={s.bar} aria-hidden="true">
-        <span style={{ width: `${Math.round((pos / DECK_SIZE) * 100)}%` }} />
+        <span style={{ width: `${total ? Math.round((done / total) * 100) : 100}%` }} />
       </span>
 
-      <div className={s.stage}>
-        <button className={back ? `${s.card} ${s.cardBack}` : s.card} onClick={() => setBack(!back)} aria-live="polite">
-          <span className={`mono ${s.side}`}>
-            {t(back ? 'sideA' : 'sideQ')} {t('pageShort')} {num(card.page, lang)}
-          </span>
-          <span className={back ? `${s.main2} ${s.answer}` : s.main2} lang={cl} dir={dirOf(cl)}>
-            {back ? card.a[cl] : card.q[cl]}
-          </span>
-          {back ? (
-            <span className={s.sub} lang={cl} dir={dirOf(cl)}>
-              {card.note[cl]}
-            </span>
-          ) : (
-            <span className={s.sub}>{t('tapToSee')}</span>
-          )}
-        </button>
-
-        {back ? (
-          <div className={s.rates}>
-            {RATES.map(([id, label, next], k) => (
-              <button key={id} className={s[id]} onClick={() => rate(k)}>
-                {t(label)}
-                <span>
-                  {t(next)} {t('later')}
-                </span>
-              </button>
-            ))}
+      {!card ? (
+        <div className={s.stage}>
+          <div className={s.card}>
+            <span className={s.main2}>{t('cardsDone')}</span>
           </div>
-        ) : (
-          <button className={s.show} onClick={() => setBack(true)}>
-            {t('showAnswer')}
+          <button className={s.show} onClick={() => navigate('/home')}>
+            {t('k47')}
           </button>
-        )}
-        <span className={s.stats}>
-          {t('statsA') + num(stats[0], lang) + t('statsB') + num(stats[1], lang) + t('statsC') + num(stats[2], lang)}
-        </span>
-      </div>
+          <span className={s.stats}>
+            {t('statsA') + num(stats[0], lang) + t('statsB') + num(stats[1], lang) + t('statsC') + num(stats[2], lang)}
+          </span>
+        </div>
+      ) : (
+        <div className={s.stage}>
+          <button className={back ? `${s.card} ${s.cardBack}` : s.card} onClick={() => setBack(!back)} aria-live="polite">
+            <span className={`mono ${s.side}`}>
+              {t(back ? 'sideA' : 'sideQ')} {card.page !== null && `${t('pageShort')} ${num(card.page, lang)}`}
+            </span>
+            <span className={back ? `${s.main2} ${s.answer}` : s.main2} lang={cl} dir={dirOf(cl)}>
+              {back ? card.a : card.q}
+            </span>
+            {back ? (
+              <span className={s.sub} lang={cl} dir={dirOf(cl)}>
+                {card.note}
+              </span>
+            ) : (
+              <span className={s.sub}>{t('tapToSee')}</span>
+            )}
+          </button>
+
+          {back ? (
+            <div className={s.rates}>
+              {RATES.map(([id, label, next], k) => (
+                <button key={id} className={s[id]} onClick={() => rate(k)}>
+                  {t(label)}
+                  <span>
+                    {nextLabel(id, next)} {t('later')}
+                  </span>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <button className={s.show} onClick={() => setBack(true)}>
+              {t('showAnswer')}
+            </button>
+          )}
+          <span className={s.stats}>
+            {t('statsA') + num(stats[0], lang) + t('statsB') + num(stats[1], lang) + t('statsC') + num(stats[2], lang)}
+          </span>
+        </div>
+      )}
     </main>
   );
 }

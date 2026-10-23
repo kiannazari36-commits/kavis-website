@@ -134,6 +134,49 @@ begin
       ('ar', 'natural', 'في بداية العلاج نستخدم أربع مجموعات من الأدوية: مدرات البول، ومثبطات ACE، وحاصرات مستقبلات الأنجيوتنسين، وحاصرات قنوات الكالسيوم.')
   ) as v(l, s, t);
 
+  -- ── Flash cards (made by the server from the lesson; the app only updates the review state) ──
+  -- due: 'now' = in today's round; a number = days from now (already reviewed once, "Knew it").
+  for m in
+    select * from (values
+      ('Hipertansiyon', 'Tiyazid diüretiklerin zorunlu kontrendikasyonu nedir?', 'Gut', 'Tiyazidler serum ürik asit düzeyini artırır.', 14, 'now'),
+      ('Hipertansiyon', 'Alfa-1 blokerlerin ilk dozundan sonra ne görülebilir?', 'Ortostatik hipotansiyon', 'Bu yüzden ilk dozun yatmadan önce alınması önerilir.', 13, 'now'),
+      ('Hipertansiyon', 'ACE inhibitörlerine bağlı kuru öksürük neyin birikimiyle ilişkilidir?', 'Bradikinin', 'ACE inhibitörleri nadiren anjiyoödem de yapabilir.', 13, 'now'),
+      ('Hipertansiyon', 'Hipertansiyon tanısı için sınır değerler nelerdir?', 'Sistolik ≥ 140 mmHg veya diyastolik ≥ 90 mmHg', 'Tek ölçüm yetmez; tekrarlanan ölçümlerde bulunmalıdır.', 10, 'now'),
+      ('Hipertansiyon', 'Belirli bir nedeni bulunamayan hipertansiyona ne denir?', 'Primer (esansiyel) hipertansiyon', 'Hastaların büyük çoğunluğu bu gruptadır.', 10, 'now'),
+      ('Hipertansiyon', 'İlk basamak tedavide kullanılan dört ilaç grubu hangileridir?', 'Diüretikler, ACE inhibitörleri, ARB''ler, kalsiyum kanal blokerleri', null, 12, 'now'),
+      ('Hipertansiyon', 'ACE inhibitörü tedavisine nasıl başlanır?', 'Düşük dozla (ör. ramipril 2,5 mg/gün)', 'Doz 2–4 haftada bir titre edilir.', 12, 'now'),
+      ('Hipertansiyon', 'Gebelikte hangi antihipertansifler tercih edilir?', 'Metildopa, labetalol, nifedipin', null, 14, 'now'),
+      ('Hipertansiyon', 'Gebelikte hangi antihipertansif gruplar kontrendikedir?', 'ACE inhibitörleri ve ARB''ler', 'Fetüse zarar verirler.', 14, '2'),
+      ('Hipertansiyon', 'Diyabetik hipertansif hastada ilk seçenek nedir?', 'ACE inhibitörü veya ARB', 'Böbreği korudukları için tercih edilir.', 15, '3'),
+      ('Hipertansiyon', 'Hipertansif acil durumda ilk saatte tansiyon en fazla ne kadar düşürülür?', '%25', 'Damar yoluyla verilen ilaçlarla.', 16, '4'),
+      ('Hipertansiyon', 'Hipertansif ivedi durumda tansiyon ne kadar sürede düşürülür?', '24–48 saatte, ağızdan ilaçlarla yavaşça', 'Çok hızlı düşürmek beyin ve kalbe zarar verebilir.', 16, '5'),
+      ('Parasetamol toksisitesi', 'Parasetamol zehirlenmesinin antidotu nedir?', 'N-asetilsistein (NAC)', null, 9, 'now'),
+      ('Parasetamol toksisitesi', 'Parasetamolün toksik metaboliti hangisidir?', 'NAPQI', 'CYP2E1 ile oluşur.', 6, 'now'),
+      ('Parasetamol toksisitesi', 'NAPQI normalde neyle zararsız hale getirilir?', 'Glutatyon', 'Glutatyon tükenince karaciğer hasarı başlar.', 6, 'now'),
+      ('Parasetamol toksisitesi', 'Parasetamol zehirlenmesinde hangi organ hasar görür?', 'Karaciğer (sentrilobüler nekroz)', null, 7, '1'),
+      ('Parasetamol toksisitesi', 'Tedavi kararında hangi nomogram kullanılır?', 'Rumack–Matthew nomogramı', 'Alımdan en erken 4 saat sonra ölçülen plazma düzeyiyle.', 8, '2'),
+      ('Parasetamol toksisitesi', 'N-asetilsistein en etkili ne zaman verilir?', 'Alımdan sonraki ilk 8 saat içinde', null, 9, '6')
+    ) as v(lesson, q, a, note, page, due)
+  loop
+    select d.id into cid from public.card_decks d
+      join public.materials ma on ma.id = d.material_id
+     where d.user_id = uid and ma.title = m.lesson;
+    if cid is null then
+      insert into public.card_decks (user_id, course_id, material_id, lang, title)
+      select uid, ma.course_id, ma.id, 'tr', ma.title from public.materials ma where ma.user_id = uid and ma.title = m.lesson
+      returning id into cid;
+    end if;
+    insert into public.flashcards (deck_id, user_id, question, answer, note, page, sort_order, due_at, interval_days, reps, last_rating, last_reviewed_at)
+    values (cid, uid, m.q, m.a, m.note, m.page,
+            (select count(*) from public.flashcards f where f.deck_id = cid),
+            case when m.due = 'now' then now() - interval '2 hours' else now() + make_interval(days => m.due::int) end,
+            case when m.due = 'now' then 0 else 4 end,
+            case when m.due = 'now' then 0 else 1 end,
+            case when m.due = 'now' then null else 'good'::public.card_rating end,
+            case when m.due = 'now' then null else now() - make_interval(days => greatest(1, 4 - m.due::int)) end);
+    cid := null;
+  end loop;
+
   -- ── School timetable (Monday = 1) ──
   insert into public.timetable_entries (user_id, course_id, title, weekday, start_time, end_time, room, teacher)
   select uid, co.id, t.title, t.weekday, t.start_time, t.end_time, t.room, t.teacher

@@ -24,7 +24,9 @@ Everything that is not finished yet. Updated after every step.
   - [x] Courses (menu, home "continue", My Courses, course folder, reader title), profile (name, school, department, year) and settings (`user_settings`, per-course content language) now come from Supabase. `web/src/api/mock/courses.ts` removed
   - [x] Reader: text (`material_content.reader_doc`), hard words (`material_terms`, tap → `tap_term`), saved translations, highlights (`annotations`), pages read (`reading_progress`), stopwatch → `study_sessions`. Example: the "Hipertansiyon" lesson; other lessons show "reading page not ready yet". `web/src/api/mock/readerDoc.ts` removed
   - [ ] Reader still mock: the assistant side panel, molecule viewer, read aloud, pen
-  - [ ] Still mock on these pages: cards, quiz, assistant, plan, progress, notifications, "today's plan" and review box on home → connect them next, with example rows in `seed.sql`
+  - [x] Cards: today's round = cards due now (`flashcards` + `card_decks`, optional `?course=`); Bildim / Zor / Bilmedim saves the review state (simple spaced repetition: 1 min / 10 min / 4 days × ease). Example: Hipertansiyon (12) and Parasetamol toksisitesi (6) decks. `web/src/api/mock/cards.ts` removed
+  - [ ] "Add to cards" from a hard word, and "add mistakes to cards": need the server (the app may not create cards)
+  - [ ] Still mock on these pages: quiz, assistant, plan, progress, notifications, "today's plan" and review box on home → connect them next, with example rows in `seed.sql`
   - [ ] Class rank on course cards ("Sıralama #3") has no data on the server; hidden until it exists
   - [ ] App language and theme are still saved only in the browser (`profiles.app_lang`, `user_settings.app_theme` exist)
   - [x] Trial card and Premium status from `access_status()`; devices: login registers the web (all browsers share install id `web` = one slot), My devices list, sign out, 3rd-device screen, signed-out-elsewhere check at start, log out frees the slot

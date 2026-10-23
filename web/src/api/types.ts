@@ -111,7 +111,21 @@ export type QuizQuestion = {
   molecule?: 'captopril';
 };
 
-export type FlashCard = { q: L10n; a: L10n; note: L10n; page: number };
+/** A flash card, written in its deck's language (the content language). */
+export type FlashCard = {
+  id: string;
+  q: string;
+  a: string;
+  note: string;
+  page: number | null;
+  /** Deck title, e.g. the lesson ("Hipertansiyon"). */
+  deck: string;
+  lang: Lang;
+  intervalDays: number;
+  ease: number;
+  reps: number;
+  againCount: number;
+};
 export type CardRating = 'again' | 'hard' | 'good';
 
 export type PlanItem = {

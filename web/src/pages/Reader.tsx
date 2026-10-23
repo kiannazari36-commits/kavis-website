@@ -325,7 +325,7 @@ export default function Reader() {
           <button aria-label={t('listen')} title={t('listen')} onClick={() => toast(t('pageAloud'))}>
             <Icon name="speaker" size={20} />
           </button>
-          <button aria-label={t('cardsLabel')} title={t('cardsLabel')} onClick={() => navigate('/cards')}>
+          <button aria-label={t('cardsLabel')} title={t('cardsLabel')} onClick={() => navigate(`/cards?course=${courseId}`)}>
             <Icon name="cards" size={20} />
           </button>
           <button
