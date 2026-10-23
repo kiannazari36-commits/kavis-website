@@ -1,15 +1,19 @@
-# Kavis Study — web frontend project
+# Kavis Study
 
 ## Who I am
-- Pharmacy student, not a developer. Talk to me in **Persian (فارسی)** or Turkish, short and simple. Explain every terminal command before running it.
-- Make reasonable decisions yourself, then tell me briefly what you did. Ask only before something irreversible.
+- Pharmacy student, not a developer. Reply in the language I write in (English, Turkish or Persian), short and simple. Explain every command I have to run myself.
+- Make reasonable decisions yourself, then tell me briefly what you did. Ask only before something irreversible, something that costs money, or anything that changes the live database.
 
 ## What this app is
 Kavis Study (old names: Jarvis Study, AIM Study). Slogan: "Always Improve More".
 A student uploads the teacher's PDF, a slide photo or a lecture recording. The app turns it into an interactive reading page **without changing the teacher's text**, plus summaries, audio narration, flash cards, quizzes in the teacher's style, a study plan and an AI assistant. The AI only uses the material the student uploaded. For all students, not only pharmacy.
 
 ## What is in this folder
-- `design/` — the full design prototype exported from a Claude Design canvas: 72 `.dc.html` screens, `canvas.json` (board list) and the images (`icon_star*.png`, `brain*.png`, `star_*.png`, `icon_taba.png`).
+- `web/` — React + Vite + TypeScript web app (all screens built). Deployed on Vercel: https://kavis-website.vercel.app (test only, noindex); every push to `main` of `kiannazari36-commits/kavis-website` redeploys it. Server calls live in `web/src/api/` (being moved from mock data to Supabase).
+- `ios/` — SwiftUI + XcodeGen iPhone app (`project.yml`). Screens done and still to build are listed in `TODO.md`. Still on mock data.
+- `supabase/` — `migrations/` (the live schema) and `tests/` (40 behaviour checks for a local Postgres).
+- `docs/BACKEND.md` — the backend: which table / RPC / Edge Function each screen uses. Read it before any server work.
+- `design/` — the final UI design, exported from the "Kavis Study" Claude Design canvas. **Source of truth for every client.** Contents: 72 `.dc.html` screens, `canvas.json` (board list) and the images (`icon_star*.png`, `brain*.png`, `star_*.png`, `icon_taba.png`).
 - `reference/dc-runtime.js` — the runtime that renders the `.dc.html` format. Read it only to understand the template syntax; do not ship it.
 
 ### The `.dc.html` format (how to read the design files)
@@ -33,22 +37,34 @@ A student uploads the teacher's PDF, a slide photo or a lecture recording. The a
 
 ## Product rules
 - Interface languages: Turkish, English, Persian, Arabic (Persian and Arabic right-to-left). An uploaded PDF stays in its own language; there is a translate button. The assistant speaks the language the student wants.
-- Content language: quiz questions, flash cards and summaries are written in the language of the uploaded PDF, not the interface language. Settings has a "Content language" option: "Same as PDF" (default), "Same as app", or a chosen language (tr/en/fa/ar). It can also be changed per course on the course page (the course setting wins over the global one). Buttons and menus always stay in the app language.
+- Content language: course setting, then general setting, then the PDF's language. Quiz questions, flash cards and summaries are written in the language of the uploaded PDF, not the interface language. Settings has a "Content language" option: "Same as PDF" (default), "Same as app", or a chosen language (tr/en/fa/ar). It can also be changed per course on the course page (the course setting wins over the global one). Buttons and menus always stay in the app language.
 - Offline use in every plan (free included). "Delete account" exists everywhere.
-- Payments: only Apple in-app purchase in the iPhone app. Premium bought on iPhone also unlocks the web (needs a server later). The web never sells Premium: the web Premium page has no buy buttons and no App Store billing text; it says "Upgrade to Premium in the Kavis Study iPhone app" with an App Store button.
+- Payments: only Apple in-app purchase in the iPhone app. Premium unlocks every device through the server (`access_status()`). The web never sells Premium: the web Premium page has no buy buttons and no App Store billing text; it says "Upgrade to Premium in the Kavis Study iPhone app" with an App Store button.
 - Prices: Apple sets the local price per country, so never hardcode prices or currencies. On the web show "Price in the App Store".
-- Free trial: 3 days, max 2 PDFs, 60 assistant questions, each PDF max 100 pages. Show the remaining limits during the trial. After the trial the student keeps: reading old PDFs, own notes, highlights, existing cards and summaries, and offline use. Premium only: new PDF upload, new assistant questions, generating new quizzes/cards, sharing. Locked message: "Deneme süren doldu. Çalıştığın PDF'ler seninle kalıyor; yeni PDF yüklemek için Premium'a geç." (also in en/fa/ar). There is no "2 courses / 20 questions per month" free plan.
-- Devices: max 2 devices per account; the web counts as one. On a 3rd device show "You're signed in on 2 devices. Choose one to sign out." with the device list. Settings has "My devices" with the list and a sign-out button for each. (UI only with mock data until the server exists.)
+- Free trial: only our own app trial (no bank card, no Apple free-trial offer): 3 days, max 2 lessons (PDFs), 60 assistant questions, each PDF max 100 pages. So no paywall text may say the plan is charged after the trial. Show the remaining limits during the trial. After the trial the student keeps: reading old PDFs, own notes, highlights, existing cards and summaries, and offline use. Premium only: new PDF upload, new assistant questions, generating new quizzes/cards, sharing. Locked message: "Deneme süren doldu. Çalıştığın PDF'ler seninle kalıyor; yeni PDF yüklemek için Premium'a geç." (also in en/fa/ar). There is no "2 courses / 20 questions per month" free plan.
+- Devices: max 2 devices per account; the web counts as one. On a 3rd device show "You're signed in on 2 devices. Choose one to sign out." with the device list. Settings has "My devices" with the list and a sign-out button for each. Enforced on the server by the RPC `register_device`.
 - Sharing (Premium only): only what the app made (quizzes, summaries, flash cards), never the original PDF. A share link opens a web page "To open this, download the Kavis Study app" with an App Store button and no preview. In the app, a non-Premium receiver sees "This lesson can only be opened with Premium."
 - Android: no Android app yet. Android users use the web with the free trial; Premium for them comes later (Google Play or a web payment).
+- Lecture recordings: speech-to-text runs on the device; the app sends only the transcript to the server.
+- iPhone: bottom tab bar has 3 tabs; the assistant button stays at the top right.
 - `TODO.md` lists everything not finished yet (server, real payments, Android payment, device limit on the server, legal check of texts, …). Update it after every step.
 
-## The task (do it step by step, tell me after each step)
-1. Read `design/canvas.json`, `design/DeskApp.dc.html` and `design/DesignSystem.dc.html`; give me a 5-line summary of the pages you will build.
-2. Create a modern web frontend in a new folder `web/`: **Vite + React + TypeScript**, plain CSS or CSS modules with the design tokens above, React Router, i18n for tr/en/fa/ar with RTL.
-3. Build the pages to match the design exactly: landing, login/signup, home (my courses), course folder, reader, assistant, quiz, cards, study plan, progress, settings, paywall. Light and dark mode.
-4. No real backend yet: use mock data and fake API functions in one `src/api/` folder so a real server can be plugged in later.
-5. Run it locally (`npm install`, `npm run dev`) and tell me exactly what to open in the browser.
-6. Make it deploy-ready (static build) and explain the simplest free way to publish it (e.g. Vercel or Netlify), step by step.
+## Backend (Supabase)
+- Project **Kavis**, ref `lnbfcfxxrqohcnkhlcur`, region eu-west-1 (stays there), Postgres 17. One backend for every client (web, iOS, later Android).
+- Schema: `supabase/migrations/` — **already applied** to the live project (44 tables, RLS on all, 5 private buckets, RPCs `access_status`, `can_i`, `register_device`, `sign_out_device`, `content_lang_for`, `tap_term`, `study_streak`). File names match the live migration versions. Any new schema change = a new migration file, tested locally first, and applied to the live database only after I say yes.
+- Full API map: `docs/BACKEND.md`. The 7 remaining security-advisor warnings are intentional (explained there).
+- **Rule:** AI output, scores, usage counters, subscriptions and shares are written **only by Edge Functions** (service role). The apps never write them.
+- **Secrets:** never put the service role key, the Claude API key, Apple keys or any secret in code or git. Clients use only the URL and the publishable (anon) key from `.env` files that git ignores (`web/.env.local`). Edge Functions read secrets from Supabase secrets.
+- Claude Code reaches the project through the Supabase MCP connector (read freely; ask before writing to the live database).
+
+## Current task: connect the web app to Supabase
+Replace the mock functions in `web/src/api/` one area at a time, with `@supabase/supabase-js`:
+1. Auth: email + 6-digit code, then Apple and Google.
+2. Profile and settings (`profiles`, `user_settings`).
+3. Devices: `register_device` after every login, "My devices", the 3rd-device screen.
+4. Courses and timetable.
+5. Trial status (`access_status`).
+
+After each area: test it in the browser, commit, push, update `TODO.md`, and stop so I can check. Keep the screens exactly as designed.
 
 Do not change anything inside `design/`.

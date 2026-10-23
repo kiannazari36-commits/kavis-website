@@ -2,7 +2,25 @@
 
 Everything that is not finished yet. Updated after every step.
 
-## Server (nothing real yet — the web uses mock data in `web/src/api/`)
+## Decisions (23 Oct 2026 — do not reopen)
+- Supabase region stays eu-west-1 (Ireland); the EU-hosting sentence goes in the privacy notice
+- Lecture recordings: speech-to-text runs on the device; the app sends only the transcript to the server
+- Trial: only our own app trial (3 days, 2 lessons, 60 questions, 100 pages per lesson, no bank card). No Apple free-trial offer
+- Payments: only Apple in-app purchase. Premium unlocks every device through the server. Prices are never hardcoded
+- Max 2 devices (the web counts as one). Offline use in every plan. Sharing is Premium only and never includes the PDF
+- Content language: course setting, then general setting, then the PDF's language
+- iPhone bottom tab bar has 3 tabs; the assistant stays at the top right
+
+## Backend (Supabase project "Kavis", `lnbfcfxxrqohcnkhlcur`) — details in `docs/BACKEND.md`
+- [x] Schema v1: 44 tables, RLS on all, 5 private buckets, 7 RPCs; both migrations applied live; 40 local behaviour tests pass
+- [x] Claude Code connected to the project (Supabase MCP connector)
+- [ ] Connect the web app (`web/src/api/`), one area at a time: auth (email + 6-digit code, then Apple and Google) → profile and settings → devices (`register_device`) → courses and timetable → trial status (`access_status`)
+- [ ] Email sending for the 6-digit code: Supabase's built-in email is only for testing (few emails per hour); a real email provider (custom SMTP) before launch
+- [ ] Edge Functions (none built yet; list in `docs/BACKEND.md`); secrets only in Supabase secrets
+- [ ] Fill `course_catalog` per department (the design has the pharmacy list)
+- [ ] Connect the iOS app (`supabase-swift`)
+
+## Server features (the web still uses mock data in `web/src/api/`)
 - [ ] Real backend: accounts, login (email + Apple + Google), email verification code
 - [ ] Store PDFs, notes, highlights, cards, summaries, quiz results per account
 - [ ] PDF processing: turn the PDF into the reading page without changing the teacher's text, hard-word explanations
@@ -16,6 +34,7 @@ Everything that is not finished yet. Updated after every step.
 
 ## Payments and plans
 - [ ] Apple in-app purchase in the iPhone app (the only way to buy Premium)
+- [ ] Paywall text: no Apple free trial, so never show "After the 3-day trial, your plan is charged to your Apple / Google Play account" or "Premium · 3 günlük ücretsiz deneme başladı" (both are in `design/ScrPaywall.dc.html`). Not in the web or iOS code now (the web Premium page has no billing text, the iOS paywall is not built yet); write the correct text when the iOS paywall is built, in 4 languages
 - [ ] Server check of the Apple subscription so Premium also unlocks the web
 - [ ] Prices come from the App Store (never hardcoded) — web shows "Price in the App Store"
 - [ ] Android payment later (Google Play or a web payment) — no Android app yet. The web tells Android users (Premium page, share link page, Google Play button) to use the web with the free trial
