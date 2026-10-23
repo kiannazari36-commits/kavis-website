@@ -21,6 +21,7 @@ declare
   i     int;
   qid   uuid;
   qid2  uuid;
+  pid   uuid;
 begin
   select id into uid from auth.users where email = seed_email;
   if uid is null then raise exception 'No account with email %', seed_email; end if;
@@ -32,6 +33,8 @@ begin
   delete from public.courses           where user_id = uid;  -- cascades: course_exams; materials keep course_id null …
   delete from public.materials         where user_id = uid;  -- … so delete them too (cascades: reading_progress, content, …)
   delete from public.user_devices      where user_id = uid and install_id like 'seed-%';
+  delete from public.study_plans       where user_id = uid;
+  delete from public.review_sessions   where user_id = uid;
 
   -- ── Profile and settings ──
   update public.profiles
@@ -222,6 +225,54 @@ begin
   insert into public.quiz_questions (quiz_id, user_id, topic_id, sort_order, kind, style_tag, text, options, answer_index, explanation, source_page, hints, molecule)
   select qid2, uid, topic_id, sort_order - 1, kind, style_tag, text, options, answer_index, explanation, source_page, hints, molecule
   from public.quiz_questions where quiz_id = qid and sort_order in (1, 2);
+
+  -- ── This week's study plan (made by the server: Edge Function build-plan / daily planner) ──
+  -- Past days are done, except two missed tasks
+  -- the day before today (for "I missed yesterday"). 6 study days, Sunday is the rest day.
+  update public.user_settings set study_days = 6 where user_id = uid;
+  insert into public.study_plans (user_id, week_start, stage, reasons)
+  values (uid, date_trunc('week', current_date)::date, 'smart', jsonb_build_array(
+    jsonb_build_object('text', 'Vize haftası ' || to_char(current_date + 4, 'DD') || '–' || to_char(current_date + 8, 'DD.MM') || ' · sınavı yakın derse daha çok süre', 'color', 'pri'),
+    jsonb_build_object('text', 'Zayıf konuların: Hipertansif kriz %38, ACE inh. %54', 'color', 'pri'),
+    jsonb_build_object('text', 'Hocanın derste uzun durduğu ve sorularında çok çıkan konular', 'color', 'amb'),
+    jsonb_build_object('text', 'Öğrendiğin konular birkaç gün sonra kısa tekrar olarak geri gelir', 'color', 'good')))
+  returning id into pid;
+
+  insert into public.plan_items (plan_id, user_id, day, course_id, material_id, kind, title, minutes, why, target, status, sort_order, done_at)
+  select pid, uid, d.day, co.id, ma.id, v.kind, v.title, v.minutes, v.why, v.target,
+         case when d.day < current_date - 1 then 'done'::public.task_status
+              when d.day = current_date - 1 and v.ord = 0 then 'done' else 'todo' end,
+         v.ord,
+         case when d.day < current_date - 1 or (d.day = current_date - 1 and v.ord = 0) then d.day + time '20:00' end
+  from (values
+    (0, 0, 'Farmakoterapi',            'Hipertansiyon',              'read',      'Hipertansif kriz',             35, 'zayıf konun · %38',          'reader'),
+    (0, 1, 'Toksikoloji',              'Organofosfat zehirlenmesi',  'read',      'Organofosfat zehirlenmesi',    35, 'vizesi yakın',               'reader'),
+    (0, 2, null,                       null,                         'review',    '3 gün önceki konular',         20, 'unutmaman için',             'cards'),
+    (1, 0, 'Farmakoterapi',            'Hipertansiyon',              'read',      'ACE inh. yan etkileri',        40, 'zayıf konun · %54',          'reader'),
+    (1, 1, 'Farmasötik Teknoloji III', 'Tablet formülasyonu',        'read',      'Tablet formülasyonu',          30, 'hoca 12 dk durdu',           'reader'),
+    (2, 0, 'Toksikoloji',              'Parasetamol toksisitesi',    'read',      'Parasetamol toksisitesi',      45, 'sorularında 3 kez',          'reader'),
+    (2, 1, 'Farmakoterapi',            'Hipertansiyon',              'read',      'Gebelikte hipertansiyon',      25, 'sorularında 4 kez',          'reader'),
+    (2, 2, null,                       null,                         'cards',     'Kartlar',                      20, 'tekrar günü',                'cards'),
+    (3, 0, 'Farmakoterapi',            'Hipertansiyon',              'read',      'Tiyazid kontrendikasyonları',  30, 'hoca: "sınavda soruyorum"',  'reader'),
+    (3, 1, 'Toksikoloji',              'Ağır metaller',              'read',      'Ağır metaller',                40, 'zayıf konun · %49',          'reader'),
+    (3, 2, null,                       null,                         'review',    'Haftanın tekrarı',             20, 'unutmaman için',             'cards'),
+    (4, 0, 'Farmakoterapi',            'Hipertansiyon',              'review',    'Hipertansiyon tekrarı',        10, 'özet + 6 kart',              'cards'),
+    (4, 1, 'Farmakoterapi',            'Diyabet',                    'read',      'Diyabet · Bölüm 2',            25, 'okuma',                      'reader'),
+    (4, 2, 'Toksikoloji',              null,                         'quiz',      'Toksikoloji kısa sınav',       15, '10 soru',                    'quiz'),
+    (5, 0, 'Farmakoterapi',            null,                         'exam_prep', 'Farmakoterapi özeti',          40, 'vizeden önce',               'exam_prep'),
+    (5, 1, 'Farmakoterapi',            null,                         'exam_prep', 'Sınava özel 6 soru',           30, 'zayıf konulardan',           'quiz'),
+    (5, 2, 'Farmakoterapi',            null,                         'mistakes',  'Yanlışlarını tekrar',          20, 'son sınavdan',               'quiz')
+  ) as v(d, ord, course, lesson, kind, title, minutes, why, target)
+  -- d is the weekday in the example (4 = today); days are placed around today so today always has tasks.
+  cross join lateral (select (current_date + (v.d - 4)) as day) d
+  left join public.courses co on co.user_id = uid and co.name = v.course
+  left join public.materials ma on ma.user_id = uid and ma.title = v.lesson;
+
+  -- Today's short review on home ("Bugün tekrar günü").
+  insert into public.review_sessions (user_id, course_id, material_id, scheduled_for, minutes, content)
+  select uid, ma.course_id, ma.id, current_date, 8,
+         '{"summary": true, "cards": 6, "questions": 3, "reasons": ["weak", "forgetting"]}'::jsonb
+  from public.materials ma where ma.user_id = uid and ma.title = 'Hipertansiyon';
 
   -- ── School timetable (Monday = 1) ──
   insert into public.timetable_entries (user_id, course_id, title, weekday, start_time, end_time, room, teacher)

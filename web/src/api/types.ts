@@ -143,17 +143,6 @@ export type FlashCard = {
 };
 export type CardRating = 'again' | 'hard' | 'good';
 
-export type PlanItem = {
-  /** Course id, or "review" / "exam" for review and exam-prep tasks. */
-  kind: string;
-  label: L10n;
-  title: L10n;
-  /** Minutes for a 1.5 h study day; scaled to the student's hours. */
-  minutes: number;
-  why: L10n;
-  to: 'reader' | 'quiz';
-};
-
 export type CourseRank = {
   courseId: string;
   name: L10n;

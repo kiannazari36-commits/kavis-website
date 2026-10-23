@@ -92,7 +92,8 @@
   "sideExpand": "Menüyü genişlet",
   "comingSoon": "Yakında",
   "storesSoon": "iPhone, iPad, Android ve Mac uygulamaları yakında · web şimdi kullanılabilir.",
-  "helloName": "Merhaba {name},"
+  "helloName": "Merhaba {name},",
+  "daysUntilExam": "gün sonra sınav: {course}"
  },
  "en": {
   "pdfs": "PDFs",
@@ -187,7 +188,8 @@
   "sideExpand": "Expand menu",
   "comingSoon": "Coming soon",
   "storesSoon": "iPhone, iPad, Android and Mac apps are coming soon · the web works now.",
-  "helloName": "Hi {name},"
+  "helloName": "Hi {name},",
+  "daysUntilExam": "days until the exam: {course}"
  },
  "fa": {
   "pdfs": "PDFها",
@@ -282,7 +284,8 @@
   "sideExpand": "باز کردن منو",
   "comingSoon": "به‌زودی",
   "storesSoon": "اپلیکیشن‌های آیفون، آیپد، اندروید و مک به‌زودی می‌آیند · نسخهٔ وب همین حالا کار می‌کند.",
-  "helloName": "سلام {name}،"
+  "helloName": "سلام {name}،",
+  "daysUntilExam": "روز تا امتحان: {course}"
  },
  "ar": {
   "pdfs": "ملفات PDF",
@@ -377,6 +380,7 @@
   "sideExpand": "توسيع القائمة",
   "comingSoon": "قريبًا",
   "storesSoon": "تطبيقات iPhone وiPad وAndroid وMac قريبًا · الويب يعمل الآن.",
-  "helloName": "مرحبًا {name}،"
+  "helloName": "مرحبًا {name}،",
+  "daysUntilExam": "أيام حتى امتحان: {course}"
  }
 }

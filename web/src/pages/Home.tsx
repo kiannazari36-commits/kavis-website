@@ -8,7 +8,10 @@ import { COURSE_COLOR } from '../components/courseColors';
 import { listCourses, recentPdfs } from '../api/courses';
 import { getProfile } from '../api/account';
 import { useAsync } from '../hooks/useAsync';
-import { courseCount } from '../i18n/format';
+import { courseCount, duration, num } from '../i18n/format';
+import { daysUntil, isoToday } from '../api/courses';
+import { getTodayReview, getWeekPlan, setReview, setTaskDone } from '../api/plan';
+import { useSettings } from '../settings/SettingsProvider';
 import { useTrial } from '../trial/TrialProvider';
 import { usePanelPref } from '../hooks/usePanelPref';
 import s from './Home.module.css';
@@ -18,11 +21,11 @@ import s from './Home.module.css';
 // Level tag on a lesson card, from how much of it is read: Beginner / Good / Very good (k81 / k78 / k83).
 const levelKey = (pct: number) => (pct < 30 ? 'k81' : pct < 80 ? 'k78' : 'k83');
 
-const PLAN = [
-  { time: '09:00', title: 'k85', sub: 'k86' },
-  { time: '09:40', title: 'k87', sub: 'k88' },
-  { time: '18:00', title: 'k89', sub: 'k90' },
-];
+/** "09:00" + minutes → "09:40". */
+const addTime = (hm: string, minutes: number) => {
+  const m = parseInt(hm, 10) * 60 + parseInt(hm.slice(3), 10) + minutes;
+  return `${String(Math.floor(m / 60) % 24).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+};
 
 export default function Home() {
   const { t, lang } = useI18n();
@@ -35,8 +38,19 @@ export default function Home() {
   const firstName = profile?.name.split(' ')[0] ?? '';
   const navigate = useNavigate();
   const upload = () => guard('pdf', () => toast(t('k165')));
+  const { settings } = useSettings();
+  const review = useAsync(getTodayReview, []);
   const [showReview, setShowReview] = useState(true);
-  const [done, setDone] = useState<boolean[]>([true, false, false]);
+  // Today's plan (from this week's plan), one after the other from the reminder time, 10 minutes apart.
+  const week = useAsync(getWeekPlan, []);
+  const todayTasks = (week?.tasks ?? []).filter((x) => x.day === isoToday());
+  const plan = todayTasks.map((x, i) => ({
+    ...x,
+    time: addTime(settings.notifyTime, todayTasks.slice(0, i).reduce((a, y) => a + y.minutes + 10, 0)),
+  }));
+  const [ticks, setTicks] = useState<Record<string, boolean>>({});
+  const isDone = (id: string, status: string) => ticks[id] ?? status === 'done';
+  const nextExam = [...(courses ?? [])].filter((c) => c.examDate).sort((a, b) => a.examDate!.localeCompare(b.examDate!))[0];
   const [ask, setAsk] = useState('');
   // Right panel (today's plan + assistant): closed by default like the iPad design, opens wide screens only. Remembered.
   const [panelOpen, setPanelOpen] = usePanelPref('kavis.planOpen', 1440);
@@ -69,21 +83,23 @@ export default function Home() {
           </h1>
         </div>
 
-        {showReview && (
+        {showReview && review && (
           <section className={s.review}>
             <span className={s.reviewIcon}>
               <Icon name="refresh" size={26} />
             </span>
             <span className={s.reviewText}>
               <b>{t('k65')}</b>
-              <span>{t('k66')}</span>
+              <span>
+                {[review.title, t('reviewParts').replace('{c}', num(review.cards, lang)).replace('{q}', num(review.questions, lang)), duration(review.minutes, lang)].join(' · ')}
+              </span>
             </span>
             <span className={s.reviewBtns}>
-              <button className={s.reviewGo} onClick={() => navigate('/cards')}>
+              <button className={s.reviewGo} onClick={() => (setReview(review.id, 'done'), navigate('/cards'))}>
                 <Icon name="play" size={15} />
                 {t('k67')}
               </button>
-              <button className={s.reviewLater} onClick={() => setShowReview(false)}>
+              <button className={s.reviewLater} onClick={() => (setReview(review.id, 'tomorrow'), setShowReview(false))}>
                 {t('k68')}
               </button>
             </span>
@@ -145,9 +161,9 @@ export default function Home() {
 
       {!panelOpen && (
         <button className={s.planTab} aria-label={t('planOpen')} aria-expanded={false} onClick={() => setPanelOpen(true)}>
-          <span className={s.tabCount}>{PLAN.length}</span>
+          <span className={s.tabCount}>{plan.length}</span>
           <span className={s.tabTitle}>{t('planTab')}</span>
-          <span className={`mono ${s.tabTimes}`}>{PLAN.map((p) => p.time).join(' · ')}</span>
+          <span className={`mono ${s.tabTimes}`}>{plan.map((p) => p.time).join(' · ')}</span>
           <Icon name="chevron" size={16} width={2.2} className={s.tabChev} />
         </button>
       )}
@@ -164,28 +180,36 @@ export default function Home() {
                 <Icon name="close" size={14} width={2.2} />
               </button>
             </div>
-            {PLAN.map((p, i) => (
-              <div key={p.time} className={s.planRow}>
-                <span className={`mono ${s.time}`}>{p.time}</span>
-                <span className={s.planText}>
-                  <b>{t(p.title)}</b>
-                  <span>{t(p.sub)}</span>
-                </span>
-                <button
-                  role="checkbox"
-                  aria-checked={done[i]}
-                  aria-label={t(p.title)}
-                  className={done[i] ? `${s.check} ${s.checkOn}` : s.check}
-                  onClick={() => setDone(done.map((d, j) => (j === i ? !d : d)))}
-                >
-                  {done[i] && <Icon name="check" size={13} width={2.4} />}
-                </button>
-              </div>
-            ))}
-            <Link to="/plan" className={s.countdown}>
-              <b>7</b>
-              {t('k91')}
-            </Link>
+            {plan.map((p) => {
+              const done = isDone(p.id, p.status);
+              return (
+                <div key={p.id} className={s.planRow}>
+                  <span className={`mono ${s.time}`}>{p.time}</span>
+                  <span className={s.planText}>
+                    <b>{p.title}</b>
+                    <span>{`${duration(p.minutes, lang)} · ${p.why}`}</span>
+                  </span>
+                  <button
+                    role="checkbox"
+                    aria-checked={done}
+                    aria-label={p.title}
+                    className={done ? `${s.check} ${s.checkOn}` : s.check}
+                    onClick={() => {
+                      setTicks({ ...ticks, [p.id]: !done });
+                      setTaskDone(p.id, !done);
+                    }}
+                  >
+                    {done && <Icon name="check" size={13} width={2.4} />}
+                  </button>
+                </div>
+              );
+            })}
+            {nextExam && (
+              <Link to="/plan" className={s.countdown}>
+                <b>{num(daysUntil(nextExam.examDate!), lang)}</b>
+                {t('daysUntilExam').replace('{course}', nextExam.short ?? nextExam.name)}
+              </Link>
+            )}
           </section>
   
           <section className={`${s.panel} ${s.assistant}`}>

@@ -144,7 +144,13 @@
   "dlOff": "Otomatik indirme kapatıldı",
   "dlOn": "Açtığın PDF'ler cihazına kaydedilecek",
   "manageToast": "Hipertansiyon, Diyabet, Tablet Formülasyonu cihazında · istediğini silebilirsin",
-  "pwWhyShare": "Paylaşmak Premium'a özel"
+  "pwWhyShare": "Paylaşmak Premium'a özel",
+  "planLabelReview": "Tekrar",
+  "planLabelExam": "Sınava özel",
+  "toastMissedN": "Plan güncellendi · {n} iş {days} günlerine dağıtıldı",
+  "noMissed": "Kaçırdığın iş yok, plan zaten güncel.",
+  "noPlan": "Bu haftanın planı henüz hazır değil. Kavis planını derslerine ve sınav tarihlerine göre hazırlıyor.",
+  "reviewParts": "özet + {c} kart + {q} soru"
  },
  "en": {
   "planA": "My study",
@@ -291,7 +297,13 @@
   "dlOff": "Auto-download turned off",
   "dlOn": "PDFs you open will be saved to your device",
   "manageToast": "Hypertension, Diabetes, Tablet Formulation on your device · delete any you want",
-  "pwWhyShare": "Sharing is Premium-only"
+  "pwWhyShare": "Sharing is Premium-only",
+  "planLabelReview": "Review",
+  "planLabelExam": "Exam prep",
+  "toastMissedN": "Plan updated · {n} tasks moved to {days}",
+  "noMissed": "Nothing missed, the plan is up to date.",
+  "noPlan": "This week's plan is not ready yet. Kavis builds it from your courses and exam dates.",
+  "reviewParts": "summary + {c} cards + {q} questions"
  },
  "fa": {
   "planA": "برنامهٔ",
@@ -438,7 +450,13 @@
   "dlOff": "دانلود خودکار خاموش شد",
   "dlOn": "PDFهایی که باز می‌کنی روی دستگاهت ذخیره می‌شوند",
   "manageToast": "فشار خون بالا، دیابت، فرمولاسیون قرص روی دستگاهت · هرکدام را خواستی پاک کن",
-  "pwWhyShare": "اشتراک‌گذاری مخصوص Premium است"
+  "pwWhyShare": "اشتراک‌گذاری مخصوص Premium است",
+  "planLabelReview": "مرور",
+  "planLabelExam": "ویژه امتحان",
+  "toastMissedN": "برنامه به‌روز شد · {n} کار به {days} منتقل شد",
+  "noMissed": "کاری از دست نرفته؛ برنامه به‌روز است.",
+  "noPlan": "برنامهٔ این هفته هنوز آماده نیست. Kavis آن را بر اساس درس‌ها و تاریخ امتحان‌هایت می‌سازد.",
+  "reviewParts": "خلاصه + {c} کارت + {q} سؤال"
  },
  "ar": {
   "planA": "خطة",
@@ -585,6 +603,12 @@
   "dlOff": "تم إيقاف التنزيل التلقائي",
   "dlOn": "ستُحفظ ملفات PDF التي تفتحها على جهازك",
   "manageToast": "ارتفاع ضغط الدم، السكري، تركيب الأقراص على جهازك · احذف ما تشاء",
-  "pwWhyShare": "المشاركة حصرية لـ Premium"
+  "pwWhyShare": "المشاركة حصرية لـ Premium",
+  "planLabelReview": "مراجعة",
+  "planLabelExam": "خاص بالامتحان",
+  "toastMissedN": "تم تحديث الخطة · نُقلت {n} مهام إلى {days}",
+  "noMissed": "لا توجد مهام فائتة، الخطة محدّثة.",
+  "noPlan": "خطة هذا الأسبوع غير جاهزة بعد. يبنيها Kavis من مقرراتك ومواعيد امتحاناتك.",
+  "reviewParts": "ملخص + {c} بطاقات + {q} أسئلة"
  }
 }

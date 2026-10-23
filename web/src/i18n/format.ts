@@ -118,3 +118,27 @@ export function pagesShort(from: number, to: number, lang: Lang) {
   const word = { tr: 'S.', en: from === to ? 'p.' : 'pp.', fa: 'ص.', ar: 'ص.' }[lang];
   return `${word} ${range}`;
 }
+
+const D = (iso: string) => new Date(`${iso}T00:00:00Z`);
+
+/** "19–25 Ekim" / "Oct 19 – 25" (week header). */
+export function dateRange(from: string, to: string, lang: Lang) {
+  const f = new Intl.DateTimeFormat(DATE_LOCALE[lang], { day: 'numeric', month: lang === 'en' ? 'short' : 'long', timeZone: 'UTC' });
+  // formatRange is in every current browser; the TypeScript target here does not list it.
+  return (f as Intl.DateTimeFormat & { formatRange(a: Date, b: Date): string }).formatRange(D(from), D(to));
+}
+
+/** "Cum 23 Ekim" / "Fri 23 Oct" (today's plan). */
+export function dayDate(iso: string, lang: Lang) {
+  return new Intl.DateTimeFormat(DATE_LOCALE[lang], { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }).format(D(iso));
+}
+
+/** "23 EKİ" (day column of the week). */
+export function dayShort(iso: string, lang: Lang) {
+  return new Intl.DateTimeFormat(DATE_LOCALE[lang], { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(D(iso)).toLocaleUpperCase(lang);
+}
+
+/** "Pazartesi" (where missed tasks went). */
+export function weekdayName(iso: string, lang: Lang) {
+  return new Intl.DateTimeFormat(DATE_LOCALE[lang], { weekday: 'long', timeZone: 'UTC' }).format(D(iso));
+}

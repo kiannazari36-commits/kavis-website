@@ -23,6 +23,8 @@ export type Settings = {
   cheerNotifications: boolean;
   offlineMode: boolean;
   autoDownload: boolean;
+  /** Study / review reminder time, "09:00" (also the start of today's plan on home). */
+  notifyTime: string;
 };
 
 const KEY = 'kavis.settings';
@@ -40,6 +42,7 @@ export const DEFAULT_SETTINGS: Settings = {
   cheerNotifications: true,
   offlineMode: false,
   autoDownload: true,
+  notifyTime: '09:00',
 };
 
 // Settings live in the account (table user_settings, one row per student). The browser keeps a copy so the
@@ -59,9 +62,10 @@ type Row = {
   cheer_notifications: boolean;
   offline_mode: boolean;
   auto_download: boolean;
+  notify_time: string;
 };
 const COLUMNS =
-  'content_lang, plan_mode, study_days, study_hours, reader_paper, reader_font_size, translation_style, push_notifications, sync, cheer_notifications, offline_mode, auto_download';
+  'content_lang, plan_mode, study_days, study_hours, reader_paper, reader_font_size, translation_style, push_notifications, sync, cheer_notifications, offline_mode, auto_download, notify_time';
 
 const fromRow = (r: Row, courseContentLang: Record<string, ContentLangChoice>): Settings => ({
   contentLang: r.content_lang,
@@ -77,6 +81,7 @@ const fromRow = (r: Row, courseContentLang: Record<string, ContentLangChoice>): 
   cheerNotifications: r.cheer_notifications,
   offlineMode: r.offline_mode,
   autoDownload: r.auto_download,
+  notifyTime: r.notify_time.slice(0, 5),
 });
 
 const toRow = (s: Settings): Row => ({
@@ -92,6 +97,7 @@ const toRow = (s: Settings): Row => ({
   cheer_notifications: s.cheerNotifications,
   offline_mode: s.offlineMode,
   auto_download: s.autoDownload,
+  notify_time: s.notifyTime,
 });
 
 function cache(s: Settings) {
