@@ -36,6 +36,7 @@ begin
   delete from public.study_plans       where user_id = uid;
   delete from public.review_sessions   where user_id = uid;
   delete from public.notifications     where user_id = uid;
+  delete from public.assistant_threads where user_id = uid;
 
   -- ── Profile and settings ──
   update public.profiles
@@ -338,6 +339,45 @@ begin
                                         and s.started_at >= date_trunc('week', current_date) - interval '7 days' and s.started_at < date_trunc('week', current_date)) || ' saat çalıştın',
                                                                               'Hedefin 12 saatti. En çok: Farmakoterapi.',                           '/progress')
   ) as v(d, at, kind, title, body, dest);
+
+  -- ── Assistant conversations (threads and answers are written by the server: Edge Function "assistant") ──
+  -- One thread per course (the Farmakoterapi one is about the Hipertansiyon lesson, so the reader panel shows it)
+  -- and one about all courses. Answers come only from the student's lessons, with page sources.
+  for m in
+    select * from (values
+      (0, 'Farmakoterapi', 'Hipertansiyon', 'user',      'Bu sayfayı kısaca anlatır mısın?', null, null, 3),
+      (1, 'Farmakoterapi', 'Hipertansiyon', 'assistant', 'İlk basamak tedavide dört grup kullanılır: diüretikler, ACE inhibitörleri, ARB''ler ve kalsiyum kanal blokerleri. ACE inhibitörlerine düşük dozla başlanır (ör. ramipril 2,5 mg/gün) ve doz 2–4 haftada bir artırılır.', 'Hipertansiyon', 12, 3),
+      (2, 'Farmakoterapi', 'Hipertansiyon', 'user',      'ACE inhibitörleri neden kuru öksürük yapar?', null, null, 3),
+      (3, 'Farmakoterapi', 'Hipertansiyon', 'assistant', 'ACE enzimi bradikinini de yıkar. ACE inhibe edilince bradikinin birikir ve kuru öksürük yapar. Öksürük olursa ARB''ye geçilir; ARB''ler bradikinini artırmaz.', 'Hipertansiyon', 13, 3),
+      (4, 'Farmakoterapi', 'Hipertansiyon', 'user',      'Gebelikte hangi tansiyon ilaçları kullanılmaz?', null, null, 1),
+      (5, 'Farmakoterapi', 'Hipertansiyon', 'assistant', 'ACE inhibitörleri ve ARB''ler gebelikte kontrendikedir; fetüse zarar verirler. Gebelikte metildopa, labetalol ve nifedipin tercih edilir.', 'Hipertansiyon', 14, 1),
+      (0, 'Toksikoloji', 'Organofosfat zehirlenmesi', 'user',      'Organofosfat zehirlenmesinde antidot nedir?', null, null, 2),
+      (1, 'Toksikoloji', 'Organofosfat zehirlenmesi', 'assistant', 'Atropin muskarinik belirtileri (salya, bronş salgısı, bradikardi) düzeltir. Pralidoksim kolinesterazı yeniden aktive eder; erken verilmelidir.', 'Organofosfat zehirlenmesi', 9, 2),
+      (0, 'Farmasötik Teknoloji III', 'Tablet formülasyonu', 'user',      'Islak granülasyonun avantajı nedir?', null, null, 5),
+      (1, 'Farmasötik Teknoloji III', 'Tablet formülasyonu', 'assistant', 'Tozun akışını ve sıkıştırılabilirliğini iyileştirir; etkin maddenin karışımda homojen dağılmasını sağlar.', 'Tablet formülasyonu', 5, 5),
+      (0, 'Farmakognozi', 'Glikozitler', 'user',      'Digoksin hangi bitkiden elde edilir?', null, null, 4),
+      (1, 'Farmakognozi', 'Glikozitler', 'assistant', 'Digitalis lanata (yünlü yüksükotu) yapraklarından elde edilir. Digoksin bir kardiyak glikozittir.', 'Glikozitler', 17, 4),
+      (0, null, null, 'user',      'Bu hafta en çok neye çalışmalıyım?', null, null, 0),
+      (1, null, null, 'assistant', 'En zayıf konuların: Hipertansif kriz (%38), Kurşun zehirlenmesi (%49) ve ACE inhibitörlerinin yan etkileri (%54). Farmakoterapi vizen en yakın sınavın; planında bu konular için kısa tekrarlar var.', null, null, 0)
+    ) as v(ord, course, lesson, role, content, src_lesson, src_page, days_ago)
+  loop
+    select th.id into qid from public.assistant_threads th
+     where th.user_id = uid and th.title = coalesce(m.lesson, 'Tüm derslerim');
+    if qid is null then
+      insert into public.assistant_threads (user_id, course_id, material_id, mode, title, created_at, updated_at)
+      select uid,
+             (select id from public.courses where user_id = uid and name = m.course),
+             (select id from public.materials where user_id = uid and title = m.lesson),
+             'chat', coalesce(m.lesson, 'Tüm derslerim'), now() - make_interval(days => m.days_ago), now() - make_interval(days => m.days_ago)
+      returning id into qid;
+    end if;
+    insert into public.assistant_messages (thread_id, user_id, role, content, source_mode, sources, created_at)
+    values (qid, uid, m.role, m.content, 'pdf',
+            case when m.src_lesson is null then '[]'::jsonb
+                 else jsonb_build_array(jsonb_build_object('material_id', (select id from public.materials where user_id = uid and title = m.src_lesson), 'page', m.src_page)) end,
+            now() - make_interval(days => m.days_ago) + make_interval(mins => m.ord));
+    qid := null;
+  end loop;
 
   -- ── School timetable (Monday = 1) ──
   insert into public.timetable_entries (user_id, course_id, title, weekday, start_time, end_time, room, teacher)

@@ -3,14 +3,17 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useI18n } from '../i18n/I18nProvider';
 import { useToast } from '../components/Toast';
 import Icon, { type IconName } from '../components/Icon';
-import { askAssistant, listAssistantTopics, uploadForAssistant, type SourceMode } from '../api/assistant';
+import { latestThread, listAssistantTopics, uploadForAssistant, type AssistantTopic, type ChatMessage, type SourceMode } from '../api/assistant';
 import { useAsync } from '../hooks/useAsync';
-import type { AssistantTopic, Attachment, AttachmentKind } from '../api/types';
+import { num } from '../i18n/format';
+import type { Attachment, AttachmentKind } from '../api/types';
 import { useTrial } from '../trial/TrialProvider';
 import s from './Assistant.module.css';
 
 // Design: design/NewIPad.dc.html, screens "ai" (start + message box) and "aichat" (answer view).
 // The assistant answers only from the student's material unless "AI + research" is switched on.
+// Answers are made by the server (Edge Function "assistant", not built yet): the chat shows the earlier
+// conversation from the database, and a new question waits for the server.
 
 type Panel = '' | 'menu' | 'add' | 'courses';
 type Upload = { kind: AttachmentKind; data: Attachment; topic: string; chosen: boolean; done: boolean };
@@ -21,9 +24,9 @@ export default function Assistant() {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const { guard } = useTrial();
-  const topics = useAsync(listAssistantTopics, []);
+  const topics = useAsync(() => listAssistantTopics(t('asAllName'), t('asAllSub')), [lang]);
 
-  const [course, setCourse] = useState(params.get('q') ? 'hypertension' : '');
+  const [course, setCourse] = useState(params.get('q') ? 'all' : (params.get('course') ?? ''));
   const [mode, setMode] = useState<SourceMode>('pdf');
   const [panel, setPanel] = useState<Panel>('');
   const [editCourse, setEditCourse] = useState(false);
@@ -32,7 +35,7 @@ export default function Assistant() {
   // A question from another page (?q=…) opens the chat directly.
   const [chat, setChat] = useState<{ topic: string; q: string } | null>(() => {
     const q = params.get('q');
-    return q ? { topic: 'hypertension', q } : null;
+    return q ? { topic: 'all', q } : null;
   });
 
   useEffect(() => {
@@ -43,7 +46,7 @@ export default function Assistant() {
 
   const byId = (id: string) => topics.find((x) => x.id === id);
   const sel = byId(course);
-  const name = (x?: AssistantTopic) => (x ? x.name[lang] : '');
+  const name = (x?: AssistantTopic) => (x ? x.name : '');
 
   const placeholder = !sel ? t('phPick') : sel.id === 'all' ? t('phAll') : name(sel) + t('phAbout');
 
@@ -76,7 +79,8 @@ export default function Assistant() {
   };
   const doUpload = async (kind: AttachmentKind) => {
     const data = await uploadForAssistant(kind);
-    setUpload({ kind, data, topic: data.topic, chosen: false, done: false });
+    // The sample upload has no real course guess yet: suggest the chosen course, else the first one.
+    setUpload({ kind, data, topic: sel && sel.id !== 'all' ? sel.id : topics[0].id, chosen: false, done: false });
     toast(data.name[lang] + t('attUploaded'));
   };
 
@@ -97,8 +101,8 @@ export default function Assistant() {
       {list.map((k) => (
         <button key={k.id} role="radio" aria-checked={isOn(k.id)} className={isOn(k.id) ? `${s.course} ${s.courseOn}` : s.course} onClick={() => onPick(k.id)}>
           <span className={s.dot} style={{ background: k.color }} />
-          <b>{k.name[lang]}</b>
-          <span>{k.sub[lang]}</span>
+          <b>{k.name}</b>
+          <span>{k.sub}</span>
         </button>
       ))}
     </div>
@@ -308,10 +312,11 @@ function Chat({ topic, question, mode, onBack }: { topic: AssistantTopic; questi
   const toast = useToast();
   const navigate = useNavigate();
   const [draft, setDraft] = useState('');
+  const [asked, setAsked] = useState<string[]>(question ? [question] : []);
   const { guard } = useTrial();
-  const answer = useAsync(() => askAssistant(topic.id, question, mode), [topic.id, question, mode]);
+  const history = useAsync(() => latestThread(topic.courseId), [topic.courseId]);
   const all = topic.id === 'all';
-  const name = topic.name[lang];
+  const name = topic.name;
   const tag = all ? t('tagAll') : t('tagCourse') + name.toLocaleUpperCase(lang === 'tr' ? 'tr' : 'en');
   const hello = all ? t('helloAll') : t('helloA') + name + t('helloB') + (mode === 'ai' ? t('helloAi') : '');
 
@@ -320,6 +325,11 @@ function Chat({ topic, question, mode, onBack }: { topic: AssistantTopic; questi
     ['followQuiz', name + t('followQuizT'), 'generate'],
     ['followCard', t('followCardA') + name + t('followCardB'), 'generate'],
   ];
+  const sourceLine = (m: ChatMessage) =>
+    m.sources
+      .filter((x) => x.lesson)
+      .map((x) => (x.page !== null ? `${x.lesson} · ${t('pageAbbr')} ${num(x.page, lang)}` : x.lesson))
+      .join(' · ');
 
   return (
     <main className={s.chatPage}>
@@ -338,41 +348,53 @@ function Chat({ topic, question, mode, onBack }: { topic: AssistantTopic; questi
             <span className={mode === 'ai' ? `${s.chipStatic} ${s.chipAi}` : s.chipStatic}>{t(mode === 'ai' ? 'srcAi' : 'srcPdf')}</span>
           </span>
         </span>
-        {topic.folder && (
-          <button className={s.folderBtn} onClick={() => navigate(topic.folder === 'all' ? '/courses' : `/courses/${topic.folder}`)}>
-            <Icon name="folder" size={17} />
-            {t(all ? 'folderAll' : 'folderOpen')}
-          </button>
-        )}
+        <button className={s.folderBtn} onClick={() => navigate(all ? '/courses' : `/courses/${topic.courseId}`)}>
+          <Icon name="folder" size={17} />
+          {t(all ? 'folderAll' : 'folderOpen')}
+        </button>
       </div>
 
       <div className={s.thread}>
         <div className={s.column}>
           <div className={s.ai}>{hello}</div>
-          <div className={s.me}>{question || topic.sample.q[lang]}</div>
-          {answer ? (
-            <>
-              <div className={s.answer}>
-                <span className={`mono ${s.answerTag}`}>{tag}</span>
-                <span>{answer.a[lang]}</span>
-                <span className={`mono ${s.answerSrc}`}>
-                  {t('sourcePrefix')} {answer.src[lang]}
-                </span>
-              </div>
-              {question && <span className={s.protoNote}>{t('protoNote')}</span>}
-              <div className={s.follow}>
-                {follow.map(([k, msg, action]) => (
-                  <button key={k} onClick={() => guard(action, () => toast(msg))}>
-                    {t(k)}
-                  </button>
-                ))}
-              </div>
-            </>
-          ) : (
+          {history === undefined && (
             <div className={s.typing} aria-label="…">
               <span />
               <span />
               <span />
+            </div>
+          )}
+          {history?.length === 0 && !asked.length && <span className={s.protoNote}>{t('noThread')}</span>}
+          {history?.map((m) =>
+            m.role === 'user' ? (
+              <div key={m.id} className={s.me}>
+                {m.text}
+              </div>
+            ) : (
+              <div key={m.id} className={s.answer}>
+                <span className={`mono ${s.answerTag}`}>{m.outsidePdf ? t('outsidePdf') : tag}</span>
+                <span>{m.text}</span>
+                {sourceLine(m) && (
+                  <span className={`mono ${s.answerSrc}`}>
+                    {t('sourcePrefix')} {sourceLine(m)}
+                  </span>
+                )}
+              </div>
+            ),
+          )}
+          {asked.map((q, i) => (
+            <div key={i} className={s.me}>
+              {q}
+            </div>
+          ))}
+          {asked.length > 0 && <span className={s.protoNote}>{t('askLater')}</span>}
+          {history && history.length > 0 && (
+            <div className={s.follow}>
+              {follow.map(([k, msg, action]) => (
+                <button key={k} onClick={() => guard(action, () => toast(msg))}>
+                  {t(k)}
+                </button>
+              ))}
             </div>
           )}
         </div>
@@ -387,6 +409,7 @@ function Chat({ topic, question, mode, onBack }: { topic: AssistantTopic; questi
             return;
           }
           guard('question', () => {
+            setAsked([...asked, draft.trim()]);
             setDraft('');
             toast(t('searchingA') + name + t('searchingB'));
           });

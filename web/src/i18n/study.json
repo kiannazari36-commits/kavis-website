@@ -171,7 +171,13 @@
   "style_structure": "Yapı / yan etki",
   "daysLeftN": "{n} gün kaldı",
   "packSources": "ders PDF'in, ses kaydın, soruların ve zayıf konuların birleştirildi",
-  "noPack": "Bu dersin sınava özel paketi henüz hazır değil."
+  "noPack": "Bu dersin sınava özel paketi henüz hazır değil.",
+  "asAllName": "Tüm derslerim",
+  "asAllSub": "Hepsinden cevap",
+  "askLater": "Gerçek cevaplar, asistan sunucuya bağlanınca gelecek. Yukarıda bu konudaki önceki sohbetin var.",
+  "noThread": "Bu konuda henüz sohbetin yok.",
+  "outsidePdf": "PDF dışı bilgi",
+  "pageAbbr": "s."
  },
  "en": {
   "heroA": "How can I",
@@ -345,7 +351,13 @@
   "style_structure": "Structure / side effect",
   "daysLeftN": "{n} days left",
   "packSources": "your PDF, recording, questions and weak topics combined",
-  "noPack": "This course's exam pack is not ready yet."
+  "noPack": "This course's exam pack is not ready yet.",
+  "asAllName": "All my courses",
+  "asAllSub": "Answers from all of them",
+  "askLater": "Real answers come once the assistant is connected to the server. Above is your earlier chat on this.",
+  "noThread": "No chat about this yet.",
+  "outsidePdf": "Outside your PDF",
+  "pageAbbr": "p."
  },
  "fa": {
   "heroA": "امروز چطور",
@@ -519,7 +531,13 @@
   "style_structure": "ساختار / عارضه جانبی",
   "daysLeftN": "{n} روز مانده",
   "packSources": "PDF درس، ضبط صوتی، سؤال‌ها و موضوعات ضعیفت ترکیب شدند",
-  "noPack": "بستهٔ امتحان این درس هنوز آماده نیست."
+  "noPack": "بستهٔ امتحان این درس هنوز آماده نیست.",
+  "asAllName": "همه درس‌هایم",
+  "asAllSub": "پاسخ از همه",
+  "askLater": "پاسخ‌های واقعی وقتی دستیار به سرور وصل شد می‌آیند. بالا گفت‌وگوی قبلی‌ات دربارهٔ همین است.",
+  "noThread": "هنوز گفت‌وگویی دربارهٔ این نداری.",
+  "outsidePdf": "خارج از PDF",
+  "pageAbbr": "ص."
  },
  "ar": {
   "heroA": "كيف يمكنني اليوم",
@@ -693,6 +711,12 @@
   "style_structure": "البنية / الأثر الجانبي",
   "daysLeftN": "بقي {n} أيام",
   "packSources": "دُمج ملف PDF والتسجيل والأسئلة ونقاط ضعفك",
-  "noPack": "حزمة الامتحان لهذا المقرر غير جاهزة بعد."
+  "noPack": "حزمة الامتحان لهذا المقرر غير جاهزة بعد.",
+  "asAllName": "كل موادي",
+  "asAllSub": "إجابة من جميعها",
+  "askLater": "ستأتي الإجابات الحقيقية عند ربط المساعد بالخادم. في الأعلى محادثتك السابقة حول هذا.",
+  "noThread": "لا توجد محادثة حول هذا بعد.",
+  "outsidePdf": "خارج ملف PDF",
+  "pageAbbr": "ص."
  }
 }

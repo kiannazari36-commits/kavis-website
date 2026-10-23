@@ -35,7 +35,10 @@ Everything that is not finished yet. Updated after every step.
   - [ ] Congratulation as a push notification when the app is closed: scheduled job `send-notifications`
   - [x] Notifications: new web page `/notifications` (design ScrNotifications: Today / Yesterday / This week), from `notifications`; opening marks them read; the bell dot shows unread; the flame button shows the real streak. Example: 9 notifications matching the example data
   - [ ] Scheduled job `send-notifications` (push, snooze) and the server writing notifications (planner, lesson ready, exam result, weekly report)
-  - [ ] Still mock: assistant (chat and the reader side panel), Premium page offer → connect them next, with example rows in `seed.sql`
+  - [x] Assistant: course choice = real courses + "all"; the chat and the reader's side panel show the saved conversation (`assistant_threads` + `assistant_messages`, sources = lesson + page). A new question is shown with "real answers come once the assistant is connected" (the app may not write answers). Example: 5 conversations, 14 messages
+  - [ ] Edge Function `assistant`: answer only from the student's lessons (`material_chunks` search), "AI + research" mode, save thread + messages, count trial questions, cost limit — needs the Claude API key as a Supabase secret
+  - [ ] Assistant "+" menu (upload PDF / photo / audio, solve a question photo): still sample data (`web/src/api/mock/assistant.ts`) until upload is built
+  - [ ] Still mock: Premium page offer → connect them next, with example rows in `seed.sql`
   - [ ] Class rank on course cards ("Sıralama #3") has no data on the server; hidden until it exists
   - [ ] App language and theme are still saved only in the browser (`profiles.app_lang`, `user_settings.app_theme` exist)
   - [x] Trial card and Premium status from `access_status()`; devices: login registers the web (all browsers share install id `web` = one slot), My devices list, sign out, 3rd-device screen, signed-out-elsewhere check at start, log out frees the slot

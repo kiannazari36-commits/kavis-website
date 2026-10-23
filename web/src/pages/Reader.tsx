@@ -7,6 +7,7 @@ import Icon from '../components/Icon';
 import Wordmark from '../components/Wordmark';
 import { getPdf, recentPdfs } from '../api/courses';
 import { addHighlight, getLesson, markRead, saveStudyTime, tapTerm, translate, type TranslationStyle } from '../api/reader';
+import { latestThread } from '../api/assistant';
 import { num, percent } from '../i18n/format';
 import { useAsync } from '../hooks/useAsync';
 import { usePanelPref } from '../hooks/usePanelPref';
@@ -353,7 +354,7 @@ export default function Reader() {
         )}
       </main>
 
-      {panel && !focus && <AssistantPanel onClose={() => setPanel(false)} />}
+      {panel && !focus && <AssistantPanel materialId={pdfId} onClose={() => setPanel(false)} />}
 
       {shareOpen && <ShareDialog pdfId={pdfId} onClose={() => setShareOpen(false)} />}
 
@@ -589,8 +590,10 @@ function TranslateDialog({ doc, materialId, source, onClose }: { doc: ReaderDoc;
   );
 }
 
-function AssistantPanel({ onClose }: { onClose: () => void }) {
-  const { t } = useI18n();
+function AssistantPanel({ materialId, onClose }: { materialId: string; onClose: () => void }) {
+  const { t, lang } = useI18n();
+  // The earlier chat about this lesson (answers are made by the server, Edge Function "assistant").
+  const history = useAsync(() => latestThread(null, materialId), [materialId]);
   const toast = useToast();
   const [draft, setDraft] = useState('');
   const [mine, setMine] = useState<Msg[]>([]);
@@ -633,20 +636,32 @@ function AssistantPanel({ onClose }: { onClose: () => void }) {
       <span className={s.only}>{t('onlyFrom')}</span>
 
       <div className={s.chat}>
-        <div className={s.me}>{t('explainPage')}</div>
-        <div className={s.ai}>
-          <b>{t('pageGist')}</b>
-          <span>{t('gist1')}</span>
-          <span>{t('gist2')}</span>
-          <span className={`mono ${s.src}`}>{t('source12')}</span>
-        </div>
-        <div className={s.me}>{t('teacherEmph')}</div>
-        <div className={s.ai}>{t('teacherAnswer')}</div>
+        {history?.map((m) =>
+          m.role === 'user' ? (
+            <div key={m.id} className={s.me}>
+              {m.text}
+            </div>
+          ) : (
+            <div key={m.id} className={s.ai}>
+              <span>{m.text}</span>
+              {m.sources.some((x) => x.page !== null) && (
+                <span className={`mono ${s.src}`}>
+                  {t('sourcePrefix')}{' '}
+                  {m.sources
+                    .filter((x) => x.page !== null)
+                    .map((x) => `${t('pageAbbr')} ${num(x.page!, lang)}`)
+                    .join(', ')}
+                </span>
+              )}
+            </div>
+          ),
+        )}
         {mine.map((m, i) => (
           <div key={i} className={s.me}>
             {m.text}
           </div>
         ))}
+        {mine.length > 0 && <span className={s.only}>{t('askLater')}</span>}
         <div ref={end} />
       </div>
 

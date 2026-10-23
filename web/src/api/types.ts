@@ -67,17 +67,6 @@ export type ReaderTerm = {
   explanation: Partial<Record<Lang, { name: string; kind: string; text: string }>>;
 };
 
-/** A course (or "all courses") the assistant can answer about. */
-export type AssistantTopic = {
-  id: string;
-  name: L10n;
-  sub: L10n;
-  color: string;
-  /** Course id for "open the course folder", "all" for My Courses, null if none. */
-  folder: string | null;
-  sample: { q: L10n; a: L10n; src: L10n };
-};
-
 export type AttachmentKind = 'pdf' | 'photo' | 'audio';
 
 export type Attachment = {
