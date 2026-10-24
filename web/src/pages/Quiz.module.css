@@ -425,6 +425,50 @@
   font-weight: 600;
 }
 
+.optionRight {
+  border: 2px solid var(--good);
+  background: var(--good-soft);
+}
+
+.optionRight .letter {
+  background: var(--good);
+  color: #fffcf6;
+}
+
+.optionWrong {
+  border: 2px solid var(--bad);
+  background: var(--bad-soft);
+}
+
+.optionWrong .letter {
+  background: var(--bad);
+  color: #fffcf6;
+}
+
+.optionDim {
+  opacity: 0.55;
+}
+
+.option[aria-disabled='true'] {
+  cursor: default;
+}
+
+.verdict {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wrongNow {
+  align-self: flex-start;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 12px;
+  background: var(--bad-soft);
+  color: var(--bad);
+}
+
 .optionOn .letter {
   background: var(--pri);
   color: #fffcf6;

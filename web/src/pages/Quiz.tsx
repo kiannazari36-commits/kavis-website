@@ -148,6 +148,13 @@ export default function Quiz() {
     if (qi >= qList.length - 1) finishRun();
     else setQi(qi + 1);
   };
+  // Picking an option answers the question at once: right or wrong is shown with the right answer and why; the
+  // answer cannot be changed. A wrong one is already explained, so the results show it open.
+  const pick = (i: number) => {
+    if (sel !== undefined) return;
+    setAnswers({ ...answers, [qIdx]: i });
+    if (Q && i !== Q.answer) setFinds({ ...finds, [qIdx]: { mode: 'show', hints: 1, bad: -1 } });
+  };
   const addHint = () => {
     if (nH >= 3) {
       toast(t('allHints'));
@@ -288,14 +295,32 @@ export default function Quiz() {
                 key={i}
                 role="radio"
                 aria-checked={sel === i}
-                className={sel === i ? `${s.option} ${s.optionOn}` : s.option}
-                onClick={() => setAnswers({ ...answers, [qIdx]: i })}
+                aria-disabled={sel !== undefined}
+                className={[
+                  s.option,
+                  sel !== undefined && i === Q.answer ? s.optionRight : '',
+                  sel === i && i !== Q.answer ? s.optionWrong : '',
+                  sel !== undefined && sel !== i && i !== Q.answer ? s.optionDim : '',
+                ].join(' ')}
+                onClick={() => pick(i)}
               >
                 <span className={s.letter}>{LETTERS[i]}</span>
                 {o}
               </button>
             ))}
           </div>
+          {sel !== undefined && (
+            <div className={s.verdict} role="status" lang={cl} dir={cdir}>
+              <span className={sel === Q.answer ? s.solved : s.wrongNow}>
+                {sel === Q.answer ? t('rightNow') : `${t('wrongNow')} ${LETTERS[Q.answer]}) ${Q.options[Q.answer]}`}
+              </span>
+              {Q.why && (
+                <span className={s.whyText}>
+                  <b>{t('why')}</b> {Q.why}
+                </span>
+              )}
+            </div>
+          )}
           <div className={s.hints} lang={cl} dir={cdir}>
             {Q.hints.slice(0, nH).map((h, i) => (
               <div key={i} className={s.hint}>
@@ -306,10 +331,12 @@ export default function Quiz() {
                 <span>{h}</span>
               </div>
             ))}
-            <button className={nH > 0 ? s.hintBtn : `${s.hintBtn} ${s.hintBtnFirst}`} onClick={addHint}>
-              <Icon name="bulb" size={16} />
-              {nH === 0 ? t('hintFirst') : nH < 3 ? `${t('hintMore')}${nH}/3)` : t('hintsDone')}
-            </button>
+            {sel === undefined && (
+              <button className={nH > 0 ? s.hintBtn : `${s.hintBtn} ${s.hintBtnFirst}`} onClick={addHint}>
+                <Icon name="bulb" size={16} />
+                {nH === 0 ? t('hintFirst') : nH < 3 ? `${t('hintMore')}${nH}/3)` : t('hintsDone')}
+              </button>
+            )}
           </div>
           <div className={s.qFoot}>
             <span className={s.label2}>{t('howSure')}</span>
