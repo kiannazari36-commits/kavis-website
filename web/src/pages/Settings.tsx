@@ -77,6 +77,9 @@ export default function Settings() {
     getProfile().then((p) => p && setProfile(p));
   }, []);
   const [delOpen, setDelOpen] = useState(false);
+  const [delPass, setDelPass] = useState('');
+  const [delErr, setDelErr] = useState('');
+  const [delBusy, setDelBusy] = useState(false);
   const isMac = /Mac|iPhone|iPad/.test(navigator.platform);
 
   const go = (id: Section) => {
@@ -364,7 +367,13 @@ export default function Settings() {
               <b>{t('k158')}</b>
               <span>{t('k159')}</span>
             </span>
-            <button className={s.ghost} onClick={() => requestMyData().then(() => toast(t('expSent')))}>
+            <button
+              className={s.ghost}
+              onClick={async () => {
+                toast(t('expMaking'));
+                toast(t((await requestMyData()) ? 'expReady' : 'expFailed'));
+              }}
+            >
               {t('k160')}
             </button>
             <button className={s.danger} onClick={() => setDelOpen(true)}>
@@ -401,17 +410,35 @@ export default function Settings() {
             <b className={s.delTitle}>{t('delTitle')}</b>
             <span className={s.delText}>{t('delText')}</span>
             <span className={s.delSub}>{t('delSub')}</span>
-            <span className={s.delMail}>{t('delMail')}</span>
+            <span className={s.delMail}>{t('delWait')}</span>
+            {/* The password once more, so nobody deletes the account from a computer left open. */}
+            <input
+              className={s.delPass}
+              type="password"
+              autoComplete="current-password"
+              value={delPass}
+              onChange={(e) => (setDelPass(e.target.value), setDelErr(''))}
+              placeholder={t('delPassHint')}
+              aria-label={t('delPassHint')}
+            />
+            {delErr && <span className={s.delErr}>{delErr}</span>}
             <div className={s.delBtns}>
-              <button className={s.ghostBig} onClick={() => setDelOpen(false)}>
+              <button className={s.ghostBig} onClick={() => (setDelOpen(false), setDelPass(''), setDelErr(''))}>
                 {t('delCancel')}
               </button>
               <button
                 className={s.dangerBig}
+                aria-busy={delBusy}
                 onClick={async () => {
-                  await deleteAccount();
+                  if (!delPass) return setDelErr(t('delPassHint'));
+                  if (delBusy) return;
+                  setDelBusy(true);
+                  const r = await deleteAccount(delPass);
+                  setDelBusy(false);
+                  if ('error' in r) return setDelErr(t(r.error === 'password' ? 'delPassWrong' : 'delFailed'));
                   setDelOpen(false);
-                  toast(t('delSent'));
+                  setDelPass('');
+                  toast(t('delScheduled').replace('{date}', new Date(r.scheduledFor).toLocaleDateString(lang, { day: 'numeric', month: 'long' })));
                 }}
               >
                 {t('k161')}

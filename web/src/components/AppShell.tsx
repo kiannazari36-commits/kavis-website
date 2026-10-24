@@ -4,7 +4,8 @@ import { useI18n } from '../i18n/I18nProvider';
 import { useTheme } from '../theme/ThemeProvider';
 import { listCourses } from '../api/courses';
 import { currentUser, logOut } from '../api/auth';
-import { clearProfile, getProfile } from '../api/account';
+import { cancelDeletion, clearProfile, DELETION_EVENT, deletionDate, getProfile } from '../api/account';
+import { useToast } from './Toast';
 import { checkThisDevice, signOutThisDevice } from '../api/devices';
 import { studyLine } from '../i18n/format';
 import { useAsync } from '../hooks/useAsync';
@@ -49,6 +50,15 @@ export default function AppShell() {
     .toUpperCase();
   const [open, setOpen] = useState(false);
   const [focus, setFocus] = useState(false);
+  const toast = useToast();
+  // "Hesabın … tarihinde silinecek · Vazgeç" while a deletion waits its 30 days.
+  const [delCheck, setDelCheck] = useState(0);
+  const deleteOn = useAsync(deletionDate, [delCheck]);
+  useEffect(() => {
+    const again = () => setDelCheck((n) => n + 1);
+    window.addEventListener(DELETION_EVENT, again);
+    return () => window.removeEventListener(DELETION_EVENT, again);
+  }, []);
   // Desktop: wide menu (open) or the narrow icon rail of the iPad design (closed). Remembered.
   const [wide, setWide] = usePanelPref('kavis.sideOpen', 1280);
 
@@ -149,6 +159,14 @@ export default function AppShell() {
       <div className={s.content}>
         <Outlet context={{ focus, setFocus } satisfies ShellContext} />
       </div>
+
+      {deleteOn && !focus && (
+        <div className={s.delBanner} role="status">
+          <Icon name="trash" size={16} />
+          <span>{t('delBanner').replace('{date}', new Date(deleteOn).toLocaleDateString(lang, { day: 'numeric', month: 'long' }))}</span>
+          <button onClick={async () => toast(t((await cancelDeletion()) ? 'delUndone' : 'delFailed'))}>{t('delUndo')}</button>
+        </div>
+      )}
     </div>
   );
 }

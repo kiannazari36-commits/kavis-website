@@ -266,6 +266,39 @@
   min-width: 0;
 }
 
+/* "Your account will be deleted on …" while the 30 days run */
+.delBanner {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100vw - 32px);
+  padding: 8px 8px 8px 16px;
+  border-radius: 999px;
+  background: var(--bad-soft);
+  color: var(--bad);
+  border: 1px solid var(--bad);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 10px 26px rgba(42, 36, 32, 0.14);
+}
+
+.delBanner button {
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 16px;
+  border: 0;
+  background: var(--bad);
+  color: #fffcf6;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
 /* Mobile: sidebar becomes a slide-in menu */
 .mobileBar {
   display: none;

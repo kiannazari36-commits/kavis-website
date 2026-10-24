@@ -41,7 +41,7 @@ The app never writes AI output, scores, usage counters, subscriptions or shares 
 | Profile, "Hesap bilgilerim" | `profiles` (name, school, department, class year, photo in `avatars` bucket) |
 | Settings (theme, content language, translation, reader, voice, notifications, timetable reminders, offline, plan) | `user_settings` (one row per student) |
 | Push notifications | `push_tokens` (APNs now; FCM / web push later) |
-| Request my data / delete account | Edge `export-data`, `delete-account` → `account_requests`; a daily job deletes 30 days after email confirmation |
+| Request my data / delete account | Edge `export-data` (JSON download now; email later); Edge `delete-account` (`request` with the password again → `account_requests` delete/confirmed/`scheduled_for` +30 days; `cancel`); the app reads `account_requests` for the banner; nightly pg_cron job → `delete-account` `purge` (files, then the auth user; tables by cascade) |
 
 ## Courses, term, timetable
 
@@ -148,14 +148,14 @@ The app never writes AI output, scores, usage counters, subscriptions or shares 
 
 ## Edge Functions
 
-**Built:** `assistant` (`verify_jwt = true`; POST `{ question, course_id?, material_id?, mode, thread_id?, lang, page_from?, page_to? }`; with `material_id` the whole lesson text goes to the AI, prompt-cached, and it only talks about that lesson; very long lessons and course chats get the open pages + full-text search pieces), `process-material` (`verify_jwt = false`: checks the student's login itself; the next batch is called with the service key in `x-internal-key`), `ai-health` (free check that the `ANTHROPIC_API_KEY` secret works: lists models, no tokens), `add-card` (`verify_jwt = true`; POST `{ term_id }` → `{ card_id, added | already }`: a flash card from a hard word's explanation, in the lesson's deck), `build-plan` (`verify_jwt = true`; POST `{ action: 'build' | 'light_day' | 'add_mistakes', today, course_id?, count? }`; rules only, no AI; the web calls `build` when the Plan page opens and the week's plan is missing or made on an earlier day), `grade-quiz` (`supabase/functions/grade-quiz/`; `verify_jwt = true`; POST `{ attempt_id }` → `{ score, level, results }`).
+**Built:** `assistant` (`verify_jwt = true`; POST `{ question, course_id?, material_id?, mode, thread_id?, lang, page_from?, page_to? }`; with `material_id` the whole lesson text goes to the AI, prompt-cached, and it only talks about that lesson; very long lessons and course chats get the open pages + full-text search pieces), `process-material` (`verify_jwt = false`: checks the student's login itself; the next batch is called with the service key in `x-internal-key`), `ai-health` (free check that the `ANTHROPIC_API_KEY` secret works: lists models, no tokens), `add-card` (`verify_jwt = true`; POST `{ term_id }` → `{ card_id, added | already }`: a flash card from a hard word's explanation, in the lesson's deck), `build-plan` (`verify_jwt = true`; POST `{ action: 'build' | 'light_day' | 'add_mistakes', today, course_id?, count? }`; rules only, no AI; the web calls `build` when the Plan page opens and the week's plan is missing or made on an earlier day), `export-data` (`verify_jwt = true`), `delete-account` (`verify_jwt = false`: request/cancel check the login themselves; `purge` needs the `x-purge-key` from `private.app_secrets`, checked by `check_purge_key()`), `grade-quiz` (`supabase/functions/grade-quiz/`; `verify_jwt = true`; POST `{ attempt_id }` → `{ score, level, results }`).
 
 ### To build (secrets: `ANTHROPIC_API_KEY`, Apple keys)
 
 `accept-terms`, `sign-out-device`, `process-material`, `split-material`, `process-recording`, `import-timetable`,
 `explain-term`, `translate`, `assistant`, `generate-quiz`, `grade-quiz`, `generate-summary`, `generate-cards`,
 `analyze-style`, `apple-verify`, `apple-notifications`, `create-share`, `open-share`,
-`export-data`, `delete-account`, and scheduled jobs: `send-notifications`, `daily-planner`, `purge-deleted-accounts`.
+scheduled jobs: `send-notifications`, `daily-planner`.
 
 ## Decisions (23 Oct 2026)
 

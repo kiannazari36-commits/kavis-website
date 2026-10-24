@@ -77,7 +77,10 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Study plan generation (starter → smart plan), progress data, weak topics
 - [ ] Settings saved in the account (now only in the browser)
 - [ ] Notifications (study reminders, congratulations)
-- [ ] "Request my data" and "Delete account" (email confirmation, 30 days)
+- [x] "Request my data": Edge `export-data` → one JSON file downloaded at once (all own rows + 7-day PDF links)
+- [x] "Delete account": password asked again (Edge `delete-account`), deleted after 30 days, banner "Hesabın … silinecek · Vazgeç" until then
+- [ ] Nightly purge job: migration `20261025120000_account_purge.sql` (pg_cron + pg_net, random key in `private.app_secrets`) — tested on live with rollback, **waiting for Kian's OK to apply**
+- [ ] Later: email for both (needs an email provider): export sent by email, deletion confirmed by an email link (the design's text); accounts with Apple/Google sign-in have no password → confirm by email then
 
 ## Payments and plans
 - [ ] Apple in-app purchase in the iPhone app (the only way to buy Premium)
