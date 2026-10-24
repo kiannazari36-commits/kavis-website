@@ -145,7 +145,11 @@ The app never writes AI output, scores, usage counters, subscriptions or shares 
 
 `materials` (PDF / photos / audio, 100 MB), `avatars`, `question-samples`, `ink`, `support`.
 
-## Edge Functions to build (secrets: `ANTHROPIC_API_KEY`, Apple keys)
+## Edge Functions
+
+**Built:** `grade-quiz` (`supabase/functions/grade-quiz/`; `verify_jwt = true`; POST `{ attempt_id }` → `{ score, level, results }`).
+
+### To build (secrets: `ANTHROPIC_API_KEY`, Apple keys)
 
 `accept-terms`, `sign-out-device`, `process-material`, `split-material`, `process-recording`, `import-timetable`,
 `explain-term`, `translate`, `assistant`, `generate-quiz`, `grade-quiz`, `generate-summary`, `generate-cards`,

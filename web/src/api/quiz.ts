@@ -81,8 +81,9 @@ export function getSectionCheck(materialId: string) {
 export type GivenAnswer = { questionId: string; chosen: number | null; hints: number; confidence?: 'sure' | 'unsure' | 'guess' };
 
 /**
- * Saves a finished try. The app writes the answers; whether each is right, the score and the level are set by the
- * server (Edge Function grade-quiz, not built yet), so they stay empty until then.
+ * Saves a finished try, then asks the server to grade it (Edge Function grade-quiz): it sets right/wrong,
+ * the score and level, topic mastery, and adds wrong answers given with "sure" to the "Hatalarım" cards.
+ * The app itself never writes scores.
  */
 export async function saveAttempt(quizId: string, answers: GivenAnswer[]) {
   const user = currentUser();
@@ -102,6 +103,9 @@ export async function saveAttempt(quizId: string, answers: GivenAnswer[]) {
   if (saved.error) return console.error('quiz_answers', saved.error);
   const done = await supabase.from('quiz_attempts').update({ finished_at: new Date().toISOString() }).eq('id', id);
   if (done.error) console.error('finish attempt', done.error);
+  const graded = await supabase.functions.invoke('grade-quiz', { body: { attempt_id: id } });
+  if (graded.error) console.error('grade-quiz', graded.error);
+  return graded.data as { score: number | null; level: string | null } | null;
 }
 
 /** "Add wrong answers to my plan": the plan is made by the server (Edge Function build-plan) — not connected yet. */

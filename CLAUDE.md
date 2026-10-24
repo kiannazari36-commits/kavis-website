@@ -3,6 +3,7 @@
 ## Who I am
 - Pharmacy student, not a developer. **Always talk to me in Turkish** (since 23 Oct 2026), short and simple. Explain every command I have to run myself.
 - Make reasonable decisions yourself, then tell me briefly what you did. Ask only before something irreversible, something that costs money, or anything that changes the live database.
+- **After every step, explain in a few short sentences what we did and why** (in plain words, no jargon) — I want to learn how the app is built.
 
 ## What this app is
 Kavis Study (old names: Jarvis Study, AIM Study). Slogan: "Always Improve More".
@@ -67,7 +68,11 @@ Replace the mock functions in `web/src/api/` one area at a time, with `@supabase
 
 After each area: test it in the browser, commit, push, update `TODO.md`, and stop so I can check. Keep the screens exactly as designed.
 
-## Next phase (after the web is connected)
+## Order of work (decided 24 Oct 2026)
+1. **Finish the website completely first** (all pages on real data + the Edge Functions it needs), then
+2. the iOS and iPad app on the same backend.
+
+## Next phase (after the web is finished)
 Build the iOS **and iPad** app with the UI design at https://claude.ai/artifact/SoArzVrar1Yo8usieABRB3 (read it with the Artifact tool, not a web fetch). Use it together with `design/` for the iPhone/iPad screens.
 
 Do not change anything inside `design/`.
