@@ -7,7 +7,7 @@
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 import { extractText, getDocumentProxy } from 'npm:unpdf';
-import { batches, cleanHints, costUsd, markTerms, paragraphsOf } from './lib.ts';
+import { batches, cleanHints, costUsd, markTerms, paragraphsOf, readyNotice } from './lib.ts';
 import { SCHEMA, SYSTEM, contentLanguage, userMessage, type AiBatch } from './ai.ts';
 
 declare const EdgeRuntime: { waitUntil(p: Promise<unknown>): void };
@@ -260,11 +260,14 @@ async function finish(db: SupabaseClient, materialId: string, uid: string, title
   await db.from('materials').update({ status: 'ready', processed_at: new Date().toISOString() }).eq('id', materialId);
   const { data: c } = await db.from('material_content').select('stats').eq('material_id', materialId).single();
   const st = (c?.stats ?? {}) as Record<string, number>;
+  // In the student's app language (profiles.app_lang, saved by the apps).
+  const { data: prof } = await db.from('profiles').select('app_lang').eq('id', uid).single();
+  const note = readyNotice(prof?.app_lang ?? 'tr', title, st);
   await db.from('notifications').insert({
     user_id: uid,
     kind: 'lesson_ready',
-    title: `${title} dersin hazır`,
-    body: `${st.pages ?? 0} sayfa · ${st.terms ?? 0} terim · ${st.cards ?? 0} kart · ${st.questions ?? 0} soru hazırlandı.`,
+    title: note.title,
+    body: note.body,
     data: { to: '/courses' },
     sent_at: new Date().toISOString(),
   });

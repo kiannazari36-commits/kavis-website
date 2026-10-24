@@ -1,5 +1,5 @@
 // Run: node --experimental-strip-types supabase/functions/process-material/lib.test.ts
-import { batches, cleanHints, costUsd, markTerms, paragraphsOf, plain } from './lib.ts';
+import { batches, cleanHints, costUsd, markTerms, paragraphsOf, plain, readyNotice } from './lib.ts';
 
 let fails = 0;
 const check = (name: string, ok: boolean) => {
@@ -38,4 +38,8 @@ check('hints that do not give it away are kept', cleanHints(['Depolanmaya bak.']
 check('answer check ignores case', cleanHints(['b GRUBU depolanmaz işte'], opts, 1).length === 0);
 check('page reference is cut out of a hint', cleanHints(['(s. 4) Yağda eriyenler A, D, E, K harfleriyle hatırlanır.'], opts, 1)[0] === 'Yağda eriyenler A, D, E, K harfleriyle hatırlanır.');
 check('a hint that only points to a page is dropped', cleanHints(['(s. 5)', 'sayfa 5'], opts, 1).length === 0);
+const st = { pages: 5, terms: 4, cards: 4, questions: 2 };
+check('ready notice in Turkish', readyNotice('tr', 'Vitaminler', st).title === 'Vitaminler dersin hazır');
+check('ready notice in English', readyNotice('en', 'Vitamins', st).body === '5 pages · 4 terms · 4 cards · 2 questions prepared.');
+check('unknown language → Turkish', readyNotice('de', 'X', {}).body.startsWith('0 sayfa'));
 if (fails) process.exit(1);

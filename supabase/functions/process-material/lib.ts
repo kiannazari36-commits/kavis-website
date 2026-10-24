@@ -105,3 +105,20 @@ export function cleanHints(hints: string[], options: string[], answerIndex: numb
     .filter((h) => h.length >= 8)
     .filter((h) => answer.length < 3 || !h.toLocaleLowerCase('tr').includes(answer));
 }
+
+type Stats = { pages?: number; terms?: number; cards?: number; questions?: number };
+
+/** The "lesson ready" notification in the student's app language (tr/en/fa/ar; anything else → Turkish). */
+export function readyNotice(lang: string, title: string, st: Stats) {
+  const n = { p: st.pages ?? 0, t: st.terms ?? 0, c: st.cards ?? 0, q: st.questions ?? 0 };
+  switch (lang) {
+    case 'en':
+      return { title: `${title} is ready`, body: `${n.p} pages · ${n.t} terms · ${n.c} cards · ${n.q} questions prepared.` };
+    case 'fa':
+      return { title: `درس ${title} آماده است`, body: `${n.p} صفحه · ${n.t} اصطلاح · ${n.c} کارت · ${n.q} سؤال آماده شد.` };
+    case 'ar':
+      return { title: `درس ${title} جاهز`, body: `تم تجهيز ${n.p} صفحات · ${n.t} مصطلحات · ${n.c} بطاقات · ${n.q} أسئلة.` };
+    default:
+      return { title: `${title} dersin hazır`, body: `${n.p} sayfa · ${n.t} terim · ${n.c} kart · ${n.q} soru hazırlandı.` };
+  }
+}

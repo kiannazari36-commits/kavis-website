@@ -3,6 +3,7 @@ import { I18nProvider } from './i18n/I18nProvider';
 import { ThemeProvider } from './theme/ThemeProvider';
 import { ToastProvider } from './components/Toast';
 import { SettingsProvider } from './settings/SettingsProvider';
+import PrefsSync from './settings/PrefsSync';
 import { TrialProvider } from './trial/TrialProvider';
 import AppShell from './components/AppShell';
 import Landing from './pages/Landing';
@@ -29,6 +30,7 @@ export default function App() {
     <ThemeProvider>
       <I18nProvider>
         <SettingsProvider>
+          <PrefsSync />
           <ToastProvider>
             <BrowserRouter>
               <TrialProvider>

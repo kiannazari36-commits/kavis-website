@@ -42,8 +42,9 @@ Everything that is not finished yet. Updated after every step.
   - [x] First real test (24 Oct 2026): 5-page PDF ready in 23 s for $0.026. Fixed after it: hints never give the answer or point to a page (AI rule + server filter `cleanHints`, tested), the reader's section check uses only questions from that section's pages; the section-check box shows only on sections that have questions, with the real count (else just "Sonraki bölüm")
   - [ ] Scanned PDFs / photos: text recognition (OCR) with the AI; lectures longer than 100 pages: split into parts
   - [ ] PDFs over 50 MB (slides with many images are often bigger): Supabase free plan allows 50 MB per file. Before launch: Pro plan (higher limit) or shrink / split the PDF in the browser before uploading. Now the upload screen stops them with a message
-  - [ ] Notification text of "lesson ready" in the student's app language (now Turkish)
-  - [ ] Deleting a lesson must also delete its file in Storage (database rows go by cascade, files do not; one test file `…/8fc2be66…/original.pdf` is left in the materials bucket)
+  - [x] Notification text of "lesson ready" in the student's app language (`profiles.app_lang`, `readyNotice` in `process-material/lib.ts`)
+  - [x] Delete a lesson (trash button on the course page, asked once more): the row goes (everything made from it by cascade), then its files in Storage. The trial lesson does not come back
+  - [ ] One old test file `…/8fc2be66…/original.pdf` is still in the materials bucket (its lesson was deleted before this existed): delete it in the Supabase dashboard → Storage → materials
   - [x] Edge Function `assistant` (deployed, not yet tested with a real question): searches the student's lessons (`material_chunks`, full-text with Turkish-friendly prefixes), answers only from them ("AI + research" may add general knowledge, marked), saves thread + messages, counts the trial question and AI cost. The web chat and the reader's side panel use it. Rules in `lib.ts` (6 Node tests)
   - [x] Reader panel knows where the student is (24 Oct 2026): the open section's pages are sent and their text always goes to the AI first ("this page" works); the header names the open lesson; "Asistana sor" on a hard word or a sentence really sends the question
   - [x] With one chosen lesson the assistant gets the whole lesson text (up to ~120,000 characters, prompt-cached for 5 minutes so follow-ups cost ~10%) and only talks about that lesson; sources are page numbers. Longer lessons: open pages + search pieces
@@ -54,7 +55,7 @@ Everything that is not finished yet. Updated after every step.
   - [ ] Assistant "+" menu (upload PDF / photo / audio, solve a question photo): still sample data (`web/src/api/mock/assistant.ts`) until upload is built
   - [ ] Still mock: Premium page offer → connect them next, with example rows in `seed.sql`
   - [ ] Class rank on course cards ("Sıralama #3") has no data on the server; hidden until it exists
-  - [ ] App language and theme are still saved only in the browser (`profiles.app_lang`, `user_settings.app_theme` exist)
+  - [x] App language and theme are saved in the account (`profiles.app_lang`, `user_settings.app_theme`): used after sign-in on every device, saved on change (`settings/PrefsSync.tsx`)
   - [x] Trial card and Premium status from `access_status()`; devices: login registers the web (all browsers share install id `web` = one slot), My devices list, sign out, 3rd-device screen, signed-out-elsewhere check at start, log out frees the slot
   - [x] School timetable screen `/schedule` (design NewSchedule; from the plan page's "Okul programım"): tomorrow's classes, day tabs, reminder bell per class, add / delete classes (`timetable_entries`), reminder switches and time (`user_settings.class_*`), notification preview + sample browser notification
   - [ ] Timetable from a photo / PDF: Edge Function `import-timetable` (buttons say "coming soon")

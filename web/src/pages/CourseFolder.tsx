@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useI18n, type Lang } from '../i18n/I18nProvider';
 import { duration, examLabel, num, percent } from '../i18n/format';
@@ -5,6 +6,8 @@ import Icon from '../components/Icon';
 import { COURSE_COLOR } from '../components/courseColors';
 import { courseStats, getCourse } from '../api/courses';
 import { useAsync } from '../hooks/useAsync';
+import { deleteLesson } from '../api/upload';
+import { useToast } from '../components/Toast';
 import type { Pdf } from '../api/types';
 import ContentLangPicker from '../components/ContentLangPicker';
 import { useContentLang, useSettings } from '../settings/SettingsProvider';
@@ -24,7 +27,17 @@ export default function CourseFolder() {
   const { t, lang } = useI18n();
   const { guard } = useTrial();
   const navigate = useNavigate();
-  const course = useAsync(() => getCourse(courseId), [courseId]);
+  const toast = useToast();
+  // "Delete lesson": asked once more before it happens (it cannot be undone).
+  const [asking, setAsking] = useState<string | null>(null);
+  const [reload, setReload] = useState(0);
+  const course = useAsync(() => getCourse(courseId), [courseId, reload]);
+  const remove = async (p: Pdf) => {
+    setAsking(null);
+    const ok = await deleteLesson(p.id);
+    toast(ok ? p.title + t('lessonDeleted') : t('lessonDeleteFailed'));
+    if (ok) setReload((n) => n + 1);
+  };
   const { settings, setCourseContentLang } = useSettings();
   const contentLang = useContentLang(course ?? undefined);
 
@@ -104,30 +117,47 @@ export default function CourseFolder() {
           </div>
           <div className={s.list}>
             {course.pdfs.map((p) => (
-              <Link key={p.id} to={`/reader?course=${course.id}&pdf=${p.id}`} className={s.pdf}>
-                <span
-                  className={s.ring}
-                  role="img"
-                  aria-label={`${percent(p.read, lang)} ${t('read')}`}
-                  style={{ background: `conic-gradient(${col.fg} ${Math.round(p.read * 3.6)}deg, var(--sub) 0)` }}
-                >
-                  <span className="mono">{num(p.read, lang)}</span>
-                </span>
-                <span className={s.pdfBody}>
-                  <b>{p.title}</b>
-                  <span className={s.timeRow}>
-                    <span className={s.timeBar}>
-                      <span style={{ width: `${Math.round((p.minutes / maxMin) * 100)}%` }} />
+              <div key={p.id} className={s.pdfRow}>
+                <Link to={`/reader?course=${course.id}&pdf=${p.id}`} className={s.pdf}>
+                  <span
+                    className={s.ring}
+                    role="img"
+                    aria-label={`${percent(p.read, lang)} ${t('read')}`}
+                    style={{ background: `conic-gradient(${col.fg} ${Math.round(p.read * 3.6)}deg, var(--sub) 0)` }}
+                  >
+                    <span className="mono">{num(p.read, lang)}</span>
+                  </span>
+                  <span className={s.pdfBody}>
+                    <b>{p.title}</b>
+                    <span className={s.timeRow}>
+                      <span className={s.timeBar}>
+                        <span style={{ width: `${Math.round((p.minutes / maxMin) * 100)}%` }} />
+                      </span>
+                      <span className="mono">{duration(p.minutes, lang)}</span>
                     </span>
-                    <span className="mono">{duration(p.minutes, lang)}</span>
+                    <span className={s.status}>
+                      {pdfStatus(p, lang, t)}
+                      {p.read > 0 && <span className={`mono ${s.device}`}>{t('onDevice')}</span>}
+                    </span>
                   </span>
-                  <span className={s.status}>
-                    {pdfStatus(p, lang, t)}
-                    {p.read > 0 && <span className={`mono ${s.device}`}>{t('onDevice')}</span>}
-                  </span>
-                </span>
-                <Icon name="chevron" size={18} className={`flip-rtl ${s.chev}`} />
-              </Link>
+                  <Icon name="chevron" size={18} className={`flip-rtl ${s.chev}`} />
+                </Link>
+                {asking === p.id ? (
+                  <div className={s.ask} role="group" aria-label={t('lessonDeleteAsk')}>
+                    <span>{t('lessonDeleteAsk')}</span>
+                    <button className={s.askYes} onClick={() => remove(p)}>
+                      {t('lessonDeleteYes')}
+                    </button>
+                    <button className={s.askNo} onClick={() => setAsking(null)}>
+                      {t('lessonDeleteNo')}
+                    </button>
+                  </div>
+                ) : (
+                  <button className={s.del} aria-label={t('lessonDelete')} title={t('lessonDelete')} onClick={() => setAsking(p.id)}>
+                    <Icon name="trash" size={16} />
+                  </button>
+                )}
+              </div>
             ))}
           </div>
         </>

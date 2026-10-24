@@ -70,3 +70,25 @@ export async function lessonStatus(id: string): Promise<LessonStatus | null> {
   const stats = (Array.isArray(content) ? content[0]?.stats : content?.stats) ?? {};
   return { status: data.status, pages: data.page_count, courseId: data.course_id, stats };
 }
+
+/**
+ * Deletes a lesson: the row first (its reading page, words, cards, questions and progress go with it by cascade),
+ * then its files in Storage (`<user>/<lesson>/…`), which the database cannot remove itself.
+ * The trial lesson count does not come back (CLAUDE.md: 2 lessons per trial).
+ */
+export async function deleteLesson(materialId: string) {
+  const user = currentUser();
+  if (!user) return false;
+  const { error } = await supabase.from('materials').delete().eq('id', materialId);
+  if (error) {
+    console.error('deleteLesson', error);
+    return false;
+  }
+  const folder = `${user.id}/${materialId}`;
+  const { data: files } = await supabase.storage.from('materials').list(folder);
+  if (files?.length) {
+    const { error: e2 } = await supabase.storage.from('materials').remove(files.map((f) => `${folder}/${f.name}`));
+    if (e2) console.error('deleteLesson files', e2);
+  }
+  return true;
+}
