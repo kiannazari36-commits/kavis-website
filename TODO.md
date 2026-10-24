@@ -37,6 +37,7 @@ Everything that is not finished yet. Updated after every step.
   - [x] Notifications: new web page `/notifications` (design ScrNotifications: Today / Yesterday / This week), from `notifications`; opening marks them read; the bell dot shows unread; the flame button shows the real streak. Example: 9 notifications matching the example data
   - [ ] Scheduled job `send-notifications` (push, snooze) and the server writing notifications (planner, lesson ready, exam result, weekly report)
   - [x] Assistant: course choice = real courses + "all"; the chat and the reader's side panel show the saved conversation (`assistant_threads` + `assistant_messages`, sources = lesson + page). A new question is shown with "real answers come once the assistant is connected" (the app may not write answers). Example: 5 conversations, 14 messages
+  - [ ] Renew the Anthropic API key every 90 days (created 24 Oct 2026 → expires ~22 Jan 2027): new key in the Console, replace the Supabase secret `ANTHROPIC_API_KEY`
   - [ ] Edge Function `assistant`: answer only from the student's lessons (`material_chunks` search), "AI + research" mode, save thread + messages, count trial questions, cost limit — needs the Claude API key as a Supabase secret
   - [ ] Assistant "+" menu (upload PDF / photo / audio, solve a question photo): still sample data (`web/src/api/mock/assistant.ts`) until upload is built
   - [ ] Still mock: Premium page offer → connect them next, with example rows in `seed.sql`

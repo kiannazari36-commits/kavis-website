@@ -55,6 +55,7 @@ A student uploads the teacher's PDF, a slide photo or a lecture recording. The a
 - Schema: `supabase/migrations/` — **already applied** to the live project (45 tables, RLS on all, 5 private buckets, RPCs `access_status`, `can_i`, `register_device`, `sign_out_device`, `content_lang_for`, `tap_term`, `study_streak`). File names match the live migration versions. Any new schema change = a new migration file, tested locally first, and applied to the live database only after I say yes.
 - Full API map: `docs/BACKEND.md`. The 7 remaining security-advisor warnings are intentional (explained there).
 - **Rule:** AI output, scores, usage counters, subscriptions and shares are written **only by Edge Functions** (service role). The apps never write them.
+- **AI model (decided 24 Oct 2026):** Claude Sonnet 5.5 (`claude-sonnet-5-5`) for PDF processing and the assistant (cheaper than Opus). The key is the Supabase secret `ANTHROPIC_API_KEY` (Anthropic Console, Default Workspace, expires after 90 days — renew it). Ask me before every paid test and say what it cost.
 - **Secrets:** never put the service role key, the Claude API key, Apple keys or any secret in code or git. Clients use only the URL and the publishable (anon) key from `.env` files that git ignores (`web/.env.local`). Edge Functions read secrets from Supabase secrets.
 - Claude Code reaches the project through the Supabase MCP connector (read freely; ask before writing to the live database).
 
