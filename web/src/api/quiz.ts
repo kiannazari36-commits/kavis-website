@@ -73,7 +73,6 @@ export async function coursesWithPack(): Promise<string[]> {
   return [...new Set((data ?? []).map((r) => r.course_id as string))];
 }
 
-/** The short check after a section in the reader. */
 /**
  * The short check after a section in the reader: up to 3 of the lesson's questions from that section's pages.
  * (Example lessons without lesson questions have a ready-made section_check quiz.) null = no questions there.
@@ -87,6 +86,21 @@ export async function getSectionCheck(materialId: string, pageFrom?: number, pag
     return questions.length ? { ...lesson, questions } : null;
   }
   return latestQuiz('section_check', { material: materialId });
+}
+
+/**
+ * How many questions the check after each section would have, so the reader shows the box only where there are
+ * questions. Returns a counter for a page range (max 3, like getSectionCheck).
+ */
+export async function sectionCheckCounter(materialId: string): Promise<(pageFrom: number, pageTo: number) => number> {
+  const lesson = await latestQuiz('lesson_end', { material: materialId });
+  if (lesson) {
+    const pages = lesson.questions.map((q) => q.page).filter((p): p is number => p !== null);
+    return (from, to) => Math.min(3, pages.filter((p) => p >= from && p <= to).length);
+  }
+  const check = await latestQuiz('section_check', { material: materialId });
+  const n = check?.questions.length ?? 0;
+  return () => n;
 }
 
 export type GivenAnswer = { questionId: string; chosen: number | null; hints: number; confidence?: 'sure' | 'unsure' | 'guess' };

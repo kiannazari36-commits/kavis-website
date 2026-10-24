@@ -456,6 +456,11 @@
   font-size: 13px;
 }
 
+.nextOnly {
+  display: flex;
+  justify-content: flex-end;
+}
+
 /* Floating tool dock */
 .dock {
   position: absolute;

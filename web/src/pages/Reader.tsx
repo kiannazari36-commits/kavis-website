@@ -8,6 +8,7 @@ import Wordmark from '../components/Wordmark';
 import { getPdf, recentPdfs } from '../api/courses';
 import { addHighlight, getLesson, markRead, saveStudyTime, tapTerm, translate, type TranslationStyle } from '../api/reader';
 import { askAssistant, latestThread, type ChatMessage } from '../api/assistant';
+import { sectionCheckCounter } from '../api/quiz';
 import { num, percent } from '../i18n/format';
 import { useAsync } from '../hooks/useAsync';
 import { usePanelPref } from '../hooks/usePanelPref';
@@ -50,6 +51,7 @@ export default function Reader() {
   const pdfId = params.get('pdf') ?? '';
   const lesson = useAsync(() => (pdfId ? getLesson(pdfId) : Promise.resolve(null)), [pdfId]);
   const pdfInfo = useAsync(() => getPdf(courseId, pdfId), [courseId, pdfId]);
+  const checkCount = useAsync(() => (pdfId ? sectionCheckCounter(pdfId) : Promise.resolve(() => 0)), [pdfId]);
   const doc = lesson?.doc;
   const [pagesRead, setPagesRead] = useState<number[] | null>(null);
   const [pct, setPct] = useState<number | null>(null);
@@ -168,6 +170,10 @@ export default function Reader() {
   const pageInfo = pdfInfo
     ? `${pdfInfo.course.name.toLocaleUpperCase(lang)} · ${t('pageOf').replace('{p}', num(lastPage, lang)).replace('{n}', num(pdfInfo.pdf.pages, lang))} · ${percent(pct ?? lesson.percent, lang)}`
     : '';
+  const pageFrom = Math.min(...section.blocks.map((b) => b.pageFrom));
+  const pageTo = Math.max(...section.blocks.map((b) => b.pageTo));
+  // The section check only where this section's pages have questions.
+  const checkN = checkCount ? checkCount(pageFrom, pageTo) : 0;
   const sectionEnd = sec_ === doc.sections.length - 1 ? t('s4end') : t('secEnd').replace('{n}', num(sec_ + 1, lang));
   const fontSize = fontI === 0 ? settings.readerFontSize : FONT_SIZES[fontI];
   const clock = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
@@ -294,23 +300,29 @@ export default function Reader() {
               />
             ))}
 
-            <section className={s.check}>
-              <span className={s.checkIcon}>
-                <Icon name="check" size={22} width={2} />
-              </span>
-              <span className={s.checkText}>
-                <b>{t('checkTitle')}</b>
-                <span>{sectionEnd}</span>
-              </span>
-              <button className={s.checkGo} onClick={() => navigate(
-                    `/quiz?from=reader&course=${courseId}&pdf=${pdfId}&pf=${Math.min(...section.blocks.map((b) => b.pageFrom))}&pt=${Math.max(...section.blocks.map((b) => b.pageTo))}`,
-                  )}>
-                {t('start')}
-              </button>
-              <button className={s.checkNext} onClick={nextSection}>
-                {sec_ === doc.sections.length - 1 ? t('lessonSummary') : t('nextSection')}
-              </button>
-            </section>
+            {checkN > 0 ? (
+              <section className={s.check}>
+                <span className={s.checkIcon}>
+                  <Icon name="check" size={22} width={2} />
+                </span>
+                <span className={s.checkText}>
+                  <b>{t('checkTitle').replace('{n}', num(checkN, lang))}</b>
+                  <span>{sectionEnd}</span>
+                </span>
+                <button className={s.checkGo} onClick={() => navigate(`/quiz?from=reader&course=${courseId}&pdf=${pdfId}&pf=${pageFrom}&pt=${pageTo}`)}>
+                  {t('start')}
+                </button>
+                <button className={s.checkNext} onClick={nextSection}>
+                  {sec_ === doc.sections.length - 1 ? t('lessonSummary') : t('nextSection')}
+                </button>
+              </section>
+            ) : (
+              <div className={s.nextOnly}>
+                <button className={s.checkNext} onClick={nextSection}>
+                  {sec_ === doc.sections.length - 1 ? t('lessonSummary') : t('nextSection')}
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
