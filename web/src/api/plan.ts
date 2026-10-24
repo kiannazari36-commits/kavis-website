@@ -1,8 +1,8 @@
 import { supabase } from './supabase';
 import { isoToday } from './courses';
 
-// The plan is made by the server (Edge Function build-plan, daily planner); the app reads it and updates
-// a task's status and day (done, moved after a missed day).
+// The plan is made by the server (Edge Function build-plan); the app reads it and updates a task's status and
+// day (done, moved after a missed day).
 
 export type PlanStage = 'basic' | 'smart';
 export type TaskKind = 'read' | 'review' | 'quiz' | 'cards' | 'exam_prep' | 'mistakes' | 'placement';
@@ -27,7 +27,7 @@ export type PlanTask = {
 /** A reason shown under "Why does the plan look like this?" (content language). */
 export type PlanReason = { text: string; color: 'pri' | 'amb' | 'good' };
 
-export type WeekPlan = { id: string; stage: PlanStage; weekStart: string; reasons: PlanReason[]; tasks: PlanTask[] };
+export type WeekPlan = { id: string; stage: PlanStage; weekStart: string; reasons: PlanReason[]; tasks: PlanTask[]; generatedOn: string };
 
 /** Monday of this week (YYYY-MM-DD). */
 export function mondayOf(iso = isoToday()) {
@@ -70,9 +70,9 @@ export async function getWeekPlan(): Promise<WeekPlan | null> {
   const weekStart = mondayOf();
   const { data: plan, error } = await supabase
     .from('study_plans')
-    .select('id, stage, week_start, reasons')
+    .select('id, stage, week_start, reasons, generated_at')
     .eq('week_start', weekStart)
-    .maybeSingle<{ id: string; stage: PlanStage; week_start: string; reasons: PlanReason[] }>();
+    .maybeSingle<{ id: string; stage: PlanStage; week_start: string; reasons: PlanReason[]; generated_at: string }>();
   if (error) console.error('study_plans', error);
   if (!plan) return null;
   const { data, error: e2 } = await supabase
@@ -83,7 +83,23 @@ export async function getWeekPlan(): Promise<WeekPlan | null> {
     .order('day')
     .order('sort_order');
   if (e2) console.error('plan_items', e2);
-  return { id: plan.id, stage: plan.stage, weekStart: plan.week_start, reasons: plan.reasons ?? [], tasks: ((data ?? []) as Row[]).map(toTask) };
+  const made = new Date(plan.generated_at);
+  const generatedOn = `${made.getFullYear()}-${String(made.getMonth() + 1).padStart(2, '0')}-${String(made.getDate()).padStart(2, '0')}`;
+  return { id: plan.id, stage: plan.stage, weekStart: plan.week_start, reasons: plan.reasons ?? [], tasks: ((data ?? []) as Row[]).map(toTask), generatedOn };
+}
+
+/**
+ * Asks the server to plan (Edge Function build-plan, rules only, no AI): 'build' makes the rest of this week
+ * again (done tasks stay), 'light_day' keeps today's 2 most important tasks and moves the others, 'add_mistakes'
+ * adds a 15-minute mistakes task tomorrow. The student's own date is sent (time zones).
+ */
+export async function runPlanner(action: 'build' | 'light_day' | 'add_mistakes', extra: { course_id?: string | null; count?: number } = {}) {
+  const { data, error } = await supabase.functions.invoke('build-plan', { body: { action, today: isoToday(), ...extra } });
+  if (error) {
+    console.error('build-plan', error);
+    return null;
+  }
+  return data as Record<string, unknown>;
 }
 
 export async function setTaskDone(id: string, done: boolean) {

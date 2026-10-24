@@ -2,6 +2,7 @@ import { supabase } from './supabase';
 import { currentUser } from './auth';
 import type { Lang } from '../i18n/I18nProvider';
 import type { ExamTopic, QuizQuestion } from './types';
+import { runPlanner } from './plan';
 
 /** Exam-prep pack of a course: summary topics by importance + a quiz in the lecturer's style (made by the server). */
 export type ExamPack = { quizId: string; lang: Lang; topics: ExamTopic[]; questions: QuizQuestion[] };
@@ -134,9 +135,9 @@ export async function saveAttempt(quizId: string, answers: GivenAnswer[]) {
   return graded.data as { score: number | null; level: string | null } | null;
 }
 
-/** "Add wrong answers to my plan": the plan is made by the server (Edge Function build-plan) — not connected yet. */
-export async function addWrongsToPlan(_questionIds: string[]) {
-  return false;
+/** "Add wrong answers to my plan": a 15-minute mistakes task tomorrow (Edge Function build-plan). */
+export async function addWrongsToPlan(courseId: string | null, count: number) {
+  return (await runPlanner('add_mistakes', { course_id: courseId || null, count })) !== null;
 }
 
 /** Study reminder time ("Yarın saat kaçta?") = user_settings.notify_time. */

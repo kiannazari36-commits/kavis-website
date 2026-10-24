@@ -396,7 +396,7 @@ export default function Quiz() {
                 ? t('retryA') + num(wrongs.length, lang) + t(wrongs.length === 1 ? 'retryB1' : 'retryB')
                 : t('newA') + num(qs.length, lang) + t('retryB')}
             </button>
-            <button className={s.heroGhost} onClick={() => addWrongsToPlan(wrongs.map((k) => qs[k].id)).then((ok) => toast(t(ok ? 'addedPlan' : 'k165')))}>
+            <button className={s.heroGhost} onClick={() => addWrongsToPlan(courseId, wrongs.length).then((ok) => toast(t(ok ? 'addedPlan' : 'planFailed')))}>
               {t('addPlan')}
             </button>
             <span className={s.timeLabel}>{t('whatTime')}</span>

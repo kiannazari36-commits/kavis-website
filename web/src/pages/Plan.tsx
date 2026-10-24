@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n/I18nProvider';
 import { dateRange, dayDate, dayShort, duration, hoursLabel, num, weekdayName } from '../i18n/format';
 import { useToast } from '../components/Toast';
 import Icon from '../components/Icon';
-import { addDays, getWeekPlan, rescheduleMissed, setTaskDone, taskLink, type PlanTask } from '../api/plan';
+import { addDays, getWeekPlan, rescheduleMissed, runPlanner, setTaskDone, taskLink, type PlanTask } from '../api/plan';
 import { addOwnItem, listOwnPlan, removeOwnItem, setOwnMinutes, type OwnItem } from '../api/ownPlan';
 import { isoToday, listCourses } from '../api/courses';
 import { useAsync } from '../hooks/useAsync';
@@ -13,7 +13,8 @@ import { COURSE_COLOR } from '../components/courseColors';
 import s from './Plan.module.css';
 
 // Design: design/NewIPad.dc.html, screen "plan" ("Ders planım"): Kavis plan / own plan / no plan.
-// The Kavis plan is made by the server; here the student ticks tasks off and moves missed ones.
+// The Kavis plan is made by the server (Edge Function build-plan): when the week has no plan yet, or it was made on
+// an earlier day, it is made again on opening. Here the student ticks tasks off and moves missed ones.
 
 const DAY_KEYS = ['dMon', 'dTue', 'dWed', 'dThu', 'dFri', 'dSat', 'dSun'];
 const REASON_COLOR = { pri: 'var(--pri)', amb: 'var(--amb-t)', good: 'var(--good)' };
@@ -37,6 +38,7 @@ export default function Plan() {
   const courses = useAsync(listCourses, []) ?? [];
   // Ticks are shown at once and saved in the background.
   const [ticks, setTicks] = useState<Record<string, boolean>>({});
+  const [busy, setBusy] = useState(false);
 
   const mode = settings.planMode;
   const nDays = Math.max(1, Math.min(7, settings.studyDays));
@@ -45,6 +47,24 @@ export default function Plan() {
   const weekStart = plan?.weekStart ?? today;
   const days = DAY_KEYS.map((_, i) => addDays(weekStart, i));
   const isDone = (x: PlanTask) => ticks[x.id] ?? x.status === 'done';
+
+  const plan_ = async (action: 'build' | 'light_day') => {
+    setBusy(true);
+    const r = await runPlanner(action);
+    setBusy(false);
+    setTicks({});
+    setReload((n) => n + 1);
+    return r !== null;
+  };
+  // A missing or old plan (made before today) is made again once on opening.
+  const autoBuilt = useRef(false);
+  useEffect(() => {
+    if (mode !== 'aim' || plan === undefined || autoBuilt.current) return;
+    if (plan && plan.generatedOn >= today) return;
+    autoBuilt.current = true;
+    plan_('build');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, plan]);
 
   const setMode = (m: typeof mode) => {
     patch({ planMode: m });
@@ -79,9 +99,7 @@ export default function Plan() {
     );
   };
 
-  let todayTasks = plan?.tasks.filter((x) => x.day === today) ?? [];
-  // "I have little time today": the two first tasks, half as long (shown only; the server's light-day plan comes later).
-  if (short) todayTasks = todayTasks.slice(0, 2).map((x) => ({ ...x, minutes: Math.max(5, Math.round(x.minutes / 10) * 5) }));
+  const todayTasks = plan?.tasks.filter((x) => x.day === today) ?? [];
   const todayMin = todayTasks.reduce((a, x) => a + x.minutes, 0);
 
   const tick = (x: PlanTask) => {
@@ -144,7 +162,7 @@ export default function Plan() {
       {mode === 'aim' && plan === null && (
         <section className={s.none}>
           <Icon name="calendar" size={40} width={1.5} />
-          <p>{t('noPlan')}</p>
+          <p>{t(busy ? 'planMaking' : 'noPlan')}</p>
         </section>
       )}
 
@@ -219,8 +237,13 @@ export default function Plan() {
                 })}
                 <button
                   aria-pressed={short}
+                  aria-busy={busy}
                   className={short ? `${s.short} ${s.shortOn}` : s.short}
-                  onClick={() => {
+                  onClick={async () => {
+                    // Light day: the server keeps the 2 most important tasks; back to full = plan again.
+                    if (busy) return;
+                    const ok = await plan_(short ? 'build' : 'light_day');
+                    if (!ok) return toast(t('planFailed'));
                     setShort(!short);
                     toast(t(short ? 'toastShortOff' : 'toastShortOn'));
                   }}
@@ -243,6 +266,17 @@ export default function Plan() {
                     {text}
                   </span>
                 ))}
+                <button
+                  className={s.refresh}
+                  aria-busy={busy}
+                  onClick={async () => {
+                    if (busy) return;
+                    toast(t((await plan_('build')) ? 'planRefreshed' : 'planFailed'));
+                  }}
+                >
+                  <Icon name="refresh" size={15} />
+                  {t(busy ? 'planMaking' : 'planRefresh')}
+                </button>
               </section>
             </div>
           </div>

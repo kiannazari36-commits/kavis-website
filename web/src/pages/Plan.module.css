@@ -478,6 +478,27 @@
   color: var(--text2);
 }
 
+.refresh {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.refresh:hover {
+  border-color: var(--pri);
+  color: var(--pri);
+}
+
 .dot {
   width: 8px;
   height: 8px;
