@@ -92,15 +92,16 @@ export async function getSectionCheck(materialId: string, pageFrom?: number, pag
  * How many questions the check after each section would have, so the reader shows the box only where there are
  * questions. Returns a counter for a page range (max 3, like getSectionCheck).
  */
-export async function sectionCheckCounter(materialId: string): Promise<(pageFrom: number, pageTo: number) => number> {
+export async function sectionCheckCounter(materialId: string): Promise<{ count: (pageFrom: number, pageTo: number) => number }> {
+  // (An object, not a bare function: React would call a function given to setState.)
   const lesson = await latestQuiz('lesson_end', { material: materialId });
   if (lesson) {
     const pages = lesson.questions.map((q) => q.page).filter((p): p is number => p !== null);
-    return (from, to) => Math.min(3, pages.filter((p) => p >= from && p <= to).length);
+    return { count: (from, to) => Math.min(3, pages.filter((p) => p >= from && p <= to).length) };
   }
   const check = await latestQuiz('section_check', { material: materialId });
   const n = check?.questions.length ?? 0;
-  return () => n;
+  return { count: () => n };
 }
 
 export type GivenAnswer = { questionId: string; chosen: number | null; hints: number; confidence?: 'sure' | 'unsure' | 'guess' };

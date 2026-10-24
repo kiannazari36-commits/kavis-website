@@ -53,7 +53,7 @@ export default function Reader() {
   const pdfId = params.get('pdf') ?? '';
   const lesson = useAsync(() => (pdfId ? getLesson(pdfId) : Promise.resolve(null)), [pdfId]);
   const pdfInfo = useAsync(() => getPdf(courseId, pdfId), [courseId, pdfId]);
-  const checkCount = useAsync(() => (pdfId ? sectionCheckCounter(pdfId) : Promise.resolve(() => 0)), [pdfId]);
+  const checkCount = useAsync(() => (pdfId ? sectionCheckCounter(pdfId) : Promise.resolve({ count: () => 0 })), [pdfId]);
   const doc = lesson?.doc;
   const [pagesRead, setPagesRead] = useState<number[] | null>(null);
   const [pct, setPct] = useState<number | null>(null);
@@ -195,7 +195,7 @@ export default function Reader() {
   const pageFrom = Math.min(...section.blocks.map((b) => b.pageFrom));
   const pageTo = Math.max(...section.blocks.map((b) => b.pageTo));
   // The section check only where this section's pages have questions.
-  const checkN = checkCount ? checkCount(pageFrom, pageTo) : 0;
+  const checkN = checkCount ? checkCount.count(pageFrom, pageTo) : 0;
   const sectionEnd = sec_ === doc.sections.length - 1 ? t('s4end') : t('secEnd').replace('{n}', num(sec_ + 1, lang));
   const fontSize = fontI === 0 ? settings.readerFontSize : FONT_SIZES[fontI];
   const clock = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
