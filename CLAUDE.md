@@ -58,6 +58,7 @@ A student uploads the teacher's PDF, a slide photo or a lecture recording. The a
 - **AI model (decided 24 Oct 2026):** Claude Sonnet 5.5 (`claude-sonnet-5-5`) for PDF processing and the assistant (cheaper than Opus). The key is the Supabase secret `ANTHROPIC_API_KEY` (Anthropic Console, Default Workspace, expires after 90 days — renew it). Ask me before every paid test and say what it cost.
 - **Secrets:** never put the service role key, the Claude API key, Apple keys or any secret in code or git. Clients use only the URL and the publishable (anon) key from `.env` files that git ignores (`web/.env.local`). Edge Functions read secrets from Supabase secrets.
 - Claude Code reaches the project through the Supabase MCP connector (read freely; ask before writing to the live database).
+- **Local copy for testing (since 25 Oct 2026):** Docker Desktop (on the Desktop folder) + Supabase CLI (`brew`). `supabase start` runs the whole backend on this Mac with all migrations (seed off); `npm --prefix web run dev:local` (port 5174, `.claude/launch.json` "web-local") opens the web app on it. Claude tests there with its own fake accounts (`supabase/local-test-users.local.md`, git-ignored) and fake PDFs — never on the live site or Kian's account. Edge Functions run locally too; AI calls need `ANTHROPIC_API_KEY` in `supabase/functions/.env` (git-ignored). The nightly purge job is switched off in the local copy.
 
 ## Current task: connect the web app to Supabase
 Replace the mock functions in `web/src/api/` one area at a time, with `@supabase/supabase-js`:

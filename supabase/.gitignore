@@ -1,0 +1,14 @@
+# Supabase
+.branches
+.temp
+
+# dotenvx
+.env.keys
+.env.local
+.env.*.local
+
+# Edge Function secrets for the local copy (ANTHROPIC_API_KEY)
+functions/.env
+
+# Local test accounts
+*.local.md
