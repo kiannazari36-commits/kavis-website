@@ -51,7 +51,10 @@ export default function Quiz() {
   const courseId = picked ?? chips.find((c) => ready?.includes(c.id))?.id ?? chips[0]?.id ?? '';
   const pdfId = params.get('pdf') ?? '';
   const pack = useAsync(() => (courseId ? getExamPack(courseId) : Promise.resolve(null)), [courseId]);
-  const check = useAsync(() => (fromReader && pdfId ? getSectionCheck(pdfId) : Promise.resolve(null)), [fromReader, pdfId]);
+  // From the reader: the questions of the section just read (its pages ?pf=…&pt=…).
+  const pf = params.get('pf') ? Number(params.get('pf')) : undefined;
+  const pt = params.get('pt') ? Number(params.get('pt')) : undefined;
+  const check = useAsync(() => (fromReader && pdfId ? getSectionCheck(pdfId, pf, pt) : Promise.resolve(null)), [fromReader, pdfId, pf, pt]);
   const cl: Lang = pack?.lang ?? 'tr';
   const cdir = dirOf(cl);
 
@@ -81,8 +84,8 @@ export default function Quiz() {
   if (!courses || pack === undefined || (fromReader && check === undefined)) return <main className={s.main} />;
 
   // From the reader: the lesson's section check; otherwise the course's exam pack.
-  const quizId = fromReader && check ? check.quizId : pack?.quizId;
-  const qs = (fromReader && check ? check.questions : pack?.questions) ?? [];
+  const quizId = fromReader ? check?.quizId : pack?.quizId;
+  const qs = (fromReader ? check?.questions : pack?.questions) ?? [];
   const topics = pack?.topics ?? [];
   const qList = list ?? qs.map((_, i) => i);
   const qIdx = qList[Math.min(qi, qList.length - 1)];
@@ -260,7 +263,7 @@ export default function Quiz() {
         </div>
       )}
 
-      {tab === 'quiz' && !Q && <p className={s.muted}>{t('noPack')}</p>}
+      {tab === 'quiz' && !Q && <p className={s.muted}>{t(fromReader ? 'noSectionQs' : 'noPack')}</p>}
 
       {tab === 'quiz' && Q && (
         <section className={s.qCard}>

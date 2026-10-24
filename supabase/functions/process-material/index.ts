@@ -7,7 +7,7 @@
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 import { extractText, getDocumentProxy } from 'npm:unpdf';
-import { batches, costUsd, markTerms, paragraphsOf } from './lib.ts';
+import { batches, cleanHints, costUsd, markTerms, paragraphsOf } from './lib.ts';
 import { SCHEMA, SYSTEM, contentLanguage, userMessage, type AiBatch } from './ai.ts';
 
 declare const EdgeRuntime: { waitUntil(p: Promise<unknown>): void };
@@ -222,7 +222,7 @@ async function runBatch(db: SupabaseClient, materialId: string, batchNo: number)
             answer_index: q.answer_index,
             explanation: q.explanation,
             source_page: q.page,
-            hints: q.hints.slice(0, 3),
+            hints: cleanHints(q.hints, q.options, q.answer_index).slice(0, 3),
           })),
       );
     }
@@ -255,16 +255,8 @@ async function runBatch(db: SupabaseClient, materialId: string, batchNo: number)
   }
 }
 
-/** Last batch: the short check after a section (2 questions), "ready", and a notification. */
+/** Last batch: "ready" and a notification. (The check after a section uses the lesson's questions of its pages.) */
 async function finish(db: SupabaseClient, materialId: string, uid: string, title: string) {
-  const { data: quiz } = await db.from('quizzes').select('id, course_id, lang').eq('material_id', materialId).eq('kind', 'lesson_end').maybeSingle();
-  if (quiz) {
-    const { data: qs } = await db.from('quiz_questions').select('topic_id, kind, style_tag, text, options, answer_index, explanation, source_page, hints').eq('quiz_id', quiz.id).order('sort_order').limit(2);
-    if (qs?.length) {
-      const { data: check } = await db.from('quizzes').insert({ user_id: uid, course_id: quiz.course_id, material_id: materialId, kind: 'section_check', lang: quiz.lang, teacher_style: false }).select('id').single();
-      if (check) await db.from('quiz_questions').insert(qs.map((q, i) => ({ ...q, quiz_id: check.id, user_id: uid, sort_order: i })));
-    }
-  }
   await db.from('materials').update({ status: 'ready', processed_at: new Date().toISOString() }).eq('id', materialId);
   const { data: c } = await db.from('material_content').select('stats').eq('material_id', materialId).single();
   const st = (c?.stats ?? {}) as Record<string, number>;

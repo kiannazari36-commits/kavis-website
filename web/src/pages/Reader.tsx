@@ -302,7 +302,9 @@ export default function Reader() {
                 <b>{t('checkTitle')}</b>
                 <span>{sectionEnd}</span>
               </span>
-              <button className={s.checkGo} onClick={() => navigate(`/quiz?from=reader&course=${courseId}&pdf=${pdfId}`)}>
+              <button className={s.checkGo} onClick={() => navigate(
+                    `/quiz?from=reader&course=${courseId}&pdf=${pdfId}&pf=${Math.min(...section.blocks.map((b) => b.pageFrom))}&pt=${Math.max(...section.blocks.map((b) => b.pageTo))}`,
+                  )}>
                 {t('start')}
               </button>
               <button className={s.checkNext} onClick={nextSection}>

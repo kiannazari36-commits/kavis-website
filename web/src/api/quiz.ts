@@ -33,7 +33,7 @@ const toQuestion = (r: QRow): QuizQuestion => ({
 });
 
 /** The newest quiz of a kind for a course (or one lesson), with its questions in order. */
-async function latestQuiz(kind: 'exam_prep' | 'section_check', filter: { course?: string; material?: string }) {
+async function latestQuiz(kind: 'exam_prep' | 'section_check' | 'lesson_end', filter: { course?: string; material?: string }) {
   let q = supabase.from('quizzes').select('id, lang').eq('kind', kind).order('created_at', { ascending: false }).limit(1);
   if (filter.course) q = q.eq('course_id', filter.course);
   if (filter.material) q = q.eq('material_id', filter.material);
@@ -74,7 +74,18 @@ export async function coursesWithPack(): Promise<string[]> {
 }
 
 /** The short check after a section in the reader. */
-export function getSectionCheck(materialId: string) {
+/**
+ * The short check after a section in the reader: up to 3 of the lesson's questions from that section's pages.
+ * (Example lessons without lesson questions have a ready-made section_check quiz.) null = no questions there.
+ */
+export async function getSectionCheck(materialId: string, pageFrom?: number, pageTo?: number) {
+  const lesson = await latestQuiz('lesson_end', { material: materialId });
+  if (lesson) {
+    const questions = lesson.questions
+      .filter((q) => pageFrom === undefined || (q.page !== null && q.page >= pageFrom && q.page <= (pageTo ?? pageFrom)))
+      .slice(0, 3);
+    return questions.length ? { ...lesson, questions } : null;
+  }
   return latestQuiz('section_check', { material: materialId });
 }
 

@@ -89,3 +89,19 @@ export function batches(totalPages: number, size: number): [number, number][] {
 
 /** Claude Sonnet 5.5 list price in US dollars (input $2, output $10 per million tokens). */
 export const costUsd = (input: number, output: number) => Math.round(((input * 2 + output * 10) / 1_000_000) * 10000) / 10000;
+
+// Page references in a hint: "(s. 4)", "(p. 12)", "(ص. 3)", "sayfa 4", "page 12".
+const PAGE_REF = /\(\s*(?:s|p|pp|ص)\.\s*\d+(?:\s*[–-]\s*\d+)?\s*\)|\b(?:sayfa|page)\s+\d+/giu;
+
+/**
+ * Hints must help the student think, not point to a page or give the answer away: page references are cut out,
+ * and a hint that contains the correct option's text (case-insensitive) or is left with almost nothing is dropped.
+ * Short options (1-2 letters, e.g. "A") are not checked against.
+ */
+export function cleanHints(hints: string[], options: string[], answerIndex: number): string[] {
+  const answer = (options[answerIndex] ?? '').trim().toLocaleLowerCase('tr').replace(/[.!]+$/, '');
+  return hints
+    .map((h) => h.replace(PAGE_REF, '').replace(/\s{2,}/g, ' ').trim())
+    .filter((h) => h.length >= 8)
+    .filter((h) => answer.length < 3 || !h.toLocaleLowerCase('tr').includes(answer));
+}

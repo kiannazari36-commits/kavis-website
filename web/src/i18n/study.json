@@ -181,7 +181,8 @@
   "askBudget": "Bu ayki yapay zekâ kullanım sınırına ulaştın. Gelecek ay yeniden sorabilirsin.",
   "askDeclined": "Bu soruya cevap veremedim. Soruyu biraz farklı sormayı dene.",
   "askFailed": "Cevap alınamadı. İnternetini kontrol edip tekrar dene.",
-  "followEasyQ": "Bunu daha kolay anlatır mısın?"
+  "followEasyQ": "Bunu daha kolay anlatır mısın?",
+  "noSectionQs": "Bu bölüm için soru yok. Okumaya devam edip sonraki bölümün sonunda tekrar dene."
  },
  "en": {
   "heroA": "How can I",
@@ -365,7 +366,8 @@
   "askBudget": "You reached this month's AI limit. You can ask again next month.",
   "askDeclined": "I couldn't answer this question. Try asking it a bit differently.",
   "askFailed": "Couldn't get an answer. Check your connection and try again.",
-  "followEasyQ": "Can you explain this more simply?"
+  "followEasyQ": "Can you explain this more simply?",
+  "noSectionQs": "No questions for this section. Keep reading and try again at the end of the next section."
  },
  "fa": {
   "heroA": "امروز چطور",
@@ -549,7 +551,8 @@
   "askBudget": "به سقف استفادهٔ این ماه از هوش مصنوعی رسیدی. ماه بعد دوباره بپرس.",
   "askDeclined": "نتوانستم به این سؤال جواب بدهم. کمی متفاوت بپرس.",
   "askFailed": "پاسخی دریافت نشد. اینترنتت را بررسی کن و دوباره امتحان کن.",
-  "followEasyQ": "می‌شود این را ساده‌تر توضیح بدهی؟"
+  "followEasyQ": "می‌شود این را ساده‌تر توضیح بدهی؟",
+  "noSectionQs": "برای این بخش سؤالی نیست. ادامه بده و در پایان بخش بعد دوباره امتحان کن."
  },
  "ar": {
   "heroA": "كيف يمكنني اليوم",
@@ -733,6 +736,7 @@
   "askBudget": "وصلت إلى حد استخدام الذكاء الاصطناعي لهذا الشهر. يمكنك السؤال مجددًا الشهر القادم.",
   "askDeclined": "لم أستطع الإجابة عن هذا السؤال. جرّب صياغته بشكل مختلف.",
   "askFailed": "تعذّر الحصول على إجابة. تحقق من الاتصال وحاول مجددًا.",
-  "followEasyQ": "هل يمكنك شرح هذا بطريقة أبسط؟"
+  "followEasyQ": "هل يمكنك شرح هذا بطريقة أبسط؟",
+  "noSectionQs": "لا توجد أسئلة لهذا القسم. تابع القراءة وجرّب مجددًا في نهاية القسم التالي."
  }
 }

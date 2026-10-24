@@ -1,5 +1,5 @@
 // Run: node --experimental-strip-types supabase/functions/process-material/lib.test.ts
-import { batches, costUsd, markTerms, paragraphsOf, plain } from './lib.ts';
+import { batches, cleanHints, costUsd, markTerms, paragraphsOf, plain } from './lib.ts';
 
 let fails = 0;
 const check = (name: string, ok: boolean) => {
@@ -31,4 +31,11 @@ check('case-insensitive match keeps the original spelling', (markTerms('ACE İnh
 check('no match inside another word', markTerms('antihipertansif', [{ key: 'y', surface: 'hipertansif' }], new Set()).length === 1);
 check('batches of 8: 20 pages → 3', JSON.stringify(batches(20, 8)) === '[[1,8],[9,16],[17,20]]');
 check('cost: 100k in + 10k out = $0.30', costUsd(100_000, 10_000) === 0.3);
+const opts = ['Dışkıyla atılırlar', 'B grubu depolanmaz', 'Provitaminleri vardır'];
+const kept = cleanHints(['(s. 5) Depolanma satırına bakın.', 'Suda eriyenler yağ dokusunda birikmez.', 'B grubu depolanmaz.'], opts, 1);
+check('a hint that states the answer is removed', kept.length === 2 && !kept.some((h) => h.includes('B grubu')));
+check('hints that do not give it away are kept', cleanHints(['Depolanmaya bak.'], opts, 1).length === 1);
+check('answer check ignores case', cleanHints(['b GRUBU depolanmaz işte'], opts, 1).length === 0);
+check('page reference is cut out of a hint', cleanHints(['(s. 4) Yağda eriyenler A, D, E, K harfleriyle hatırlanır.'], opts, 1)[0] === 'Yağda eriyenler A, D, E, K harfleriyle hatırlanır.');
+check('a hint that only points to a page is dropped', cleanHints(['(s. 5)', 'sayfa 5'], opts, 1).length === 0);
 if (fails) process.exit(1);
