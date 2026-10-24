@@ -80,6 +80,7 @@ export default function Reader() {
   const [trSource, setTrSource] = useState<string | null>(null);
   const [paused, setPaused] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [asked, setAsked] = useState<{ text: string; n: number } | null>(null);
   const [seconds, setSeconds] = useState(0);
   const secondsRef = useRef(0);
   secondsRef.current = seconds;
@@ -197,9 +198,10 @@ export default function Reader() {
     setFontI(n);
     toast(t('fontSizePrefix') + ['Normal', t('fontBig'), t('fontSmall')][n]);
   };
+  // A question from the reader (a hard word, a sentence): the panel opens and sends it.
   const askAssistant = (q: string) => {
     setPanel(true);
-    toast(t('askedPrefix') + q);
+    setAsked({ text: q, n: Date.now() });
   };
   const toggleFocus = () => {
     if (focus) {
@@ -294,7 +296,7 @@ export default function Reader() {
                       toast(t('highlighted'));
                     },
                   ],
-                  [t('actAsk'), () => (setSelected(false), guard('question', () => (setPanel(true), toast(t('askedExplain')))))],
+                  [t('actAsk'), () => (setSelected(false), askAssistant(t('askSentence') + sentenceOf(b)))],
                 ]}
                 onTranslate={() => setTrSource(paraText(b.paragraphs[0]))}
               />
@@ -359,7 +361,7 @@ export default function Reader() {
             onClose={() => setTerm(null)}
             onAsk={(name) => {
               setTerm(null);
-              guard('question', () => askAssistant(name + t('askedSuffix')));
+              askAssistant(name + t('askedSuffix'));
             }}
             onCard={(name) => toast(name + t('addedToCards'))}
             onListen={(name) => toast(t('readingAloud') + name)}
@@ -367,7 +369,9 @@ export default function Reader() {
         )}
       </main>
 
-      {panel && !focus && <AssistantPanel materialId={pdfId} onClose={() => setPanel(false)} />}
+      {panel && !focus && (
+        <AssistantPanel materialId={pdfId} title={title} pages={[pageFrom, pageTo]} asked={asked} onClose={() => setPanel(false)} />
+      )}
 
       {shareOpen && <ShareDialog pdfId={pdfId} onClose={() => setShareOpen(false)} />}
 
@@ -603,7 +607,16 @@ function TranslateDialog({ doc, materialId, source, onClose }: { doc: ReaderDoc;
   );
 }
 
-function AssistantPanel({ materialId, onClose }: { materialId: string; onClose: () => void }) {
+type PanelProps = {
+  materialId: string;
+  title: string;
+  /** The pages the student is reading now, so "this page" means something to the assistant. */
+  pages: [number, number];
+  asked: { text: string; n: number } | null;
+  onClose: () => void;
+};
+
+function AssistantPanel({ materialId, title, pages, asked, onClose }: PanelProps) {
   const { t, lang } = useI18n();
   // The earlier chat about this lesson (answers are made by the server, Edge Function "assistant").
   const thread = useAsync(() => latestThread(null, materialId), [materialId]);
@@ -634,7 +647,7 @@ function AssistantPanel({ materialId, onClose }: { materialId: string; onClose: 
       setDraft('');
       setQuick(false);
       setWaiting(true);
-      const r = await askAssistant(q, { materialId, threadId: threadId ?? thread?.id ?? null, mode: 'pdf', lang });
+      const r = await askAssistant(q, { materialId, threadId: threadId ?? thread?.id ?? null, mode: 'pdf', lang, pages });
       setWaiting(false);
       if ('error' in r) return toast(t({ locked: 'trialQFull', budget: 'askBudget', declined: 'askDeclined', other: 'askFailed' }[r.error]));
       setThreadId(r.threadId);
@@ -645,6 +658,15 @@ function AssistantPanel({ materialId, onClose }: { materialId: string; onClose: 
     e.preventDefault();
     send(draft);
   };
+  // Send a question asked from the page (once per ask).
+  const sent = useRef(0);
+  useEffect(() => {
+    if (asked && asked.n !== sent.current) {
+      sent.current = asked.n;
+      send(asked.text);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [asked]);
 
   return (
     <aside className={s.panel} aria-label={t('assistant')}>
@@ -656,7 +678,7 @@ function AssistantPanel({ materialId, onClose }: { materialId: string; onClose: 
           <Icon name="close" size={16} />
         </button>
       </div>
-      <span className={s.only}>{t('onlyFrom')}</span>
+      <span className={s.only}>{t('onlyFrom').replace('{lesson}', title)}</span>
 
       <div className={s.chat}>
         {history.map((m) =>

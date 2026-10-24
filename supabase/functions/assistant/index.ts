@@ -1,9 +1,9 @@
 // Edge Function assistant: answers a student's question only from their own lessons (CLAUDE.md).
-// POST { question, course_id?, material_id?, mode: 'pdf' | 'ai', thread_id?, lang }
+// POST { question, course_id?, material_id?, mode: 'pdf' | 'ai', thread_id?, lang, page_from?, page_to? }
 //   → { thread_id, answer, sources: [{ material_id, lesson, page }], outside_pdf }
-// Finds the best text pieces (material_chunks, full-text search), asks Claude Sonnet 5.5, saves the thread and both
-// messages, counts a trial question and the AI cost. "AI + research" (mode 'ai') may add general knowledge,
-// marked outside_pdf. Apps never write answers themselves.
+// Finds the best text pieces (the pages open in the reader first, then material_chunks full-text search), asks
+// Claude Sonnet 5.5, saves the thread and both messages, counts a trial question and the AI cost.
+// "AI + research" (mode 'ai') may add general knowledge, marked outside_pdf. Apps never write answers themselves.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 import { costUsd, queryTerms, rankChunks, tsQuery } from './lib.ts';
@@ -46,6 +46,7 @@ ${
     ? 'Answer mainly from the excerpts. If they are not enough, you may add general textbook knowledge; then set outside_pdf to true and say briefly which part is not from their PDFs.'
     : 'Answer ONLY from the excerpts. If they do not contain the answer, say clearly (in one or two sentences) that you could not find it in their lessons and suggest what to look for; do not use outside knowledge. outside_pdf is always false.'
 }
+If the student is reading a lesson now, you are told which pages are open; "this page", "this topic", "explain this" mean those pages (excerpts marked OPEN PAGE).
 Write in the language of the student's question (if unclear: ${LANG_NAMES[lang] ?? 'Turkish'}). Be short and clear: 2-6 sentences or a few bullet points, plain text without markdown headings. Explain simply, like a good classmate.
 sources: the numbers of the excerpts you actually used (e.g. [2, 5]); empty if none.`;
 
@@ -66,6 +67,8 @@ Deno.serve(async (req) => {
   const lang = typeof body.lang === 'string' ? body.lang : 'tr';
   const courseId: string | null = typeof body.course_id === 'string' ? body.course_id : null;
   const materialId: string | null = typeof body.material_id === 'string' ? body.material_id : null;
+  const pageFrom = Number.isInteger(body.page_from) ? (body.page_from as number) : null;
+  const pageTo = Number.isInteger(body.page_to) ? (body.page_to as number) : pageFrom;
 
   // Trial / Premium, and the monthly AI budget.
   const { data: allowed } = await db.rpc('can_use', { feature: 'ask', uid });
@@ -82,7 +85,21 @@ Deno.serve(async (req) => {
   const titles = new Map((mats ?? []).map((m) => [m.id as string, m.title as string]));
   const ids = [...titles.keys()];
 
-  let pieces: { id: number; material_id: string; page: number | null; text: string }[] = [];
+  type Piece = { id: number; material_id: string; page: number | null; text: string; open?: boolean };
+  let pieces: Piece[] = [];
+  // The pages open in the reader always come first.
+  const open: Piece[] = [];
+  if (materialId && ids.includes(materialId) && pageFrom !== null) {
+    const { data } = await db
+      .from('material_chunks')
+      .select('id, material_id, page, text')
+      .eq('material_id', materialId)
+      .gte('page', pageFrom)
+      .lte('page', Math.min(pageTo ?? pageFrom, pageFrom + 3))
+      .order('page')
+      .limit(4);
+    open.push(...(data ?? []).map((p) => ({ ...p, open: true })));
+  }
   const terms = queryTerms(question);
   if (ids.length && terms.length) {
     const { data } = await db
@@ -93,6 +110,7 @@ Deno.serve(async (req) => {
       .limit(40);
     pieces = rankChunks(data ?? [], terms, PIECES);
   }
+  pieces = [...open, ...pieces.filter((p) => !open.some((o) => o.id === p.id))].slice(0, PIECES + open.length);
 
   // The thread: continue it, or start a new one.
   let threadId: string | null = typeof body.thread_id === 'string' ? body.thread_id : null;
@@ -107,7 +125,7 @@ Deno.serve(async (req) => {
   }
 
   const excerpts = pieces.length
-    ? pieces.map((p, i) => `[E${i + 1}] (${titles.get(p.material_id) ?? ''}, page ${p.page ?? '?'})\n${p.text.slice(0, 2500)}`).join('\n\n')
+    ? pieces.map((p, i) => `[E${i + 1}] (${p.open ? 'OPEN PAGE, ' : ''}${titles.get(p.material_id) ?? ''}, page ${p.page ?? '?'})\n${p.text.slice(0, 2500)}`).join('\n\n')
     : '(no matching excerpts were found in the student\'s lessons)';
 
   const client = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')!.trim() });
@@ -118,7 +136,7 @@ Deno.serve(async (req) => {
     fallbacks: 'default',
     output_config: { effort: 'low', format: { type: 'json_schema', schema: SCHEMA } },
     system: system(mode, lang),
-    messages: [...history, { role: 'user', content: `Excerpts from my lessons:\n\n${excerpts}\n\nMy question: ${question}` }],
+    messages: [...history, { role: 'user', content: `${open.length ? `I am reading "${titles.get(materialId!) ?? ''}", page ${pageFrom}${pageTo && pageTo !== pageFrom ? `-${pageTo}` : ''}.\n\n` : ''}Excerpts from my lessons:\n\n${excerpts}\n\nMy question: ${question}` }],
   };
   let res;
   try {

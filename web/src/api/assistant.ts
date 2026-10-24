@@ -72,10 +72,10 @@ export type AskError = 'locked' | 'budget' | 'declined' | 'other';
  */
 export async function askAssistant(
   question: string,
-  where: { courseId?: string | null; materialId?: string | null; threadId?: string | null; mode: SourceMode; lang: string },
+  where: { courseId?: string | null; materialId?: string | null; threadId?: string | null; mode: SourceMode; lang: string; pages?: [number, number] },
 ): Promise<{ threadId: string; message: ChatMessage } | { error: AskError }> {
   const { data, error } = await supabase.functions.invoke('assistant', {
-    body: { question, course_id: where.courseId ?? null, material_id: where.materialId ?? null, thread_id: where.threadId ?? null, mode: where.mode, lang: where.lang },
+    body: { question, course_id: where.courseId ?? null, material_id: where.materialId ?? null, thread_id: where.threadId ?? null, mode: where.mode, lang: where.lang, page_from: where.pages?.[0] ?? null, page_to: where.pages?.[1] ?? null },
   });
   if (error) {
     const status = (error as { context?: { status?: number } }).context?.status;
