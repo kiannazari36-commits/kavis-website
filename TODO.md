@@ -79,7 +79,7 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Notifications (study reminders, congratulations)
 - [x] "Request my data": Edge `export-data` → one JSON file downloaded at once (all own rows + 7-day PDF links)
 - [x] "Delete account": password asked again (Edge `delete-account`), deleted after 30 days, banner "Hesabın … silinecek · Vazgeç" until then
-- [ ] Nightly purge job: migration `20261025120000_account_purge.sql` (pg_cron + pg_net, random key in `private.app_secrets`) — tested on live with rollback, **waiting for Kian's OK to apply**
+- [x] Nightly purge job (03:30 UTC): migration `20261024213309_account_purge.sql` applied 25 Oct 2026 with Kian's OK (pg_cron + pg_net, random key in `private.app_secrets`); a manual run answered `{deleted: 0}`
 - [ ] Later: email for both (needs an email provider): export sent by email, deletion confirmed by an email link (the design's text); accounts with Apple/Google sign-in have no password → confirm by email then
 
 ## Payments and plans

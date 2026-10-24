@@ -2,7 +2,7 @@
 // POST { action: 'request', password } → the password is checked once more, then the account is deleted in 30 days
 //   (account_requests: kind 'delete', status 'confirmed', scheduled_for). → { scheduled_for } or 403 { error: 'password' }
 // POST { action: 'cancel' }            → "Vazgeç" within the 30 days.
-// POST { action: 'purge' } + header x-purge-key (the nightly job, migration 20261025120000_account_purge.sql)
+// POST { action: 'purge' } + header x-purge-key (the nightly job, migration 20261024213309_account_purge.sql)
 //   → deletes the accounts whose 30 days are over: their files in Storage, then the login (every table goes with it).
 // verify_jwt is off because the nightly job has no login; request/cancel check the student's login themselves.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
