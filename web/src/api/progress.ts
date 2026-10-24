@@ -44,21 +44,6 @@ type Attempt = { score: number; level: string | null; started_at: string; quizze
 
 const DAY = 86_400_000;
 
-/** The weakest topic (lowest mastery), for the assistant's greeting on home; null when there is none. */
-export async function weakestTopic(): Promise<WeakTopic | null> {
-  const { data, error } = await supabase
-    .from('topic_progress')
-    .select('mastery, material_topics(title, material_id, materials(title, course_id))')
-    .eq('state', 'weak')
-    .order('mastery')
-    .limit(1)
-    .maybeSingle();
-  if (error) console.error('weakestTopic', error);
-  const w = data as unknown as { mastery: number; material_topics: { title: string; material_id: string; materials: { title: string; course_id: string | null } } } | null;
-  if (!w) return null;
-  return { title: w.material_topics.title, lesson: w.material_topics.materials.title, mastery: w.mastery, courseId: w.material_topics.materials.course_id, materialId: w.material_topics.material_id };
-}
-
 export async function getProgress(): Promise<Progress> {
   const monday = mondayOf();
   const [minutes, streak, attempts, weak, taps, courses] = await Promise.all([

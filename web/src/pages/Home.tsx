@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n/I18nProvider';
 import { useToast } from '../components/Toast';
@@ -11,7 +11,7 @@ import { useAsync } from '../hooks/useAsync';
 import { courseCount, duration, num } from '../i18n/format';
 import { daysUntil, isoToday } from '../api/courses';
 import { ensureWeekPlan, getTodayReview, setReview, setTaskDone } from '../api/plan';
-import { weakestTopic } from '../api/progress';
+import { listOwnPlan } from '../api/ownPlan';
 import { useSettings } from '../settings/SettingsProvider';
 import { useTrial } from '../trial/TrialProvider';
 import { usePanelPref } from '../hooks/usePanelPref';
@@ -43,11 +43,24 @@ export default function Home() {
   const { settings } = useSettings();
   const review = useAsync(getTodayReview, []);
   const [showReview, setShowReview] = useState(true);
-  // Today's plan (from this week's plan, made first if it is missing or old), one after the other from the
-  // reminder time, 10 minutes apart.
-  const week = useAsync(() => ensureWeekPlan(settings.planMode), [settings.planMode]);
-  const weak = useAsync(weakestTopic, []);
-  const todayTasks = (week?.tasks ?? []).filter((x) => x.day === isoToday());
+  // Today's plan, one after the other from the reminder time, 10 minutes apart: the Kavis plan's tasks (made first
+  // if the week's plan is missing or old), or with "Kendi planım" the student's own courses for this weekday.
+  const mode = settings.planMode;
+  const week = useAsync(() => (mode === 'aim' ? ensureWeekPlan(mode) : Promise.resolve(null)), [mode]);
+  const own = useAsync(() => (mode === 'own' ? listOwnPlan() : Promise.resolve([])), [mode]);
+  const loaded = mode === 'aim' ? week !== undefined : mode === 'own' ? own !== undefined : true;
+  const weekdayNow = ((new Date().getDay() + 6) % 7) + 1;
+  const todayTasks =
+    mode === 'aim'
+      ? (week?.tasks ?? []).filter((x) => x.day === isoToday()).map((x) => ({ ...x, own: false, link: '' }))
+      : mode === 'own'
+        ? (own ?? [])
+            .filter((x) => x.weekday === weekdayNow)
+            .map((x) => {
+              const c = courses?.find((y) => y.id === x.courseId);
+              return { id: x.id, title: c?.name ?? '', minutes: x.minutes, why: t('ownPlanWhy'), status: 'todo', own: true, link: `/courses/${x.courseId}` };
+            })
+        : [];
   const plan = todayTasks.map((x, i) => ({
     ...x,
     time: addTime(settings.notifyTime, todayTasks.slice(0, i).reduce((a, y) => a + y.minutes + 10, 0)),
@@ -55,8 +68,8 @@ export default function Home() {
   const [ticks, setTicks] = useState<Record<string, boolean>>({});
   const isDone = (id: string, status: string) => ticks[id] ?? status === 'done';
   const nextExam = [...(courses ?? [])].filter((c) => c.examDate).sort((a, b) => a.examDate!.localeCompare(b.examDate!))[0];
-  const [ask, setAsk] = useState('');
-  // Right panel (today's plan + assistant): closed by default like the iPad design, opens wide screens only. Remembered.
+  // Right panel (today's plan): closed by default like the iPad design, opens wide screens only. Remembered.
+  // The assistant is not in it (it opens from the star at the top).
   const [panelOpen, setPanelOpen] = usePanelPref('kavis.planOpen', 1440);
 
   const uploads: [IconName, string, boolean][] = [
@@ -70,12 +83,6 @@ export default function Home() {
     ['cards', 'k73', 'var(--amb-soft)', 'var(--amb-t)', '/cards'],
     ['book', 'k74', 'var(--good-soft)', 'var(--good)', '/reader'],
   ];
-
-  const sendAsk = (e: FormEvent) => {
-    e.preventDefault();
-    if (ask.trim()) return guard('question', () => navigate(`/assistant?q=${encodeURIComponent(ask.trim())}`));
-    navigate(ask.trim() ? `/assistant?q=${encodeURIComponent(ask.trim())}` : '/assistant');
-  };
 
   return (
     <main className={panelOpen ? s.main : `${s.main} ${s.mainWide}`}>
@@ -184,9 +191,9 @@ export default function Home() {
                 <Icon name="close" size={14} width={2.2} />
               </button>
             </div>
-            {week !== undefined && plan.length === 0 && (
+            {loaded && plan.length === 0 && (
               <Link to="/plan" className={s.planEmpty}>
-                {t(settings.planMode === 'aim' ? 'planEmptyToday' : 'planOffHome')}
+                {t(mode === 'aim' ? 'planEmptyToday' : mode === 'own' ? 'planOwnEmpty' : 'planOffHome')}
               </Link>
             )}
             {plan.map((p) => {
@@ -198,18 +205,24 @@ export default function Home() {
                     <b>{p.title}</b>
                     <span>{`${duration(p.minutes, lang)} · ${p.why}`}</span>
                   </span>
-                  <button
-                    role="checkbox"
-                    aria-checked={done}
-                    aria-label={p.title}
-                    className={done ? `${s.check} ${s.checkOn}` : s.check}
-                    onClick={() => {
-                      setTicks({ ...ticks, [p.id]: !done });
-                      setTaskDone(p.id, !done);
-                    }}
-                  >
-                    {done && <Icon name="check" size={13} width={2.4} />}
-                  </button>
+                  {p.own ? (
+                    <Link to={p.link} className={s.check} aria-label={p.title}>
+                      <Icon name="chevron" size={13} width={2.4} className="flip-rtl" />
+                    </Link>
+                  ) : (
+                    <button
+                      role="checkbox"
+                      aria-checked={done}
+                      aria-label={p.title}
+                      className={done ? `${s.check} ${s.checkOn}` : s.check}
+                      onClick={() => {
+                        setTicks({ ...ticks, [p.id]: !done });
+                        setTaskDone(p.id, !done);
+                      }}
+                    >
+                      {done && <Icon name="check" size={13} width={2.4} />}
+                    </button>
+                  )}
                 </div>
               );
             })}
@@ -220,48 +233,7 @@ export default function Home() {
               </Link>
             )}
           </section>
-  
-          <section className={`${s.panel} ${s.assistant}`}>
-            <div className={s.asstHead}>
-              <span className="star-btn" style={{ width: 36, height: 36 }} aria-hidden="true" />
-              <span className={s.asstTitle}>
-                <b>{t('k92')}</b>
-                <span>{t('k93')}</span>
-              </span>
-            </div>
-            {/* Greeting with the student's name and weakest topic (from their quizzes). */}
-            <div className={s.bubble}>
-              {weak ? (
-                <>
-                  {t('asstWeakA').replace('{name}', firstName).replace('{lesson}', weak.lesson)} <b>{weak.title}</b>
-                  {t('k96')}
-                </>
-              ) : (
-                t('asstHello').replace('{name}', firstName)
-              )}
-            </div>
-            <div className={s.chips}>
-              {['k97', 'k98', 'k99'].map((k) => (
-                <button
-                  key={k}
-                  onClick={() =>
-                    k === 'k97'
-                      ? guard('question', () => navigate(`/assistant?q=${encodeURIComponent(weak ? t('explainTopicQ').replace('{topic}', weak.title) : t(k))}`))
-                      : guard('generate', () => navigate(k === 'k98' ? '/quiz' : '/cards'))
-                  }
-                >
-                  {t(k)}
-                </button>
-              ))}
-            </div>
-            <span className={s.grow} />
-            <form className={s.ask} onSubmit={sendAsk}>
-              <input value={ask} onChange={(e) => setAsk(e.target.value)} placeholder={t('k100')} aria-label={t('k100')} />
-              <button type="submit" aria-label={t('k100')}>
-                <Icon name="send" size={16} className="flip-rtl" />
-              </button>
-            </form>
-          </section>
+
         </aside>
       )}
     </main>
