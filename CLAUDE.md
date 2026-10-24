@@ -52,7 +52,7 @@ A student uploads the teacher's PDF, a slide photo or a lecture recording. The a
 
 ## Backend (Supabase)
 - Project **Kavis**, ref `lnbfcfxxrqohcnkhlcur`, region eu-west-1 (stays there), Postgres 17. One backend for every client (web, iOS, later Android).
-- Schema: `supabase/migrations/` — **already applied** to the live project (45 tables, RLS on all, 5 private buckets, RPCs `access_status`, `can_i`, `register_device`, `sign_out_device`, `content_lang_for`, `tap_term`, `study_streak`). File names match the live migration versions. Any new schema change = a new migration file, tested locally first, and applied to the live database only after I say yes.
+- Schema: `supabase/migrations/` — **already applied** to the live project (45 tables, RLS on all, 5 private buckets, RPCs `access_status`, `can_i`, `register_device`, `sign_out_device`, `content_lang_for`, `tap_term`, `study_streak`; nightly pg_cron job `purge-deleted-accounts`). File names match the live migration versions. Any new schema change = a new migration file, tested locally first, and applied to the live database only after I say yes.
 - Full API map: `docs/BACKEND.md`. The 7 remaining security-advisor warnings are intentional (explained there).
 - **Rule:** AI output, scores, usage counters, subscriptions and shares are written **only by Edge Functions** (service role). The apps never write them.
 - **AI model (decided 24 Oct 2026):** Claude Sonnet 5.5 (`claude-sonnet-5-5`) for PDF processing and the assistant (cheaper than Opus). The key is the Supabase secret `ANTHROPIC_API_KEY` (Anthropic Console, Default Workspace, expires after 90 days — renew it). Ask me before every paid test and say what it cost.
