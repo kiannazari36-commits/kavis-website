@@ -80,12 +80,14 @@ export default function Reader() {
   const [term, setTerm] = useState<string | null>(null);
   const [selected, setSelected] = useState(false);
   const [trSource, setTrSource] = useState<string | null>(null);
-  const [paused, setPaused] = useState(false);
+  const [paused, setPaused] = useState(() => loadClock(pdfId).paused);
   const [shareOpen, setShareOpen] = useState(false);
   const [asked, setAsked] = useState<{ text: string; n: number } | null>(null);
-  const [seconds, setSeconds] = useState(0);
-  const secondsRef = useRef(0);
+  const [seconds, setSeconds] = useState(() => loadClock(pdfId).seconds);
+  const secondsRef = useRef(seconds);
   secondsRef.current = seconds;
+  const pausedRef = useRef(paused);
+  pausedRef.current = paused;
   const scroller = useRef<HTMLDivElement>(null);
   const { guard } = useTrial();
   const { focus, setFocus } = useOutletContext<ShellContext>();
@@ -97,11 +99,28 @@ export default function Reader() {
     return () => clearInterval(id);
   }, [paused]);
 
-  // Study time is saved when leaving the lesson.
+  // The clock shows today's time on this lesson: leaving and coming back goes on from where it was (also paused).
+  // Leaving saves the new study time; less than a minute waits until the next visit.
   useEffect(() => {
-    setSeconds(0);
+    const saved = loadClock(pdfId);
+    setSeconds(saved.seconds);
+    setPaused(saved.paused);
+    let start = saved.seconds;
+    let pending = saved.pending;
+    const leave = () => {
+      if (!pdfId) return;
+      const fresh = secondsRef.current - start + pending;
+      const sent = Boolean(courseId) && fresh >= 60;
+      if (sent) saveStudyTime(courseId, pdfId, fresh);
+      start = secondsRef.current;
+      pending = sent ? 0 : fresh;
+      saveClock(pdfId, { seconds: secondsRef.current, paused: pausedRef.current, pending });
+    };
+    // Closing the tab or the browser counts as leaving too.
+    window.addEventListener('pagehide', leave);
     return () => {
-      if (courseId && pdfId) saveStudyTime(courseId, pdfId, secondsRef.current);
+      window.removeEventListener('pagehide', leave);
+      leave();
     };
   }, [courseId, pdfId]);
 
@@ -505,6 +524,30 @@ function Block({ doc, block, terms, fontSize, term, onTerm, selected, highlights
       )}
     </article>
   );
+}
+
+type Clock = { day: string; seconds: number; paused: boolean; pending: number };
+const clockKey = (pdfId: string) => `kavis.readerClock.${pdfId}`;
+const today = () => new Date().toDateString();
+
+/** The reader clock of one lesson, kept in this browser for today (a new day starts at 00:00). */
+function loadClock(pdfId: string): Clock {
+  const fresh = { day: today(), seconds: 0, paused: false, pending: 0 };
+  try {
+    const c = JSON.parse(localStorage.getItem(clockKey(pdfId)) ?? 'null') as Clock | null;
+    if (!c) return fresh;
+    return c.day === today() ? c : { ...fresh, pending: c.pending ?? 0 };
+  } catch {
+    return fresh;
+  }
+}
+
+function saveClock(pdfId: string, c: Omit<Clock, 'day'>) {
+  try {
+    localStorage.setItem(clockKey(pdfId), JSON.stringify({ ...c, day: today() }));
+  } catch {
+    // private window: the clock simply starts again next time
+  }
 }
 
 function TermCard({
