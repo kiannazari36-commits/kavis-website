@@ -5,12 +5,13 @@ import { useToast } from '../components/Toast';
 import Wordmark from '../components/Wordmark';
 import LangThemeSwitch from '../components/LangThemeSwitch';
 import Icon, { AppleLogo, GoogleLogo } from '../components/Icon';
-import { AuthFail, logIn, onSignedIn, resendCode, signUp, socialLogIn, verifyEmail, type Provider } from '../api/auth';
+import { AuthFail, currentUser, logIn, onSignedIn, resendCode, sendPasswordReset, setNewPassword, signUp, socialLogIn, verifyEmail, type Provider } from '../api/auth';
 import { checkDeviceLimit } from '../api/devices';
 import s from './Login.module.css';
 
 // Design: design/DeskApp.dc.html screen "login" (layout) + design/NewSignup.dc.html (sign up / log in / verify flow).
-type Mode = 'signup' | 'login' | 'verify';
+type Mode = 'signup' | 'login' | 'verify' | 'forgot' | 'reset';
+const MODES: Mode[] = ['login', 'verify', 'forgot', 'reset'];
 
 const RESEND_SECONDS = 42;
 // Sign-up confirmation: false = the email has a link (now), true = a 6-digit code (needs {{ .Token }} in the
@@ -40,7 +41,7 @@ export default function Login() {
   const toast = useToast();
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
-  const mode: Mode = params.get('mode') === 'login' ? 'login' : params.get('mode') === 'verify' ? 'verify' : 'signup';
+  const mode: Mode = (MODES as string[]).includes(params.get('mode') ?? '') ? (params.get('mode') as Mode) : 'signup';
   const setMode = (m: Mode) => setParams(m === 'signup' ? {} : { mode: m }, { replace: m !== 'verify' });
 
   const [name, setName] = useState('');
@@ -130,6 +131,10 @@ export default function Login() {
 
         {mode === 'verify' ? (
           <Verify email={pending.email} onBack={() => setMode('signup')} />
+        ) : mode === 'forgot' ? (
+          <Forgot initialEmail={email} onBack={() => setMode('login')} />
+        ) : mode === 'reset' ? (
+          <Reset onExpired={() => setMode('forgot')} />
         ) : (
           <form className={s.form} onSubmit={submit} noValidate>
             <div role="tablist" aria-label={t('account')} className={s.tabs}>
@@ -216,7 +221,7 @@ export default function Login() {
               </div>
             )}
             {!signup && (
-              <button type="button" className={s.forgot} onClick={() => toast(t('k165'))}>
+              <button type="button" className={s.forgot} onClick={() => setMode('forgot')}>
                 {t('forgot')}
               </button>
             )}
@@ -377,5 +382,126 @@ function Verify({ email, onBack }: { email: string; onBack: () => void }) {
         </button>
       )}
     </div>
+  );
+}
+
+/** "Forgot password": sends a reset link to the email. */
+function Forgot({ initialEmail, onBack }: { initialEmail: string; onBack: () => void }) {
+  const { t } = useI18n();
+  const toast = useToast();
+  const [email, setEmail] = useState(initialEmail);
+  const [sent, setSent] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  const submit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (busy) return;
+    setBusy(true);
+    try {
+      await sendPasswordReset(email);
+      setSent(true);
+    } catch (err) {
+      toast(t(errKey(err)));
+    }
+    setBusy(false);
+  };
+
+  if (sent) {
+    return (
+      <div className={s.verify}>
+        <button type="button" className={s.verifyBack} onClick={onBack}>
+          <Icon name="back" size={16} width={1.8} className="flip-rtl" />
+          {t('backToLogin')}
+        </button>
+        <span className={s.mailIcon} aria-hidden="true">
+          <Icon name="mail" size={40} width={1.5} />
+        </span>
+        <h1 className={s.title}>
+          {t('checkA')} <span>{t('checkB')}</span>
+        </h1>
+        <p className={s.verifyText}>
+          {t('resetA')} <b dir="ltr">{email.trim()}</b> {t('resetB')}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <form className={s.form} onSubmit={submit} noValidate>
+      <button type="button" className={s.verifyBack} onClick={onBack}>
+        <Icon name="back" size={16} width={1.8} className="flip-rtl" />
+        {t('backToLogin')}
+      </button>
+      <h1 className={s.title}>
+        {t('forgotA')} <span>{t('forgotB')}</span>
+      </h1>
+      <p className={s.verifyText}>{t('forgotText')}</p>
+      <label className={s.field}>
+        {t('k43')}
+        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="elif@ogrenci.edu.tr" autoComplete="email" dir="ltr" autoFocus />
+      </label>
+      <button type="submit" className={email.trim() ? s.submit : `${s.submit} ${s.submitOff}`} aria-disabled={!email.trim() || busy}>
+        {t('sendLink')}
+      </button>
+    </form>
+  );
+}
+
+/** Opened from the reset link: the link signs the student in, then they choose a new password. */
+function Reset({ onExpired }: { onExpired: () => void }) {
+  const { t } = useI18n();
+  const toast = useToast();
+  const navigate = useNavigate();
+  const [pw, setPw] = useState('');
+  const [pw2, setPw2] = useState('');
+  const [busy, setBusy] = useState(false);
+  const signedIn = !!currentUser();
+
+  const submit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (busy) return;
+    if (pw !== pw2) return toast(t('pwMismatch'));
+    setBusy(true);
+    try {
+      await setNewPassword(pw);
+      toast(t('pwSaved'));
+      await afterLogin(navigate);
+    } catch (err) {
+      toast(t(errKey(err)));
+      setBusy(false);
+    }
+  };
+
+  if (!signedIn) {
+    return (
+      <div className={s.verify}>
+        <h1 className={s.title}>
+          {t('forgotA')} <span>{t('forgotB')}</span>
+        </h1>
+        <p className={s.verifyText}>{t('resetExpired')}</p>
+        <button type="button" className={s.submit} onClick={onExpired}>
+          {t('sendLink')}
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <form className={s.form} onSubmit={submit} noValidate>
+      <h1 className={s.title}>
+        {t('newPwA')} <span>{t('newPwB')}</span>
+      </h1>
+      <label className={s.field}>
+        {t('newPw')}
+        <input type="password" value={pw} onChange={(e) => setPw(e.target.value)} autoComplete="new-password" dir="ltr" autoFocus />
+      </label>
+      <label className={s.field}>
+        {t('newPw2')}
+        <input type="password" value={pw2} onChange={(e) => setPw2(e.target.value)} autoComplete="new-password" dir="ltr" />
+      </label>
+      <button type="submit" className={pw && pw2 ? s.submit : `${s.submit} ${s.submitOff}`} aria-disabled={!pw || !pw2 || busy}>
+        {t('save')}
+      </button>
+    </form>
   );
 }

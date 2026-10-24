@@ -18,7 +18,7 @@ Everything that is not finished yet. Updated after every step.
   - [x] Auth with email: sign up (name, email, password) → confirmation **link** in the email → signed in (opens `/home`); log in; log out; app pages need a signed-in student. `web/src/api/supabase.ts` + `auth.ts`; keys in `web/.env.local` (git-ignored) and in the Vercel project settings
   - [ ] Supabase dashboard → Authentication → URL Configuration: Site URL `https://kavis-website.vercel.app`, Redirect URLs `http://localhost:5173/**` and `https://kavis-website.vercel.app/**` (add the real domain later)
   - [ ] Later: switch back to the 6-digit code of the design (`EMAIL_CODE = true` in `web/src/pages/Login.tsx` + `{{ .Token }}` in the "Confirm sign up" template); iOS needs the code anyway. Kavis-styled email texts in 4 languages
-  - [ ] "Forgot password" (now a toast): reset with a 6-digit code
+  - [x] "Şifremi unuttum": email link → `/login?mode=reset` → new password (Supabase `resetPasswordForEmail` + `updateUser`); expired link → ask for a new one
   - [ ] Sign in with Apple and Google (buttons now show "coming soon"): needs Apple developer account (Services ID + key) and a Google Cloud OAuth client, then enable both in Supabase → Authentication → Providers
   - [x] Example data: `supabase/seed.sql` (re-runnable; fills the kiannazari36 account with 5 courses, 13 lessons, exams, timetable, reading progress, study time). Applied to the live project. Each newly connected area adds its rows there
   - [x] Courses (menu, home "continue", My Courses, course folder, reader title), profile (name, school, department, year) and settings (`user_settings`, per-course content language) now come from Supabase. `web/src/api/mock/courses.ts` removed

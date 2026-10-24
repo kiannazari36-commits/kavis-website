@@ -112,3 +112,18 @@ export async function logOut() {
   user = null;
   return true;
 }
+
+/** "Forgot password": emails a link that opens /login?mode=reset (must be in Supabase → Redirect URLs). */
+export async function sendPasswordReset(email: string) {
+  const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: `${location.origin}/login?mode=reset` });
+  if (error) fail(error);
+  return true;
+}
+
+/** Sets a new password; works only while signed in through the reset link (or normally signed in). */
+export async function setNewPassword(password: string) {
+  const { data, error } = await supabase.auth.updateUser({ password });
+  if (error) fail(error);
+  user = toUser((await supabase.auth.getSession()).data.session) ?? user;
+  return data.user;
+}
