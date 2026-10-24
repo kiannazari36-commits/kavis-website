@@ -4,7 +4,7 @@ import { useI18n } from '../i18n/I18nProvider';
 import { num } from '../i18n/format';
 import { useToast } from '../components/Toast';
 import Icon from '../components/Icon';
-import { inspectPdf, lessonStatus, MAX_PAGES, uploadLesson, UploadFail, type LessonStatus, type PdfInfo } from '../api/upload';
+import { inspectPdf, lessonStatus, MAX_MB, MAX_PAGES, uploadLesson, UploadFail, type LessonStatus, type PdfInfo } from '../api/upload';
 import { listCourses } from '../api/courses';
 import { useAsync } from '../hooks/useAsync';
 import { useTrial } from '../trial/TrialProvider';
@@ -57,6 +57,7 @@ export default function Upload() {
   const choose = async (f: File | undefined) => {
     if (!f) return;
     if (f.type !== 'application/pdf' && !f.name.toLowerCase().endsWith('.pdf')) return toast(t('up_notPdf'));
+    if (f.size > MAX_MB * 1048576) return toast(t('up_tooBig').replace('{mb}', num(Math.round(f.size / 1048576), lang)));
     setFile(f);
     setInfo(null);
     if (!title) setTitle(f.name.replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ').trim());
@@ -81,7 +82,8 @@ export default function Upload() {
         setLessonId(id);
         setStage('processing');
       } catch (e) {
-        toast(t(e instanceof UploadFail && e.reason === 'trial' ? 'trialPdfFull' : 'up_failed'));
+        const reason = e instanceof UploadFail ? e.reason : 'network';
+        toast(reason === 'trial' ? t('trialPdfFull') : reason === 'tooBig' ? t('up_tooBig').replace('{mb}', num(Math.round(file.size / 1048576), lang)) : t('up_failed'));
       }
       setBusy(false);
     });

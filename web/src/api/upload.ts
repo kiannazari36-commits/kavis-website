@@ -6,6 +6,8 @@ import { currentUser } from './auth';
 // checked by the database), and the server prepares the reading page (Edge Function process-material).
 
 export const MAX_PAGES = 100;
+/** Largest file the storage accepts (Supabase free plan: 50 MB per file). */
+export const MAX_MB = 50;
 
 export type PdfInfo = { pages: number; hasText: boolean; sizeMb: number };
 
@@ -19,28 +21,35 @@ export async function inspectPdf(file: File): Promise<PdfInfo> {
 }
 
 export class UploadFail extends Error {
-  reason: 'trial' | 'network';
-  constructor(reason: 'trial' | 'network') {
+  reason: 'trial' | 'network' | 'tooBig';
+  constructor(reason: 'trial' | 'network' | 'tooBig') {
     super(reason);
     this.reason = reason;
   }
 }
 
-/** Creates the lesson and uploads the file; returns the lesson id. Then asks the server to prepare it. */
+/**
+ * Uploads the file, then creates the lesson; returns the lesson id. Then asks the server to prepare it.
+ * The file goes first: a failed upload must not use up a trial lesson (the lesson row counts it).
+ */
 export async function uploadLesson(file: File, title: string, courseId: string | null): Promise<string> {
   const user = currentUser();
   if (!user) throw new UploadFail('network');
+  if (file.size > MAX_MB * 1048576) throw new UploadFail('tooBig');
   const id = crypto.randomUUID();
   const path = `${user.id}/${id}/original.pdf`;
-
-  const row = await supabase.from('materials').insert({ id, user_id: user.id, course_id: courseId, kind: 'pdf', title: title.trim() });
-  // The insert policy refuses it when the trial is over or its 2 lessons are used.
-  if (row.error) throw new UploadFail(row.error.code === '42501' ? 'trial' : 'network');
 
   const up = await supabase.storage.from('materials').upload(path, file, { contentType: 'application/pdf', upsert: false });
   if (up.error) {
     console.error('upload', up.error);
     throw new UploadFail('network');
+  }
+
+  const row = await supabase.from('materials').insert({ id, user_id: user.id, course_id: courseId, kind: 'pdf', title: title.trim() });
+  if (row.error) {
+    // Refused (trial over or its 2 lessons used): remove the file again.
+    await supabase.storage.from('materials').remove([path]);
+    throw new UploadFail(row.error.code === '42501' ? 'trial' : 'network');
   }
   const f = await supabase
     .from('material_files')

@@ -192,7 +192,8 @@
   "up_notPdf": "Bu dosya PDF değil.",
   "up_processFailed": "Ders hazırlanırken bir sorun oldu. Biraz sonra tekrar deneriz.",
   "up_done": "tamam",
-  "up_working": "hazırlanıyor"
+  "up_working": "hazırlanıyor",
+  "up_tooBig": "Bu PDF {mb} MB. Şimdilik en fazla 50 MB yüklenebiliyor; PDF'i küçültüp (sıkıştırıp) tekrar dene."
  },
  "en": {
   "pdfs": "PDFs",
@@ -387,7 +388,8 @@
   "up_notPdf": "This file is not a PDF.",
   "up_processFailed": "Something went wrong while preparing the lesson. We will try again shortly.",
   "up_done": "done",
-  "up_working": "in progress"
+  "up_working": "in progress",
+  "up_tooBig": "This PDF is {mb} MB. For now up to 50 MB can be uploaded; compress the PDF and try again."
  },
  "fa": {
   "pdfs": "PDFها",
@@ -582,7 +584,8 @@
   "up_notPdf": "این فایل PDF نیست.",
   "up_processFailed": "هنگام آماده‌سازی درس مشکلی پیش آمد. کمی بعد دوباره تلاش می‌کنیم.",
   "up_done": "انجام شد",
-  "up_working": "در حال انجام"
+  "up_working": "در حال انجام",
+  "up_tooBig": "این PDF {mb} مگابایت است. فعلاً حداکثر ۵۰ مگابایت؛ PDF را فشرده کن و دوباره امتحان کن."
  },
  "ar": {
   "pdfs": "ملفات PDF",
@@ -777,6 +780,7 @@
   "up_notPdf": "هذا الملف ليس PDF.",
   "up_processFailed": "حدث خطأ أثناء تجهيز الدرس. سنحاول مجددًا بعد قليل.",
   "up_done": "تم",
-  "up_working": "قيد التنفيذ"
+  "up_working": "قيد التنفيذ",
+  "up_tooBig": "هذا الملف {mb} ميغابايت. حاليًا الحد 50 ميغابايت؛ اضغط الملف وحاول مجددًا."
  }
 }
