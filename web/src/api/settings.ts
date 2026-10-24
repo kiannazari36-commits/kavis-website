@@ -25,6 +25,11 @@ export type Settings = {
   autoDownload: boolean;
   /** Study / review reminder time, "09:00" (also the start of today's plan on home). */
   notifyTime: string;
+  /** School timetable reminders: the evening before (at classRemindTime), 1 h before the first class, a prep tip. */
+  classRemindDayBefore: boolean;
+  classRemindTime: string;
+  classRemindFirst: boolean;
+  classPrepTip: boolean;
 };
 
 const KEY = 'kavis.settings';
@@ -43,6 +48,10 @@ export const DEFAULT_SETTINGS: Settings = {
   offlineMode: false,
   autoDownload: true,
   notifyTime: '09:00',
+  classRemindDayBefore: true,
+  classRemindTime: '20:00',
+  classRemindFirst: false,
+  classPrepTip: true,
 };
 
 // Settings live in the account (table user_settings, one row per student). The browser keeps a copy so the
@@ -63,9 +72,13 @@ type Row = {
   offline_mode: boolean;
   auto_download: boolean;
   notify_time: string;
+  class_remind_day_before: boolean;
+  class_remind_time: string;
+  class_remind_first_class: boolean;
+  class_prep_tip: boolean;
 };
 const COLUMNS =
-  'content_lang, plan_mode, study_days, study_hours, reader_paper, reader_font_size, translation_style, push_notifications, sync, cheer_notifications, offline_mode, auto_download, notify_time';
+  'content_lang, plan_mode, study_days, study_hours, reader_paper, reader_font_size, translation_style, push_notifications, sync, cheer_notifications, offline_mode, auto_download, notify_time, class_remind_day_before, class_remind_time, class_remind_first_class, class_prep_tip';
 
 const fromRow = (r: Row, courseContentLang: Record<string, ContentLangChoice>): Settings => ({
   contentLang: r.content_lang,
@@ -82,6 +95,10 @@ const fromRow = (r: Row, courseContentLang: Record<string, ContentLangChoice>): 
   offlineMode: r.offline_mode,
   autoDownload: r.auto_download,
   notifyTime: r.notify_time.slice(0, 5),
+  classRemindDayBefore: r.class_remind_day_before,
+  classRemindTime: r.class_remind_time.slice(0, 5),
+  classRemindFirst: r.class_remind_first_class,
+  classPrepTip: r.class_prep_tip,
 });
 
 const toRow = (s: Settings): Row => ({
@@ -98,6 +115,10 @@ const toRow = (s: Settings): Row => ({
   offline_mode: s.offlineMode,
   auto_download: s.autoDownload,
   notify_time: s.notifyTime,
+  class_remind_day_before: s.classRemindDayBefore,
+  class_remind_time: s.classRemindTime,
+  class_remind_first_class: s.classRemindFirst,
+  class_prep_tip: s.classPrepTip,
 });
 
 function cache(s: Settings) {

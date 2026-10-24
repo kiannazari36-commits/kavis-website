@@ -43,7 +43,8 @@ Everything that is not finished yet. Updated after every step.
   - [ ] Class rank on course cards ("Sıralama #3") has no data on the server; hidden until it exists
   - [ ] App language and theme are still saved only in the browser (`profiles.app_lang`, `user_settings.app_theme` exist)
   - [x] Trial card and Premium status from `access_status()`; devices: login registers the web (all browsers share install id `web` = one slot), My devices list, sign out, 3rd-device screen, signed-out-elsewhere check at start, log out frees the slot
-  - [ ] Timetable screen (data is in the database already)
+  - [x] School timetable screen `/schedule` (design NewSchedule; from the plan page's "Okul programım"): tomorrow's classes, day tabs, reminder bell per class, add / delete classes (`timetable_entries`), reminder switches and time (`user_settings.class_*`), notification preview + sample browser notification
+  - [ ] Timetable from a photo / PDF: Edge Function `import-timetable` (buttons say "coming soon")
 - [ ] Email sending for the 6-digit code: Supabase's built-in email is only for testing (few emails per hour); a real email provider (custom SMTP) before launch
 - [ ] Edge Functions (none built yet; list in `docs/BACKEND.md`); secrets only in Supabase secrets
 - [ ] Fill `course_catalog` per department (the design has the pharmacy list)
@@ -84,7 +85,7 @@ Everything that is not finished yet. Updated after every step.
 ## Web app — not built yet
 - [ ] Upload screen (PDF, photo, audio recording)
 - [ ] Onboarding after sign-up (language, plan days/hours, courses)
-- [ ] Help & live support chat, school timetable
+- [ ] Help & live support chat
 - [ ] Live audio lesson, "Let me explain" (teach-back), solve a question photo
 - [ ] Pen / handwritten notes on the PDF, full PDF page view
 - [ ] Lesson summary / review pages ("Bugünün tekrarı", exam center)

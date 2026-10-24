@@ -111,7 +111,7 @@ export default function Plan() {
               <Icon name="chevron" size={16} />
             </span>
           </button>
-          <button className={s.school} onClick={() => toast(t('k165'))}>
+          <button className={s.school} onClick={() => navigate('/schedule')}>
             <Icon name="calendar" size={18} />
             {t('schoolSchedule')}
           </button>

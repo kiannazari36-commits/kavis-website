@@ -1,0 +1,504 @@
+.main {
+  padding: 28px 34px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.round {
+  flex: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 23px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.titleBox {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.titleBox h1 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+.titleBox span {
+  font-size: 14px;
+  color: var(--text2);
+}
+
+/* Empty state: three ways to add the timetable */
+.empty {
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 28px;
+  border-radius: 30px;
+  background: var(--card);
+  border: 1px solid var(--line);
+}
+
+.emptyIcon {
+  width: 60px;
+  height: 60px;
+  border-radius: 20px;
+  background: var(--amb-soft);
+  color: var(--amb-t);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty h2 {
+  margin: 4px 0 0;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.empty p {
+  margin: 0;
+  color: var(--text2);
+  line-height: 1.5;
+}
+
+.how {
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.empty small {
+  color: var(--text2);
+  font-size: 12.5px;
+}
+
+.way {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.wayPri {
+  border: 0;
+  background: #9c2f3a;
+  color: #fffcf6;
+}
+
+.wayIcon {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: var(--sub);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wayPri .wayIcon {
+  background: rgba(255, 252, 246, 0.16);
+}
+
+.wayText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.wayText b {
+  font-weight: 600;
+}
+
+.wayText span {
+  font-size: 13px;
+  color: var(--text2);
+}
+
+.wayPri .wayText span {
+  color: rgba(255, 252, 246, 0.8);
+}
+
+/* Timetable */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hero {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 20px;
+  border-radius: 26px;
+  background: var(--hero);
+  color: var(--on-hero);
+}
+
+.heroIcon {
+  flex: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 23px;
+  background: rgba(255, 252, 246, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heroText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.heroText .mono {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  opacity: 0.8;
+}
+
+.heroText b {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.heroText span:last-child {
+  font-size: 13.5px;
+  opacity: 0.85;
+}
+
+.days {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.dayBtn {
+  flex: 1;
+  min-width: 76px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 8px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.dayBtn span {
+  font-size: 12px;
+  color: var(--text2);
+}
+
+.dayBtn small {
+  min-height: 14px;
+  font-size: 11px;
+  color: var(--amb-t);
+  font-weight: 600;
+}
+
+.dayOn {
+  background: #9c2f3a;
+  border-color: #9c2f3a;
+  color: #fffcf6;
+}
+
+.dayOn span,
+.dayOn small {
+  color: rgba(255, 252, 246, 0.85);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  border-radius: 26px;
+  background: var(--card);
+  border: 1px solid var(--line);
+}
+
+.dayTitle,
+.cardTitle {
+  margin: 0 0 4px;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.muted {
+  margin: 0;
+  color: var(--text2);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 18px;
+}
+
+.time {
+  flex: none;
+  width: 52px;
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+}
+
+.time span {
+  opacity: 0.75;
+  font-size: 12px;
+}
+
+.rowText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rowText b {
+  font-weight: 600;
+}
+
+.rowText span {
+  font-size: 13px;
+  color: var(--text2);
+}
+
+.bell,
+.del {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.bellOn {
+  border-color: transparent;
+  background: var(--amb-soft);
+  color: var(--amb-t);
+}
+
+.del:hover {
+  color: var(--pri);
+}
+
+.add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 999px;
+  border: 1.5px dashed var(--line);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 20px;
+  background: var(--sub);
+}
+
+.form label {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--text2);
+}
+
+.form input,
+.form select {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+}
+
+.formRow {
+  display: flex;
+  gap: 10px;
+}
+
+.formBtns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.pri,
+.ghost {
+  padding: 10px 18px;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.pri {
+  border: 0;
+  background: var(--pri);
+  color: #fffcf6;
+}
+
+.ghost {
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+}
+
+.switchRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+}
+
+.when {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.seg {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--seg);
+}
+
+.seg button {
+  flex: 1;
+  padding: 8px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text2);
+  font: inherit;
+  cursor: pointer;
+}
+
+.seg .segOn {
+  background: var(--card);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.notif {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 20px;
+  background: var(--sub);
+}
+
+.notif img {
+  border-radius: 10px;
+}
+
+.notifText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 13.5px;
+}
+
+.notifText > .mono {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text2);
+  letter-spacing: 0.04em;
+}
+
+.notifText em {
+  font-style: normal;
+  color: var(--amb-t);
+}
+
+.redo {
+  align-self: flex-start;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text2);
+  font: inherit;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .main {
+    padding: 18px 16px 32px;
+  }
+  .formRow {
+    flex-direction: column;
+  }
+}
