@@ -50,7 +50,7 @@ export default function Courses() {
   const onDrop = (e: DragEvent) => {
     e.preventDefault();
     setDragOver(false);
-    guard('pdf', () => toast(t('k165')));
+    guard('pdf', () => navigate('/upload'));
   };
 
   return (

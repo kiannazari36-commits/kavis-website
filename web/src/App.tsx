@@ -19,6 +19,7 @@ import Progress from './pages/Progress';
 import Settings from './pages/Settings';
 import Notifications from './pages/Notifications';
 import Schedule from './pages/Schedule';
+import Upload from './pages/Upload';
 import Paywall from './pages/Paywall';
 import DeviceLimit from './pages/DeviceLimit';
 import ShareLink from './pages/ShareLink';
@@ -48,6 +49,7 @@ export default function App() {
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/notifications" element={<Notifications />} />
                     <Route path="/schedule" element={<Schedule />} />
+                    <Route path="/upload" element={<Upload />} />
                   </Route>
                   <Route path="/premium" element={<Paywall />} />
                   <Route path="/devices" element={<DeviceLimit />} />

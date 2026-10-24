@@ -1,7 +1,6 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useI18n, type Lang } from '../i18n/I18nProvider';
 import { duration, examLabel, num, percent } from '../i18n/format';
-import { useToast } from '../components/Toast';
 import Icon from '../components/Icon';
 import { COURSE_COLOR } from '../components/courseColors';
 import { courseStats, getCourse } from '../api/courses';
@@ -23,7 +22,6 @@ function pdfStatus(p: Pdf, lang: Lang, t: (k: string) => string) {
 export default function CourseFolder() {
   const { courseId = '' } = useParams();
   const { t, lang } = useI18n();
-  const toast = useToast();
   const { guard } = useTrial();
   const navigate = useNavigate();
   const course = useAsync(() => getCourse(courseId), [courseId]);
@@ -44,7 +42,7 @@ export default function CourseFolder() {
   const col = COURSE_COLOR[course.color];
   const st = courseStats(course);
   const maxMin = Math.max(1, ...course.pdfs.map((p) => p.minutes));
-  const addPdf = () => guard('pdf', () => toast(t('k165')));
+  const addPdf = () => guard('pdf', () => navigate(`/upload?course=${course.id}`));
 
   return (
     <main className={s.main}>

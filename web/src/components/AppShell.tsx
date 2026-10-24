@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Navigate, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n/I18nProvider';
 import { useTheme } from '../theme/ThemeProvider';
-import { useToast } from './Toast';
 import { listCourses } from '../api/courses';
 import { currentUser, logOut } from '../api/auth';
 import { clearProfile, getProfile } from '../api/account';
@@ -36,7 +35,6 @@ const NAV: [string, IconName, string][] = [
 export default function AppShell() {
   const { t, lang } = useI18n();
   const { toggle } = useTheme();
-  const toast = useToast();
   const { guard } = useTrial();
   const navigate = useNavigate();
   const location = useLocation();
@@ -104,7 +102,7 @@ export default function AppShell() {
             <Icon name="close" />
           </button>
         </div>
-        <button className={s.upload} title={t('k33')} onClick={() => guard('pdf', () => toast(t('k165')))}>
+        <button className={s.upload} title={t('k33')} onClick={() => guard('pdf', () => navigate('/upload'))}>
           <Icon name="upload" size={18} />
           <span className={s.label}>{t('k33')}</span>
         </button>

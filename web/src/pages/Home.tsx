@@ -37,7 +37,8 @@ export default function Home() {
   const recent = useAsync(() => recentPdfs(3), []) ?? [];
   const firstName = profile?.name.split(' ')[0] ?? '';
   const navigate = useNavigate();
-  const upload = () => guard('pdf', () => toast(t('k165')));
+  // PDF opens the upload screen; photos, recordings and questions come later.
+  const upload = (pdf: boolean) => guard('pdf', () => (pdf ? navigate('/upload') : toast(t('k165'))));
   const { settings } = useSettings();
   const review = useAsync(getTodayReview, []);
   const [showReview, setShowReview] = useState(true);
@@ -108,7 +109,7 @@ export default function Home() {
 
         <div className={s.uploads}>
           {uploads.map(([icon, key, primary]) => (
-            <button key={key} className={primary ? `${s.upload} ${s.uploadPri}` : s.upload} onClick={upload}>
+            <button key={key} className={primary ? `${s.upload} ${s.uploadPri}` : s.upload} onClick={() => upload(primary)}>
               <Icon name={icon} size={20} />
               {t(key)}
             </button>
