@@ -34,5 +34,19 @@ export function rankChunks<T extends { text: string }>(chunks: T[], terms: strin
     .map((x) => x.c);
 }
 
-/** Claude Sonnet 5.5 list price in US dollars (input $2, output $10 per million tokens). */
-export const costUsd = (input: number, output: number) => Math.round(((input * 2 + output * 10) / 1_000_000) * 10000) / 10000;
+/**
+ * The whole text of one lesson, page by page, for the assistant — or null when it is longer than maxChars
+ * (then only the open pages and the best search pieces are sent).
+ */
+export function lessonText(chunks: { page: number | null; text: string }[], maxChars: number): string | null {
+  const pages = [...chunks].sort((a, b) => (a.page ?? 0) - (b.page ?? 0)).map((c) => `[Page ${c.page ?? '?'}]\n${c.text.trim()}`);
+  const text = pages.join('\n\n');
+  return text.length <= maxChars ? text : null;
+}
+
+/**
+ * Claude Sonnet 5.5 list price in US dollars: input $2, output $10 per million tokens; cache writes (5 minutes)
+ * $2.50, cache reads $0.20.
+ */
+export const costUsd = (input: number, output: number, cacheWrite = 0, cacheRead = 0) =>
+  Math.round(((input * 2 + output * 10 + cacheWrite * 2.5 + cacheRead * 0.2) / 1_000_000) * 10000) / 10000;

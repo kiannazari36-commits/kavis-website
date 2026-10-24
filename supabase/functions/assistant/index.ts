@@ -1,16 +1,20 @@
 // Edge Function assistant: answers a student's question only from their own lessons (CLAUDE.md).
 // POST { question, course_id?, material_id?, mode: 'pdf' | 'ai', thread_id?, lang, page_from?, page_to? }
 //   → { thread_id, answer, sources: [{ material_id, lesson, page }], outside_pdf }
-// Finds the best text pieces (the pages open in the reader first, then material_chunks full-text search), asks
-// Claude Sonnet 5.5, saves the thread and both messages, counts a trial question and the AI cost.
+// One chosen lesson (material_id): Claude gets the whole lesson (cached for 5 minutes, so follow-up questions are
+// cheap) and is told which pages are open. Otherwise, or for a very long lesson, it gets the best text pieces (the
+// open pages first, then material_chunks full-text search). Claude Sonnet 5.5 answers; the function saves the
+// thread and both messages, counts a trial question and the AI cost.
 // "AI + research" (mode 'ai') may add general knowledge, marked outside_pdf. Apps never write answers themselves.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
-import { costUsd, queryTerms, rankChunks, tsQuery } from './lib.ts';
+import { costUsd, lessonText, queryTerms, rankChunks, tsQuery } from './lib.ts';
 
 const MODEL = 'claude-sonnet-5-5';
 const MONTHLY_BUDGET_USD = 3;
 const PIECES = 6;
+// About 35,000 tokens: the first question on a lesson costs at most ~$0.09, follow-ups read it from the cache.
+const LESSON_MAX_CHARS = 120_000;
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -39,16 +43,20 @@ const SCHEMA = {
   additionalProperties: false,
 };
 
-const system = (mode: string, lang: string) => `You are Kavis, a study assistant for a university student. You answer from the student's own lecture material.
-You get numbered excerpts [E1], [E2]… from the student's lessons (lesson name and page given), and maybe earlier messages of this chat.
+const system = (mode: string, lang: string, whole: boolean) => `You are Kavis, a study assistant for a university student. You answer from the student's own lecture material.
+${
+  whole
+    ? 'You get the whole text of ONE lesson the student chose, page by page ([Page n]), and maybe earlier messages of this chat. Talk only about this lesson: if the question is about another subject, say kindly in one sentence that here you only help with this lesson.'
+    : 'You get numbered excerpts [E1], [E2]… from the student\'s lessons (lesson name and page given), and maybe earlier messages of this chat.'
+}
 ${
   mode === 'ai'
-    ? 'Answer mainly from the excerpts. If they are not enough, you may add general textbook knowledge; then set outside_pdf to true and say briefly which part is not from their PDFs.'
-    : 'Answer ONLY from the excerpts. If they do not contain the answer, say clearly (in one or two sentences) that you could not find it in their lessons and suggest what to look for; do not use outside knowledge. outside_pdf is always false.'
+    ? 'Answer mainly from the lesson text you got. If it is not enough, you may add general textbook knowledge; then set outside_pdf to true and say briefly which part is not from their PDFs.'
+    : 'Answer ONLY from the lesson text you got. If it does not contain the answer, say clearly (in one or two sentences) that you could not find it in their lessons and suggest what to look for; do not use outside knowledge. outside_pdf is always false.'
 }
-If the student is reading a lesson now, you are told which pages are open; "this page", "this topic", "explain this" mean those pages (excerpts marked OPEN PAGE).
+If the student is reading a lesson now, you are told which pages are open; "this page", "this topic", "explain this" mean those pages. They may still ask about any other page of the lesson.
 Write in the language of the student's question (if unclear: ${LANG_NAMES[lang] ?? 'Turkish'}). Be short and clear: 2-6 sentences or a few bullet points, plain text without markdown headings. Explain simply, like a good classmate.
-sources: the numbers of the excerpts you actually used (e.g. [2, 5]); empty if none.`;
+${whole ? 'sources: the page numbers you actually used (e.g. [2, 5]); empty if none.' : 'sources: the numbers of the excerpts you actually used (e.g. [2, 5]); empty if none.'}`;
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
@@ -85,23 +93,24 @@ Deno.serve(async (req) => {
   const titles = new Map((mats ?? []).map((m) => [m.id as string, m.title as string]));
   const ids = [...titles.keys()];
 
-  type Piece = { id: number; material_id: string; page: number | null; text: string; open?: boolean };
+  type Piece = { id: number; material_id: string; page: number | null; text: string };
   let pieces: Piece[] = [];
-  // The pages open in the reader always come first.
   const open: Piece[] = [];
-  if (materialId && ids.includes(materialId) && pageFrom !== null) {
-    const { data } = await db
-      .from('material_chunks')
-      .select('id, material_id, page, text')
-      .eq('material_id', materialId)
-      .gte('page', pageFrom)
-      .lte('page', Math.min(pageTo ?? pageFrom, pageFrom + 3))
-      .order('page')
-      .limit(4);
-    open.push(...(data ?? []).map((p) => ({ ...p, open: true })));
+  // One chosen lesson: the whole text if it is not too long.
+  let whole: string | null = null;
+  let lessonPages: number[] = [];
+  if (materialId && ids.includes(materialId)) {
+    const { data } = await db.from('material_chunks').select('id, material_id, page, text').eq('material_id', materialId).order('page').limit(500);
+    whole = lessonText(data ?? [], LESSON_MAX_CHARS);
+    lessonPages = (data ?? []).map((c) => c.page).filter((p): p is number => p !== null);
+    // Too long: the pages open in the reader always come first.
+    if (!whole && pageFrom !== null) {
+      const last = Math.min(pageTo ?? pageFrom, pageFrom + 3);
+      open.push(...(data ?? []).filter((c) => c.page !== null && c.page >= pageFrom && c.page <= last).slice(0, 4));
+    }
   }
   const terms = queryTerms(question);
-  if (ids.length && terms.length) {
+  if (!whole && ids.length && terms.length) {
     const { data } = await db
       .from('material_chunks')
       .select('id, material_id, page, text')
@@ -125,8 +134,10 @@ Deno.serve(async (req) => {
   }
 
   const excerpts = pieces.length
-    ? pieces.map((p, i) => `[E${i + 1}] (${p.open ? 'OPEN PAGE, ' : ''}${titles.get(p.material_id) ?? ''}, page ${p.page ?? '?'})\n${p.text.slice(0, 2500)}`).join('\n\n')
+    ? pieces.map((p, i) => `[E${i + 1}] (${titles.get(p.material_id) ?? ''}, page ${p.page ?? '?'})\n${p.text.slice(0, 2500)}`).join('\n\n')
     : '(no matching excerpts were found in the student\'s lessons)';
+  const lessonTitle = materialId ? (titles.get(materialId) ?? '') : '';
+  const reading = materialId && pageFrom !== null ? `I am reading "${lessonTitle}", page ${pageFrom}${pageTo && pageTo !== pageFrom ? `-${pageTo}` : ''}.\n\n` : '';
 
   const client = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')!.trim() });
   const params = {
@@ -135,8 +146,12 @@ Deno.serve(async (req) => {
     betas: ['server-side-fallback-2026-07-01'],
     fallbacks: 'default',
     output_config: { effort: 'low', format: { type: 'json_schema', schema: SCHEMA } },
-    system: system(mode, lang),
-    messages: [...history, { role: 'user', content: `${open.length ? `I am reading "${titles.get(materialId!) ?? ''}", page ${pageFrom}${pageTo && pageTo !== pageFrom ? `-${pageTo}` : ''}.\n\n` : ''}Excerpts from my lessons:\n\n${excerpts}\n\nMy question: ${question}` }],
+    system: [
+      { type: 'text', text: system(mode, lang, !!whole) },
+      // The lesson text is the same for every question on this lesson, so it is cached.
+      ...(whole ? [{ type: 'text', text: `The lesson "${lessonTitle}", whole text:\n\n${whole}`, cache_control: { type: 'ephemeral' } }] : []),
+    ],
+    messages: [...history, { role: 'user', content: `${reading}${whole ? '' : `Excerpts from my lessons:\n\n${excerpts}\n\n`}My question: ${question}` }],
   };
   let res;
   try {
@@ -150,7 +165,9 @@ Deno.serve(async (req) => {
   const block = res.content.find((b) => b.type === 'text');
   if (!block || block.type !== 'text') return json({ error: 'ai' }, 502);
   const out = JSON.parse(block.text) as { answer: string; sources: number[]; outside_pdf: boolean };
-  const used = [...new Set(out.sources)].map((n) => pieces[n - 1]).filter(Boolean);
+  const used: { material_id: string; page: number | null }[] = whole
+    ? [...new Set(out.sources)].filter((n) => lessonPages.includes(n)).sort((a, b) => a - b).map((page) => ({ material_id: materialId!, page }))
+    : [...new Set(out.sources)].map((n) => pieces[n - 1]).filter(Boolean);
   const sources = used.map((p) => ({ material_id: p.material_id, page: p.page }));
 
   // Save: thread, both messages, trial question, cost.
@@ -173,15 +190,17 @@ Deno.serve(async (req) => {
     const { data: t } = await db.from('trial_usage').select('assistant_questions').eq('user_id', uid).maybeSingle();
     await db.from('trial_usage').upsert({ user_id: uid, assistant_questions: (t?.assistant_questions ?? 0) + 1 });
   }
+  const cacheWrite = res.usage.cache_creation_input_tokens ?? 0;
+  const cacheRead = res.usage.cache_read_input_tokens ?? 0;
   const input = res.usage.input_tokens;
   const output = res.usage.output_tokens;
   const { data: u } = await db.from('usage_monthly').select('input_tokens, output_tokens, cost_usd, assistant_questions').eq('user_id', uid).eq('month', month).maybeSingle();
   await db.from('usage_monthly').upsert({
     user_id: uid,
     month,
-    input_tokens: Number(u?.input_tokens ?? 0) + input,
+    input_tokens: Number(u?.input_tokens ?? 0) + input + cacheWrite + cacheRead,
     output_tokens: Number(u?.output_tokens ?? 0) + output,
-    cost_usd: Number(u?.cost_usd ?? 0) + costUsd(input, output),
+    cost_usd: Number(u?.cost_usd ?? 0) + costUsd(input, output, cacheWrite, cacheRead),
     assistant_questions: Number(u?.assistant_questions ?? 0) + 1,
   });
 
