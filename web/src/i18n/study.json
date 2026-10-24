@@ -177,7 +177,11 @@
   "askLater": "Gerçek cevaplar, asistan sunucuya bağlanınca gelecek. Yukarıda bu konudaki önceki sohbetin var.",
   "noThread": "Bu konuda henüz sohbetin yok.",
   "outsidePdf": "PDF dışı bilgi",
-  "pageAbbr": "s."
+  "pageAbbr": "s.",
+  "askBudget": "Bu ayki yapay zekâ kullanım sınırına ulaştın. Gelecek ay yeniden sorabilirsin.",
+  "askDeclined": "Bu soruya cevap veremedim. Soruyu biraz farklı sormayı dene.",
+  "askFailed": "Cevap alınamadı. İnternetini kontrol edip tekrar dene.",
+  "followEasyQ": "Bunu daha kolay anlatır mısın?"
  },
  "en": {
   "heroA": "How can I",
@@ -357,7 +361,11 @@
   "askLater": "Real answers come once the assistant is connected to the server. Above is your earlier chat on this.",
   "noThread": "No chat about this yet.",
   "outsidePdf": "Outside your PDF",
-  "pageAbbr": "p."
+  "pageAbbr": "p.",
+  "askBudget": "You reached this month's AI limit. You can ask again next month.",
+  "askDeclined": "I couldn't answer this question. Try asking it a bit differently.",
+  "askFailed": "Couldn't get an answer. Check your connection and try again.",
+  "followEasyQ": "Can you explain this more simply?"
  },
  "fa": {
   "heroA": "امروز چطور",
@@ -537,7 +545,11 @@
   "askLater": "پاسخ‌های واقعی وقتی دستیار به سرور وصل شد می‌آیند. بالا گفت‌وگوی قبلی‌ات دربارهٔ همین است.",
   "noThread": "هنوز گفت‌وگویی دربارهٔ این نداری.",
   "outsidePdf": "خارج از PDF",
-  "pageAbbr": "ص."
+  "pageAbbr": "ص.",
+  "askBudget": "به سقف استفادهٔ این ماه از هوش مصنوعی رسیدی. ماه بعد دوباره بپرس.",
+  "askDeclined": "نتوانستم به این سؤال جواب بدهم. کمی متفاوت بپرس.",
+  "askFailed": "پاسخی دریافت نشد. اینترنتت را بررسی کن و دوباره امتحان کن.",
+  "followEasyQ": "می‌شود این را ساده‌تر توضیح بدهی؟"
  },
  "ar": {
   "heroA": "كيف يمكنني اليوم",
@@ -717,6 +729,10 @@
   "askLater": "ستأتي الإجابات الحقيقية عند ربط المساعد بالخادم. في الأعلى محادثتك السابقة حول هذا.",
   "noThread": "لا توجد محادثة حول هذا بعد.",
   "outsidePdf": "خارج ملف PDF",
-  "pageAbbr": "ص."
+  "pageAbbr": "ص.",
+  "askBudget": "وصلت إلى حد استخدام الذكاء الاصطناعي لهذا الشهر. يمكنك السؤال مجددًا الشهر القادم.",
+  "askDeclined": "لم أستطع الإجابة عن هذا السؤال. جرّب صياغته بشكل مختلف.",
+  "askFailed": "تعذّر الحصول على إجابة. تحقق من الاتصال وحاول مجددًا.",
+  "followEasyQ": "هل يمكنك شرح هذا بطريقة أبسط؟"
  }
 }

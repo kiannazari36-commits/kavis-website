@@ -141,6 +141,15 @@ begin
       ('ar', 'natural', 'في بداية العلاج نستخدم أربع مجموعات من الأدوية: مدرات البول، ومثبطات ACE، وحاصرات مستقبلات الأنجيوتنسين، وحاصرات قنوات الكالسيوم.')
   ) as v(l, s, t);
 
+  -- Search pieces for the assistant (process-material makes them from real PDFs): one per page of the reading page.
+  insert into public.material_chunks (material_id, user_id, page, text)
+  select c.material_id, c.user_id, (b->>'pageFrom')::int,
+         concat_ws(E'\n', b->>'heading', (select string_agg(case when jsonb_typeof(p) = 'array'
+                       then (select string_agg(case when jsonb_typeof(sg) = 'string' then sg #>> '{}' else sg->>'text' end, '') from jsonb_array_elements(p) sg)
+                       else p->>'text' end, E'\n') from jsonb_array_elements(b->'paragraphs') p))
+  from public.material_content c, jsonb_array_elements(c.reader_doc->'sections') s, jsonb_array_elements(s->'blocks') b
+  where c.user_id = uid;
+
   -- ── Flash cards (made by the server from the lesson; the app only updates the review state) ──
   -- due: 'now' = in today's round; a number = days from now (already reviewed once, "Knew it").
   for m in

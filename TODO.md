@@ -41,7 +41,8 @@ Everything that is not finished yet. Updated after every step.
   - [x] Edge Function `process-material` (deployed, not yet tested with a real PDF): text cut from the PDF by unpdf (never rewritten), 8 pages per AI call (Claude Sonnet 5.5, structured JSON, server-side refusal fallback), writes reading page, hard words (4 languages), topics, search pieces, cards, questions, section check, usage + cost, "lesson ready" notification; scanned / >100 pages give the trial lesson back; $3 per student per month AI budget. Rules in `lib.ts` (12 Node tests)
   - [ ] Scanned PDFs / photos: text recognition (OCR) with the AI; lectures longer than 100 pages: split into parts
   - [ ] Notification text of "lesson ready" in the student's app language (now Turkish)
-  - [ ] Edge Function `assistant`: answer only from the student's lessons (`material_chunks` search), "AI + research" mode, save thread + messages, count trial questions, cost limit — needs the Claude API key as a Supabase secret
+  - [x] Edge Function `assistant` (deployed, not yet tested with a real question): searches the student's lessons (`material_chunks`, full-text with Turkish-friendly prefixes), answers only from them ("AI + research" may add general knowledge, marked), saves thread + messages, counts the trial question and AI cost. The web chat and the reader's side panel use it. Rules in `lib.ts` (6 Node tests)
+  - [ ] Assistant: streaming answers (now the whole answer arrives at once), teach-back, voice, solve-a-photo
   - [ ] Assistant "+" menu (upload PDF / photo / audio, solve a question photo): still sample data (`web/src/api/mock/assistant.ts`) until upload is built
   - [ ] Still mock: Premium page offer → connect them next, with example rows in `seed.sql`
   - [ ] Class rank on course cards ("Sıralama #3") has no data on the server; hidden until it exists

@@ -1,9 +1,9 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useI18n } from '../i18n/I18nProvider';
 import { useToast } from '../components/Toast';
 import Icon, { type IconName } from '../components/Icon';
-import { latestThread, listAssistantTopics, uploadForAssistant, type AssistantTopic, type ChatMessage, type SourceMode } from '../api/assistant';
+import { askAssistant, latestThread, listAssistantTopics, uploadForAssistant, type AssistantTopic, type ChatMessage, type SourceMode } from '../api/assistant';
 import { useAsync } from '../hooks/useAsync';
 import { num } from '../i18n/format';
 import type { Attachment, AttachmentKind } from '../api/types';
@@ -312,13 +312,19 @@ function Chat({ topic, question, mode, onBack }: { topic: AssistantTopic; questi
   const toast = useToast();
   const navigate = useNavigate();
   const [draft, setDraft] = useState('');
-  const [asked, setAsked] = useState<string[]>(question ? [question] : []);
   const { guard } = useTrial();
-  const history = useAsync(() => latestThread(topic.courseId), [topic.courseId]);
+  const thread = useAsync(() => latestThread(topic.courseId), [topic.courseId]);
+  // Messages of this visit (the earlier ones come from the database) and the thread they continue.
+  const [extra, setExtra] = useState<ChatMessage[]>([]);
+  const [threadId, setThreadId] = useState<string | null>(null);
+  const [waiting, setWaiting] = useState(false);
+  const askedFirst = useRef(false);
+  const end = useRef<HTMLDivElement>(null);
   const all = topic.id === 'all';
   const name = topic.name;
   const tag = all ? t('tagAll') : t('tagCourse') + name.toLocaleUpperCase(lang === 'tr' ? 'tr' : 'en');
   const hello = all ? t('helloAll') : t('helloA') + name + t('helloB') + (mode === 'ai' ? t('helloAi') : '');
+  const messages = [...(thread?.messages ?? []), ...extra];
 
   const follow: [string, string, 'question' | 'generate'][] = [
     ['followEasy', t('followEasyT'), 'question'],
@@ -330,6 +336,31 @@ function Chat({ topic, question, mode, onBack }: { topic: AssistantTopic; questi
       .filter((x) => x.lesson)
       .map((x) => (x.page !== null ? `${x.lesson} · ${t('pageAbbr')} ${num(x.page, lang)}` : x.lesson))
       .join(' · ');
+
+  const ask = async (q: string) => {
+    setExtra((e) => [...e, { id: crypto.randomUUID(), role: 'user', text: q, mode, sources: [], outsidePdf: false }]);
+    setWaiting(true);
+    const r = await askAssistant(q, { courseId: topic.courseId, threadId: threadId ?? thread?.id ?? null, mode, lang });
+    setWaiting(false);
+    if ('error' in r) {
+      toast(t({ locked: 'trialQFull', budget: 'askBudget', declined: 'askDeclined', other: 'askFailed' }[r.error]));
+      return;
+    }
+    setThreadId(r.threadId);
+    setExtra((e) => [...e, r.message]);
+  };
+
+  // A question typed on the start screen is asked once the earlier chat is loaded.
+  useEffect(() => {
+    if (!question || askedFirst.current || thread === undefined) return;
+    askedFirst.current = true;
+    ask(question);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [thread]);
+
+  useEffect(() => {
+    end.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, [messages.length, waiting]);
 
   return (
     <main className={s.chatPage}>
@@ -357,15 +388,8 @@ function Chat({ topic, question, mode, onBack }: { topic: AssistantTopic; questi
       <div className={s.thread}>
         <div className={s.column}>
           <div className={s.ai}>{hello}</div>
-          {history === undefined && (
-            <div className={s.typing} aria-label="…">
-              <span />
-              <span />
-              <span />
-            </div>
-          )}
-          {history?.length === 0 && !asked.length && <span className={s.protoNote}>{t('noThread')}</span>}
-          {history?.map((m) =>
+          {thread !== undefined && messages.length === 0 && !waiting && <span className={s.protoNote}>{t('noThread')}</span>}
+          {messages.map((m) =>
             m.role === 'user' ? (
               <div key={m.id} className={s.me}>
                 {m.text}
@@ -382,21 +406,23 @@ function Chat({ topic, question, mode, onBack }: { topic: AssistantTopic; questi
               </div>
             ),
           )}
-          {asked.map((q, i) => (
-            <div key={i} className={s.me}>
-              {q}
+          {(waiting || thread === undefined) && (
+            <div className={s.typing} aria-label="…">
+              <span />
+              <span />
+              <span />
             </div>
-          ))}
-          {asked.length > 0 && <span className={s.protoNote}>{t('askLater')}</span>}
-          {history && history.length > 0 && (
+          )}
+          {messages.length > 0 && !waiting && (
             <div className={s.follow}>
               {follow.map(([k, msg, action]) => (
-                <button key={k} onClick={() => guard(action, () => toast(msg))}>
+                <button key={k} onClick={() => guard(action, () => (k === 'followEasy' ? ask(t('followEasyQ')) : toast(msg)))}>
                   {t(k)}
                 </button>
               ))}
             </div>
           )}
+          <div ref={end} />
         </div>
       </div>
 
@@ -408,10 +434,11 @@ function Chat({ topic, question, mode, onBack }: { topic: AssistantTopic; questi
             toast(t('writeQ'));
             return;
           }
+          if (waiting) return;
           guard('question', () => {
-            setAsked([...asked, draft.trim()]);
+            const q = draft.trim();
             setDraft('');
-            toast(t('searchingA') + name + t('searchingB'));
+            ask(q);
           });
         }}
       >

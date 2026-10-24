@@ -7,7 +7,7 @@ import Icon from '../components/Icon';
 import Wordmark from '../components/Wordmark';
 import { getPdf, recentPdfs } from '../api/courses';
 import { addHighlight, getLesson, markRead, saveStudyTime, tapTerm, translate, type TranslationStyle } from '../api/reader';
-import { latestThread } from '../api/assistant';
+import { askAssistant, latestThread, type ChatMessage } from '../api/assistant';
 import { num, percent } from '../i18n/format';
 import { useAsync } from '../hooks/useAsync';
 import { usePanelPref } from '../hooks/usePanelPref';
@@ -39,8 +39,6 @@ const TAGS: Record<ReaderTag, [string, 'vio' | 'red']> = {
   general: ['tagGeneral', 'vio'],
 };
 const blockPages = (b: ReaderBlock) => Array.from({ length: b.pageTo - b.pageFrom + 1 }, (_, i) => b.pageFrom + i);
-
-type Msg = { from: 'me' | 'ai'; text: string };
 
 export default function Reader() {
   const { t, lang } = useI18n();
@@ -594,29 +592,39 @@ function TranslateDialog({ doc, materialId, source, onClose }: { doc: ReaderDoc;
 function AssistantPanel({ materialId, onClose }: { materialId: string; onClose: () => void }) {
   const { t, lang } = useI18n();
   // The earlier chat about this lesson (answers are made by the server, Edge Function "assistant").
-  const history = useAsync(() => latestThread(null, materialId), [materialId]);
+  const thread = useAsync(() => latestThread(null, materialId), [materialId]);
   const toast = useToast();
   const [draft, setDraft] = useState('');
-  const [mine, setMine] = useState<Msg[]>([]);
+  const [mine, setMine] = useState<ChatMessage[]>([]);
+  const [threadId, setThreadId] = useState<string | null>(null);
+  const [waiting, setWaiting] = useState(false);
   const [quick, setQuick] = useState(false);
   const { guard } = useTrial();
   const end = useRef<HTMLDivElement>(null);
+  const history = [...(thread?.messages ?? []), ...mine];
 
   useEffect(() => {
     if (mine.length) end.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }, [mine.length]);
+  }, [mine.length, waiting]);
 
+  // Questions in the reader are about this lesson only.
   const send = (text: string) => {
     const q = text.trim();
     if (!q) {
       toast(t('writeFirst'));
       return;
     }
-    guard('question', () => {
-      setMine((m) => [...m, { from: 'me', text: q }]);
+    if (waiting) return;
+    guard('question', async () => {
+      setMine((m) => [...m, { id: crypto.randomUUID(), role: 'user', text: q, mode: 'pdf', sources: [], outsidePdf: false }]);
       setDraft('');
       setQuick(false);
-      toast(t('writing'));
+      setWaiting(true);
+      const r = await askAssistant(q, { materialId, threadId: threadId ?? thread?.id ?? null, mode: 'pdf', lang });
+      setWaiting(false);
+      if ('error' in r) return toast(t({ locked: 'trialQFull', budget: 'askBudget', declined: 'askDeclined', other: 'askFailed' }[r.error]));
+      setThreadId(r.threadId);
+      setMine((m) => [...m, r.message]);
     });
   };
   const submit = (e: FormEvent) => {
@@ -637,7 +645,7 @@ function AssistantPanel({ materialId, onClose }: { materialId: string; onClose: 
       <span className={s.only}>{t('onlyFrom')}</span>
 
       <div className={s.chat}>
-        {history?.map((m) =>
+        {history.map((m) =>
           m.role === 'user' ? (
             <div key={m.id} className={s.me}>
               {m.text}
@@ -657,12 +665,7 @@ function AssistantPanel({ materialId, onClose }: { materialId: string; onClose: 
             </div>
           ),
         )}
-        {mine.map((m, i) => (
-          <div key={i} className={s.me}>
-            {m.text}
-          </div>
-        ))}
-        {mine.length > 0 && <span className={s.only}>{t('askLater')}</span>}
+        {waiting && <div className={s.ai}>…</div>}
         <div ref={end} />
       </div>
 
