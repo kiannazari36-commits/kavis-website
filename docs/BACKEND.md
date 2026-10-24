@@ -148,7 +148,7 @@ The app never writes AI output, scores, usage counters, subscriptions or shares 
 
 ## Edge Functions
 
-**Built:** `assistant` (`verify_jwt = true`; POST `{ question, course_id?, material_id?, mode, thread_id?, lang, page_from?, page_to? }`; with `material_id` the whole lesson text goes to the AI, prompt-cached, and it only talks about that lesson; very long lessons and course chats get the open pages + full-text search pieces), `process-material` (`verify_jwt = false`: checks the student's login itself; the next batch is called with the service key in `x-internal-key`), `ai-health` (free check that the `ANTHROPIC_API_KEY` secret works: lists models, no tokens), `grade-quiz` (`supabase/functions/grade-quiz/`; `verify_jwt = true`; POST `{ attempt_id }` → `{ score, level, results }`).
+**Built:** `assistant` (`verify_jwt = true`; POST `{ question, course_id?, material_id?, mode, thread_id?, lang, page_from?, page_to? }`; with `material_id` the whole lesson text goes to the AI, prompt-cached, and it only talks about that lesson; very long lessons and course chats get the open pages + full-text search pieces), `process-material` (`verify_jwt = false`: checks the student's login itself; the next batch is called with the service key in `x-internal-key`), `ai-health` (free check that the `ANTHROPIC_API_KEY` secret works: lists models, no tokens), `add-card` (`verify_jwt = true`; POST `{ term_id }` → `{ card_id, added | already }`: a flash card from a hard word's explanation, in the lesson's deck), `grade-quiz` (`supabase/functions/grade-quiz/`; `verify_jwt = true`; POST `{ attempt_id }` → `{ score, level, results }`).
 
 ### To build (secrets: `ANTHROPIC_API_KEY`, Apple keys)
 

@@ -74,3 +74,16 @@ export async function rateCard(c: FlashCard, rating: CardRating) {
     .eq('id', c.id);
   if (error) console.error('rateCard', error);
 }
+
+/**
+ * "Kartlara ekle" on a hard word: the server (Edge Function add-card) makes the card from the word's explanation
+ * in the lesson's deck. 'already' = the word was added before.
+ */
+export async function addTermCard(termId: string): Promise<'added' | 'already' | 'failed'> {
+  const { data, error } = await supabase.functions.invoke('add-card', { body: { term_id: termId } });
+  if (error) {
+    console.error('add-card', error);
+    return 'failed';
+  }
+  return (data as { already?: boolean }).already ? 'already' : 'added';
+}

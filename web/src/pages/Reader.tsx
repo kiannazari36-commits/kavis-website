@@ -9,6 +9,7 @@ import { getPdf, recentPdfs } from '../api/courses';
 import { addHighlight, getLesson, markRead, saveStudyTime, tapTerm, translate, type TranslationStyle } from '../api/reader';
 import { askAssistant, latestThread, type ChatMessage } from '../api/assistant';
 import { sectionCheckCounter } from '../api/quiz';
+import { addTermCard } from '../api/cards';
 import { canSpeak, speak, stopSpeaking } from '../hooks/speak';
 import { num, percent } from '../i18n/format';
 import { useAsync } from '../hooks/useAsync';
@@ -364,7 +365,10 @@ export default function Reader() {
               setTerm(null);
               askAssistant(name + t('askedSuffix'));
             }}
-            onCard={(name) => toast(name + t('addedToCards'))}
+            onCard={async (name) => {
+              const r = await addTermCard(lesson.terms[term].id);
+              toast(r === 'added' ? name + t('addedToCards') : r === 'already' ? name + t('cardAlready') : t('cardFailed'));
+            }}
             onNoVoice={() => toast(t('noVoice'))}
           />
         )}
