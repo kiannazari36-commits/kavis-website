@@ -10,7 +10,8 @@ import { getProfile } from '../api/account';
 import { useAsync } from '../hooks/useAsync';
 import { courseCount, duration, num } from '../i18n/format';
 import { daysUntil, isoToday } from '../api/courses';
-import { getTodayReview, getWeekPlan, setReview, setTaskDone } from '../api/plan';
+import { ensureWeekPlan, getTodayReview, setReview, setTaskDone } from '../api/plan';
+import { weakestTopic } from '../api/progress';
 import { useSettings } from '../settings/SettingsProvider';
 import { useTrial } from '../trial/TrialProvider';
 import { usePanelPref } from '../hooks/usePanelPref';
@@ -42,8 +43,10 @@ export default function Home() {
   const { settings } = useSettings();
   const review = useAsync(getTodayReview, []);
   const [showReview, setShowReview] = useState(true);
-  // Today's plan (from this week's plan), one after the other from the reminder time, 10 minutes apart.
-  const week = useAsync(getWeekPlan, []);
+  // Today's plan (from this week's plan, made first if it is missing or old), one after the other from the
+  // reminder time, 10 minutes apart.
+  const week = useAsync(() => ensureWeekPlan(settings.planMode), [settings.planMode]);
+  const weak = useAsync(weakestTopic, []);
   const todayTasks = (week?.tasks ?? []).filter((x) => x.day === isoToday());
   const plan = todayTasks.map((x, i) => ({
     ...x,
@@ -181,6 +184,11 @@ export default function Home() {
                 <Icon name="close" size={14} width={2.2} />
               </button>
             </div>
+            {week !== undefined && plan.length === 0 && (
+              <Link to="/plan" className={s.planEmpty}>
+                {t(settings.planMode === 'aim' ? 'planEmptyToday' : 'planOffHome')}
+              </Link>
+            )}
             {plan.map((p) => {
               const done = isDone(p.id, p.status);
               return (
@@ -221,16 +229,25 @@ export default function Home() {
                 <span>{t('k93')}</span>
               </span>
             </div>
+            {/* Greeting with the student's name and weakest topic (from their quizzes). */}
             <div className={s.bubble}>
-              {t('k94')} <b>{t('k95')}</b>
-              {t('k96')}
+              {weak ? (
+                <>
+                  {t('asstWeakA').replace('{name}', firstName).replace('{lesson}', weak.lesson)} <b>{weak.title}</b>
+                  {t('k96')}
+                </>
+              ) : (
+                t('asstHello').replace('{name}', firstName)
+              )}
             </div>
             <div className={s.chips}>
               {['k97', 'k98', 'k99'].map((k) => (
                 <button
                   key={k}
                   onClick={() =>
-                    k === 'k97' ? guard('question', () => navigate(`/assistant?q=${encodeURIComponent(t(k))}`)) : guard('generate', () => navigate(k === 'k98' ? '/quiz' : '/cards'))
+                    k === 'k97'
+                      ? guard('question', () => navigate(`/assistant?q=${encodeURIComponent(weak ? t('explainTopicQ').replace('{topic}', weak.title) : t(k))}`))
+                      : guard('generate', () => navigate(k === 'k98' ? '/quiz' : '/cards'))
                   }
                 >
                   {t(k)}

@@ -89,6 +89,17 @@ export async function getWeekPlan(): Promise<WeekPlan | null> {
 }
 
 /**
+ * This week's plan for pages that show it: with the Kavis plan on, a missing plan or one made on an earlier day is
+ * made again first (Edge Function build-plan). Other plan modes only read what is there.
+ */
+export async function ensureWeekPlan(mode: 'aim' | 'own' | 'none'): Promise<WeekPlan | null> {
+  const plan = await getWeekPlan();
+  if (mode !== 'aim' || (plan && plan.generatedOn >= isoToday())) return plan;
+  await runPlanner('build');
+  return getWeekPlan();
+}
+
+/**
  * Asks the server to plan (Edge Function build-plan, rules only, no AI): 'build' makes the rest of this week
  * again (done tasks stay), 'light_day' keeps today's 2 most important tasks and moves the others, 'add_mistakes'
  * adds a 15-minute mistakes task tomorrow. The student's own date is sent (time zones).

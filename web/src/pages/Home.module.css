@@ -533,6 +533,22 @@
   padding-inline-end: 76px;
 }
 
+.planEmpty {
+  display: block;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1.5px dashed var(--line);
+  color: var(--text2);
+  font-size: 13px;
+  line-height: 1.45;
+  text-decoration: none;
+}
+
+.planEmpty:hover {
+  border-color: var(--pri);
+  color: var(--pri);
+}
+
 .planTab {
   position: fixed;
   inset-inline-end: 0;
