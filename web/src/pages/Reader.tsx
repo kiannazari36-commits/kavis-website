@@ -9,6 +9,7 @@ import { getPdf, recentPdfs } from '../api/courses';
 import { addHighlight, getLesson, markRead, saveStudyTime, tapTerm, translate, type TranslationStyle } from '../api/reader';
 import { askAssistant, latestThread, type ChatMessage } from '../api/assistant';
 import { sectionCheckCounter } from '../api/quiz';
+import { canSpeak, speak, stopSpeaking } from '../hooks/speak';
 import { num, percent } from '../i18n/format';
 import { useAsync } from '../hooks/useAsync';
 import { usePanelPref } from '../hooks/usePanelPref';
@@ -364,7 +365,7 @@ export default function Reader() {
               askAssistant(name + t('askedSuffix'));
             }}
             onCard={(name) => toast(name + t('addedToCards'))}
-            onListen={(name) => toast(t('readingAloud') + name)}
+            onNoVoice={() => toast(t('noVoice'))}
           />
         )}
       </main>
@@ -507,18 +508,31 @@ function TermCard({
   onClose,
   onAsk,
   onCard,
-  onListen,
+  onNoVoice,
 }: {
   term: ReaderTerm;
   onClose: () => void;
   onAsk: (name: string) => void;
   onCard: (name: string) => void;
-  onListen: (name: string) => void;
+  onNoVoice: () => void;
 }) {
   const { t, lang } = useI18n();
   // Explanation in the app language; a missing language is made later by the Edge Function "explain-term".
-  const ex = term.explanation[lang] ?? term.explanation.en ?? term.explanation.tr;
+  const exLang = term.explanation[lang] ? lang : term.explanation.en ? 'en' : 'tr';
+  const ex = term.explanation[exLang];
   const name = ex?.name ?? term.surface;
+  // "Dinle": the browser reads the word and its explanation aloud; pressing again stops it.
+  const [speaking, setSpeaking] = useState(false);
+  useEffect(() => stopSpeaking, [term.id]);
+  const listen = () => {
+    if (speaking) {
+      stopSpeaking();
+      setSpeaking(false);
+      return;
+    }
+    if (!canSpeak()) return onNoVoice();
+    setSpeaking(speak(`${name}. ${ex?.text ?? ''}`, exLang, () => setSpeaking(false)));
+  };
   return (
     <div role="dialog" aria-label={t('termExpl')} className={s.termCard}>
       <div className={s.termTop}>
@@ -539,7 +553,9 @@ function TermCard({
           {t('askAssistant')}
         </button>
         <button onClick={() => onCard(name)}>{t('addToCards')}</button>
-        <button onClick={() => onListen(name)}>{t('listen')}</button>
+        <button onClick={listen} aria-pressed={speaking}>
+          {speaking ? t('stopListen') : t('listen')}
+        </button>
       </div>
     </div>
   );
