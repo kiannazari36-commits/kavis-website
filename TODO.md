@@ -43,6 +43,7 @@ Everything that is not finished yet. Updated after every step.
   - [ ] Scanned PDFs / photos: text recognition (OCR) with the AI; lectures longer than 100 pages: split into parts
   - [ ] PDFs over 50 MB (slides with many images are often bigger): Supabase free plan allows 50 MB per file. Before launch: Pro plan (higher limit) or shrink / split the PDF in the browser before uploading. Now the upload screen stops them with a message
   - [ ] Notification text of "lesson ready" in the student's app language (now Turkish)
+  - [ ] Deleting a lesson must also delete its file in Storage (database rows go by cascade, files do not; one test file `…/8fc2be66…/original.pdf` is left in the materials bucket)
   - [x] Edge Function `assistant` (deployed, not yet tested with a real question): searches the student's lessons (`material_chunks`, full-text with Turkish-friendly prefixes), answers only from them ("AI + research" may add general knowledge, marked), saves thread + messages, counts the trial question and AI cost. The web chat and the reader's side panel use it. Rules in `lib.ts` (6 Node tests)
   - [ ] Assistant: streaming answers (now the whole answer arrives at once), teach-back, voice, solve-a-photo
   - [ ] Assistant "+" menu (upload PDF / photo / audio, solve a question photo): still sample data (`web/src/api/mock/assistant.ts`) until upload is built
