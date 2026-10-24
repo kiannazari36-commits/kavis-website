@@ -115,6 +115,7 @@ The app never writes AI output, scores, usage counters, subscriptions or shares 
 
 | Screen | API |
 |---|---|
+| Kendi planım (own plan) | `own_plan_items` (weekday, course, minutes; written by the app — migration `20261024140202_own_plan.sql`) |
 | Ders planım (Kavis planı / kendi planım / plansız) | `user_settings.plan_mode`; Edge `build-plan` → `study_plans` + `plan_items` (stage basic → smart, `reasons`) |
 | "Bugün az vaktim var", missed tasks | Edge `build-plan` with `action: 'light_day' | 'reschedule'`; the app marks `plan_items.status` |
 | İlerleme: weekly minutes, calendar, streak, scores, weak topics, best hours | views `daily_minutes`, `topic_mastery`; RPC `study_streak()`; `quiz_attempts`; `study_sessions` by hour |

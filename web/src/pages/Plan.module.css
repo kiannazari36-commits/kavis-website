@@ -575,3 +575,43 @@
     width: min(330px, calc(100vw - 32px));
   }
 }
+
+/* Own plan: a course block (tap = change length, × = remove) and the course picker */
+.ownLen,
+.ownX {
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.ownX {
+  margin-inline-start: 8px;
+  opacity: 0.6;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.ownX:hover {
+  opacity: 1;
+}
+
+.ownPick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ownPick button {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  border-inline-start-width: 4px;
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}

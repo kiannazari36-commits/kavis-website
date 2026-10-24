@@ -5,6 +5,7 @@ import { dateRange, dayDate, dayShort, duration, hoursLabel, num, weekdayName } 
 import { useToast } from '../components/Toast';
 import Icon from '../components/Icon';
 import { addDays, getWeekPlan, rescheduleMissed, setTaskDone, taskLink, type PlanTask } from '../api/plan';
+import { addOwnItem, listOwnPlan, removeOwnItem, setOwnMinutes, type OwnItem } from '../api/ownPlan';
 import { isoToday, listCourses } from '../api/courses';
 import { useAsync } from '../hooks/useAsync';
 import { useSettings } from '../settings/SettingsProvider';
@@ -16,6 +17,8 @@ import s from './Plan.module.css';
 
 const DAY_KEYS = ['dMon', 'dTue', 'dWed', 'dThu', 'dFri', 'dSat', 'dSun'];
 const REASON_COLOR = { pri: 'var(--pri)', amb: 'var(--amb-t)', good: 'var(--good)' };
+// Own plan: tapping a course block steps through these lengths.
+const OWN_MINUTES = [30, 45, 60, 90];
 
 export default function Plan() {
   const { t, lang } = useI18n();
@@ -24,7 +27,11 @@ export default function Plan() {
   const { settings, patch } = useSettings();
   const [menu, setMenu] = useState(false);
   const [short, setShort] = useState(false);
-  const [own, setOwn] = useState<Record<number, string[]>>({});
+  const ownLoaded = useAsync(listOwnPlan, []);
+  const [ownEdits, setOwnEdits] = useState<OwnItem[] | null>(null);
+  const own = ownEdits ?? ownLoaded ?? [];
+  // The day whose "+ Ders ekle" course picker is open (1 = Monday).
+  const [picking, setPicking] = useState<number | null>(null);
   const [reload, setReload] = useState(0);
   const plan = useAsync(getWeekPlan, [reload]);
   const courses = useAsync(listCourses, []) ?? [];
@@ -257,22 +264,56 @@ export default function Plan() {
                   <b>{t(d)}</b>
                 </span>
                 <div className={s.tasks}>
-                  {(own[i] ?? []).map((id, j) => {
-                    const c = courses.find((x) => x.id === id);
-                    const col = COURSE_COLOR[c?.color ?? 'red'];
-                    return (
-                      <span key={j} className={s.ownItem} style={{ borderInlineStartColor: col.fg, background: col.soft }}>
-                        {(c?.short ?? c?.name ?? '') + t('min45')}
-                      </span>
-                    );
-                  })}
-                  {/* Own plan: not saved yet (needs a place in the database). */}
-                  <button
-                    className={s.addOwn}
-                    onClick={() => courses.length && setOwn({ ...own, [i]: [...(own[i] ?? []), courses[(own[i] ?? []).length % courses.length].id] })}
-                  >
-                    {t('addCourseShort')}
-                  </button>
+                  {own
+                    .filter((x) => x.weekday === i + 1)
+                    .map((x) => {
+                      const c = courses.find((y) => y.id === x.courseId);
+                      const col = COURSE_COLOR[c?.color ?? 'red'];
+                      const name = c?.short ?? c?.name ?? '';
+                      return (
+                        <span key={x.id} className={s.ownItem} style={{ borderInlineStartColor: col.fg, background: col.soft }}>
+                          <button
+                            className={s.ownLen}
+                            onClick={() => {
+                              const minutes = OWN_MINUTES[(OWN_MINUTES.indexOf(x.minutes) + 1) % OWN_MINUTES.length];
+                              setOwnEdits(own.map((y) => (y.id === x.id ? { ...y, minutes } : y)));
+                              setOwnMinutes(x.id, minutes);
+                            }}
+                          >
+                            {`${name} · ${duration(x.minutes, lang)}`}
+                          </button>
+                          <button
+                            className={s.ownX}
+                            aria-label={t('close')}
+                            onClick={() => (setOwnEdits(own.filter((y) => y.id !== x.id)), removeOwnItem(x.id))}
+                          >
+                            <Icon name="close" size={12} />
+                          </button>
+                        </span>
+                      );
+                    })}
+                  {picking === i + 1 ? (
+                    <span className={s.ownPick}>
+                      {courses.map((c) => (
+                        <button
+                          key={c.id}
+                          style={{ borderInlineStartColor: COURSE_COLOR[c.color].fg }}
+                          onClick={async () => {
+                            setPicking(null);
+                            const order = own.filter((y) => y.weekday === i + 1).length;
+                            const id = await addOwnItem(i + 1, c.id, order);
+                            if (id) setOwnEdits([...own, { id, weekday: i + 1, courseId: c.id, minutes: 45 }]);
+                          }}
+                        >
+                          {c.short ?? c.name}
+                        </button>
+                      ))}
+                    </span>
+                  ) : (
+                    <button className={s.addOwn} onClick={() => setPicking(i + 1)}>
+                      {t('addCourseShort')}
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
