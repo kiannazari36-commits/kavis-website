@@ -38,6 +38,9 @@ Everything that is not finished yet. Updated after every step.
   - [ ] Scheduled job `send-notifications` (push, snooze) and the server writing notifications (planner, lesson ready, exam result, weekly report)
   - [x] Assistant: course choice = real courses + "all"; the chat and the reader's side panel show the saved conversation (`assistant_threads` + `assistant_messages`, sources = lesson + page). A new question is shown with "real answers come once the assistant is connected" (the app may not write answers). Example: 5 conversations, 14 messages
   - [ ] Renew the Anthropic API key every 90 days (created 24 Oct 2026 → expires ~22 Jan 2027): new key in the Console, replace the Supabase secret `ANTHROPIC_API_KEY`
+  - [x] Edge Function `process-material` (deployed, not yet tested with a real PDF): text cut from the PDF by unpdf (never rewritten), 8 pages per AI call (Claude Sonnet 5.5, structured JSON, server-side refusal fallback), writes reading page, hard words (4 languages), topics, search pieces, cards, questions, section check, usage + cost, "lesson ready" notification; scanned / >100 pages give the trial lesson back; $3 per student per month AI budget. Rules in `lib.ts` (12 Node tests)
+  - [ ] Scanned PDFs / photos: text recognition (OCR) with the AI; lectures longer than 100 pages: split into parts
+  - [ ] Notification text of "lesson ready" in the student's app language (now Turkish)
   - [ ] Edge Function `assistant`: answer only from the student's lessons (`material_chunks` search), "AI + research" mode, save thread + messages, count trial questions, cost limit — needs the Claude API key as a Supabase secret
   - [ ] Assistant "+" menu (upload PDF / photo / audio, solve a question photo): still sample data (`web/src/api/mock/assistant.ts`) until upload is built
   - [ ] Still mock: Premium page offer → connect them next, with example rows in `seed.sql`
@@ -84,7 +87,7 @@ Everything that is not finished yet. Updated after every step.
 - [ ] iPhone app opens share links (universal links); non-Premium receiver sees "This lesson can only be opened with Premium." (text is ready in `web/src/i18n/app.json` → `sharePremiumOnly`)
 
 ## Web app — not built yet
-- [ ] Upload screen (PDF, photo, audio recording)
+- [x] Upload screen for PDF (`/upload`, design ScrUpload) — [ ] photo and audio recording still "coming soon"
 - [ ] Onboarding after sign-up (language, plan days/hours, courses)
 - [ ] Help & live support chat
 - [ ] Live audio lesson, "Let me explain" (teach-back), solve a question photo

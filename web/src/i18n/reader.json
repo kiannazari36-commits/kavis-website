@@ -114,7 +114,8 @@
   "pagesLabel": "SAYFA {a}–{b}",
   "pageOf": "SAYFA {p}/{n}",
   "secEnd": "Bölüm {n} bitti. 1 dakikada pekiştir.",
-  "noReaderDoc": "Bu dersin okuma sayfası henüz hazır değil. PDF sunucuda işlenince burada açılacak."
+  "noReaderDoc": "Bu dersin okuma sayfası henüz hazır değil. PDF sunucuda işlenince burada açılacak.",
+  "tagGeneral": "Konu"
  },
  "en": {
   "pageInfo": "PHARMACOTHERAPY · PAGE 12/48 · 25%",
@@ -231,7 +232,8 @@
   "pagesLabel": "PAGES {a}–{b}",
   "pageOf": "PAGE {p}/{n}",
   "secEnd": "Section {n} done. Reinforce it in 1 minute.",
-  "noReaderDoc": "The reading page of this lesson is not ready yet. It opens here once the PDF is processed on the server."
+  "noReaderDoc": "The reading page of this lesson is not ready yet. It opens here once the PDF is processed on the server.",
+  "tagGeneral": "Topic"
  },
  "fa": {
   "pageInfo": "دارودرمانی · صفحه 12/48 · 25%",
@@ -348,7 +350,8 @@
   "pagesLabel": "صفحه {a}–{b}",
   "pageOf": "صفحه {p}/{n}",
   "secEnd": "بخش {n} تمام شد. در ۱ دقیقه مرورش کن.",
-  "noReaderDoc": "صفحه خواندن این درس هنوز آماده نیست. وقتی PDF روی سرور پردازش شد، اینجا باز می‌شود."
+  "noReaderDoc": "صفحه خواندن این درس هنوز آماده نیست. وقتی PDF روی سرور پردازش شد، اینجا باز می‌شود.",
+  "tagGeneral": "مبحث"
  },
  "ar": {
   "pageInfo": "العلاج الدوائي · الصفحة 12/48 · 25%",
@@ -465,6 +468,7 @@
   "pagesLabel": "الصفحات {a}–{b}",
   "pageOf": "الصفحة {p}/{n}",
   "secEnd": "انتهى القسم {n}. ثبّته في دقيقة واحدة.",
-  "noReaderDoc": "صفحة القراءة لهذا الدرس غير جاهزة بعد. ستفتح هنا بعد معالجة ملف PDF على الخادم."
+  "noReaderDoc": "صفحة القراءة لهذا الدرس غير جاهزة بعد. ستفتح هنا بعد معالجة ملف PDF على الخادم.",
+  "tagGeneral": "موضوع"
  }
 }

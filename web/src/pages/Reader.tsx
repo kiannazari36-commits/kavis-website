@@ -36,6 +36,7 @@ const TAGS: Record<ReaderTag, [string, 'vio' | 'red']> = {
   side_effect: ['tagSide', 'red'],
   special: ['s3tag', 'vio'],
   emergency: ['s4tag', 'red'],
+  general: ['tagGeneral', 'vio'],
 };
 const blockPages = (b: ReaderBlock) => Array.from({ length: b.pageTo - b.pageFrom + 1 }, (_, i) => b.pageFrom + i);
 

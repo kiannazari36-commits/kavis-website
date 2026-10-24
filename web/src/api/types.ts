@@ -41,7 +41,7 @@ export type Course = {
 export type Segment = string | { term: string; text: string };
 
 /** Kind of a page block; the label is an app text (src/i18n/reader.json). */
-export type ReaderTag = 'definition' | 'dose' | 'side_effect' | 'special' | 'emergency';
+export type ReaderTag = 'definition' | 'dose' | 'side_effect' | 'special' | 'emergency' | 'general';
 
 export type ReaderBlock = {
   pageFrom: number;

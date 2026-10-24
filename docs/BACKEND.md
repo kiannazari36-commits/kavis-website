@@ -148,7 +148,7 @@ The app never writes AI output, scores, usage counters, subscriptions or shares 
 
 ## Edge Functions
 
-**Built:** `ai-health` (free check that the `ANTHROPIC_API_KEY` secret works: lists models, no tokens), `grade-quiz` (`supabase/functions/grade-quiz/`; `verify_jwt = true`; POST `{ attempt_id }` → `{ score, level, results }`).
+**Built:** `process-material` (`verify_jwt = false`: checks the student's login itself; the next batch is called with the service key in `x-internal-key`), `ai-health` (free check that the `ANTHROPIC_API_KEY` secret works: lists models, no tokens), `grade-quiz` (`supabase/functions/grade-quiz/`; `verify_jwt = true`; POST `{ attempt_id }` → `{ score, level, results }`).
 
 ### To build (secrets: `ANTHROPIC_API_KEY`, Apple keys)
 
