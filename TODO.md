@@ -50,7 +50,7 @@ Everything that is not finished yet. Updated after every step.
   - [x] With one chosen lesson the assistant gets the whole lesson text (up to ~120,000 characters, prompt-cached for 5 minutes so follow-ups cost ~10%) and only talks about that lesson; sources are page numbers. Longer lessons: open pages + search pieces
   - [x] Term card "Dinle": the browser's own voice reads the word + explanation (Web Speech API, free, offline); press again to stop. Later in the iOS app: AVSpeechSynthesizer. "Kartlara ekle" makes a real card (Edge Function `add-card`: "<word> nedir?" + the explanation, in the lesson's deck and content language, no AI, a word is added only once)
   - [x] Reader clock remembers each lesson for the day (this browser): leaving and coming back goes on from the same time, a paused clock stays paused; study time is saved on leaving or closing the tab (short visits add up until a minute)
-  - [x] Quiz: picking an option answers at once — right (green) or wrong (red) with the right answer and "Neden?"; the answer is locked; wrong answers open already explained in the results
+  - [x] Quiz: pick an option (can still change it), then "Ne kadar eminsin?" — only then right (green) or wrong (red) with the right answer and "Neden?"; then locked. Wrong answers open already explained in the results
   - [ ] Assistant: streaming answers (now the whole answer arrives at once), teach-back, voice, solve-a-photo
   - [ ] Assistant "+" menu (upload PDF / photo / audio, solve a question photo): still sample data (`web/src/api/mock/assistant.ts`) until upload is built
   - [ ] Still mock: Premium page offer → connect them next, with example rows in `seed.sql`

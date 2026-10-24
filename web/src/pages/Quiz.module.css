@@ -453,6 +453,16 @@
   cursor: default;
 }
 
+.sureNudge {
+  align-self: flex-start;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 12px;
+  background: var(--amb-soft);
+  color: var(--amb-t);
+}
+
 .verdict {
   display: flex;
   flex-direction: column;

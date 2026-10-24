@@ -145,15 +145,29 @@ export default function Quiz() {
       toast(t('pickFirst'));
       return;
     }
+    if (!revealed) {
+      toast(t('sureFirst'));
+      return;
+    }
     if (qi >= qList.length - 1) finishRun();
     else setQi(qi + 1);
   };
-  // Picking an option answers the question at once: right or wrong is shown with the right answer and why; the
-  // answer cannot be changed. A wrong one is already explained, so the results show it open.
+  // First an option (it can still be changed), then "how sure are you?": after that the question is answered —
+  // right or wrong is shown with the right answer and why, and nothing can be changed. A wrong one is already
+  // explained, so the results show it open.
+  const revealed = sel !== undefined && conf[qIdx] !== undefined;
   const pick = (i: number) => {
-    if (sel !== undefined) return;
+    if (revealed) return;
     setAnswers({ ...answers, [qIdx]: i });
-    if (Q && i !== Q.answer) setFinds({ ...finds, [qIdx]: { mode: 'show', hints: 1, bad: -1 } });
+  };
+  const pickSure = (c: Confidence) => {
+    if (revealed) return;
+    if (sel === undefined) {
+      toast(t('pickFirst'));
+      return;
+    }
+    setConf({ ...conf, [qIdx]: c });
+    if (Q && sel !== Q.answer) setFinds({ ...finds, [qIdx]: { mode: 'show', hints: 1, bad: -1 } });
   };
   const addHint = () => {
     if (nH >= 3) {
@@ -295,12 +309,13 @@ export default function Quiz() {
                 key={i}
                 role="radio"
                 aria-checked={sel === i}
-                aria-disabled={sel !== undefined}
+                aria-disabled={revealed}
                 className={[
                   s.option,
-                  sel !== undefined && i === Q.answer ? s.optionRight : '',
-                  sel === i && i !== Q.answer ? s.optionWrong : '',
-                  sel !== undefined && sel !== i && i !== Q.answer ? s.optionDim : '',
+                  !revealed && sel === i ? s.optionOn : '',
+                  revealed && i === Q.answer ? s.optionRight : '',
+                  revealed && sel === i && i !== Q.answer ? s.optionWrong : '',
+                  revealed && sel !== i && i !== Q.answer ? s.optionDim : '',
                 ].join(' ')}
                 onClick={() => pick(i)}
               >
@@ -309,7 +324,12 @@ export default function Quiz() {
               </button>
             ))}
           </div>
-          {sel !== undefined && (
+          {sel !== undefined && !revealed && (
+            <span className={s.sureNudge} role="status">
+              {t('sureNudge')}
+            </span>
+          )}
+          {revealed && (
             <div className={s.verdict} role="status" lang={cl} dir={cdir}>
               <span className={sel === Q.answer ? s.solved : s.wrongNow}>
                 {sel === Q.answer ? t('rightNow') : `${t('wrongNow')} ${LETTERS[Q.answer]}) ${Q.options[Q.answer]}`}
@@ -331,7 +351,7 @@ export default function Quiz() {
                 <span>{h}</span>
               </div>
             ))}
-            {sel === undefined && (
+            {!revealed && (
               <button className={nH > 0 ? s.hintBtn : `${s.hintBtn} ${s.hintBtnFirst}`} onClick={addHint}>
                 <Icon name="bulb" size={16} />
                 {nH === 0 ? t('hintFirst') : nH < 3 ? `${t('hintMore')}${nH}/3)` : t('hintsDone')}
@@ -341,12 +361,12 @@ export default function Quiz() {
           <div className={s.qFoot}>
             <span className={s.label2}>{t('howSure')}</span>
             {(['sure', 'unsure', 'guess'] as const).map((c) => (
-              <button key={c} aria-pressed={conf[qIdx] === c} className={conf[qIdx] === c ? `${s.conf} ${s.confOn}` : s.conf} onClick={() => setConf({ ...conf, [qIdx]: c })}>
+              <button key={c} aria-pressed={conf[qIdx] === c} className={conf[qIdx] === c ? `${s.conf} ${s.confOn}` : s.conf} onClick={() => pickSure(c)}>
                 {t(c)}
               </button>
             ))}
             <span className={s.grow} />
-            <button className={sel === undefined ? `${s.next} ${s.nextOff}` : s.next} aria-disabled={sel === undefined} onClick={nextQ}>
+            <button className={revealed ? s.next : `${s.next} ${s.nextOff}`} aria-disabled={!revealed} onClick={nextQ}>
               {qi >= qList.length - 1 ? t('finish') : t('nextQ')}
             </button>
           </div>
