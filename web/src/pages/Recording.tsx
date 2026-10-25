@@ -17,6 +17,8 @@ export default function Recording() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const id = params.get('id') ?? '';
+  // Opened from a note on a PDF page: start at that moment.
+  const startAt = Number(params.get('t')) || 0;
   const [rec, setRec] = useState<Rec | null | undefined>(undefined);
   const audio = useRef<HTMLAudioElement>(null);
   const [now, setNow] = useState(0);
@@ -83,6 +85,9 @@ export default function Recording() {
                   controls
                   preload="metadata"
                   className={s.audio}
+                  onLoadedMetadata={(e) => {
+                    if (startAt) e.currentTarget.currentTime = startAt;
+                  }}
                   onTimeUpdate={(e) => setNow(e.currentTarget.currentTime)}
                 />
                 <div className={s.speeds}>

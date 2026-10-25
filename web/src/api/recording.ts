@@ -121,3 +121,51 @@ export async function recordingsOf(pdfId: string) {
   if (error) console.error('recordingsOf', error);
   return (data ?? []).map((r) => ({ id: r.id, title: r.title, status: r.status, seconds: r.duration_sec ?? 0 }));
 }
+
+/** A course's recordings (course page list). */
+export async function recordingsOfCourse(courseId: string) {
+  const { data, error } = await supabase
+    .from('materials')
+    .select('id, title, status, duration_sec, created_at')
+    .eq('kind', 'audio')
+    .eq('course_id', courseId)
+    .order('created_at', { ascending: false });
+  if (error) console.error('recordingsOfCourse', error);
+  return (data ?? []).map((r) => ({ id: r.id, title: r.title, status: r.status, seconds: r.duration_sec ?? 0, day: r.created_at.slice(0, 10) }));
+}
+
+/** A note on a PDF page from the lecture recording: what the lecturer said there, and where in the recording. */
+export type LectureMark = { page: number; recordingId: string; at: number; kind: 'exam' | 'stress' | 'time'; text: string; minutes: number };
+
+/**
+ * Notes for the reading page from the lesson's recordings: "sınavda çıkar" / stressed moments on the page they were
+ * said about (the part of the talk that matches the page, else the topic's first page), and pages the lecturer
+ * spent 2 minutes or more on.
+ */
+export async function lectureMarks(pdfId: string): Promise<LectureMark[]> {
+  const [recs, topics] = await Promise.all([
+    supabase.from('materials').select('id, material_content(lecture)').eq('kind', 'audio').eq('linked_material_id', pdfId).eq('status', 'ready'),
+    supabase.from('material_topics').select('id, page_from').eq('material_id', pdfId),
+  ]);
+  if (recs.error) console.error('lectureMarks', recs.error);
+  const topicPage = new Map((topics.data ?? []).map((x) => [x.id as string, (x.page_from as number | null) ?? 0]));
+  const marks: LectureMark[] = [];
+  for (const r of recs.data ?? []) {
+    const content = r.material_content as unknown as { lecture: Record<string, unknown> | null } | { lecture: Record<string, unknown> | null }[] | null;
+    const lecture = ((Array.isArray(content) ? content[0]?.lecture : content?.lecture) ?? {}) as { parts?: LecturePart[]; quotes?: LectureQuote[] };
+    const parts = lecture.parts ?? [];
+    for (const q of lecture.quotes ?? []) {
+      const part = parts.find((p) => q.at >= p.start && q.at < p.end && p.page > 0);
+      const page = part?.page ?? (q.topic_id ? (topicPage.get(q.topic_id) ?? 0) : 0);
+      if (page > 0) marks.push({ page, recordingId: r.id, at: q.at, kind: q.kind, text: q.text, minutes: 0 });
+    }
+    const perPage = new Map<number, { seconds: number; at: number }>();
+    for (const p of parts) {
+      if (p.page <= 0) continue;
+      const x = perPage.get(p.page) ?? { seconds: 0, at: p.start };
+      perPage.set(p.page, { seconds: x.seconds + (p.end - p.start), at: Math.min(x.at, p.start) });
+    }
+    for (const [page, x] of perPage) if (x.seconds >= 120) marks.push({ page, recordingId: r.id, at: x.at, kind: 'time', text: '', minutes: Math.round(x.seconds / 60) });
+  }
+  return marks;
+}

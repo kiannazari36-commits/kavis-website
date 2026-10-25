@@ -7,6 +7,8 @@ import { COURSE_COLOR } from '../components/courseColors';
 import { courseStats, getCourse } from '../api/courses';
 import { useAsync } from '../hooks/useAsync';
 import { deleteLesson } from '../api/upload';
+import { recordingsOfCourse } from '../api/recording';
+import { clock } from '../speech/transcribe';
 import { useToast } from '../components/Toast';
 import type { Pdf } from '../api/types';
 import ContentLangPicker from '../components/ContentLangPicker';
@@ -32,6 +34,7 @@ export default function CourseFolder() {
   const [asking, setAsking] = useState<string | null>(null);
   const [reload, setReload] = useState(0);
   const course = useAsync(() => getCourse(courseId), [courseId, reload]);
+  const recordings = useAsync(() => recordingsOfCourse(courseId), [courseId]) ?? [];
   const remove = async (p: Pdf) => {
     setAsking(null);
     const ok = await deleteLesson(p.id);
@@ -166,6 +169,30 @@ export default function CourseFolder() {
           <b>{t('emptyFolder')}</b>
           <span>{t('emptyHint')}</span>
         </div>
+      )}
+
+      {recordings.length > 0 && (
+        <>
+          <div className={s.listHead}>
+            <h2>{t('recList')}</h2>
+          </div>
+          <div className={s.list}>
+            {recordings.map((r) => (
+              <Link key={r.id} to={`/recording?id=${r.id}`} className={s.pdf}>
+                <span className={s.recIcon}>
+                  <Icon name="mic" size={22} />
+                </span>
+                <span className={s.pdfBody}>
+                  <b>{r.title}</b>
+                  <span className={s.status}>
+                    {r.status === 'ready' ? clock(r.seconds) : r.status === 'failed' ? t('recFailedShort') : t('recWorkingShort')} · {r.day}
+                  </span>
+                </span>
+                <Icon name="chevron" size={18} className={`flip-rtl ${s.chev}`} />
+              </Link>
+            ))}
+          </div>
+        </>
       )}
 
       <button className={s.addBottom} onClick={addPdf}>

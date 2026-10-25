@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { useNavigate, useOutletContext, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useOutletContext, useSearchParams } from 'react-router-dom';
 import { LANG_NAMES, LANGS, useI18n, type Lang } from '../i18n/I18nProvider';
 import { useTheme } from '../theme/ThemeProvider';
 import { useToast } from '../components/Toast';
@@ -10,7 +10,8 @@ import { addHighlight, getLesson, markRead, saveStudyTime, tapTerm, translate, t
 import { askAssistant, latestThread, type ChatMessage } from '../api/assistant';
 import { sectionCheckCounter } from '../api/quiz';
 import { addTermCard } from '../api/cards';
-import { recordingsOf } from '../api/recording';
+import { lectureMarks, recordingsOf, type LectureMark } from '../api/recording';
+import { clock } from '../speech/transcribe';
 import { canSpeak, speak, stopSpeaking } from '../hooks/speak';
 import { num, percent } from '../i18n/format';
 import { useAsync } from '../hooks/useAsync';
@@ -57,6 +58,8 @@ export default function Reader() {
   // The lecture recording of this lesson, if there is one (button "Ses kaydı" in the header).
   const recordings = useAsync(() => (pdfId ? recordingsOf(pdfId) : Promise.resolve([])), [pdfId]);
   const recording = recordings?.find((r) => r.status === 'ready') ?? recordings?.[0];
+  // What the lecturer said about each page in the recording ("Hoca burada sınavda çıkar dedi").
+  const marks = useAsync(() => (pdfId ? lectureMarks(pdfId) : Promise.resolve([])), [pdfId]) ?? [];
   const checkCount = useAsync(() => (pdfId ? sectionCheckCounter(pdfId) : Promise.resolve({ count: () => 0 })), [pdfId]);
   const doc = lesson?.doc;
   const [pagesRead, setPagesRead] = useState<number[] | null>(null);
@@ -290,6 +293,7 @@ export default function Reader() {
           <div className={s.column}>
             {section.blocks.map((b, i) => (
               <Block
+                marks={marks.filter((m) => m.page >= b.pageFrom && m.page <= b.pageTo)}
                 key={`${sec_}-${i}`}
                 doc={doc}
                 block={b}
@@ -428,6 +432,8 @@ function paraText(p: ReaderBlock['paragraphs'][number]) {
 }
 
 type BlockProps = {
+  /** Notes from the lecture recording on this page. */
+  marks: LectureMark[];
   doc: ReaderDoc;
   block: ReaderBlock;
   terms: Record<string, ReaderTerm>;
@@ -441,7 +447,7 @@ type BlockProps = {
   onTranslate: () => void;
 };
 
-function Block({ doc, block, terms, fontSize, term, onTerm, selected, highlights, onSelect, selActs, onTranslate }: BlockProps) {
+function Block({ doc, block, terms, fontSize, term, onTerm, selected, highlights, onSelect, selActs, onTranslate, marks }: BlockProps) {
   const { t, lang } = useI18n();
   const toast = useToast();
   const [tagKey, tagStyle] = TAGS[block.tag] ?? TAGS.definition;
@@ -477,6 +483,16 @@ function Block({ doc, block, terms, fontSize, term, onTerm, selected, highlights
           {t('translate')}
         </button>
       </div>
+      {marks.map((m, i) => (
+        <Link key={i} to={`/recording?id=${m.recordingId}&t=${Math.floor(m.at)}`} className={m.kind === 'exam' ? `${s.lectureMark} ${s.lectureExam}` : s.lectureMark}>
+          <Icon name="mic" size={15} />
+          <span className={s.lectureText}>
+            <b>{m.kind === 'exam' ? t('markExam') : m.kind === 'stress' ? t('markStress') : t('markTime').replace('{n}', num(m.minutes, lang))}</b>
+            {m.text && <span>“{m.text}”</span>}
+          </span>
+          <span className="mono">{clock(m.at)}</span>
+        </Link>
+      ))}
       {block.heading && (
         <h2 className={s.heading} lang={doc.language}>
           {block.heading}

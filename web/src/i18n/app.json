@@ -281,7 +281,13 @@
   "rec_examBtn": "Hocanın vurguladığı konulardan sınav",
   "rec_text": "Metin",
   "rec_pdfPage": "PDF S. {n}",
-  "recAudio": "Ses kaydı"
+  "recAudio": "Ses kaydı",
+  "markExam": "Hoca burada “sınavda çıkar” dedi",
+  "markStress": "Hoca burada özellikle vurguladı",
+  "markTime": "Hoca bu sayfada {n} dk durdu",
+  "recList": "Ders ses kayıtları",
+  "recFailedShort": "hazırlanamadı",
+  "recWorkingShort": "hazırlanıyor"
  },
  "en": {
   "pdfs": "PDFs",
@@ -565,7 +571,13 @@
   "rec_examBtn": "Exam on the topics the lecturer stressed",
   "rec_text": "Text",
   "rec_pdfPage": "PDF P. {n}",
-  "recAudio": "Recording"
+  "recAudio": "Recording",
+  "markExam": "The lecturer said “this will be in the exam” here",
+  "markStress": "The lecturer stressed this here",
+  "markTime": "The lecturer spent {n} min on this page",
+  "recList": "Lecture recordings",
+  "recFailedShort": "could not be prepared",
+  "recWorkingShort": "preparing"
  },
  "fa": {
   "pdfs": "PDFها",
@@ -849,7 +861,13 @@
   "rec_examBtn": "آزمون از مباحث مورد تأکید استاد",
   "rec_text": "متن",
   "rec_pdfPage": "PDF ص. {n}",
-  "recAudio": "صدای کلاس"
+  "recAudio": "صدای کلاس",
+  "markExam": "استاد اینجا گفت «در امتحان می‌آید»",
+  "markStress": "استاد اینجا تأکید کرد",
+  "markTime": "استاد {n} دقیقه روی این صفحه ماند",
+  "recList": "صداهای کلاس",
+  "recFailedShort": "آماده نشد",
+  "recWorkingShort": "در حال آماده شدن"
  },
  "ar": {
   "pdfs": "ملفات PDF",
@@ -1133,6 +1151,12 @@
   "rec_examBtn": "اختبار في المواضيع التي أكّدها الأستاذ",
   "rec_text": "النص",
   "rec_pdfPage": "PDF ص. {n}",
-  "recAudio": "تسجيل"
+  "recAudio": "تسجيل",
+  "markExam": "قال الأستاذ هنا «سيأتي في الامتحان»",
+  "markStress": "أكّد الأستاذ هنا",
+  "markTime": "أمضى الأستاذ {n} د في هذه الصفحة",
+  "recList": "تسجيلات المحاضرات",
+  "recFailedShort": "تعذّر التجهيز",
+  "recWorkingShort": "قيد التجهيز"
  }
 }
