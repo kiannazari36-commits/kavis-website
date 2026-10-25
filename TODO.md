@@ -108,6 +108,7 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Real device names from the apps (the web name comes from the browser)
 
 ## Sharing
+- [x] Owner page `/admin` (25 Oct 2026, not in any menu): sign-ups, trial / Premium, lessons, AI cost this month (Edge `admin-stats`, answers only the owner id in the function; `ADMIN_USER_IDS` in `supabase/functions/.env` for the local copy)
 - [x] Real share links for app-made content (quizzes, summaries, cards — never the PDF, it belongs to the teacher): Edge `create-share` (Premium only) writes `shares`; the link page `/s/:id` only says "download the app". Receiving / copying the items happens in the iPhone app
 - [ ] iPhone app opens share links (universal links); non-Premium receiver sees "This lesson can only be opened with Premium." (text is ready in `web/src/i18n/app.json` → `sharePremiumOnly`)
 

@@ -24,6 +24,7 @@ import Upload from './pages/Upload';
 import Record from './pages/Record';
 import Recording from './pages/Recording';
 import Samples from './pages/Samples';
+import Admin from './pages/Admin';
 import Paywall from './pages/Paywall';
 import DeviceLimit from './pages/DeviceLimit';
 import ShareLink from './pages/ShareLink';
@@ -58,6 +59,7 @@ export default function App() {
                     <Route path="/record" element={<Record />} />
                     <Route path="/recording" element={<Recording />} />
                     <Route path="/samples" element={<Samples />} />
+                    <Route path="/admin" element={<Admin />} />
                   </Route>
                   <Route path="/premium" element={<Paywall />} />
                   <Route path="/devices" element={<DeviceLimit />} />
