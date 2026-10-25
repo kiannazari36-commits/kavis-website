@@ -146,13 +146,137 @@
   padding: 14px 28px 4px;
 }
 
-.tabs {
-  flex: 1;
+.secPick {
+  position: relative;
   min-width: 0;
+}
+
+.secBtn {
+  height: 40px;
+  max-width: min(460px, 60vw);
   display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  scrollbar-width: none;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px 0 16px;
+  border-radius: 20px;
+  border: 1px solid var(--pri);
+  background: var(--pri);
+  color: #fffcf6;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.secBtn .mono {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.secBtn b {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevDown {
+  transform: rotate(90deg);
+  flex: none;
+}
+
+.chevUp {
+  transform: rotate(-90deg);
+  flex: none;
+}
+
+/* Tap outside closes the list */
+.secShade {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  border: 0;
+  background: transparent;
+  cursor: default;
+}
+
+.secMenu {
+  position: absolute;
+  top: 46px;
+  inset-inline-start: 0;
+  z-index: 31;
+  width: min(380px, 86vw);
+  max-height: min(420px, 60vh);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  border-radius: 20px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: 0 14px 34px rgba(42, 36, 32, 0.18);
+}
+
+.secMenu button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  text-align: start;
+  cursor: pointer;
+}
+
+.secMenu button:hover {
+  background: var(--sub);
+}
+
+.secMenu button b {
+  flex: 1;
+  font-weight: 500;
+}
+
+.secMenu .mono {
+  font-size: 11px;
+  color: var(--text2);
+}
+
+.secMenu .secOn {
+  background: var(--pri-soft);
+}
+
+.secMenu .secOn b {
+  color: var(--pri-t);
+  font-weight: 600;
+}
+
+/* Small page search: a page number, Enter opens it */
+.pageFind {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text2);
+}
+
+.pageFind input {
+  width: 64px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  outline: none;
 }
 
 /* Full screen: the page of the open section, next to the assistant star */
@@ -160,25 +284,6 @@
   flex: none;
   font-size: 11px;
   color: var(--text2);
-}
-
-.tab {
-  height: 36px;
-  flex: none;
-  padding: 0 16px;
-  border-radius: 18px;
-  border: 1px solid var(--line);
-  background: var(--card);
-  color: var(--text2);
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.tabOn {
-  border-color: var(--pri);
-  background: var(--pri);
-  color: #fffcf6;
-  font-weight: 600;
 }
 
 /* Pages */

@@ -97,6 +97,9 @@ export default function Reader() {
   const [panel, setPanel] = usePanelPref('kavis.readerPanel', 1200);
   const [term, setTerm] = useState<string | null>(null);
   const [selected, setSelected] = useState(false);
+  // The section list (one button that opens the others) and the page search box.
+  const [secMenu, setSecMenu] = useState(false);
+  const [pageQuery, setPageQuery] = useState('');
   const [trSource, setTrSource] = useState<{ text: string; page: number } | null>(null);
   const [paused, setPaused] = useState(() => loadClock(pdfId).paused);
   const [shareOpen, setShareOpen] = useState(false);
@@ -226,6 +229,7 @@ export default function Reader() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
+      setSecMenu(false);
       setTerm(null);
       setSelected(false);
       setTrSource(null);
@@ -289,6 +293,20 @@ export default function Reader() {
     setTerm(null);
     setSelected(false);
     scroller.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  // Page search: open the section with that page and scroll to it.
+  const jumpToPage = (e: FormEvent) => {
+    e.preventDefault();
+    const p = Number(pageQuery);
+    const i = doc.sections.findIndex((x) => x.blocks.some((b) => p >= b.pageFrom && p <= b.pageTo));
+    if (!Number.isInteger(p) || i < 0) return toast(t('pageNotFound'));
+    setPageQuery('');
+    goSection(i);
+    setTimeout(() => {
+      const pages = scroller.current?.querySelectorAll<HTMLElement>('[data-from]') ?? [];
+      const el = [...pages].find((x) => p >= Number(x.dataset.from) && p <= Number(x.dataset.to));
+      el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
   };
   const nextSection = () => {
     if (sec >= doc.sections.length - 1) {
@@ -364,15 +382,50 @@ export default function Reader() {
           />
         </header>
 
-        {/* Sections; in full screen (no header) also the page and the assistant star, top right. */}
+        {/* One button with the open section (tap: the list of all sections) and a small page search; in full
+            screen (no header) also the page and the assistant star, top right. */}
         <div className={s.tabsRow}>
-          <div role="tablist" aria-label={t('sections')} className={s.tabs} lang={doc.language}>
-            {doc.sections.map((x, i) => (
-              <button key={x.title} dir="auto" role="tab" aria-selected={i === sec_} className={i === sec_ ? `${s.tab} ${s.tabOn}` : s.tab} onClick={() => goSection(i)}>
-                {x.title}
-              </button>
-            ))}
+          <div className={s.secPick} lang={doc.language}>
+            <button className={s.secBtn} aria-haspopup="listbox" aria-expanded={secMenu} aria-label={t('sections')} onClick={() => setSecMenu(!secMenu)}>
+              <span className="mono">
+                {num(sec_ + 1, lang)}/{num(doc.sections.length, lang)}
+              </span>
+              <b dir="auto">{section.title}</b>
+              <Icon name="chevron" size={16} className={secMenu ? s.chevUp : s.chevDown} />
+            </button>
+            {secMenu && (
+              <>
+                <button className={s.secShade} aria-label={t('close')} onClick={() => setSecMenu(false)} />
+                <div role="listbox" aria-label={t('sections')} className={s.secMenu}>
+                  {doc.sections.map((x, i) => {
+                    const from = Math.min(...x.blocks.map((b) => b.pageFrom));
+                    const to = Math.max(...x.blocks.map((b) => b.pageTo));
+                    return (
+                      <button
+                        key={`${i}-${x.title}`}
+                        role="option"
+                        aria-selected={i === sec_}
+                        className={i === sec_ ? s.secOn : ''}
+                        onClick={() => (goSection(i), setSecMenu(false))}
+                      >
+                        <span className="mono">{num(i + 1, lang)}</span>
+                        <b dir="auto">{x.title}</b>
+                        <span className="mono">
+                          {t('pageAbbr')} {num(from, lang)}
+                          {to !== from && `–${num(to, lang)}`}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
           </div>
+          <span className={s.grow} />
+          <form className={s.pageFind} onSubmit={jumpToPage} role="search">
+            <Icon name="search" size={15} />
+            <input value={pageQuery} onChange={(e) => setPageQuery(e.target.value.replace(/\D/g, ''))} inputMode="numeric" placeholder={t('pageFind')} aria-label={t('pageFind')} />
+          </form>
           {focus && (
             <>
               <span className={`mono ${s.focusPage}`}>{pageInfo}</span>
@@ -637,7 +690,7 @@ function Block({ doc, block, terms, fontSize, term, onTerm, selected, highlights
     );
 
   return (
-    <article className={s.page}>
+    <article className={s.page} data-from={block.pageFrom} data-to={block.pageTo}>
       <InkLayer strokes={ink} pen={pen} onDone={(st) => onInk([...ink, st])} />
       <div className={s.pageTop}>
         <span className="mono">{pageLabel}</span>
