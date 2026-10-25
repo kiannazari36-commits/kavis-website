@@ -382,3 +382,62 @@
 :global([dir='rtl']) .title {
   letter-spacing: 0;
 }
+
+/* "Nasıl çalışır" and "SSS" (below the features) */
+.how,
+.faq {
+  padding: 0 72px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.how h2,
+.faq h2 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.how ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.faq details {
+  border-radius: 20px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  padding: 16px 20px;
+}
+
+.faq summary {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.faq p {
+  margin: 10px 0 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text2);
+}
+
+@media (max-width: 900px) {
+  .how,
+  .faq {
+    padding-inline: 16px;
+  }
+
+  .how ol {
+    grid-template-columns: 1fr;
+  }
+}

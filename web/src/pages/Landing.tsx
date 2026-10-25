@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n/I18nProvider';
-import { useToast } from '../components/Toast';
 import Wordmark from '../components/Wordmark';
 import LangThemeSwitch from '../components/LangThemeSwitch';
 import Icon, { AppleLogo, PlayLogo, type IconName } from '../components/Icon';
@@ -17,15 +16,21 @@ const FEATURES: [IconName, string, string][] = [
   ['mic', 'k26', 'k27'],
   ['globe', 'k28', 'k29'],
 ];
+// "Nasıl çalışır": three steps; "SSS": common questions (answers follow CLAUDE.md product rules).
+const HOW: [IconName, string, string][] = [
+  ['upload', 'how1T', 'how1S'],
+  ['book', 'how2T', 'how2S'],
+  ['checklist', 'how3T', 'how3S'],
+];
+const FAQ = ['faq1', 'faq2', 'faq3', 'faq4', 'faq5', 'faq6'];
 
 export default function Landing() {
   const { t } = useI18n();
-  const toast = useToast();
   const navigate = useNavigate();
   const toSignup = () => navigate('/login');
   const toLogin = () => navigate('/login?mode=login');
-  const soon = () => toast(t('k165'));
-  const toFeatures = () => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+  const scrollTo = (id: string) => () => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  const toFeatures = scrollTo('features');
 
   return (
     <div className={s.page}>
@@ -37,9 +42,9 @@ export default function Landing() {
         <span className={s.grow} />
         <nav className={s.links}>
           <button onClick={toFeatures}>{t('k0')}</button>
-          <button onClick={soon}>{t('k1')}</button>
+          <button onClick={scrollTo('how')}>{t('k1')}</button>
           <button onClick={() => navigate('/premium')}>{t('k2')}</button>
-          <button onClick={soon}>{t('k3')}</button>
+          <button onClick={scrollTo('faq')}>{t('k3')}</button>
         </nav>
         <LangThemeSwitch />
         <button className={s.loginBtn} onClick={toLogin}>
@@ -110,6 +115,35 @@ export default function Landing() {
               <span>{t(text)}</span>
             </span>
           </div>
+        ))}
+      </section>
+
+      <section id="how" className={s.how}>
+        <h2>{t('k1')}</h2>
+        <ol>
+          {HOW.map(([icon, title, text], i) => (
+            <li key={title} className={s.feature}>
+              <span className={s.featureIcon}>
+                <Icon name={icon} size={21} />
+              </span>
+              <span className={s.featureText}>
+                <b>
+                  {i + 1}. {t(title)}
+                </b>
+                <span>{t(text)}</span>
+              </span>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section id="faq" className={s.faq}>
+        <h2>{t('k3')}</h2>
+        {FAQ.map((k) => (
+          <details key={k}>
+            <summary>{t(`${k}Q`)}</summary>
+            <p>{t(`${k}A`)}</p>
+          </details>
         ))}
       </section>
     </div>

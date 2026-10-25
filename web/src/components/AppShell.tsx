@@ -64,6 +64,19 @@ export default function AppShell() {
   // Close the mobile menu after navigating.
   useEffect(() => setOpen(false), [location.pathname, location.search]);
 
+  // Shortcuts (listed in Settings › Keyboard shortcuts): Ctrl / ⌘ U uploads a PDF, Ctrl / ⌘ J opens the assistant.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (!(e.ctrlKey || e.metaKey) || e.shiftKey || e.altKey) return;
+      const k = e.key.toLowerCase();
+      if (k !== 'u' && k !== 'j') return;
+      e.preventDefault();
+      navigate(k === 'u' ? '/upload' : '/assistant');
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [navigate]);
+
   // Once per visit: signed out from another device → back to login; account full → choose a device.
   useEffect(() => {
     if (!currentUser()) return;

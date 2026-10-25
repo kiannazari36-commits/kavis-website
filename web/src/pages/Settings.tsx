@@ -15,7 +15,11 @@ import { useTrial } from '../trial/TrialProvider';
 import DeviceList from '../components/DeviceList';
 import { listDevices, type Device } from '../api/devices';
 import { useAsync } from '../hooks/useAsync';
+import KeysDialog from '../components/KeysDialog';
 import s from './Settings.module.css';
+
+/** Where students write for help (Settings › Help and support). */
+const SUPPORT_EMAIL = 'kavisstudy@gmail.com';
 
 // Design: design/DeskApp.dc.html screen "settings" (web layout: section menu + cards),
 // section contents from design/NewIPad.dc.html "Profil ve ayarlar". "Content language" is new (CLAUDE.md).
@@ -63,6 +67,7 @@ export default function Settings() {
   const { pref, setPref } = useTheme();
   const toast = useToast();
   const navigate = useNavigate();
+  const [keysOpen, setKeysOpen] = useState(false);
   const { settings, patch, setContentLang } = useSettings();
   const { trial } = useTrial();
   const loaded = useAsync(listDevices, []);
@@ -264,7 +269,7 @@ export default function Settings() {
           <section className={s.card}>
             <h2>{t('k150')}</h2>
             <Row title={t('k151')} sub={t(isMac ? 'k162' : 'k152')}>
-              <button className={s.link} onClick={() => toast(t('k165'))}>
+              <button className={s.link} onClick={() => setKeysOpen(true)}>
                 {t('k153')}
               </button>
             </Row>
@@ -325,7 +330,7 @@ export default function Settings() {
               />
             </Row>
             <Row title={t('scheduleT')} sub={t('scheduleS')}>
-              <button className={s.ghost} onClick={() => toast(t('k165'))}>
+              <button className={s.ghost} onClick={() => navigate('/schedule')}>
                 {t('scheduleBtn')}
               </button>
             </Row>
@@ -390,12 +395,13 @@ export default function Settings() {
               <b>{t('helpT')}</b>
               <span>{t('helpS')}</span>
             </span>
-            <button className={s.ghost} onClick={() => toast(t('k165'))}>
+            <button className={s.ghost} onClick={() => navigate('/notifications')}>
               {t('notifsBtn')}
             </button>
-            <button className={s.ghost} onClick={() => toast(t('k165'))}>
+            {/* Support by e-mail: opens the mail app with the address and a subject. */}
+            <a className={s.ghost} href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(t('supportSubject'))}`}>
               {t('supportBtn')}
-            </button>
+            </a>
           </section>
         </div>
       </div>
@@ -447,6 +453,7 @@ export default function Settings() {
           </section>
         </div>
       )}
+    {keysOpen && <KeysDialog onClose={() => setKeysOpen(false)} />}
     </main>
   );
 }

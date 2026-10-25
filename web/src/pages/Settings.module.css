@@ -589,3 +589,8 @@
   line-height: 1.45;
   color: var(--text2);
 }
+
+a.ghost {
+  text-decoration: none;
+  color: var(--text);
+}

@@ -353,8 +353,9 @@ export default function Reader() {
     }, 80);
   };
   const nextSection = () => {
+    // After the last section: the course's exam summary ("Sınava özel özet").
     if (sec >= doc.sections.length - 1) {
-      toast(t('k165'));
+      navigate(courseId ? `/quiz?course=${courseId}&tab=sum` : '/quiz?tab=sum');
       return;
     }
     goSection(sec + 1);
