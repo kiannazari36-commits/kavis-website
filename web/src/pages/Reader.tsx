@@ -304,9 +304,15 @@ export default function Reader() {
           <button className={`${s.round} ${s.aa}`} aria-label={t('textSize')} onClick={cycleFont}>
             Aa
           </button>
-          <button className={panel ? `${s.round} ${s.roundOn}` : s.round} aria-label={t('panelToggle')} aria-pressed={panel} onClick={() => setPanel(!panel)}>
-            <Icon name="panel" size={19} className="flip-rtl" />
-          </button>
+          {/* The assistant opens beside the page: our round star, like everywhere else. */}
+          <button
+            className={panel ? `star-btn ${s.starOn}` : 'star-btn'}
+            style={{ width: 46, height: 46 }}
+            aria-label={t('panelToggle')}
+            title={t('panelToggle')}
+            aria-pressed={panel}
+            onClick={() => setPanel(!panel)}
+          />
         </header>
 
         <div role="tablist" aria-label={t('sections')} className={s.tabs} lang={doc.language}>
