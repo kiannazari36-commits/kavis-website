@@ -10,6 +10,7 @@ import { addHighlight, getLesson, markRead, saveStudyTime, tapTerm, translate, t
 import { askAssistant, latestThread, type ChatMessage } from '../api/assistant';
 import { sectionCheckCounter } from '../api/quiz';
 import { addTermCard } from '../api/cards';
+import { recordingsOf } from '../api/recording';
 import { canSpeak, speak, stopSpeaking } from '../hooks/speak';
 import { num, percent } from '../i18n/format';
 import { useAsync } from '../hooks/useAsync';
@@ -53,6 +54,9 @@ export default function Reader() {
   const pdfId = params.get('pdf') ?? '';
   const lesson = useAsync(() => (pdfId ? getLesson(pdfId) : Promise.resolve(null)), [pdfId]);
   const pdfInfo = useAsync(() => getPdf(courseId, pdfId), [courseId, pdfId]);
+  // The lecture recording of this lesson, if there is one (button "Ses kaydı" in the header).
+  const recordings = useAsync(() => (pdfId ? recordingsOf(pdfId) : Promise.resolve([])), [pdfId]);
+  const recording = recordings?.find((r) => r.status === 'ready') ?? recordings?.[0];
   const checkCount = useAsync(() => (pdfId ? sectionCheckCounter(pdfId) : Promise.resolve({ count: () => 0 })), [pdfId]);
   const doc = lesson?.doc;
   const [pagesRead, setPagesRead] = useState<number[] | null>(null);
@@ -255,6 +259,14 @@ export default function Reader() {
               </button>
             ))}
           </div>
+          <button
+            className={s.round}
+            aria-label={t(recording ? 'recAudio' : 'rec_title')}
+            title={t(recording ? 'recAudio' : 'rec_title')}
+            onClick={() => navigate(recording ? `/recording?id=${recording.id}` : `/record?pdf=${pdfId}`)}
+          >
+            <Icon name="mic" size={20} />
+          </button>
           <button className={s.round} aria-label={t('share')} onClick={() => guard('share', () => setShareOpen(true))}>
             <Icon name="share" size={19} />
           </button>

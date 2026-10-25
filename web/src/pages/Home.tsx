@@ -38,7 +38,7 @@ export default function Home() {
   const recent = useAsync(() => recentPdfs(3), []) ?? [];
   const firstName = profile?.name.split(' ')[0] ?? '';
   const navigate = useNavigate();
-  // PDF and photos open the upload screen; recordings and questions come later.
+  // PDF, photos and recordings open their screens; question samples come later.
   const upload = (to: string | null) => guard('pdf', () => (to ? navigate(to) : toast(t('k165'))));
   const { settings } = useSettings();
   const review = useAsync(getTodayReview, []);
@@ -75,7 +75,7 @@ export default function Home() {
   const uploads: [IconName, string, string | null][] = [
     ['upload', 'k33', '/upload'],
     ['camera', 'k69', '/upload?mode=photo'],
-    ['mic', 'k70', null],
+    ['mic', 'k70', '/record'],
     ['help', 'k71', null],
   ];
   const tools: [IconName, string, string, string, string][] = [

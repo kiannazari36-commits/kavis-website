@@ -412,3 +412,34 @@
   opacity: 0.35;
   cursor: default;
 }
+
+/* Recording: file or live, and what we prepare */
+.recBtns {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.recWhat {
+  align-self: stretch;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: start;
+  font-size: 14px;
+}
+
+.recWhat li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recWhat svg {
+  flex: none;
+  color: var(--good);
+}

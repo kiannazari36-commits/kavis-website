@@ -1,0 +1,280 @@
+.main {
+  padding: 28px 32px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 1200px;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.round {
+  width: 48px;
+  height: 48px;
+  flex: none;
+  border-radius: 24px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.headText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.headText h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.headText span {
+  font-size: 13px;
+  color: var(--text2);
+}
+
+.note,
+.warn {
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.note {
+  background: var(--amb-soft);
+}
+
+.warn {
+  background: var(--bad-soft);
+  color: var(--bad);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px 22px;
+  border-radius: 26px;
+  background: var(--card);
+  border: 1px solid var(--line);
+}
+
+.card h2 {
+  margin: 0 0 4px;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.audio {
+  width: 100%;
+}
+
+.speeds {
+  display: flex;
+  gap: 8px;
+}
+
+.speeds button {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.speeds .on {
+  background: var(--pri);
+  border-color: var(--pri);
+  color: #fffcf6;
+}
+
+.muted,
+.small {
+  color: var(--text2);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.quote {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.tagExam,
+.tagStress {
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tagExam {
+  background: var(--pri-soft);
+  color: var(--pri-t);
+}
+
+.tagStress {
+  background: var(--amb-soft);
+  color: var(--amb-t);
+}
+
+.quoteText {
+  font-family: Lora, serif;
+  font-size: 14.5px;
+  line-height: 1.5;
+}
+
+.time {
+  font-size: 12px;
+  color: var(--text2);
+}
+
+.topic {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.topicText {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.topicText span {
+  color: var(--text2);
+  font-size: 12.5px;
+  text-align: end;
+}
+
+.barBg {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--sub);
+  overflow: hidden;
+}
+
+.bar,
+.barExam {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: var(--amb);
+}
+
+.barExam {
+  background: var(--pri);
+}
+
+.examBtn {
+  align-self: flex-start;
+  margin-top: 6px;
+  padding: 12px 20px;
+  border-radius: 999px;
+  background: var(--pri);
+  color: #fffcf6;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.textCard {
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+}
+
+.pageTag {
+  display: inline-block;
+  margin: 8px 0 4px;
+  padding: 4px 10px;
+  border-radius: 10px;
+  background: var(--sub);
+  color: var(--text2);
+  font-size: 11px;
+  text-decoration: none;
+}
+
+.line {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-family: Lora, serif;
+  font-size: 15px;
+  line-height: 1.55;
+  text-align: start;
+  cursor: pointer;
+}
+
+.line:hover {
+  background: var(--sub);
+}
+
+.lineOn {
+  background: var(--amb-soft);
+}
+
+.line .time {
+  flex: none;
+  padding-top: 3px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+@media (max-width: 900px) {
+  .main {
+    padding: 20px 16px 60px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .textCard {
+    max-height: none;
+  }
+}
