@@ -656,3 +656,25 @@
     height: 42px;
   }
 }
+
+/* Web pages used by an "AI + research" answer */
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12.5px;
+  white-space: normal;
+}
+
+.links .mono {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text2);
+}
+
+.links a {
+  color: var(--pri-t);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

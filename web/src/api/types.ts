@@ -57,7 +57,8 @@ export type ReaderBlock = {
 export type ReaderSection = { title: string; blocks: ReaderBlock[] };
 
 /** The reading page (material_content.reader_doc). The teacher's text is never changed. */
-export type ReaderDoc = { language: string; sections: ReaderSection[] };
+/** grouped: the server already checked the sections (Edge group-sections). */
+export type ReaderDoc = { language: string; grouped?: boolean; sections: ReaderSection[] };
 
 /** A hard word of the lesson (material_terms); explanation per app language. */
 export type ReaderTerm = {

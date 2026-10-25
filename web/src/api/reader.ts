@@ -31,7 +31,7 @@ export async function getLesson(materialId: string): Promise<Lesson> {
   ]);
   for (const r of [content, terms, progress, notes]) if (r.error) console.error('getLesson', r.error);
   return {
-    doc: content.data?.reader_doc ?? null,
+    doc: await groupedDoc(materialId, content.data?.reader_doc ?? null),
     terms: Object.fromEntries(
       (terms.data ?? []).map((t) => [t.term_key, { id: t.id, surface: t.surface, page: t.page, explanation: t.explanation } as ReaderTerm]),
     ),
@@ -40,6 +40,20 @@ export async function getLesson(materialId: string): Promise<Lesson> {
     percent: progress.data?.percent_read ?? 0,
     highlights: (notes.data ?? []).map((n) => (n.anchor as { text?: string }).text ?? '').filter(Boolean),
   };
+}
+
+/**
+ * A lesson cut into too many small sections (about one per page) is grouped once into a few general parts by the
+ * server (Edge group-sections); the reader waits a few seconds the first time. Same rule as the server's lib.ts.
+ */
+async function groupedDoc(materialId: string, doc: ReaderDoc | null): Promise<ReaderDoc | null> {
+  if (!doc || doc.grouped || !doc.sections.length) return doc;
+  const pages = new Set(doc.sections.flatMap((s) => s.blocks.map((b) => b.pageFrom))).size;
+  if (doc.sections.length <= Math.max(4, Math.ceil(pages / 8))) return doc;
+  const { data, error } = await supabase.functions.invoke('group-sections', { body: { material_id: materialId } });
+  if (error || !(data as { grouped: boolean }).grouped) return doc;
+  const again = await supabase.from('material_content').select('reader_doc').eq('material_id', materialId).maybeSingle<{ reader_doc: ReaderDoc }>();
+  return again.data?.reader_doc ?? doc;
 }
 
 /** Marks pages as read; returns the new percent. */

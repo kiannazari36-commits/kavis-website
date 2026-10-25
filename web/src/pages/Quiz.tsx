@@ -51,6 +51,8 @@ export default function Quiz() {
   const [picked, setPicked] = useState<string | null>(params.get('course'));
   const courseId = picked ?? chips.find((c) => ready?.includes(c.id))?.id ?? chips[0]?.id ?? '';
   const pdfId = params.get('pdf') ?? '';
+  // Back to the lesson: after a section check, the next section of the same lesson.
+  const lessonUrl = pdfId ? `/reader?course=${params.get('course') ?? ''}&pdf=${pdfId}${params.get('next') ? `&sec=${params.get('next')}` : ''}` : '/reader';
   const [made, setMade] = useState(0);
   const pack = useAsync(() => (courseId ? getExamPack(courseId) : Promise.resolve(null)), [courseId, made]);
   const [making, setMaking] = useState(false);
@@ -194,7 +196,7 @@ export default function Quiz() {
   return (
     <main className={s.main}>
       <div className={s.head}>
-        <button className={s.round} aria-label={t('back')} onClick={() => navigate(fromReader ? '/reader' : '/home')}>
+        <button className={s.round} aria-label={t('back')} onClick={() => (fromReader ? navigate(-1) : navigate('/home'))}>
           <Icon name="back" size={20} width={1.8} className="flip-rtl" />
         </button>
         <span className={s.titleBox}>
@@ -419,7 +421,7 @@ export default function Quiz() {
             <span className={s.scoreMsg}>
               {(wrongs.length === 0 ? t('allGood') : num(wrongs.length, lang) + t('wrongsA')) + (hintedRight ? ' ' + num(hintedRight, lang) + t('hintedA') : '')}
             </span>
-            <button className={s.cont} onClick={() => (navigate('/reader'), !fromReader && toast(t('continueToast')))}>
+            <button className={s.cont} onClick={() => (navigate(lessonUrl), !fromReader && toast(t('continueToast')))}>
               {t(fromReader ? 'continueNext' : 'continueLesson')}
               <Icon name="send" size={16} className="flip-rtl" />
             </button>

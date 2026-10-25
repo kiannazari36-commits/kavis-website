@@ -7,7 +7,8 @@ import Icon from '../components/Icon';
 import Wordmark from '../components/Wordmark';
 import { getPdf, recentPdfs } from '../api/courses';
 import { addHighlight, getLesson, markRead, saveStudyTime, tapTerm, translate, type TranslationStyle } from '../api/reader';
-import { askAssistant, latestThread, type ChatMessage } from '../api/assistant';
+import { askAssistant, latestThread, type ChatMessage, type SourceMode } from '../api/assistant';
+import WebLinks from '../components/WebLinks';
 import { useVoice, VOICE_FAIL, voicePlaceholder } from '../speech/useVoice';
 import MicButton from '../components/MicButton';
 import { sectionCheckCounter } from '../api/quiz';
@@ -89,7 +90,8 @@ export default function Reader() {
   const [paper, setPaper] = useState<Paper | null>(null);
   // Default paper comes from Settings; in dark mode the dark paper is used.
   const paperNow: Paper = paper ?? (theme === 'dark' ? 'dark' : settings.readerPaper);
-  const [sec, setSec] = useState(1);
+  // ?sec= opens a section (coming back from the section check); otherwise the first one.
+  const [sec, setSec] = useState(() => Math.max(0, Number(params.get('sec')) || 0));
   const [fontI, setFontI] = useState(0);
   // Assistant panel: remembered; without a saved choice open only on wide screens.
   const [panel, setPanel] = usePanelPref('kavis.readerPanel', 1200);
@@ -432,7 +434,7 @@ export default function Reader() {
                   <b>{t('checkTitle').replace('{n}', num(checkN, lang))}</b>
                   <span>{sectionEnd}</span>
                 </span>
-                <button className={s.checkGo} onClick={() => navigate(`/quiz?from=reader&course=${courseId}&pdf=${pdfId}&pf=${pageFrom}&pt=${pageTo}`)}>
+                <button className={s.checkGo} onClick={() => navigate(`/quiz?from=reader&course=${courseId}&pdf=${pdfId}&pf=${pageFrom}&pt=${pageTo}&next=${sec_ + 1}`)}>
                   {t('start')}
                 </button>
                 <button className={s.checkNext} onClick={nextSection}>
@@ -517,6 +519,15 @@ export default function Reader() {
           <button aria-label={t('cardsLabel')} title={t('cardsLabel')} onClick={() => navigate(`/cards?pdf=${pdfId}`)}>
             <Icon name="cards" size={20} />
           </button>
+          {focus && (
+            <button
+              className={panel ? `star-btn ${s.dockStar} ${s.starOn}` : `star-btn ${s.dockStar}`}
+              aria-label={t('panelToggle')}
+              title={t('panelToggle')}
+              aria-pressed={panel}
+              onClick={() => setPanel(!panel)}
+            />
+          )}
           <button
             aria-label={focus ? t('exitFullScreen') : t('fullScreen')}
             title={focus ? t('exitFullScreen') : t('fullScreen')}
@@ -545,7 +556,7 @@ export default function Reader() {
         )}
       </main>
 
-      {panel && !focus && (
+      {panel && (
         <AssistantPanel materialId={pdfId} title={title} pages={[pageFrom, pageTo]} asked={asked} onClose={() => setPanel(false)} />
       )}
 
@@ -881,6 +892,8 @@ function AssistantPanel({ materialId, title, pages, asked, onClose }: PanelProps
   const [live, setLive] = useState('');
   const writing = live.length > 0;
   const [quick, setQuick] = useState(false);
+  // "Sadece PDF'lerim" or "Yapay zekâ + araştırma" (the lesson first, then the web).
+  const [mode, setMode] = useState<SourceMode>('pdf');
   const { guard } = useTrial();
   const voice = useVoice(lang, (text) => setDraft((d) => (d ? `${d} ${text}` : text)), (why) => toast(t(VOICE_FAIL[why])));
   const end = useRef<HTMLDivElement>(null);
@@ -899,12 +912,12 @@ function AssistantPanel({ materialId, title, pages, asked, onClose }: PanelProps
     }
     if (waiting) return;
     guard('question', async () => {
-      setMine((m) => [...m, { id: crypto.randomUUID(), role: 'user', text: q, mode: 'pdf', sources: [], outsidePdf: false }]);
+      setMine((m) => [...m, { id: crypto.randomUUID(), role: 'user', text: q, mode, sources: [], links: [], outsidePdf: false }]);
       setDraft('');
       setQuick(false);
       setWaiting(true);
       setLive('');
-      const r = await askAssistant(q, { materialId, threadId: threadId ?? thread?.id ?? null, mode: 'pdf', lang, pages }, setLive);
+      const r = await askAssistant(q, { materialId, threadId: threadId ?? thread?.id ?? null, mode, lang, pages }, setLive);
       setWaiting(false);
       setLive('');
       if ('error' in r) return toast(t({ locked: 'trialQFull', budget: 'askBudget', declined: 'askDeclined', other: 'askFailed' }[r.error]));
@@ -936,7 +949,15 @@ function AssistantPanel({ materialId, title, pages, asked, onClose }: PanelProps
           <Icon name="close" size={16} />
         </button>
       </div>
-      <span className={s.only}>{t('onlyFrom').replace('{lesson}', title)}</span>
+      <span className={s.only}>{t(mode === 'ai' ? 'onlyFromAi' : 'onlyFrom').replace('{lesson}', title)}</span>
+      <div role="radiogroup" aria-label={t('sourceLabel2')} className={s.srcSeg}>
+        {(['pdf', 'ai'] as const).map((m) => (
+          <button key={m} role="radio" aria-checked={mode === m} className={mode === m ? s.srcOn : ''} onClick={() => setMode(m)}>
+            <Icon name={m === 'pdf' ? 'file' : 'globe'} size={14} />
+            {t(m === 'pdf' ? 'srcPdf' : 'srcAi')}
+          </button>
+        ))}
+      </div>
 
       <div className={s.chat}>
         {history.map((m) =>
@@ -956,6 +977,7 @@ function AssistantPanel({ materialId, title, pages, asked, onClose }: PanelProps
                     .join(', ')}
                 </span>
               )}
+              <WebLinks links={m.links} className={s.links} />
             </div>
           ),
         )}

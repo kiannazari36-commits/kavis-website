@@ -14,6 +14,8 @@ export type ChatMessage = {
   mode: SourceMode;
   /** "Hipertansiyon · s. 13" — lessons and pages the answer came from. */
   sources: { lesson: string; page: number | null }[];
+  /** Web pages the answer used ("AI + research" searches the web). */
+  links: { url: string; title: string }[];
   outsidePdf: boolean;
 };
 
@@ -49,13 +51,21 @@ export async function latestThread(courseId: string | null, materialId?: string)
   ]);
   if (e2) console.error('assistant_messages', e2);
   const lessons = new Map(courses.flatMap((c) => c.pdfs.map((p) => [p.id, p.title] as const)));
-  type Row = { id: string; role: 'user' | 'assistant'; content: string; source_mode: SourceMode; sources: { material_id?: string; page?: number }[]; outside_pdf: boolean };
+  type Row = {
+    id: string;
+    role: 'user' | 'assistant';
+    content: string;
+    source_mode: SourceMode;
+    sources: { material_id?: string; page?: number; url?: string; title?: string }[];
+    outside_pdf: boolean;
+  };
   const messages = ((data ?? []) as Row[]).map((m) => ({
     id: m.id,
     role: m.role,
     text: m.content,
     mode: m.source_mode,
-    sources: (m.sources ?? []).map((x) => ({ lesson: (x.material_id && lessons.get(x.material_id)) || '', page: x.page ?? null })),
+    sources: (m.sources ?? []).filter((x) => x.material_id).map((x) => ({ lesson: lessons.get(x.material_id!) || '', page: x.page ?? null })),
+    links: (m.sources ?? []).filter((x) => x.url).map((x) => ({ url: x.url!, title: x.title || x.url! })),
     outsidePdf: m.outside_pdf,
   }));
   return { id: thread.id, messages };
@@ -66,10 +76,10 @@ export type AskError = 'locked' | 'budget' | 'declined' | 'other';
 /** A photo of a question for "Soruyu çözdür" (JPEG, base64 without the data: prefix). */
 export type QuestionPhoto = { media_type: 'image/jpeg'; data: string };
 
-/** The answer while it is written: the closing "SOURCES: …" line is the server's, not for the student. */
+/** The answer while it is written: the closing "SOURCES: …" line is the server's, not for the student; no ** bold. */
 const visible = (text: string) => {
   const at = text.indexOf('SOURCES:');
-  return (at < 0 ? text.replace(/\n?S(O(U(R(C(E(S)?)?)?)?)?)?$/, '') : text.slice(0, at)).trimEnd();
+  return (at < 0 ? text.replace(/\n?S(O(U(R(C(E(S)?)?)?)?)?)?$/, '') : text.slice(0, at)).replace(/\*\*/g, '').trimEnd();
 };
 
 /**
@@ -105,7 +115,7 @@ export async function askAssistant(
   }
   if (!res.ok || !res.body) return { error: res.status === 403 ? 'locked' : res.status === 429 ? 'budget' : 'other' };
 
-  type Event = { t?: string; done?: boolean; error?: string; thread_id?: string; answer?: string; sources?: { lesson: string; page: number | null }[]; outside_pdf?: boolean };
+  type Event = { t?: string; done?: boolean; error?: string; thread_id?: string; answer?: string; sources?: { lesson: string; page: number | null }[]; links?: { url: string; title: string }[]; outside_pdf?: boolean };
   const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
   let buffer = '';
   let text = '';
@@ -127,7 +137,7 @@ export async function askAssistant(
       } else if (e.done) {
         return {
           threadId: e.thread_id!,
-          message: { id: crypto.randomUUID(), role: 'assistant', text: e.answer ?? visible(text), mode: where.mode, sources: e.sources ?? [], outsidePdf: !!e.outside_pdf },
+          message: { id: crypto.randomUUID(), role: 'assistant', text: e.answer ?? visible(text), mode: where.mode, sources: e.sources ?? [], links: e.links ?? [], outsidePdf: !!e.outside_pdf },
         };
       }
     }

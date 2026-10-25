@@ -23,4 +23,6 @@ const tail = splitTail('Cevap burada.\nİkinci satır.\nSOURCES: [2, 5, 2] OUTSI
 check('tail split off', tail.answer === 'Cevap burada.\nİkinci satır.' && tail.sources.join() === '2,5' && !tail.outside);
 check('outside yes, empty sources', splitTail('A\nSOURCES: [] OUTSIDE: yes').outside && splitTail('A\nSOURCES: [] OUTSIDE: yes').sources.length === 0);
 check('no tail line', splitTail('Sadece cevap').answer === 'Sadece cevap');
+check('splitTail drops ** bold', splitTail('**Doz:** 4 g\nSOURCES: [] OUTSIDE: yes').answer === 'Doz: 4 g');
+
 if (fails) process.exit(1);

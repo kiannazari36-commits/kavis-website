@@ -57,8 +57,10 @@ export const costUsd = (input: number, output: number, cacheWrite = 0, cacheRead
  */
 export function splitTail(text: string): { answer: string; sources: number[]; outside: boolean } {
   const at = text.lastIndexOf('SOURCES:');
-  if (at < 0) return { answer: text.trim(), sources: [], outside: false };
+  // Bold marks (**) are dropped: the apps show plain text.
+  const plain = (x: string) => x.replace(/\*\*/g, '').trim();
+  if (at < 0) return { answer: plain(text), sources: [], outside: false };
   const tail = text.slice(at);
   const nums = (tail.match(/\[([^\]]*)\]/)?.[1] ?? '').split(/[,\s]+/).map(Number).filter((n) => Number.isInteger(n) && n > 0);
-  return { answer: text.slice(0, at).trim(), sources: [...new Set(nums)], outside: /OUTSIDE:\s*yes/i.test(tail) };
+  return { answer: plain(text.slice(0, at)), sources: [...new Set(nums)], outside: /OUTSIDE:\s*yes/i.test(tail) };
 }

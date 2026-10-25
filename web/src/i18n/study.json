@@ -207,7 +207,8 @@
   "voiceNoMic": "Mikrofona izin verilmedi.",
   "voiceEmpty": "Ses duyulmadı, tekrar dene.",
   "voiceFailed": "Ses yazıya çevrilemedi.",
-  "voiceStop": "Dinlemeyi bitir"
+  "voiceStop": "Dinlemeyi bitir",
+  "webSources": "İNTERNET KAYNAKLARI"
  },
  "en": {
   "heroA": "How can I",
@@ -417,7 +418,8 @@
   "voiceNoMic": "Microphone access was not allowed.",
   "voiceEmpty": "No speech heard, try again.",
   "voiceFailed": "Could not turn the voice into text.",
-  "voiceStop": "Stop listening"
+  "voiceStop": "Stop listening",
+  "webSources": "WEB SOURCES"
  },
  "fa": {
   "heroA": "امروز چطور",
@@ -627,7 +629,8 @@
   "voiceNoMic": "اجازهٔ میکروفون داده نشد.",
   "voiceEmpty": "صدایی شنیده نشد، دوباره امتحان کن.",
   "voiceFailed": "صدا به متن تبدیل نشد.",
-  "voiceStop": "پایان گوش دادن"
+  "voiceStop": "پایان گوش دادن",
+  "webSources": "منابع اینترنتی"
  },
  "ar": {
   "heroA": "كيف يمكنني اليوم",
@@ -837,6 +840,7 @@
   "voiceNoMic": "لم يُسمح بالوصول إلى الميكروفون.",
   "voiceEmpty": "لم يُسمع أي كلام، حاول مرة أخرى.",
   "voiceFailed": "تعذّر تحويل الصوت إلى نص.",
-  "voiceStop": "إيقاف الاستماع"
+  "voiceStop": "إيقاف الاستماع",
+  "webSources": "مصادر من الإنترنت"
  }
 }

@@ -2,12 +2,13 @@
 // POST { question, course_id?, material_id?, mode: 'pdf' | 'ai', thread_id?, lang, page_from?, page_to?,
 //        image?: { media_type, data } }  (image = "Soruyu çözdür": a photo of a question, solved step by step)
 //   → a stream of server-sent events: { t: "text…" } while the answer is written, then
-//     { done: true, thread_id, answer, sources: [{ material_id, lesson, page }], outside_pdf }, or { error }.
+//     { done: true, thread_id, answer, sources: [{ material_id, lesson, page }], links: [{ url, title }], outside_pdf }, or { error }.
 // One chosen lesson (material_id): Claude gets the whole lesson (cached for 5 minutes, so follow-up questions are
 // cheap) and is told which pages are open. Otherwise, or for a very long lesson, it gets the best text pieces (the
 // open pages first, then material_chunks full-text search). Claude Sonnet 5.5 answers; the function saves the
 // thread and both messages, counts a trial question and the AI cost.
-// "AI + research" (mode 'ai') may add general knowledge, marked outside_pdf. Apps never write answers themselves.
+// "AI + research" (mode 'ai') may add general knowledge and search the web (at most 3 searches, ~$0.01 each), marked
+// outside_pdf; the web pages it used come back as links. Apps never write answers themselves.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 import { costUsd, lessonText, queryTerms, rankChunks, splitTail, tsQuery } from './lib.ts';
@@ -18,6 +19,7 @@ const PIECES = 6;
 // About 35,000 tokens: the first question on a lesson costs at most ~$0.09, follow-ups read it from the cache.
 const LESSON_MAX_CHARS = 120_000;
 const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const WEB_SEARCHES = 3;
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -43,7 +45,7 @@ ${
 }
 ${
   mode === 'ai'
-    ? 'Answer mainly from the lesson text you got. If it is not enough, you may add general textbook knowledge; then say briefly which part is not from their PDFs.'
+    ? 'Base your answer on the lesson text you got. When it is not enough, or the student asks for more or newer information, search the web (reliable medical and academic sources first) and add what you found; say briefly which part is not from their PDFs.'
     : 'Answer ONLY from the lesson text you got. If it does not contain the answer, say clearly (in one or two sentences) that you could not find it in their lessons and suggest what to look for; do not use outside knowledge.'
 }
 If the student is reading a lesson now, you are told which pages are open; "this page", "this topic", "explain this" mean those pages. They may still ask about any other page of the lesson.
@@ -52,7 +54,7 @@ ${
     ? 'The student sends a photo of an exam question. Solve it step by step (numbered steps, short), say which option is right and why the others are not, and point to where it is in their lessons.'
     : 'Be short and clear: 2-6 sentences or a few bullet points. Explain simply, like a good classmate.'
 }
-Write in the language of the student's question (if unclear: ${LANG_NAMES[lang] ?? 'Turkish'}), plain text without markdown headings; never mention which language you use.
+Write in the language of the student's question (if unclear: ${LANG_NAMES[lang] ?? 'Turkish'}), plain text without markdown (no headings, no ** bold); never mention which language you use.
 End with one last line exactly like: SOURCES: [2, 5] OUTSIDE: no
 — ${whole ? 'the page numbers you used' : 'the excerpt numbers you used'} (empty [] if none), and OUTSIDE: yes only if you added general knowledge.`;
 
@@ -87,7 +89,7 @@ Deno.serve(async (req) => {
   if (use && Number(use.cost_usd) >= MONTHLY_BUDGET_USD) return json({ error: 'budget' }, 429);
 
   const client = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')!.trim() });
-  const usage = { input: 0, output: 0, cacheWrite: 0, cacheRead: 0 };
+  const usage = { input: 0, output: 0, cacheWrite: 0, cacheRead: 0, searches: 0 };
 
   // A photo of a question: first its text (to find the right lesson pages), then the solution below.
   if (image) {
@@ -167,6 +169,7 @@ Deno.serve(async (req) => {
     betas: ['server-side-fallback-2026-07-01'],
     fallbacks: 'default',
     output_config: { effort: 'low' },
+    ...(mode === 'ai' ? { tools: [{ type: 'web_search_20260209', name: 'web_search', max_uses: WEB_SEARCHES }] } : {}),
     system: [
       { type: 'text', text: system(mode, lang, !!whole, !!image) },
       // The lesson text is the same for every question on this lesson, so it is cached.
@@ -199,15 +202,26 @@ Deno.serve(async (req) => {
         usage.output += res.usage.output_tokens;
         usage.cacheWrite += res.usage.cache_creation_input_tokens ?? 0;
         usage.cacheRead += res.usage.cache_read_input_tokens ?? 0;
-        const full = res.content.filter((b) => b.type === 'text').map((b) => (b as { text: string }).text).join('');
+        // Web searches cost $10 per 1,000.
+        usage.searches += res.usage.server_tool_use?.web_search_requests ?? 0;
+        type Page = { url?: string; title?: string };
+        type Block = { type: string; text?: string; citations?: Page[] | null; content?: Page[] | { error_code: string } };
+        const blocks = res.content as Block[];
+        const full = blocks.filter((b) => b.type === 'text').map((b) => b.text ?? '').join('');
+        // The web pages the answer cites (mode 'ai'), each once; without citations, the first pages the search found.
+        const cited = blocks.flatMap((b) => b.citations ?? []);
+        const found = blocks.filter((b) => b.type === 'web_search_tool_result' && Array.isArray(b.content)).flatMap((b) => b.content as Page[]);
+        const links = [
+          ...new Map((cited.some((c) => c.url) ? cited : found.slice(0, 3)).filter((c) => c.url).map((c) => [c.url!, { url: c.url!, title: c.title || c.url! }])).values(),
+        ].slice(0, 5);
         const out = splitTail(full);
         const used: { material_id: string; page: number | null }[] = whole
           ? out.sources.filter((n) => lessonPages.includes(n)).sort((a, b) => a - b).map((page) => ({ material_id: materialId!, page }))
           : out.sources.map((n) => pieces[n - 1]).filter(Boolean).map((p) => ({ material_id: p.material_id, page: p.page }));
-        const outside = mode === 'ai' && out.outside;
-        const saved = await save(db, uid, threadId, courseId, materialId, question, out.answer, mode, used, outside);
+        const outside = mode === 'ai' && (out.outside || links.length > 0);
+        const saved = await save(db, uid, threadId, courseId, materialId, question, out.answer, mode, [...used, ...links], outside);
         await count(db, uid, month, usage);
-        send({ done: true, thread_id: saved, answer: out.answer, sources: used.map((p) => ({ ...p, lesson: titles.get(p.material_id) ?? '' })), outside_pdf: outside });
+        send({ done: true, thread_id: saved, answer: out.answer, sources: used.map((p) => ({ ...p, lesson: titles.get(p.material_id) ?? '' })), links, outside_pdf: outside });
       } catch (e) {
         console.error('assistant', e);
         send({ error: 'ai' });
@@ -228,7 +242,7 @@ async function save(
   question: string,
   answer: string,
   mode: string,
-  sources: { material_id: string; page: number | null }[],
+  sources: ({ material_id: string; page: number | null } | { url: string; title: string })[],
   outside: boolean,
 ) {
   if (!threadId) {
@@ -251,7 +265,7 @@ async function save(
 }
 
 /** A trial question (not for Premium) and the month's AI cost. */
-async function count(db: SupabaseClient, uid: string, month: string, u: { input: number; output: number; cacheWrite: number; cacheRead: number }) {
+async function count(db: SupabaseClient, uid: string, month: string, u: { input: number; output: number; cacheWrite: number; cacheRead: number; searches: number }) {
   const { data: premium } = await db.rpc('is_premium', { uid });
   if (!premium) {
     const { data: t } = await db.from('trial_usage').select('assistant_questions').eq('user_id', uid).maybeSingle();
@@ -263,7 +277,7 @@ async function count(db: SupabaseClient, uid: string, month: string, u: { input:
     month,
     input_tokens: Number(m?.input_tokens ?? 0) + u.input + u.cacheWrite + u.cacheRead,
     output_tokens: Number(m?.output_tokens ?? 0) + u.output,
-    cost_usd: Number(m?.cost_usd ?? 0) + costUsd(u.input, u.output, u.cacheWrite, u.cacheRead),
+    cost_usd: Number(m?.cost_usd ?? 0) + costUsd(u.input, u.output, u.cacheWrite, u.cacheRead) + u.searches * 0.01,
     assistant_questions: Number(m?.assistant_questions ?? 0) + 1,
   });
 }
