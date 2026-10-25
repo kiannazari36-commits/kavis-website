@@ -732,7 +732,18 @@ function TranslateDialog({ doc, materialId, source, page, onClose }: { doc: Read
   const [target, setTarget] = useState<Lang>(targets.includes(lang) ? lang : targets[0]);
   const { settings } = useSettings();
   const [style, setStyle] = useState<TranslationStyle>(settings.translationStyle);
-  const text = useAsync(() => translate(materialId, source, target, style), [source, target, style]);
+  // The translation of the chosen language and style; a new choice shows "Çevriliyor…" until its own text comes
+  // (a new one is made by the AI and takes a few seconds), never the previous language's text.
+  const key = `${target}|${style}|${source}`;
+  const [done, setDone] = useState<{ key: string; text: Awaited<ReturnType<typeof translate>> } | null>(null);
+  useEffect(() => {
+    let alive = true;
+    translate(materialId, source, target, style).then((r) => alive && setDone({ key, text: r }));
+    return () => {
+      alive = false;
+    };
+  }, [materialId, source, target, style, key]);
+  const text = done?.key === key ? done.text : undefined;
   const dir = dirOf(target);
 
   return (
