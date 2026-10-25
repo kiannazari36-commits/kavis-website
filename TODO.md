@@ -114,7 +114,7 @@ Everything that is not finished yet. Updated after every step.
 
 ## Web app — not built yet
 - [x] Upload screen for PDF (`/upload`, design ScrUpload) — [ ] photo and audio recording still "coming soon"
-- [ ] Onboarding after sign-up (language, plan days/hours, courses)
+- [x] Onboarding after sign-up on the web (25 Oct 2026, `/welcome`, until `profiles.onboarding_done`): language, school + department + class year, weekly plan (days, hours), this term's courses (suggestions per department in `web/src/api/onboarding.ts` + typed). "Ders ekle" on My Courses makes a course. Later: fill `course_catalog` per department and year; the 3 intro cards of the phone design are not on the web
 - [ ] Help & live support chat
 - [ ] Live audio lesson, "Let me explain" (teach-back), solve a question photo
 - [ ] Pen / handwritten notes on the PDF, full PDF page view

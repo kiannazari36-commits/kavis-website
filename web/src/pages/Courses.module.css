@@ -281,3 +281,24 @@
     min-height: 160px;
   }
 }
+
+/* "Ders ekle": name of the new course */
+.newCourse {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.newCourse input {
+  flex: 1;
+  min-width: 200px;
+  height: 46px;
+  padding: 0 18px;
+  border-radius: 23px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+}

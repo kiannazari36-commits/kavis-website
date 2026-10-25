@@ -25,6 +25,7 @@ import Record from './pages/Record';
 import Recording from './pages/Recording';
 import Samples from './pages/Samples';
 import Admin from './pages/Admin';
+import Welcome from './pages/Welcome';
 import Paywall from './pages/Paywall';
 import DeviceLimit from './pages/DeviceLimit';
 import ShareLink from './pages/ShareLink';
@@ -41,6 +42,7 @@ export default function App() {
                 <Routes>
                   <Route path="/" element={<Landing />} />
                   <Route path="/login" element={<Login />} />
+                  <Route path="/welcome" element={<Welcome />} />
                   {/* Pages with the sidebar */}
                   <Route element={<AppShell />}>
                     <Route path="/home" element={<Home />} />

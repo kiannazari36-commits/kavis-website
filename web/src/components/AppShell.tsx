@@ -5,6 +5,7 @@ import { useTheme } from '../theme/ThemeProvider';
 import { listCourses } from '../api/courses';
 import { currentUser, logOut } from '../api/auth';
 import { cancelDeletion, clearProfile, DELETION_EVENT, deletionDate, getProfile } from '../api/account';
+import { needsOnboarding } from '../api/onboarding';
 import { useToast } from './Toast';
 import { checkThisDevice, signOutThisDevice } from '../api/devices';
 import { studyLine } from '../i18n/format';
@@ -72,6 +73,8 @@ export default function AppShell() {
         navigate('/login?mode=login', { replace: true });
       } else if (full) navigate('/devices', { replace: true });
     });
+    // A new account first answers the welcome steps (school, department, plan, courses).
+    needsOnboarding().then((n) => n && navigate('/welcome', { replace: true }));
   }, [navigate]);
 
   // App pages need a signed-in student.

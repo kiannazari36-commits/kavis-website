@@ -1,4 +1,4 @@
-import { useState, type DragEvent } from 'react';
+import { useState, type DragEvent, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useI18n } from '../i18n/I18nProvider';
 import { duration, examLabel, pdfCount, percent, rank, termSummary } from '../i18n/format';
@@ -7,6 +7,7 @@ import TopBar from '../components/TopBar';
 import Icon from '../components/Icon';
 import { COURSE_COLOR } from '../components/courseColors';
 import { courseStats, daysUntil, listCourses } from '../api/courses';
+import { createCourses } from '../api/onboarding';
 import { useAsync } from '../hooks/useAsync';
 import type { Course } from '../api/types';
 import { useTrial } from '../trial/TrialProvider';
@@ -37,7 +38,11 @@ export default function Courses() {
   const q = (params.get('q') ?? '').toLocaleLowerCase(lang);
   const [filter, setFilter] = useState<Filter>('all');
   const [dragOver, setDragOver] = useState(false);
-  const courses = useAsync(listCourses, []);
+  const [reload, setReload] = useState(0);
+  const courses = useAsync(listCourses, [reload]);
+  // "Ders ekle": a name box above the list; a new folder is made for the course.
+  const [adding, setAdding] = useState(false);
+  const [newName, setNewName] = useState('');
 
   const all = courses ?? [];
   const shown = all.filter(matches[filter]).filter(
@@ -46,7 +51,18 @@ export default function Courses() {
   const totalPdfs = all.reduce((a, c) => a + c.pdfs.length, 0);
   const totalHours = Math.round(all.reduce((a, c) => a + courseStats(c).minutes, 0) / 60);
 
-  const addCourse = () => toast(t('k165'));
+  const addCourse = () => setAdding(true);
+  const saveCourse = async (e: FormEvent) => {
+    e.preventDefault();
+    const name = newName.trim();
+    if (!name) return toast(t('wel_needName'));
+    if (all.some((c) => c.name.toLocaleLowerCase(lang) === name.toLocaleLowerCase(lang))) return toast(t('wel_exists'));
+    await createCourses([name]);
+    setNewName('');
+    setAdding(false);
+    setReload((n) => n + 1);
+    toast(t('wel_added').replace('{x}', name));
+  };
   const onDrop = (e: DragEvent) => {
     e.preventDefault();
     setDragOver(false);
@@ -77,6 +93,17 @@ export default function Courses() {
           {t('k107')}
         </button>
       </div>
+      {adding && (
+        <form className={s.newCourse} onSubmit={saveCourse}>
+          <input autoFocus value={newName} onChange={(e) => setNewName(e.target.value)} placeholder={t('wel_coursePh')} aria-label={t('wel_courseName')} />
+          <button type="submit" className={s.add}>
+            {t('wel_addShort')}
+          </button>
+          <button type="button" className={s.chip} onClick={() => (setAdding(false), setNewName(''))}>
+            {t('schCancel')}
+          </button>
+        </form>
+      )}
 
       <div className={s.grid}>
         {shown.map((c) => {
