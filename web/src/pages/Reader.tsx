@@ -47,6 +47,9 @@ const TAGS: Record<ReaderTag, [string, 'vio' | 'red']> = {
 /** Pen colors: bordo, amber, green, blue. */
 const PEN_COLORS = ['#9C2F3A', '#E0A12A', '#2F7D5B', '#2F5D9C'];
 
+/** The study timer stops by itself after this long without any activity. */
+const IDLE_MS = 5 * 60 * 1000;
+
 const blockPages = (b: ReaderBlock) => Array.from({ length: b.pageTo - b.pageFrom + 1 }, (_, i) => b.pageFrom + i);
 
 export default function Reader() {
@@ -127,18 +130,60 @@ export default function Reader() {
   const { guard } = useTrial();
   const { focus, setFocus } = useOutletContext<ShellContext>();
 
-  // Study timer
+  // Study timer. It counts real time (not timer ticks, which browsers slow down), and only while the student is
+  // studying: it stops by itself when the tab is hidden, and after 5 minutes without any touch, key or scroll
+  // (reading aloud counts as studying); any activity starts it again.
+  const [hidden, setHidden] = useState(() => document.visibilityState === 'hidden');
+  const [idle, setIdle] = useState(false);
+  const lastActive = useRef(Date.now());
+  const counted = useRef(seconds * 1000);
+  const lastTick = useRef(Date.now());
+  const running = !paused && !hidden && !idle;
   useEffect(() => {
-    if (paused) return;
-    const id = setInterval(() => setSeconds((n) => n + 1), 1000);
+    const onVisible = () => setHidden(document.visibilityState === 'hidden');
+    const onActive = () => {
+      lastActive.current = Date.now();
+      setIdle(false);
+    };
+    const events = ['pointermove', 'pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'] as const;
+    document.addEventListener('visibilitychange', onVisible);
+    events.forEach((e) => window.addEventListener(e, onActive, { capture: true, passive: true }));
+    return () => {
+      document.removeEventListener('visibilitychange', onVisible);
+      events.forEach((e) => window.removeEventListener(e, onActive, { capture: true }));
+    };
+  }, []);
+  useEffect(() => {
+    lastTick.current = Date.now();
+    const id = setInterval(() => {
+      const now = Date.now();
+      // At most 5 s at once: a computer waking from sleep must not add the time it slept.
+      const step = Math.min(now - lastTick.current, 5000);
+      lastTick.current = now;
+      if (!window.speechSynthesis?.speaking && now - lastActive.current > IDLE_MS) {
+        setIdle(true);
+        return;
+      }
+      if (!running) return;
+      counted.current += step;
+      setSeconds(Math.floor(counted.current / 1000));
+    }, 500);
     return () => clearInterval(id);
-  }, [paused]);
+  }, [running]);
+  // Coming back after being away: tell once why the clock stood still.
+  const wasIdle = useRef(false);
+  useEffect(() => {
+    if (idle && !wasIdle.current) toast(t('clockIdle'));
+    wasIdle.current = idle;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idle]);
 
   // The clock shows today's time on this lesson: leaving and coming back goes on from where it was (also paused).
   // Leaving saves the new study time; less than a minute waits until the next visit.
   useEffect(() => {
     const saved = loadClock(pdfId);
     setSeconds(saved.seconds);
+    counted.current = saved.seconds * 1000;
     setPaused(saved.paused);
     let start = saved.seconds;
     let pending = saved.pending;
@@ -429,7 +474,12 @@ export default function Reader() {
           </div>
         )}
         <div className={s.dock}>
-          <button className={s.clock} aria-label={paused ? t('resume') : t('pause')} onClick={() => setPaused(!paused)}>
+          <button
+            className={running ? s.clock : `${s.clock} ${s.clockStill}`}
+            aria-label={paused ? t('resume') : t('pause')}
+            title={paused ? t('resume') : idle ? t('clockIdle') : t('pause')}
+            onClick={() => setPaused(!paused)}
+          >
             <span className="mono">{clock}</span>
             <span className={s.clockIcon}>
               <Icon name={paused ? 'play' : 'pause'} size={14} width={2.2} />

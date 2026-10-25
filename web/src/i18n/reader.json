@@ -128,7 +128,8 @@
   "penOn": "Kalem açık · sayfanın üstüne çiz; çizimler kaydedilir",
   "penUndo": "Geri al",
   "penDone": "Bitti",
-  "penNothing": "Geri alınacak çizim yok"
+  "penNothing": "Geri alınacak çizim yok",
+  "clockIdle": "5 dakikadır hareket yok · sayaç durdu, devam edince yeniden başlar"
  },
  "en": {
   "pageInfo": "PHARMACOTHERAPY · PAGE 12/48 · 25%",
@@ -259,7 +260,8 @@
   "penOn": "Pen on · draw over the page; drawings are saved",
   "penUndo": "Undo",
   "penDone": "Done",
-  "penNothing": "Nothing to undo"
+  "penNothing": "Nothing to undo",
+  "clockIdle": "No activity for 5 minutes · the timer stopped and starts again when you continue"
  },
  "fa": {
   "pageInfo": "دارودرمانی · صفحه 12/48 · 25%",
@@ -390,7 +392,8 @@
   "penOn": "قلم روشن است · روی صفحه بکش؛ نقاشی‌ها ذخیره می‌شوند",
   "penUndo": "برگرداندن",
   "penDone": "تمام",
-  "penNothing": "چیزی برای برگرداندن نیست"
+  "penNothing": "چیزی برای برگرداندن نیست",
+  "clockIdle": "۵ دقیقه فعالیتی نبود · زمان‌سنج متوقف شد و با ادامه دوباره شروع می‌شود"
  },
  "ar": {
   "pageInfo": "العلاج الدوائي · الصفحة 12/48 · 25%",
@@ -521,6 +524,7 @@
   "penOn": "القلم مفعّل · ارسم فوق الصفحة؛ تُحفظ الرسومات",
   "penUndo": "تراجع",
   "penDone": "تم",
-  "penNothing": "لا شيء للتراجع عنه"
+  "penNothing": "لا شيء للتراجع عنه",
+  "clockIdle": "لا نشاط منذ 5 دقائق · توقّف المؤقّت ويبدأ من جديد عند المتابعة"
  }
 }

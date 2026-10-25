@@ -1095,3 +1095,8 @@
     0 0 0 3px var(--card),
     0 0 0 5px var(--amb);
 }
+
+/* The study timer while it stands still (paused, tab hidden or no activity) */
+.clockStill .mono {
+  opacity: 0.5;
+}
