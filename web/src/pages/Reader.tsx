@@ -8,6 +8,8 @@ import Wordmark from '../components/Wordmark';
 import { getPdf, recentPdfs } from '../api/courses';
 import { addHighlight, getLesson, markRead, saveStudyTime, tapTerm, translate, type TranslationStyle } from '../api/reader';
 import { askAssistant, latestThread, type ChatMessage } from '../api/assistant';
+import { useVoice, VOICE_FAIL, voicePlaceholder } from '../speech/useVoice';
+import MicButton from '../components/MicButton';
 import { sectionCheckCounter } from '../api/quiz';
 import { addTermCard } from '../api/cards';
 import { lectureMarks, recordingsOf, type LectureMark } from '../api/recording';
@@ -875,14 +877,18 @@ function AssistantPanel({ materialId, title, pages, asked, onClose }: PanelProps
   const [mine, setMine] = useState<ChatMessage[]>([]);
   const [threadId, setThreadId] = useState<string | null>(null);
   const [waiting, setWaiting] = useState(false);
+  // The answer while it is being written.
+  const [live, setLive] = useState('');
+  const writing = live.length > 0;
   const [quick, setQuick] = useState(false);
   const { guard } = useTrial();
+  const voice = useVoice(lang, (text) => setDraft((d) => (d ? `${d} ${text}` : text)), (why) => toast(t(VOICE_FAIL[why])));
   const end = useRef<HTMLDivElement>(null);
   const history = [...(thread?.messages ?? []), ...mine];
 
   useEffect(() => {
     if (mine.length) end.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }, [mine.length, waiting]);
+  }, [mine.length, waiting, writing]);
 
   // Questions in the reader are about this lesson only.
   const send = (text: string) => {
@@ -897,8 +903,10 @@ function AssistantPanel({ materialId, title, pages, asked, onClose }: PanelProps
       setDraft('');
       setQuick(false);
       setWaiting(true);
-      const r = await askAssistant(q, { materialId, threadId: threadId ?? thread?.id ?? null, mode: 'pdf', lang, pages });
+      setLive('');
+      const r = await askAssistant(q, { materialId, threadId: threadId ?? thread?.id ?? null, mode: 'pdf', lang, pages }, setLive);
       setWaiting(false);
+      setLive('');
       if ('error' in r) return toast(t({ locked: 'trialQFull', budget: 'askBudget', declined: 'askDeclined', other: 'askFailed' }[r.error]));
       setThreadId(r.threadId);
       setMine((m) => [...m, r.message]);
@@ -951,7 +959,11 @@ function AssistantPanel({ materialId, title, pages, asked, onClose }: PanelProps
             </div>
           ),
         )}
-        {waiting && <div className={s.ai}>…</div>}
+        {waiting && (
+          <div className={s.ai} aria-live="polite">
+            {live || '…'}
+          </div>
+        )}
         <div ref={end} />
       </div>
 
@@ -968,10 +980,8 @@ function AssistantPanel({ materialId, title, pages, asked, onClose }: PanelProps
         <button type="button" className={s.askIcon} aria-label={t('quick')} aria-haspopup="menu" aria-expanded={quick} onClick={() => setQuick(!quick)}>
           <Icon name="spark" size={18} />
         </button>
-        <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={t('askPlaceholder')} aria-label={t('question')} />
-        <button type="button" className={s.askIcon} aria-label={t('talk')} onClick={() => toast(t('listening'))}>
-          <Icon name="mic" size={18} />
-        </button>
+        <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={voicePlaceholder(voice.state, t) ?? t('askPlaceholder')} aria-label={t('question')} />
+        <MicButton state={voice.state} onClick={voice.toggle} className={s.askIcon} size={18} />
         <button type="submit" className={s.askSend} aria-label={t('send')}>
           <Icon name="send" size={16} className="flip-rtl" />
         </button>

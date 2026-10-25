@@ -3,20 +3,33 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useI18n } from '../i18n/I18nProvider';
 import { useToast } from '../components/Toast';
 import Icon, { type IconName } from '../components/Icon';
-import { askAssistant, latestThread, listAssistantTopics, uploadForAssistant, type AssistantTopic, type ChatMessage, type SourceMode } from '../api/assistant';
+import {
+  askAssistant,
+  latestThread,
+  listAssistantTopics,
+  photoForAssistant,
+  weakTopicsOf,
+  type AssistantTopic,
+  type ChatMessage,
+  type QuestionPhoto,
+  type SourceMode,
+} from '../api/assistant';
 import { useAsync } from '../hooks/useAsync';
 import { num } from '../i18n/format';
-import type { Attachment, AttachmentKind } from '../api/types';
+import { useVoice, VOICE_FAIL, voicePlaceholder } from '../speech/useVoice';
+import MicButton from '../components/MicButton';
 import { useTrial } from '../trial/TrialProvider';
 import s from './Assistant.module.css';
 
 // Design: design/NewIPad.dc.html, screens "ai" (start + message box) and "aichat" (answer view).
 // The assistant answers only from the student's material unless "AI + research" is switched on.
-// Answers are made by the server (Edge Function "assistant", not built yet): the chat shows the earlier
-// conversation from the database, and a new question waits for the server.
+// Answers are made by the server (Edge Function "assistant") and appear while they are written; the chat also
+// shows the earlier conversation from the database. A question can be typed, spoken (turned into text on this
+// computer) or a photo of an exam question, solved step by step.
 
-type Panel = '' | 'menu' | 'add' | 'courses';
-type Upload = { kind: AttachmentKind; data: Attachment; topic: string; chosen: boolean; done: boolean };
+type Panel = '' | 'menu' | 'add';
+/** What opens the chat: a typed question, a photo to solve, or "Ben anlatayım" (the student explains, I check). */
+type Start = { topic: string; q: string; photo?: QuestionPhoto; teach?: boolean };
 
 export default function Assistant() {
   const { t, lang } = useI18n();
@@ -30,10 +43,11 @@ export default function Assistant() {
   const [mode, setMode] = useState<SourceMode>('pdf');
   const [panel, setPanel] = useState<Panel>('');
   const [editCourse, setEditCourse] = useState(false);
-  const [upload, setUpload] = useState<Upload | null>(null);
   const [draft, setDraft] = useState('');
+  const photoIn = useRef<HTMLInputElement>(null);
+  const voice = useVoice(lang, (text) => setDraft((d) => (d ? `${d} ${text}` : text)), (why) => toast(t(VOICE_FAIL[why])));
   // A question from another page (?q=…) opens the chat directly.
-  const [chat, setChat] = useState<{ topic: string; q: string } | null>(() => {
+  const [chat, setChat] = useState<Start | null>(() => {
     const q = params.get('q');
     return q ? { topic: 'all', q } : null;
   });
@@ -48,7 +62,7 @@ export default function Assistant() {
   const sel = byId(course);
   const name = (x?: AssistantTopic) => (x ? x.name : '');
 
-  const placeholder = !sel ? t('phPick') : sel.id === 'all' ? t('phAll') : name(sel) + t('phAbout');
+  const placeholder = voicePlaceholder(voice.state, t) ?? (!sel ? t('phPick') : sel.id === 'all' ? t('phAll') : name(sel) + t('phAbout'));
 
   const setSource = (m: SourceMode) => {
     setMode(m);
@@ -59,46 +73,67 @@ export default function Assistant() {
     setEditCourse(false);
     toast(t('coursePrefix') + name(byId(id)));
   };
+  /** Questions need a course (or "all"); without one the course list opens. */
+  const needCourse = () => {
+    if (sel) return false;
+    setPanel('menu');
+    setEditCourse(true);
+    toast(t('needCourse'));
+    return true;
+  };
   const send = () => {
-    if (!sel) {
-      setPanel('menu');
-      setEditCourse(true);
-      toast(t('needCourse'));
-      return;
-    }
+    if (needCourse()) return;
+    if (!draft.trim()) return toast(t('writeQ'));
     guard('question', () => {
-      setChat({ topic: sel.id, q: draft.trim() });
+      setChat({ topic: sel!.id, q: draft.trim() });
       setDraft('');
       setPanel('');
     });
   };
-  const addFile = (kind: AttachmentKind | 'solve') => {
+  // "+" menu: a lesson, the lecturer's questions ("Soru örneklerim") and recordings go to their own screens;
+  // "Soruyu çözdür" takes a photo of a question.
+  const addFile = (kind: 'pdf' | 'photo' | 'audio' | 'solve') => {
     setPanel('');
-    if (kind === 'solve') toast(t('k165'));
-    else guard('pdf', () => doUpload(kind));
+    const where = sel?.courseId ? `course=${sel.courseId}` : '';
+    if (kind === 'pdf') navigate(`/upload${where ? `?${where}` : ''}`);
+    else if (kind === 'photo') navigate(`/samples${where ? `?${where}` : ''}`);
+    else if (kind === 'audio') navigate('/record');
+    else if (!needCourse()) photoIn.current?.click();
   };
-  const doUpload = async (kind: AttachmentKind) => {
-    const data = await uploadForAssistant(kind);
-    // The sample upload has no real course guess yet: suggest the chosen course, else the first one.
-    setUpload({ kind, data, topic: sel && sel.id !== 'all' ? sel.id : topics[0].id, chosen: false, done: false });
-    toast(data.name[lang] + t('attUploaded'));
+  const solve = async (file?: File) => {
+    if (!file || !sel) return;
+    if (!file.type.startsWith('image/')) return toast(t('solveBadFile'));
+    const photo = await photoForAssistant(file).catch(() => null);
+    if (!photo) return toast(t('solveBadFile'));
+    guard('question', () => setChat({ topic: sel.id, q: draft.trim(), photo }));
+    setDraft('');
+  };
+  const explainWeak = async () => {
+    if (needCourse()) return;
+    const weak = await weakTopicsOf(sel!.courseId);
+    const q = weak.length ? t('qkWeakQ').replace('{list}', weak.join(', ')) : t('qkWeakQNone');
+    guard('question', () => setChat({ topic: sel!.id, q }));
+  };
+  const teach = () => {
+    if (needCourse()) return;
+    setChat({ topic: sel!.id, q: '', teach: true });
   };
 
   const quick: [IconName, string, () => void][] = [
-    ['headphones', 'qkWeak', () => toast(t('k165'))],
+    ['headphones', 'qkWeak', explainWeak],
     ['lines', 'qkSummary', () => (navigate('/reader'), toast(t('summarizing')))],
     ['checklist', 'qkFive', () => navigate('/quiz?tab=quiz')],
     ['target', 'qkWeakList', () => navigate('/quiz')],
-    ['mic', 'qkTeach', () => toast(t('k165'))],
+    ['mic', 'qkTeach', teach],
   ];
 
   if (chat) {
-    return <Chat topic={byId(chat.topic) ?? topics[0]} question={chat.q} mode={mode} onBack={() => setChat(null)} />;
+    return <Chat topic={byId(chat.topic) ?? topics[0]} start={chat} mode={mode} onBack={() => setChat(null)} />;
   }
 
-  const courseGrid = (onPick: (id: string) => void, isOn: (id: string) => boolean, list = topics) => (
+  const courseGrid = (onPick: (id: string) => void, isOn: (id: string) => boolean) => (
     <div role="radiogroup" aria-label={t('courseLabel')} className={s.courseGrid}>
-      {list.map((k) => (
+      {topics.map((k) => (
         <button key={k.id} role="radio" aria-checked={isOn(k.id)} className={isOn(k.id) ? `${s.course} ${s.courseOn}` : s.course} onClick={() => onPick(k.id)}>
           <span className={s.dot} style={{ background: k.color }} />
           <b>{k.name}</b>
@@ -124,58 +159,6 @@ export default function Assistant() {
         <span className={s.grow} />
 
         <div className={s.composerWrap}>
-          {upload && (
-            <section className={s.card}>
-              <div className={s.attTop}>
-                <span className={`mono ${s.attTag}`}>{upload.data.tag[lang]}</span>
-                <span className={s.attName}>
-                  <b>{upload.data.name[lang]}</b>
-                  <span>{upload.data.meta[lang]}</span>
-                </span>
-                <button className={s.x} aria-label={t('close')} onClick={() => setUpload(null)}>
-                  <Icon name="close" size={16} />
-                </button>
-              </div>
-              {!upload.done ? (
-                <div className={s.attDetect}>
-                  <span>
-                    {t('attThinks')} <b>{name(byId(upload.topic))}</b> {t('attBelongs')}{' '}
-                    <span className={s.muted}>· {upload.chosen ? t('youChose') : upload.data.why[lang]}</span>
-                  </span>
-                  <button
-                    className={s.priBtn}
-                    onClick={() => {
-                      const n = name(byId(upload.topic));
-                      setUpload({ ...upload, done: true });
-                      setCourse(upload.topic);
-                      toast(upload.kind === 'photo' ? `${n} ·${t('attQAdded')}` : n + t('attFolderAdded'));
-                    }}
-                  >
-                    {t(upload.kind === 'photo' ? 'attAddQ' : 'attAddCourse')}
-                  </button>
-                  <button className={s.ghostBtn} onClick={() => setPanel('courses')}>
-                    {t('attOther')}
-                  </button>
-                </div>
-              ) : (
-                <span className={s.attDone}>
-                  {name(byId(upload.topic)) + t(upload.kind === 'photo' ? 'attQAdded' : 'attFolderAdded') + t('attUses')}
-                </span>
-              )}
-            </section>
-          )}
-
-          {panel === 'courses' && upload && (
-            <section className={s.card}>
-              <span className={s.cardTitle}>{t('assignTitle')}</span>
-              {courseGrid(
-                (id) => (setUpload({ ...upload, topic: id, chosen: true }), setPanel('')),
-                (id) => id === upload.topic,
-                topics.filter((x) => x.id !== 'all'),
-              )}
-            </section>
-          )}
-
           {panel === 'menu' && (
             <section className={`${s.card} ${s.menu}`}>
               <span className={`mono ${s.label}`}>{t('courseLabel')}</span>
@@ -238,6 +221,7 @@ export default function Assistant() {
             </section>
           )}
 
+          <input ref={photoIn} type="file" accept="image/*" hidden onChange={(e) => (solve(e.target.files?.[0]), (e.target.value = ''))} />
           <form
             className={s.composer}
             onSubmit={(e: FormEvent) => {
@@ -293,9 +277,7 @@ export default function Assistant() {
                 {!sel && panel !== 'menu' && <span className={s.needDot} />}
               </button>
               <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={placeholder} aria-label={t('question')} />
-              <button type="button" className={s.round} aria-label={t('talk')} onClick={() => toast(t('listening'))}>
-                <Icon name="mic" size={19} />
-              </button>
+              <MicButton state={voice.state} onClick={voice.toggle} className={s.round} />
               <button type="submit" className={s.send} aria-label={t('send')}>
                 <Icon name="send" size={18} className="flip-rtl" />
               </button>
@@ -307,24 +289,30 @@ export default function Assistant() {
   );
 }
 
-function Chat({ topic, question, mode, onBack }: { topic: AssistantTopic; question: string; mode: SourceMode; onBack: () => void }) {
+type Shown = ChatMessage & { photo?: string };
+
+function Chat({ topic, start, mode, onBack }: { topic: AssistantTopic; start: Start; mode: SourceMode; onBack: () => void }) {
   const { t, lang } = useI18n();
   const toast = useToast();
   const navigate = useNavigate();
   const [draft, setDraft] = useState('');
   const { guard } = useTrial();
+  const voice = useVoice(lang, (text) => setDraft((d) => (d ? `${d} ${text}` : text)), (why) => toast(t(VOICE_FAIL[why])));
   const thread = useAsync(() => latestThread(topic.courseId), [topic.courseId]);
   // Messages of this visit (the earlier ones come from the database) and the thread they continue.
-  const [extra, setExtra] = useState<ChatMessage[]>([]);
+  const [extra, setExtra] = useState<Shown[]>([]);
   const [threadId, setThreadId] = useState<string | null>(null);
   const [waiting, setWaiting] = useState(false);
+  // The answer while it is being written.
+  const [live, setLive] = useState('');
+  const writing = live.length > 0;
   const askedFirst = useRef(false);
   const end = useRef<HTMLDivElement>(null);
   const all = topic.id === 'all';
   const name = topic.name;
   const tag = all ? t('tagAll') : t('tagCourse') + name.toLocaleUpperCase(lang === 'tr' ? 'tr' : 'en');
-  const hello = all ? t('helloAll') : t('helloA') + name + t('helloB') + (mode === 'ai' ? t('helloAi') : '');
-  const messages = [...(thread?.messages ?? []), ...extra];
+  const hello = start.teach ? t('teachHello') : all ? t('helloAll') : t('helloA') + name + t('helloB') + (mode === 'ai' ? t('helloAi') : '');
+  const messages: Shown[] = [...(thread?.messages ?? []), ...extra];
 
   const follow: [string, string, 'question' | 'generate'][] = [
     ['followEasy', t('followEasyT'), 'question'],
@@ -337,11 +325,16 @@ function Chat({ topic, question, mode, onBack }: { topic: AssistantTopic; questi
       .map((x) => (x.page !== null ? `${x.lesson} · ${t('pageAbbr')} ${num(x.page, lang)}` : x.lesson))
       .join(' · ');
 
-  const ask = async (q: string) => {
-    setExtra((e) => [...e, { id: crypto.randomUUID(), role: 'user', text: q, mode, sources: [], outsidePdf: false }]);
+  // In "Ben anlatayım" the student's text goes with a request to check it against the lessons.
+  const ask = async (q: string, photo?: QuestionPhoto) => {
+    const shown = q || t('solveLabel');
+    setExtra((e) => [...e, { id: crypto.randomUUID(), role: 'user', text: shown, mode, sources: [], outsidePdf: false, photo: photo && `data:image/jpeg;base64,${photo.data}` }]);
     setWaiting(true);
-    const r = await askAssistant(q, { courseId: topic.courseId, threadId: threadId ?? thread?.id ?? null, mode, lang });
+    setLive('');
+    const sent = start.teach && !photo ? t('teachPrefix') + q : q;
+    const r = await askAssistant(sent, { courseId: topic.courseId, threadId: threadId ?? thread?.id ?? null, mode, lang, photo }, setLive);
     setWaiting(false);
+    setLive('');
     if ('error' in r) {
       toast(t({ locked: 'trialQFull', budget: 'askBudget', declined: 'askDeclined', other: 'askFailed' }[r.error]));
       return;
@@ -350,17 +343,17 @@ function Chat({ topic, question, mode, onBack }: { topic: AssistantTopic; questi
     setExtra((e) => [...e, r.message]);
   };
 
-  // A question typed on the start screen is asked once the earlier chat is loaded.
+  // A question (or photo) from the start screen is asked once the earlier chat is loaded.
   useEffect(() => {
-    if (!question || askedFirst.current || thread === undefined) return;
+    if ((!start.q && !start.photo) || askedFirst.current || thread === undefined) return;
     askedFirst.current = true;
-    ask(question);
+    ask(start.q, start.photo);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [thread]);
 
   useEffect(() => {
     end.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  }, [messages.length, waiting]);
+  }, [messages.length, waiting, writing]);
 
   return (
     <main className={s.chatPage}>
@@ -388,10 +381,11 @@ function Chat({ topic, question, mode, onBack }: { topic: AssistantTopic; questi
       <div className={s.thread}>
         <div className={s.column}>
           <div className={s.ai}>{hello}</div>
-          {thread !== undefined && messages.length === 0 && !waiting && <span className={s.protoNote}>{t('noThread')}</span>}
+          {thread !== undefined && messages.length === 0 && !waiting && !start.teach && <span className={s.protoNote}>{t('noThread')}</span>}
           {messages.map((m) =>
             m.role === 'user' ? (
               <div key={m.id} className={s.me}>
+                {m.photo && <img className={s.mePhoto} src={m.photo} alt={t('solveLabel')} />}
                 {m.text}
               </div>
             ) : (
@@ -406,14 +400,20 @@ function Chat({ topic, question, mode, onBack }: { topic: AssistantTopic; questi
               </div>
             ),
           )}
-          {(waiting || thread === undefined) && (
+          {waiting && live && (
+            <div className={s.answer} aria-live="polite">
+              <span className={`mono ${s.answerTag}`}>{tag}</span>
+              <span>{live}</span>
+            </div>
+          )}
+          {((waiting && !live) || thread === undefined) && (
             <div className={s.typing} aria-label="…">
               <span />
               <span />
               <span />
             </div>
           )}
-          {messages.length > 0 && !waiting && (
+          {messages.length > 0 && !waiting && !start.teach && (
             <div className={s.follow}>
               {follow.map(([k, msg, action]) => (
                 <button key={k} onClick={() => guard(action, () => (k === 'followEasy' ? ask(t('followEasyQ')) : toast(msg)))}>
@@ -446,12 +446,10 @@ function Chat({ topic, question, mode, onBack }: { topic: AssistantTopic; questi
           <input
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
-            placeholder={all ? t('phAll') : name + t('phAbout')}
+            placeholder={voicePlaceholder(voice.state, t) ?? (start.teach ? t('teachPh') : all ? t('phAll') : name + t('phAbout'))}
             aria-label={t('question')}
           />
-          <button type="button" className={s.round} aria-label={t('talk')} onClick={() => toast(t('listening'))}>
-            <Icon name="mic" size={19} />
-          </button>
+          <MicButton state={voice.state} onClick={voice.toggle} className={s.round} />
           <button type="submit" className={s.send} aria-label={t('send')}>
             <Icon name="send" size={18} className="flip-rtl" />
           </button>

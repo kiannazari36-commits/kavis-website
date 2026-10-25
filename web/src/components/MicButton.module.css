@@ -1,0 +1,17 @@
+/* Listening: the button turns bordo. */
+.on,
+.on:hover {
+  background: var(--pri);
+  border-color: var(--pri);
+  color: #fffcf6;
+}
+
+.on {
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    box-shadow: 0 0 0 6px var(--pri-soft);
+  }
+}

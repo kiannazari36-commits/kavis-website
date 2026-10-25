@@ -1,20 +1,23 @@
 // Edge Function assistant: answers a student's question only from their own lessons (CLAUDE.md).
-// POST { question, course_id?, material_id?, mode: 'pdf' | 'ai', thread_id?, lang, page_from?, page_to? }
-//   → { thread_id, answer, sources: [{ material_id, lesson, page }], outside_pdf }
+// POST { question, course_id?, material_id?, mode: 'pdf' | 'ai', thread_id?, lang, page_from?, page_to?,
+//        image?: { media_type, data } }  (image = "Soruyu çözdür": a photo of a question, solved step by step)
+//   → a stream of server-sent events: { t: "text…" } while the answer is written, then
+//     { done: true, thread_id, answer, sources: [{ material_id, lesson, page }], outside_pdf }, or { error }.
 // One chosen lesson (material_id): Claude gets the whole lesson (cached for 5 minutes, so follow-up questions are
 // cheap) and is told which pages are open. Otherwise, or for a very long lesson, it gets the best text pieces (the
 // open pages first, then material_chunks full-text search). Claude Sonnet 5.5 answers; the function saves the
 // thread and both messages, counts a trial question and the AI cost.
 // "AI + research" (mode 'ai') may add general knowledge, marked outside_pdf. Apps never write answers themselves.
-import { createClient } from 'npm:@supabase/supabase-js@2';
+import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
-import { costUsd, lessonText, queryTerms, rankChunks, tsQuery } from './lib.ts';
+import { costUsd, lessonText, queryTerms, rankChunks, splitTail, tsQuery } from './lib.ts';
 
 const MODEL = 'claude-sonnet-5-5';
 const MONTHLY_BUDGET_USD = 3;
 const PIECES = 6;
 // About 35,000 tokens: the first question on a lesson costs at most ~$0.09, follow-ups read it from the cache.
 const LESSON_MAX_CHARS = 120_000;
+const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -32,18 +35,7 @@ function secretKey() {
 
 const LANG_NAMES: Record<string, string> = { tr: 'Turkish', en: 'English', fa: 'Persian', ar: 'Arabic' };
 
-const SCHEMA = {
-  type: 'object',
-  properties: {
-    answer: { type: 'string' },
-    sources: { type: 'array', items: { type: 'integer' } },
-    outside_pdf: { type: 'boolean' },
-  },
-  required: ['answer', 'sources', 'outside_pdf'],
-  additionalProperties: false,
-};
-
-const system = (mode: string, lang: string, whole: boolean) => `You are Kavis, a study assistant for a university student. You answer from the student's own lecture material.
+const system = (mode: string, lang: string, whole: boolean, solve: boolean) => `You are Kavis, a study assistant for a university student. You answer from the student's own lecture material.
 ${
   whole
     ? 'You get the whole text of ONE lesson the student chose, page by page ([Page n]), and maybe earlier messages of this chat. Talk only about this lesson: if the question is about another subject, say kindly in one sentence that here you only help with this lesson.'
@@ -51,12 +43,20 @@ ${
 }
 ${
   mode === 'ai'
-    ? 'Answer mainly from the lesson text you got. If it is not enough, you may add general textbook knowledge; then set outside_pdf to true and say briefly which part is not from their PDFs.'
-    : 'Answer ONLY from the lesson text you got. If it does not contain the answer, say clearly (in one or two sentences) that you could not find it in their lessons and suggest what to look for; do not use outside knowledge. outside_pdf is always false.'
+    ? 'Answer mainly from the lesson text you got. If it is not enough, you may add general textbook knowledge; then say briefly which part is not from their PDFs.'
+    : 'Answer ONLY from the lesson text you got. If it does not contain the answer, say clearly (in one or two sentences) that you could not find it in their lessons and suggest what to look for; do not use outside knowledge.'
 }
 If the student is reading a lesson now, you are told which pages are open; "this page", "this topic", "explain this" mean those pages. They may still ask about any other page of the lesson.
-Write in the language of the student's question (if unclear: ${LANG_NAMES[lang] ?? 'Turkish'}). Be short and clear: 2-6 sentences or a few bullet points, plain text without markdown headings. Explain simply, like a good classmate.
-${whole ? 'sources: the page numbers you actually used (e.g. [2, 5]); empty if none.' : 'sources: the numbers of the excerpts you actually used (e.g. [2, 5]); empty if none.'}`;
+${
+  solve
+    ? 'The student sends a photo of an exam question. Solve it step by step (numbered steps, short), say which option is right and why the others are not, and point to where it is in their lessons.'
+    : 'Be short and clear: 2-6 sentences or a few bullet points. Explain simply, like a good classmate.'
+}
+Write in the language of the student's question (if unclear: ${LANG_NAMES[lang] ?? 'Turkish'}), plain text without markdown headings; never mention which language you use.
+End with one last line exactly like: SOURCES: [2, 5] OUTSIDE: no
+— ${whole ? 'the page numbers you used' : 'the excerpt numbers you used'} (empty [] if none), and OUTSIDE: yes only if you added general knowledge.`;
+
+type Piece = { id: number; material_id: string; page: number | null; text: string };
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
@@ -69,8 +69,9 @@ Deno.serve(async (req) => {
   const uid = who.user.id;
 
   const body = await req.json().catch(() => ({}));
-  const question = typeof body.question === 'string' ? body.question.trim().slice(0, 2000) : '';
-  if (!question) return json({ error: 'question' }, 400);
+  const image = body.image && IMAGE_TYPES.includes(body.image.media_type) && typeof body.image.data === 'string' && body.image.data.length < 7_000_000 ? body.image : null;
+  let question = typeof body.question === 'string' ? body.question.trim().slice(0, 2000) : '';
+  if (!question && !image) return json({ error: 'question' }, 400);
   const mode = body.mode === 'ai' ? 'ai' : 'pdf';
   const lang = typeof body.lang === 'string' ? body.lang : 'tr';
   const courseId: string | null = typeof body.course_id === 'string' ? body.course_id : null;
@@ -85,6 +86,27 @@ Deno.serve(async (req) => {
   const { data: use } = await db.from('usage_monthly').select('cost_usd').eq('user_id', uid).eq('month', month).maybeSingle();
   if (use && Number(use.cost_usd) >= MONTHLY_BUDGET_USD) return json({ error: 'budget' }, 429);
 
+  const client = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')!.trim() });
+  const usage = { input: 0, output: 0, cacheWrite: 0, cacheRead: 0 };
+
+  // A photo of a question: first its text (to find the right lesson pages), then the solution below.
+  if (image) {
+    try {
+      const read = await client.messages.create({
+        model: MODEL,
+        max_tokens: 1500,
+        messages: [{ role: 'user', content: [{ type: 'image', source: { type: 'base64', media_type: image.media_type, data: image.data } }, { type: 'text', text: 'Copy the exam question in this photo exactly (with its options). Reply with the text only.' }] }],
+      });
+      usage.input += read.usage.input_tokens;
+      usage.output += read.usage.output_tokens;
+      const text = read.content.filter((b) => b.type === 'text').map((b) => (b as { text: string }).text).join('').trim();
+      question = [question, text].filter(Boolean).join('\n').slice(0, 2000);
+    } catch (e) {
+      console.error('assistant photo', e);
+      return json({ error: 'ai' }, 502);
+    }
+  }
+
   // Which lessons to search: one lesson, one course, or all of the student's lessons.
   let lessons = db.from('materials').select('id, title').eq('user_id', uid).eq('status', 'ready');
   if (materialId) lessons = lessons.eq('id', materialId);
@@ -93,7 +115,6 @@ Deno.serve(async (req) => {
   const titles = new Map((mats ?? []).map((m) => [m.id as string, m.title as string]));
   const ids = [...titles.keys()];
 
-  type Piece = { id: number; material_id: string; page: number | null; text: string };
   let pieces: Piece[] = [];
   const open: Piece[] = [];
   // One chosen lesson: the whole text if it is not too long.
@@ -138,76 +159,111 @@ Deno.serve(async (req) => {
     : '(no matching excerpts were found in the student\'s lessons)';
   const lessonTitle = materialId ? (titles.get(materialId) ?? '') : '';
   const reading = materialId && pageFrom !== null ? `I am reading "${lessonTitle}", page ${pageFrom}${pageTo && pageTo !== pageFrom ? `-${pageTo}` : ''}.\n\n` : '';
+  const userText = `${reading}${whole ? '' : `Excerpts from my lessons:\n\n${excerpts}\n\n`}${image ? 'Solve the question in this photo. Its text: ' : 'My question: '}${question}`;
 
-  const client = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')!.trim() });
   const params = {
     model: MODEL,
     max_tokens: 4000,
     betas: ['server-side-fallback-2026-07-01'],
     fallbacks: 'default',
-    output_config: { effort: 'low', format: { type: 'json_schema', schema: SCHEMA } },
+    output_config: { effort: 'low' },
     system: [
-      { type: 'text', text: system(mode, lang, !!whole) },
+      { type: 'text', text: system(mode, lang, !!whole, !!image) },
       // The lesson text is the same for every question on this lesson, so it is cached.
       ...(whole ? [{ type: 'text', text: `The lesson "${lessonTitle}", whole text:\n\n${whole}`, cache_control: { type: 'ephemeral' } }] : []),
     ],
-    messages: [...history, { role: 'user', content: `${reading}${whole ? '' : `Excerpts from my lessons:\n\n${excerpts}\n\n`}My question: ${question}` }],
+    messages: [
+      ...history,
+      {
+        role: 'user',
+        content: image ? [{ type: 'image', source: { type: 'base64', media_type: image.media_type, data: image.data } }, { type: 'text', text: userText }] : userText,
+      },
+    ],
   };
-  let res;
-  try {
-    // deno-lint-ignore no-explicit-any
-    res = await client.beta.messages.create(params as any);
-  } catch (e) {
-    console.error('assistant', e);
-    return json({ error: 'ai' }, 502);
-  }
-  if (res.stop_reason === 'refusal') return json({ error: 'declined' }, 422);
-  const block = res.content.find((b) => b.type === 'text');
-  if (!block || block.type !== 'text') return json({ error: 'ai' }, 502);
-  const out = JSON.parse(block.text) as { answer: string; sources: number[]; outside_pdf: boolean };
-  const used: { material_id: string; page: number | null }[] = whole
-    ? [...new Set(out.sources)].filter((n) => lessonPages.includes(n)).sort((a, b) => a - b).map((page) => ({ material_id: materialId!, page }))
-    : [...new Set(out.sources)].map((n) => pieces[n - 1]).filter(Boolean);
-  const sources = used.map((p) => ({ material_id: p.material_id, page: p.page }));
 
-  // Save: thread, both messages, trial question, cost.
+  // The answer is sent while it is written (server-sent events); saving happens at the end.
+  const enc = new TextEncoder();
+  const stream = new ReadableStream({
+    async start(ctrl) {
+      const send = (x: unknown) => ctrl.enqueue(enc.encode(`data: ${JSON.stringify(x)}\n\n`));
+      try {
+        // deno-lint-ignore no-explicit-any
+        const s = client.beta.messages.stream(params as any);
+        s.on('text', (t: string) => send({ t }));
+        const res = await s.finalMessage();
+        if (res.stop_reason === 'refusal') {
+          send({ error: 'declined' });
+          return ctrl.close();
+        }
+        usage.input += res.usage.input_tokens;
+        usage.output += res.usage.output_tokens;
+        usage.cacheWrite += res.usage.cache_creation_input_tokens ?? 0;
+        usage.cacheRead += res.usage.cache_read_input_tokens ?? 0;
+        const full = res.content.filter((b) => b.type === 'text').map((b) => (b as { text: string }).text).join('');
+        const out = splitTail(full);
+        const used: { material_id: string; page: number | null }[] = whole
+          ? out.sources.filter((n) => lessonPages.includes(n)).sort((a, b) => a - b).map((page) => ({ material_id: materialId!, page }))
+          : out.sources.map((n) => pieces[n - 1]).filter(Boolean).map((p) => ({ material_id: p.material_id, page: p.page }));
+        const outside = mode === 'ai' && out.outside;
+        const saved = await save(db, uid, threadId, courseId, materialId, question, out.answer, mode, used, outside);
+        await count(db, uid, month, usage);
+        send({ done: true, thread_id: saved, answer: out.answer, sources: used.map((p) => ({ ...p, lesson: titles.get(p.material_id) ?? '' })), outside_pdf: outside });
+      } catch (e) {
+        console.error('assistant', e);
+        send({ error: 'ai' });
+      }
+      ctrl.close();
+    },
+  });
+  return new Response(stream, { headers: { ...cors, 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache' } });
+});
+
+/** The thread (new or continued) and both messages; returns the thread id. */
+async function save(
+  db: SupabaseClient,
+  uid: string,
+  threadId: string | null,
+  courseId: string | null,
+  materialId: string | null,
+  question: string,
+  answer: string,
+  mode: string,
+  sources: { material_id: string; page: number | null }[],
+  outside: boolean,
+) {
   if (!threadId) {
     const { data: th } = await db
       .from('assistant_threads')
       .insert({ user_id: uid, course_id: courseId, material_id: materialId, mode: 'chat', title: question.slice(0, 80) })
       .select('id')
       .single();
-    threadId = th!.id;
+    threadId = th!.id as string;
   } else {
     await db.from('assistant_threads').update({ updated_at: new Date().toISOString() }).eq('id', threadId);
   }
-  await db.from('assistant_messages').insert([
-    { thread_id: threadId, user_id: uid, role: 'user', content: question, source_mode: mode },
-    { thread_id: threadId, user_id: uid, role: 'assistant', content: out.answer, source_mode: mode, sources, outside_pdf: mode === 'ai' && out.outside_pdf },
+  // Both rows name every column: missing ones would be sent as null, not the column default.
+  const { error } = await db.from('assistant_messages').insert([
+    { thread_id: threadId, user_id: uid, role: 'user', content: question, source_mode: mode, sources: [], outside_pdf: false },
+    { thread_id: threadId, user_id: uid, role: 'assistant', content: answer, source_mode: mode, sources, outside_pdf: outside },
   ]);
+  if (error) console.error('assistant_messages', error);
+  return threadId;
+}
+
+/** A trial question (not for Premium) and the month's AI cost. */
+async function count(db: SupabaseClient, uid: string, month: string, u: { input: number; output: number; cacheWrite: number; cacheRead: number }) {
   const { data: premium } = await db.rpc('is_premium', { uid });
   if (!premium) {
     const { data: t } = await db.from('trial_usage').select('assistant_questions').eq('user_id', uid).maybeSingle();
     await db.from('trial_usage').upsert({ user_id: uid, assistant_questions: (t?.assistant_questions ?? 0) + 1 });
   }
-  const cacheWrite = res.usage.cache_creation_input_tokens ?? 0;
-  const cacheRead = res.usage.cache_read_input_tokens ?? 0;
-  const input = res.usage.input_tokens;
-  const output = res.usage.output_tokens;
-  const { data: u } = await db.from('usage_monthly').select('input_tokens, output_tokens, cost_usd, assistant_questions').eq('user_id', uid).eq('month', month).maybeSingle();
+  const { data: m } = await db.from('usage_monthly').select('input_tokens, output_tokens, cost_usd, assistant_questions').eq('user_id', uid).eq('month', month).maybeSingle();
   await db.from('usage_monthly').upsert({
     user_id: uid,
     month,
-    input_tokens: Number(u?.input_tokens ?? 0) + input + cacheWrite + cacheRead,
-    output_tokens: Number(u?.output_tokens ?? 0) + output,
-    cost_usd: Number(u?.cost_usd ?? 0) + costUsd(input, output, cacheWrite, cacheRead),
-    assistant_questions: Number(u?.assistant_questions ?? 0) + 1,
+    input_tokens: Number(m?.input_tokens ?? 0) + u.input + u.cacheWrite + u.cacheRead,
+    output_tokens: Number(m?.output_tokens ?? 0) + u.output,
+    cost_usd: Number(m?.cost_usd ?? 0) + costUsd(u.input, u.output, u.cacheWrite, u.cacheRead),
+    assistant_questions: Number(m?.assistant_questions ?? 0) + 1,
   });
-
-  return json({
-    thread_id: threadId,
-    answer: out.answer,
-    sources: used.map((p) => ({ material_id: p.material_id, lesson: titles.get(p.material_id) ?? '', page: p.page })),
-    outside_pdf: mode === 'ai' && out.outside_pdf,
-  });
-});
+}

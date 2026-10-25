@@ -7,3 +7,7 @@ const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined;
 if (!url || !key) throw new Error('Missing VITE_SUPABASE_URL / VITE_SUPABASE_PUBLISHABLE_KEY (see web/.env.local)');
 
 export const supabase = createClient(url, key);
+
+/** For calls the client library cannot make itself (the assistant's answer arrives as a stream). */
+export const functionsUrl = `${url}/functions/v1`;
+export const publishableKey = key;

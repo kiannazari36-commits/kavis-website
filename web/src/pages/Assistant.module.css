@@ -71,10 +71,6 @@
   box-shadow: 0 12px 30px rgba(42, 36, 32, 0.1);
 }
 
-.cardTitle {
-  font-size: 13px;
-  font-weight: 600;
-}
 
 .menu {
   max-height: min(460px, 60vh);
@@ -270,79 +266,6 @@
   color: var(--text2);
 }
 
-/* Uploaded file card */
-.attTop {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.attTag {
-  width: 46px;
-  height: 46px;
-  flex: none;
-  border-radius: 14px;
-  background: var(--pri-soft);
-  color: var(--pri-t);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  font-weight: 600;
-}
-
-.attName {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.attName b {
-  font-size: 14px;
-  font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.attName span {
-  font-size: 12px;
-  color: var(--text2);
-}
-
-.attDetect {
-  border-radius: 16px;
-  background: var(--amb-soft);
-  padding: 10px 12px;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  font-size: 13px;
-  line-height: 1.45;
-}
-
-.attDetect > span {
-  flex: 1;
-  min-width: 220px;
-}
-
-.muted {
-  color: var(--text2);
-}
-
-.attDone {
-  align-self: flex-start;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 5px 12px;
-  border-radius: 12px;
-  background: var(--good-soft);
-  color: var(--good);
-}
-
-.priBtn,
 .ghostBtn {
   height: 34px;
   padding: 0 14px;
@@ -352,31 +275,12 @@
   white-space: nowrap;
 }
 
-.priBtn {
-  border: 0;
-  background: var(--pri);
-  color: #fffcf6;
-}
-
 .ghostBtn {
   border: 1px solid var(--line);
   background: var(--card);
   color: var(--text);
 }
 
-.x {
-  width: 34px;
-  height: 34px;
-  flex: none;
-  border-radius: 17px;
-  border: 1px solid var(--line);
-  background: transparent;
-  color: var(--text2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
 
 /* Message box */
 .composer {
@@ -609,7 +513,17 @@
   border-radius: 20px 20px 6px 20px;
   background: var(--pri);
   color: #fffcf6;
+  white-space: pre-wrap;
 }
+
+.mePhoto {
+  display: block;
+  max-width: 100%;
+  max-height: 260px;
+  margin-bottom: 8px;
+  border-radius: 14px;
+}
+
 
 :global([dir='rtl']) .ai {
   border-radius: 20px 20px 6px 20px;
@@ -631,6 +545,7 @@
   gap: 8px;
   font-size: 15px;
   line-height: 1.6;
+  white-space: pre-wrap;
 }
 
 .answerTag {

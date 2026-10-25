@@ -62,8 +62,7 @@ Everything that is not finished yet. Updated after every step.
   - [x] Reader clock counts real time (not timer ticks) and only while studying: stops when the tab is hidden and after 5 minutes without activity (reading aloud counts), starts again on activity (25 Oct 2026)
   - [x] Reader clock remembers each lesson for the day (this browser): leaving and coming back goes on from the same time, a paused clock stays paused; study time is saved on leaving or closing the tab (short visits add up until a minute)
   - [x] Quiz: pick an option (can still change it), then "Ne kadar eminsin?" — only then right (green) or wrong (red) with the right answer and "Neden?"; then locked. Wrong answers open already explained in the results
-  - [ ] Assistant: streaming answers (now the whole answer arrives at once), teach-back, voice, solve-a-photo
-  - [ ] Assistant "+" menu (upload PDF / photo / audio, solve a question photo): still sample data (`web/src/api/mock/assistant.ts`) until upload is built
+  - [x] Assistant extras (25 Oct 2026): answers stream while written (chat + reader panel); "Soruyu çözdür" (photo of a question → step-by-step solution); voice question (microphone → Whisper on the device → text in the box); "Önemli ve zayıf konularımı anlat" (weak topics from quiz results); "Ben anlatayım" (the student explains, the assistant checks against the notes); "+" menu opens upload / "Soru örneklerim" / recording. Fixed: messages were not saved (null `sources` on the question row). Teach-back score /10 not stored yet
   - [ ] Still mock: Premium page offer → connect them next, with example rows in `seed.sql`
   - [ ] Class rank on course cards ("Sıralama #3") has no data on the server; hidden until it exists
   - [x] App language and theme are saved in the account (`profiles.app_lang`, `user_settings.app_theme`): used after sign-in on every device, saved on change (`settings/PrefsSync.tsx`)

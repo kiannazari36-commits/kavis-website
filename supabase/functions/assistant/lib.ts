@@ -50,3 +50,15 @@ export function lessonText(chunks: { page: number | null; text: string }[], maxC
  */
 export const costUsd = (input: number, output: number, cacheWrite = 0, cacheRead = 0) =>
   Math.round(((input * 2 + output * 10 + cacheWrite * 2.5 + cacheRead * 0.2) / 1_000_000) * 10000) / 10000;
+
+/**
+ * The streamed answer ends with one line "SOURCES: [2, 5] OUTSIDE: no". This splits it off: the answer text, the
+ * source numbers and whether general knowledge was used. A missing line gives no sources.
+ */
+export function splitTail(text: string): { answer: string; sources: number[]; outside: boolean } {
+  const at = text.lastIndexOf('SOURCES:');
+  if (at < 0) return { answer: text.trim(), sources: [], outside: false };
+  const tail = text.slice(at);
+  const nums = (tail.match(/\[([^\]]*)\]/)?.[1] ?? '').split(/[,\s]+/).map(Number).filter((n) => Number.isInteger(n) && n > 0);
+  return { answer: text.slice(0, at).trim(), sources: [...new Set(nums)], outside: /OUTSIDE:\s*yes/i.test(tail) };
+}

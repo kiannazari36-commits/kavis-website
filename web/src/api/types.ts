@@ -67,17 +67,6 @@ export type ReaderTerm = {
   explanation: Partial<Record<Lang, { name: string; kind: string; text: string }>>;
 };
 
-export type AttachmentKind = 'pdf' | 'photo' | 'audio';
-
-export type Attachment = {
-  tag: L10n;
-  name: L10n;
-  meta: L10n;
-  /** Topic the app guesses the file belongs to. */
-  topic: string;
-  why: L10n;
-};
-
 /** Why a topic is in the exam summary (shown as its tag). */
 export type TopicReason =
   | { type: 'weak'; mastery: number }
