@@ -95,10 +95,10 @@ async function sha256(text: string) {
 }
 
 /**
- * A saved translation of a sentence (table translations). Returns null when there is none yet:
- * new translations are made by the Edge Function "translate" (not built yet).
+ * A translation of part of the teacher's text: a saved one (table translations) at once, else the server makes it
+ * with the AI and keeps it (Edge Function translate). 'locked' = trial over, 'failed' = try again.
  */
-export async function translate(materialId: string, text: string, lang: Lang, style: TranslationStyle): Promise<string | null> {
+export async function translate(materialId: string, text: string, lang: Lang, style: TranslationStyle): Promise<string | { error: 'locked' | 'failed' }> {
   const { data, error } = await supabase
     .from('translations')
     .select('text')
@@ -108,5 +108,11 @@ export async function translate(materialId: string, text: string, lang: Lang, st
     .eq('style', style)
     .maybeSingle<{ text: string }>();
   if (error) console.error('translate', error);
-  return data?.text ?? null;
+  if (data) return data.text;
+  const made = await supabase.functions.invoke('translate', { body: { material_id: materialId, text, target_lang: lang, style } });
+  if (made.error) {
+    const status = (made.error as { context?: { status?: number } }).context?.status;
+    return { error: status === 403 ? 'locked' : 'failed' };
+  }
+  return (made.data as { text: string }).text;
 }

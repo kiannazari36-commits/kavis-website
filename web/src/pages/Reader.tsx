@@ -11,8 +11,9 @@ import { askAssistant, latestThread, type ChatMessage } from '../api/assistant';
 import { sectionCheckCounter } from '../api/quiz';
 import { addTermCard } from '../api/cards';
 import { lectureMarks, recordingsOf, type LectureMark } from '../api/recording';
+import { loadInk, saveInk, type PageInk, type Stroke } from '../api/ink';
 import { clock } from '../speech/transcribe';
-import { canSpeak, speak, stopSpeaking } from '../hooks/speak';
+import { canSpeak, speak, speakAll, stopSpeaking } from '../hooks/speak';
 import { num, percent } from '../i18n/format';
 import { useAsync } from '../hooks/useAsync';
 import { usePanelPref } from '../hooks/usePanelPref';
@@ -43,6 +44,9 @@ const TAGS: Record<ReaderTag, [string, 'vio' | 'red']> = {
   emergency: ['s4tag', 'red'],
   general: ['tagGeneral', 'vio'],
 };
+/** Pen colors: bordo, amber, green, blue. */
+const PEN_COLORS = ['#9C2F3A', '#E0A12A', '#2F7D5B', '#2F5D9C'];
+
 const blockPages = (b: ReaderBlock) => Array.from({ length: b.pageTo - b.pageFrom + 1 }, (_, i) => b.pageFrom + i);
 
 export default function Reader() {
@@ -86,10 +90,34 @@ export default function Reader() {
   const [panel, setPanel] = usePanelPref('kavis.readerPanel', 1200);
   const [term, setTerm] = useState<string | null>(null);
   const [selected, setSelected] = useState(false);
-  const [trSource, setTrSource] = useState<string | null>(null);
+  const [trSource, setTrSource] = useState<{ text: string; page: number } | null>(null);
   const [paused, setPaused] = useState(() => loadClock(pdfId).paused);
   const [shareOpen, setShareOpen] = useState(false);
   const [asked, setAsked] = useState<{ text: string; n: number } | null>(null);
+  // The pen: drawing over the pages, saved per page (annotations, kind 'ink').
+  const [pen, setPen] = useState(false);
+  const [penColor, setPenColor] = useState(PEN_COLORS[0]);
+  const savedInk = useAsync(() => (pdfId ? loadInk(pdfId) : Promise.resolve({} as Record<number, PageInk>)), [pdfId]);
+  const [inkEdits, setInkEdits] = useState<Record<number, PageInk>>({});
+  const [lastInkPage, setLastInkPage] = useState<number | null>(null);
+  const inkOf = (page: number): PageInk => inkEdits[page] ?? savedInk?.[page] ?? { id: null, strokes: [] };
+  const setInk = async (page: number, strokes: Stroke[]) => {
+    const now = { id: inkOf(page).id, strokes };
+    setInkEdits((x) => ({ ...x, [page]: now }));
+    setLastInkPage(page);
+    const id = await saveInk(pdfId, page, now);
+    setInkEdits((x) => ({ ...x, [page]: { ...x[page], id } }));
+  };
+  // The speaker in the dock reads the open section aloud (the browser's voice, free).
+  const [reading, setReading] = useState(false);
+  // Another section or leaving the page stops the reading.
+  useEffect(
+    () => () => {
+      stopSpeaking();
+      setReading(false);
+    },
+    [sec, pdfId],
+  );
   const [seconds, setSeconds] = useState(() => loadClock(pdfId).seconds);
   const secondsRef = useRef(seconds);
   secondsRef.current = seconds;
@@ -294,6 +322,9 @@ export default function Reader() {
             {section.blocks.map((b, i) => (
               <Block
                 marks={marks.filter((m) => m.page >= b.pageFrom && m.page <= b.pageTo)}
+                ink={inkOf(b.pageFrom).strokes}
+                pen={pen ? penColor : null}
+                onInk={(strokes) => setInk(b.pageFrom, strokes)}
                 key={`${sec_}-${i}`}
                 doc={doc}
                 block={b}
@@ -311,7 +342,7 @@ export default function Reader() {
                   setTerm(null);
                 }}
                 selActs={[
-                  [t('actTranslate'), () => (setSelected(false), setTrSource(sentenceOf(b)))],
+                  [t('actTranslate'), () => (setSelected(false), setTrSource({ text: sentenceOf(b), page: b.pageFrom }))],
                   [
                     t('actCopy'),
                     () => {
@@ -335,7 +366,7 @@ export default function Reader() {
                   ],
                   [t('actAsk'), () => (setSelected(false), askAssistant(t('askSentence') + sentenceOf(b)))],
                 ]}
-                onTranslate={() => setTrSource(paraText(b.paragraphs[0]))}
+                onTranslate={() => setTrSource({ text: blockText(b), page: b.pageFrom })}
               />
             ))}
 
@@ -365,6 +396,32 @@ export default function Reader() {
           </div>
         </div>
 
+        {pen && (
+          <div className={s.penBar} role="toolbar" aria-label={t('pen')}>
+            {PEN_COLORS.map((c) => (
+              <button
+                key={c}
+                aria-label={c}
+                aria-pressed={penColor === c}
+                className={penColor === c ? `${s.penColor} ${s.penColorOn}` : s.penColor}
+                style={{ background: c }}
+                onClick={() => setPenColor(c)}
+              />
+            ))}
+            <button
+              className={s.penText}
+              onClick={() => {
+                if (lastInkPage === null || !inkOf(lastInkPage).strokes.length) return toast(t('penNothing'));
+                setInk(lastInkPage, inkOf(lastInkPage).strokes.slice(0, -1));
+              }}
+            >
+              {t('penUndo')}
+            </button>
+            <button className={s.penText} onClick={() => setPen(false)}>
+              {t('penDone')}
+            </button>
+          </div>
+        )}
         <div className={s.dock}>
           <button className={s.clock} aria-label={paused ? t('resume') : t('pause')} onClick={() => setPaused(!paused)}>
             <span className="mono">{clock}</span>
@@ -372,10 +429,31 @@ export default function Reader() {
               <Icon name={paused ? 'play' : 'pause'} size={14} width={2.2} />
             </span>
           </button>
-          <button aria-label={t('pen')} title={t('pen')} onClick={() => toast(t('k165'))}>
+          <button
+            aria-label={t('pen')}
+            title={t('pen')}
+            aria-pressed={pen}
+            className={pen ? s.dockOn : undefined}
+            onClick={() => {
+              setPen(!pen);
+              if (!pen) toast(t('penOn'));
+            }}
+          >
             <Icon name="pen" size={20} />
           </button>
-          <button aria-label={t('listen')} title={t('listen')} onClick={() => toast(t('pageAloud'))}>
+          <button
+            aria-label={t(reading ? 'stopListen' : 'listen')}
+            title={t(reading ? 'stopListen' : 'listen')}
+            aria-pressed={reading}
+            className={reading ? s.dockOn : undefined}
+            onClick={() => {
+              if (reading) return (stopSpeaking(), setReading(false));
+              if (!canSpeak()) return toast(t('noVoice'));
+              const ok = speakAll(section.blocks.map(blockText).join('\n'), doc.language, () => setReading(false));
+              setReading(ok);
+              if (ok) toast(t('pageAloud'));
+            }}
+          >
             <Icon name="speaker" size={20} />
           </button>
           <button aria-label={t('cardsLabel')} title={t('cardsLabel')} onClick={() => navigate(`/cards?course=${courseId}`)}>
@@ -415,15 +493,20 @@ export default function Reader() {
 
       {shareOpen && <ShareDialog pdfId={pdfId} onClose={() => setShareOpen(false)} />}
 
-      {trSource && <TranslateDialog doc={doc} materialId={pdfId} source={trSource} onClose={() => setTrSource(null)} />}
+      {trSource && <TranslateDialog doc={doc} materialId={pdfId} source={trSource.text} page={trSource.page} onClose={() => setTrSource(null)} />}
     </div>
   );
 }
 
 /** The selectable sentence of a block, if it has one. */
+/** The first paragraph of a page (the selection menu works on it). */
 function sentenceOf(b: ReaderBlock) {
   const p = b.paragraphs.find((x) => !Array.isArray(x));
-  return p && !Array.isArray(p) ? p.text : null;
+  return p && !Array.isArray(p) ? p.text : b.paragraphs[0] ? paraText(b.paragraphs[0]) : (b.heading ?? '');
+}
+/** The whole text of a page: heading and paragraphs, one per line ("Çevir", reading aloud). */
+function blockText(b: ReaderBlock) {
+  return [b.heading, ...b.paragraphs.map(paraText)].filter(Boolean).join('\n');
 }
 
 /** Plain text of one paragraph (hard words included). */
@@ -432,6 +515,10 @@ function paraText(p: ReaderBlock['paragraphs'][number]) {
 }
 
 type BlockProps = {
+  /** Lines drawn over this page, and the pen's color while drawing (null = pen off). */
+  ink: Stroke[];
+  pen: string | null;
+  onInk: (strokes: Stroke[]) => void;
   /** Notes from the lecture recording on this page. */
   marks: LectureMark[];
   doc: ReaderDoc;
@@ -447,7 +534,7 @@ type BlockProps = {
   onTranslate: () => void;
 };
 
-function Block({ doc, block, terms, fontSize, term, onTerm, selected, highlights, onSelect, selActs, onTranslate, marks }: BlockProps) {
+function Block({ doc, block, terms, fontSize, term, onTerm, selected, highlights, onSelect, selActs, onTranslate, marks, ink, pen, onInk }: BlockProps) {
   const { t, lang } = useI18n();
   const toast = useToast();
   const [tagKey, tagStyle] = TAGS[block.tag] ?? TAGS.definition;
@@ -475,6 +562,7 @@ function Block({ doc, block, terms, fontSize, term, onTerm, selected, highlights
 
   return (
     <article className={s.page}>
+      <InkLayer strokes={ink} pen={pen} onDone={(st) => onInk([...ink, st])} />
       <div className={s.pageTop}>
         <span className="mono">{pageLabel}</span>
         <span className={tagStyle === 'red' ? `${s.tag} ${s.tagRed}` : s.tag}>{t(tagKey)}</span>
@@ -636,7 +724,7 @@ function TermCard({
   );
 }
 
-function TranslateDialog({ doc, materialId, source, onClose }: { doc: ReaderDoc; materialId: string; source: string; onClose: () => void }) {
+function TranslateDialog({ doc, materialId, source, page, onClose }: { doc: ReaderDoc; materialId: string; source: string; page: number; onClose: () => void }) {
   const { t, lang } = useI18n();
   const toast = useToast();
   // Every app language except the PDF's own.
@@ -658,8 +746,12 @@ function TranslateDialog({ doc, materialId, source, onClose }: { doc: ReaderDoc;
           </button>
         </div>
         <div className={s.source}>
-          <span className="mono">{t('sourceLabel')}</span>
-          <span className="reading" lang={doc.language} dir="ltr">
+          <span className="mono">
+            {t('sourceLabelN')
+              .replace('{lang}', (LANG_NAMES[doc.language as Lang] ?? doc.language).toLocaleUpperCase(lang))
+              .replace('{page}', num(page, lang))}
+          </span>
+          <span className={`reading ${s.sourceText}`} lang={doc.language} dir="auto">
             {source}
           </span>
         </div>
@@ -689,8 +781,8 @@ function TranslateDialog({ doc, materialId, source, onClose }: { doc: ReaderDoc;
             ))}
           </div>
         </div>
-        <p className={`reading ${s.result}`} dir={text ? dir : undefined} lang={text ? target : undefined}>
-          {text === undefined ? '…' : (text ?? t('demoTranslation'))}
+        <p className={`reading ${s.result}`} dir={typeof text === 'string' ? dir : undefined} lang={typeof text === 'string' ? target : undefined}>
+          {text === undefined ? t('translating') : typeof text === 'string' ? text : t(text.error === 'locked' ? 'trLocked' : 'trFailed')}
         </p>
         <span className={s.trHint}>{t(style === 'literal' ? 'hintLiteral' : 'hintNatural')}</span>
       </section>
@@ -818,5 +910,59 @@ function AssistantPanel({ materialId, title, pages, asked, onClose }: PanelProps
         </button>
       </form>
     </aside>
+  );
+}
+
+/**
+ * Lines drawn over a page. With the pen on, the page catches the mouse / finger / Apple Pencil and draws;
+ * a finished line is given back to be saved. Points are parts of the page's width and height (0–1).
+ */
+function InkLayer({ strokes, pen, onDone }: { strokes: Stroke[]; pen: string | null; onDone: (s: Stroke) => void }) {
+  const box = useRef<SVGSVGElement>(null);
+  // The line being drawn: kept in a ref too, so fast pointer events never see an old value.
+  const [live, setLive] = useState<Stroke | null>(null);
+  const drawing = useRef<Stroke | null>(null);
+  const draw = (st: Stroke | null) => {
+    drawing.current = st;
+    setLive(st);
+  };
+  const at = (e: { clientX: number; clientY: number }): [number, number] => {
+    const r = box.current!.getBoundingClientRect();
+    return [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height];
+  };
+  const line = (st: Stroke, i: number | string) => (
+    <polyline
+      key={i}
+      points={st.points.map(([x, y]) => `${x},${y}`).join(' ')}
+      fill="none"
+      stroke={st.color}
+      strokeWidth={3}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      vectorEffect="non-scaling-stroke"
+    />
+  );
+  if (!strokes.length && !pen) return null;
+  return (
+    <svg
+      ref={box}
+      className={pen ? `${s.ink} ${s.inkOn}` : s.ink}
+      viewBox="0 0 1 1"
+      preserveAspectRatio="none"
+      onPointerDown={(e) => {
+        if (!pen) return;
+        e.currentTarget.setPointerCapture?.(e.pointerId);
+        draw({ color: pen, points: [at(e)] });
+      }}
+      onPointerMove={(e) => drawing.current && draw({ ...drawing.current, points: [...drawing.current.points, at(e)] })}
+      onPointerUp={() => {
+        const st = drawing.current;
+        if (st && st.points.length > 1) onDone(st);
+        draw(null);
+      }}
+    >
+      {strokes.map(line)}
+      {live && line(live, 'live')}
+    </svg>
   );
 }

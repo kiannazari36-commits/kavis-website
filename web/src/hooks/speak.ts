@@ -23,3 +23,29 @@ export function speak(text: string, lang: string, onEnd?: () => void) {
 export function stopSpeaking() {
   if (canSpeak()) window.speechSynthesis.cancel();
 }
+
+/**
+ * Reads a long text aloud sentence by sentence (one long utterance stops after a while in Chrome); stops anything
+ * read before. onEnd runs when it finishes or is stopped.
+ */
+export function speakAll(text: string, lang: string, onEnd?: () => void) {
+  if (!canSpeak()) return false;
+  const synth = window.speechSynthesis;
+  synth.cancel();
+  const parts = text
+    .split(/\n+|(?<=[.!?…])\s+/)
+    .map((x) => x.trim())
+    .filter(Boolean);
+  if (!parts.length) return false;
+  const voice = synth.getVoices().find((v) => v.lang.toLowerCase().startsWith(lang.toLowerCase()));
+  parts.forEach((p, i) => {
+    const u = new SpeechSynthesisUtterance(p);
+    u.lang = VOICE_LANG[lang] ?? lang;
+    if (voice) u.voice = voice;
+    u.rate = 0.95;
+    if (i === parts.length - 1) u.onend = () => onEnd?.();
+    u.onerror = (e) => e.error !== 'interrupted' && e.error !== 'canceled' && onEnd?.();
+    synth.speak(u);
+  });
+  return true;
+}
