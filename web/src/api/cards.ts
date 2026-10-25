@@ -11,21 +11,23 @@ type Row = {
   ease: number;
   reps: number;
   again_count: number;
-  card_decks: { title: string | null; lang: FlashCard['lang']; course_id: string | null };
+  card_decks: { title: string | null; lang: FlashCard['lang']; course_id: string | null; material_id: string | null };
 };
 
 /**
- * Cards due now (spaced repetition), oldest first; optionally only one course's decks.
+ * Cards due now (spaced repetition), oldest first; optionally only one course's decks, or one lesson's deck
+ * (from the reader).
  * Cards are made by the server (lesson processing, "add mistakes to cards"); the app only updates the review state.
  */
-export async function dueCards(courseId?: string, limit = 30): Promise<FlashCard[]> {
+export async function dueCards(where: { courseId?: string; materialId?: string } = {}, limit = 30): Promise<FlashCard[]> {
   let q = supabase
     .from('flashcards')
-    .select('id, question, answer, note, page, interval_days, ease, reps, again_count, card_decks!inner(title, lang, course_id)')
+    .select('id, question, answer, note, page, interval_days, ease, reps, again_count, card_decks!inner(title, lang, course_id, material_id)')
     .lte('due_at', new Date().toISOString())
     .order('due_at')
     .limit(limit);
-  if (courseId) q = q.eq('card_decks.course_id', courseId);
+  if (where.materialId) q = q.eq('card_decks.material_id', where.materialId);
+  else if (where.courseId) q = q.eq('card_decks.course_id', where.courseId);
   const { data, error } = await q.returns<Row[]>();
   if (error) {
     console.error('dueCards', error);

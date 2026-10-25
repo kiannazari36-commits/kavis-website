@@ -10,6 +10,7 @@ const cors = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
+const LETTERS = 'ABCDEFGH';
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
 
 // The service key is provided by the platform (legacy name first, then the new secret keys).
@@ -93,14 +94,16 @@ Deno.serve(async (req) => {
     }
     if (deck) {
       const { data: existing } = await admin.from('flashcards').select('question').eq('deck_id', deck.id);
-      const have = new Set((existing ?? []).map((c) => c.question));
+      // The question part of each card (the options come after an empty line), to skip mistakes already added.
+      const have = new Set((existing ?? []).map((c) => (c.question as string).split('\n\n')[0]));
       const cards = g.confidentMistakes
         .filter((q) => !have.has(q.text))
         .map((q) => ({
           deck_id: deck!.id,
           user_id: uid,
-          question: q.text,
-          answer: q.options?.[q.answer_index ?? 0] ?? '',
+          // The options stay on the card, so a test question can still be answered.
+          question: q.options?.length ? `${q.text}\n\n${q.options.map((o, i) => `${LETTERS[i]}) ${o}`).join('\n')}` : q.text,
+          answer: q.options?.length ? `${LETTERS[q.answer_index ?? 0]}) ${q.options[q.answer_index ?? 0]}` : '',
           note: q.explanation,
           page: q.source_page,
           from_mistake: true,

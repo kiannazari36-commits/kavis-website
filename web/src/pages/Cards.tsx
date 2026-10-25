@@ -23,7 +23,9 @@ export default function Cards() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const courseId = params.get('course') ?? undefined;
-  const loaded = useAsync(() => dueCards(courseId), [courseId]);
+  // From the reader: only that lesson's cards.
+  const materialId = params.get('pdf') ?? undefined;
+  const loaded = useAsync(() => dueCards({ courseId, materialId }), [courseId, materialId]);
   const [queue, setQueue] = useState<FlashCard[] | null>(null);
   const [total, setTotal] = useState(0);
   const [done, setDone] = useState(0);
@@ -67,13 +69,15 @@ export default function Cards() {
   const card = queue[0];
   const pos = Math.min(done + 1, total);
   const cl = card?.lang ?? 'tr';
+  // A card from a test question keeps its options after an empty line ("A) …" lines).
+  const [question, options] = card ? [card.q.split('\n\n')[0], card.q.split('\n\n').slice(1).join('\n')] : ['', ''];
   const nextLabel = (id: CardRating, key: string) =>
     id === 'good' && card ? t('daysN').replace('{n}', num(goodInterval(card), lang)) : t(key);
 
   return (
     <main className={s.main}>
       <div className={s.head}>
-        <button className={s.round} aria-label={t('back')} onClick={() => navigate('/home')}>
+        <button className={s.round} aria-label={t('back')} onClick={() => (materialId ? navigate(-1) : navigate('/home'))}>
           <Icon name="back" size={20} width={1.8} className="flip-rtl" />
         </button>
         <h1>
@@ -110,8 +114,13 @@ export default function Cards() {
               {t(back ? 'sideA' : 'sideQ')} {card.page !== null && `${t('pageShort')} ${num(card.page, lang)}`}
             </span>
             <span className={back ? `${s.main2} ${s.answer}` : s.main2} lang={cl} dir={dirOf(cl)}>
-              {back ? card.a : card.q}
+              {back ? card.a : question}
             </span>
+            {!back && options && (
+              <span className={s.options} lang={cl} dir={dirOf(cl)}>
+                {options}
+              </span>
+            )}
             {back ? (
               <span className={s.sub} lang={cl} dir={dirOf(cl)}>
                 {card.note}
