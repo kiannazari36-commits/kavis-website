@@ -6,7 +6,7 @@ import { createShareLink, type ShareItem } from '../api/share';
 import s from './ShareDialog.module.css';
 
 // Design: design/NewIPad.dc.html share sheet ("sh"). CLAUDE.md: Premium only, and only what the
-// app made (summary, cards, quiz) — the PDF option of the design is removed.
+// app made (summary, cards, quiz) — the PDF option of the design is removed: the PDF belongs to the teacher.
 const ITEMS: [ShareItem, string, string][] = [
   ['summary', 'shareSum', 'shareSumS'],
   ['cards', 'shareCards', 'shareCardsS'],
@@ -25,6 +25,10 @@ export default function ShareDialog({ pdfId, onClose }: { pdfId: string; onClose
       return null;
     }
     const u = await createShareLink(pdfId, sel);
+    if (!u) {
+      toast(t('shareFailed'));
+      return null;
+    }
     setUrl(u);
     return u;
   };

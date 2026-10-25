@@ -6,7 +6,9 @@ import { useToast } from '../components/Toast';
 import Icon from '../components/Icon';
 import MolViewer from '../components/MolViewer';
 import { addWrongsToPlan, coursesWithPack, getExamPack, getSectionCheck, saveAttempt, setStudyReminder } from '../api/quiz';
-import { generateExamPack } from '../api/samples';
+import { generateExamPack, type QuestionType } from '../api/samples';
+
+const QTYPES: QuestionType[] = ['case', 'side_effects', 'dose', 'knowledge', 'structure'];
 import { daysUntil, listCourses } from '../api/courses';
 import { useAsync } from '../hooks/useAsync';
 import { dirOf } from '../settings/SettingsProvider';
@@ -56,12 +58,28 @@ export default function Quiz() {
   const [made, setMade] = useState(0);
   const pack = useAsync(() => (courseId ? getExamPack(courseId) : Promise.resolve(null)), [courseId, made]);
   const [making, setMaking] = useState(false);
-  // "Hocanın tarzında yeni sorular": a new exam pack for this course (AI, Edge generate-quiz).
+  // A new exam pack for this course (AI, Edge generate-quiz) in the question types the student picks
+  // ("İstediğin tarzda"; none = a mix), like the lecturer's sample questions only when some were added.
+  const [styles, setStyles] = useState<QuestionType[]>([]);
+  const toggleStyle = (k: QuestionType) => setStyles(styles.includes(k) ? styles.filter((x) => x !== k) : [...styles, k]);
+  const stylePicker = (
+    <div className={s.stylePick} role="group" aria-label={t('pickStyle')}>
+      <span>{t('pickStyle')}</span>
+      <button aria-pressed={!styles.length} className={!styles.length ? s.styleOn : ''} onClick={() => setStyles([])}>
+        {t('styleMix')}
+      </button>
+      {QTYPES.map((k) => (
+        <button key={k} aria-pressed={styles.includes(k)} className={styles.includes(k) ? s.styleOn : ''} onClick={() => toggleStyle(k)}>
+          {t(`style_${k}`)}
+        </button>
+      ))}
+    </div>
+  );
   const makePack = () =>
     guard('generate', async () => {
       if (!courseId || making) return;
       setMaking(true);
-      const r = await generateExamPack(courseId);
+      const r = await generateExamPack(courseId, styles);
       setMaking(false);
       if ('error' in r) return toast(t(r.error === 'locked' ? 'trialQFull' : r.error === 'budget' ? 'askBudget' : 'packFailed'));
       toast(t('packMade').replace('{n}', String(r.questions)));
@@ -204,10 +222,13 @@ export default function Quiz() {
             {t('examA')} <span>{t('examB')}</span>
           </h1>
           <span className={s.sub}>{subtitle}</span>
-          <span className={s.styleBadge}>
-            <Icon name="spark" size={11} width={2} />
-            {t('teacherStyle')}
-          </span>
+          {/* Only when the questions really follow sample questions the student added. */}
+          {(fromReader ? check?.fromSamples : pack?.fromSamples) && (
+            <span className={s.styleBadge}>
+              <Icon name="spark" size={11} width={2} />
+              {t('teacherStyle')}
+            </span>
+          )}
         </span>
         <div role="radiogroup" className={s.courses}>
           {chips.map((c) => (
@@ -242,6 +263,7 @@ export default function Quiz() {
         <section className={s.makeBox}>
           <b>{t('noPack')}</b>
           <span>{t('packHow')}</span>
+          {stylePicker}
           <div className={s.makeBtns}>
             <button className={s.pri} aria-busy={making} onClick={makePack}>
               {making ? t('packMaking') : t('packMake')}
@@ -253,10 +275,13 @@ export default function Quiz() {
         </section>
       )}
       {!fromReader && pack && (
-        <button className={s.remake} aria-busy={making} onClick={makePack}>
-          <Icon name="spark" size={14} />
-          {making ? t('packMaking') : t('packRemake')}
-        </button>
+        <div className={s.remakeRow}>
+          {stylePicker}
+          <button className={s.remake} aria-busy={making} onClick={makePack}>
+            <Icon name="spark" size={14} />
+            {making ? t('packMaking') : t('packRemake')}
+          </button>
+        </div>
       )}
       {tab === 'sum' && topics.length === 0 && pack && <p className={s.muted}>{t('noPack')}</p>}
 
@@ -327,7 +352,7 @@ export default function Quiz() {
               {t('questionWord')} {num(qi + 1, lang)} / {num(qList.length, lang)}
             </span>
             <span className={`${s.tag} ${s.weak}`}>{t(`style_${Q.style}`)}</span>
-            <span className={`${s.tag} ${s.imp}`}>{t('inStyle')}</span>
+            {(fromReader ? check?.fromSamples : pack?.fromSamples) && <span className={`${s.tag} ${s.imp}`}>{t('inStyle')}</span>}
             <span className={s.grow} />
             <span className={s.progress} aria-hidden="true">
               <span style={{ width: `${Math.round(((qi + 1) / qList.length) * 100)}%` }} />

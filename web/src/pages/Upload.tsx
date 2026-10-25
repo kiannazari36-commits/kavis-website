@@ -9,6 +9,8 @@ import {
   lessonStatus,
   MAX_MB,
   MAX_PAGES,
+  partsFor,
+  splitPdf,
   MAX_PHOTOS,
   retryWithOcr,
   shrinkPhoto,
@@ -53,6 +55,8 @@ export default function Upload() {
   const [over, setOver] = useState(false);
   const [lessonId, setLessonId] = useState<string | null>(null);
   const [status, setStatus] = useState<LessonStatus | null>(null);
+  // A long PDF uploaded as several lessons (0 = one lesson).
+  const [partCount, setPartCount] = useState(0);
 
   // While preparing: ask the server every 4 seconds.
   useEffect(() => {
@@ -93,11 +97,25 @@ export default function Upload() {
     guard('pdf', async () => {
       if (!file || !info) return toast(t('up_needFile'));
       if (!title.trim()) return toast(t('up_needName'));
-      if (info.pages > MAX_PAGES) return toast(t('up_tooLong').replace('{n}', num(info.pages, lang)));
       setBusy(true);
       try {
-        const id = await uploadLesson(file, title, courseId || null);
-        setLessonId(id);
+        if (info.pages > MAX_PAGES) {
+          // A long PDF: cut into parts, each its own lesson "Name (1/3)"; the first one is followed here.
+          const parts = await splitPdf(file);
+          let first: string | null = null;
+          for (const [i, part] of parts.entries()) {
+            try {
+              const id = await uploadLesson(part, `${title.trim()} (${i + 1}/${parts.length})`, courseId || null);
+              first ??= id;
+            } catch (e) {
+              if (!first) throw e;
+              toast(t(e instanceof UploadFail && e.reason === 'trial' ? 'up_partsTrial' : 'up_failed').replace('{n}', num(i, lang)));
+              break;
+            }
+          }
+          setLessonId(first);
+          setPartCount(parts.length);
+        } else setLessonId(await uploadLesson(file, title, courseId || null));
         setStage('processing');
       } catch (e) {
         const reason = e instanceof UploadFail ? e.reason : 'network';
@@ -254,6 +272,7 @@ export default function Upload() {
           </div>
           <h2>{ready ? t('up_ready') : t('up_procT')}</h2>
           {st === 'failed' ? <p className={s.warn}>{t('up_processFailed')}</p> : !ready && <p>{t('up_procS')}</p>}
+          {partCount > 1 && <p>{t('up_partsNote').replace('{k}', num(partCount, lang))}</p>}
           <ol className={s.steps} aria-live="polite">
             {STEPS.map((k, i) => {
               const state = i < done ? 'done' : i === done && !ready ? 'active' : 'wait';
@@ -358,7 +377,14 @@ export default function Upload() {
                 </span>
               </div>
             )}
-            {info && info.pages > MAX_PAGES && <p className={s.warn}>{t('up_tooLong').replace('{n}', num(info.pages, lang))}</p>}
+            {info && info.pages > MAX_PAGES && (
+              <p className={s.warn}>
+                {t('up_split')
+                  .replace('{n}', num(info.pages, lang))
+                  .replace('{k}', num(partsFor(info.pages), lang))
+                  .replace('{max}', num(MAX_PAGES, lang))}
+              </p>
+            )}
           </section>
         )}
 

@@ -1,11 +1,12 @@
-import { useState, type FormEvent } from 'react';
+import { useRef, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n/I18nProvider';
 import { num, weekdayName } from '../i18n/format';
 import { useToast } from '../components/Toast';
 import Icon, { type IconName } from '../components/Icon';
 import Switch from '../components/Switch';
-import { addClass, deleteClass, listClasses, setClassRemind, type ClassEntry } from '../api/timetable';
+import { addClass, deleteClass, listClasses, readTimetable, setClassRemind, type ClassEntry, type FoundClass } from '../api/timetable';
+import Thinking from '../components/Thinking';
 import { addDays } from '../api/plan';
 import { isoToday, listCourses } from '../api/courses';
 import { useAsync } from '../hooks/useAsync';
@@ -15,7 +16,8 @@ import s from './Schedule.module.css';
 
 // Design: design/NewSchedule.dc.html ("Okul ders programım"): empty state with 3 ways to add, day tabs with
 // each day's classes and a reminder bell, reminder settings and a notification preview.
-// Reading the timetable from a photo / PDF needs the server (Edge Function import-timetable) — not built yet.
+// A photo or PDF of the timetable is read by the server (Edge Function import-timetable); the student sees the
+// classes it found, unticks wrong ones and adds the rest.
 
 const DAY_KEYS = ['dMon', 'dTue', 'dWed', 'dThu', 'dFri', 'dSat', 'dSun'];
 const TIMES = ['19:00', '20:00', '21:00', '22:00'];
@@ -34,6 +36,12 @@ export default function Schedule() {
   const [bells, setBells] = useState<Record<string, boolean>>({});
   const [adding, setAdding] = useState(false);
   const [manual, setManual] = useState(false);
+  // Reading a photo / PDF: the classes found, and which of them stay ticked.
+  const photoIn = useRef<HTMLInputElement>(null);
+  const fileIn = useRef<HTMLInputElement>(null);
+  const [reading, setReading] = useState(false);
+  const [found, setFound] = useState<(FoundClass & { on: boolean })[] | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const today = weekdayOf(isoToday());
   const tomorrow = (today % 7) + 1;
@@ -76,9 +84,35 @@ export default function Schedule() {
     toast(`${notifTitle}${body ? ' · ' + body.replace(/\n/g, ' · ') : ''}`);
   };
 
+  const read = async (file?: File) => {
+    if (!file) return;
+    setReading(true);
+    setFound(null);
+    const r = await readTimetable(file);
+    setReading(false);
+    if ('error' in r) return toast(t(r.error === 'file' ? 'schBadFile' : r.error === 'budget' ? 'askBudget' : 'schReadFailed'));
+    if (!r.length) return toast(t('schNoneFound'));
+    setFound(r.map((c) => ({ ...c, on: true })));
+  };
+  // The course a class belongs to: a course whose name is in the class title.
+  const courseFor = (title: string) => {
+    const x = title.toLocaleLowerCase(lang);
+    return courses.find((c) => x.includes(c.name.toLocaleLowerCase(lang)) || (c.short && x.includes(c.short.toLocaleLowerCase(lang))))?.id ?? null;
+  };
+  const addFound = async () => {
+    const chosen = (found ?? []).filter((c) => c.on);
+    if (!chosen.length) return toast(t('schPickOne'));
+    setSaving(true);
+    for (const c of chosen) await addClass({ ...c, courseId: courseFor(c.title) });
+    setSaving(false);
+    setFound(null);
+    setReload((n) => n + 1);
+    toast(t('schAddedN').replace('{n}', num(chosen.length, lang)));
+  };
+
   const ways: [IconName, string, string, () => void][] = [
-    ['camera', 'schPhoto', 'schPhotoS', () => toast(t('schReadLater'))],
-    ['file', 'schFile', 'schFileS', () => toast(t('schReadLater'))],
+    ['camera', 'schPhoto', 'schPhotoS', () => photoIn.current?.click()],
+    ['file', 'schFile', 'schFileS', () => fileIn.current?.click()],
     ['pen', 'schHand', 'schHandS', () => (setManual(true), setAdding(true), setDay(today <= 5 ? today : 1))],
   ];
 
@@ -93,6 +127,46 @@ export default function Schedule() {
           <span>{t('schRemind')}</span>
         </span>
       </div>
+      <input ref={photoIn} type="file" accept="image/*" hidden onChange={(e) => (read(e.target.files?.[0]), (e.target.value = ''))} />
+      <input ref={fileIn} type="file" accept="application/pdf,.pdf,image/*" hidden onChange={(e) => (read(e.target.files?.[0]), (e.target.value = ''))} />
+
+      {reading && (
+        <section className={s.found}>
+          <h2>{t('schReading')}</h2>
+          <Thinking />
+        </section>
+      )}
+      {found && (
+        <section className={s.found}>
+          <h2>{t('schFoundN').replace('{n}', num(found.length, lang))}</h2>
+          <p>{t('schFoundS')}</p>
+          <ul>
+            {found.map((c, i) => (
+              <li key={`${c.weekday}-${c.start}-${i}`}>
+                <label>
+                  <input type="checkbox" checked={c.on} onChange={() => setFound(found.map((x, j) => (j === i ? { ...x, on: !x.on } : x)))} />
+                  <span className={`mono ${s.foundTime}`}>
+                    {dayName(c.weekday)} · {c.start}
+                    {c.end ? `–${c.end}` : ''}
+                  </span>
+                  <b dir="auto">{c.title}</b>
+                  <span className={s.foundMeta} dir="auto">
+                    {[c.room, c.teacher].filter(Boolean).join(' · ')}
+                  </span>
+                </label>
+              </li>
+            ))}
+          </ul>
+          <div className={s.foundBtns}>
+            <button className={s.pri} aria-busy={saving} disabled={saving} onClick={addFound}>
+              {t('schAddChosen')}
+            </button>
+            <button className={s.ghost} onClick={() => setFound(null)}>
+              {t('schCancel')}
+            </button>
+          </div>
+        </section>
+      )}
 
       {classes.length === 0 && !manual ? (
         <section className={s.empty}>
@@ -254,7 +328,7 @@ export default function Schedule() {
               </button>
             </section>
 
-            <button className={s.redo} onClick={() => toast(t('schReadLater'))}>
+            <button className={s.redo} onClick={() => photoIn.current?.click()}>
               {t('schNew')}
             </button>
           </div>

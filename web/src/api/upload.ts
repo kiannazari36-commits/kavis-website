@@ -20,6 +20,30 @@ export async function inspectPdf(file: File): Promise<PdfInfo> {
   return { pages: totalPages, hasText: chars >= 20 * Math.min(totalPages, 5), sizeMb: Math.round((file.size / 1048576) * 10) / 10 };
 }
 
+/** How many lessons a long PDF becomes: parts of at most MAX_PAGES pages. */
+export const partsFor = (pages: number) => Math.ceil(pages / MAX_PAGES);
+
+/**
+ * A PDF longer than MAX_PAGES is cut in the browser into equal parts (each at most MAX_PAGES pages), every part a
+ * PDF of its own with the teacher's pages unchanged; each part becomes its own lesson.
+ */
+export async function splitPdf(file: File): Promise<File[]> {
+  const { PDFDocument } = await import('pdf-lib');
+  const src = await PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: true });
+  const total = src.getPageCount();
+  const k = partsFor(total);
+  const size = Math.ceil(total / k);
+  const parts: File[] = [];
+  for (let i = 0; i < k; i++) {
+    const doc = await PDFDocument.create();
+    const pages = await doc.copyPages(src, Array.from({ length: Math.min(size, total - i * size) }, (_, j) => i * size + j));
+    pages.forEach((p) => doc.addPage(p));
+    const bytes = await doc.save();
+    parts.push(new File([bytes], file.name.replace(/\.pdf$/i, '') + `-${i + 1}.pdf`, { type: 'application/pdf' }));
+  }
+  return parts;
+}
+
 export class UploadFail extends Error {
   reason: 'trial' | 'network' | 'tooBig';
   constructor(reason: 'trial' | 'network' | 'tooBig') {

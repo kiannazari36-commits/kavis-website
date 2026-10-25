@@ -114,9 +114,12 @@ export async function setStyleUse(courseId: string, field: 'use_in_quizzes' | 'u
   if (error) console.error('setStyleUse', error);
 }
 
-/** "Hocanın tarzında yeni sorular": a new exam pack for the course (Edge generate-quiz, AI). */
-export async function generateExamPack(courseId: string, count = 10): Promise<{ questions: number } | Fail> {
-  const { data, error } = await supabase.functions.invoke('generate-quiz', { body: { course_id: courseId, count } });
+/**
+ * A new exam pack for the course (Edge generate-quiz, AI): in the question types the student chose (none = a mix),
+ * and like the lecturer's sample questions when the student added some.
+ */
+export async function generateExamPack(courseId: string, styles: QuestionType[] = [], count = 10): Promise<{ questions: number } | Fail> {
+  const { data, error } = await supabase.functions.invoke('generate-quiz', { body: { course_id: courseId, count, styles } });
   if (error) return fail(error);
   return { questions: (data as { questions: number }).questions };
 }

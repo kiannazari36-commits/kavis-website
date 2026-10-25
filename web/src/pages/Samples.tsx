@@ -21,16 +21,13 @@ import {
 import { useTrial } from '../trial/TrialProvider';
 import s from './Samples.module.css';
 
-// Design: design/NewQuestions.dc.html, "Soru örneklerim" → "Hocanın soru tarzı": choose the course, add the lecturer's
-// questions (photo, PDF or typed), then the server finds the style (question types, topics asked most, patterns);
-// switches decide where it is used; "Hocanın tarzında yeni sorular" makes the course's exam pack in that style.
+// Design: design/NewQuestions.dc.html, "Soru örneklerim": choose the course, add sample questions (photo, PDF or typed;
+// optional), then the server finds their style (question types, topics asked most, patterns); a switch decides
+// whether exam questions follow it; "Bu tarzda yeni sorular" makes the course's exam pack in that style.
 
 const TYPES: QuestionType[] = ['case', 'side_effects', 'dose', 'knowledge', 'structure'];
-const USES = [
-  ['use_in_quizzes', 'useInQuizzes', 'smp_useQuiz'],
-  ['use_in_cards', 'useInCards', 'smp_useCards'],
-  ['use_in_summaries', 'useInSummaries', 'smp_useSum'],
-] as const;
+// The style is used only for exam questions (cards and summaries stay as the lesson text says).
+const USES = [['use_in_quizzes', 'useInQuizzes', 'smp_useQuiz']] as const;
 
 export default function Samples() {
   const { t, lang } = useI18n();

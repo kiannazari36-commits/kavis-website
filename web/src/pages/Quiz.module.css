@@ -869,3 +869,43 @@
   font-size: 13px;
   cursor: pointer;
 }
+
+/* "Hangi tarzda soru istersin?" — question types for a new pack */
+.stylePick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.stylePick > span {
+  font-size: 12.5px;
+  color: var(--text2);
+  margin-inline-end: 4px;
+}
+
+.stylePick button {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.stylePick .styleOn {
+  border-color: var(--pri);
+  background: var(--pri);
+  color: #fffcf6;
+}
+
+.remakeRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}

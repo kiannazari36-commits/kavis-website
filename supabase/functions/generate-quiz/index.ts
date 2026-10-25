@@ -1,5 +1,6 @@
 // Edge Function generate-quiz: "Hocanın tarzında yeni sorular" — the exam pack of a course ("Sınava özel").
-// POST { course_id, count? } → { quiz_id, questions }. From the course's lessons (most important pages first: what the
+// POST { course_id, count?, styles? } → { quiz_id, questions }. styles = the question types the student chose
+// ("İstediğin tarzda"): case, side_effects, dose, knowledge, structure; none = a mix. From the course's lessons (most important pages first: what the
 // lecturer said will be in the exam, weak topics, central topics), in the lecturer's question style when it is
 // known (teacher_styles, "Sınavlarda" on), the AI writes exam questions with hints and a short exam summary.
 // Writes (service role): quizzes (kind exam_prep) + quiz_questions, summaries (kind exam_prep), usage_monthly.
@@ -72,6 +73,8 @@ Deno.serve(async (req) => {
   const body = await req.json().catch(() => ({}));
   const courseId = body.course_id;
   const count = Math.min(20, Math.max(5, Number(body.count) || 10));
+  const TYPES = ['case', 'side_effects', 'dose', 'knowledge', 'structure'];
+  const wanted = (Array.isArray(body.styles) ? body.styles : []).filter((x: unknown) => TYPES.includes(String(x))) as string[];
   if (typeof courseId !== 'string') return json({ error: 'course_id' }, 400);
   const { data: course } = await db.from('courses').select('user_id, name, language, content_lang_override').eq('id', courseId).maybeSingle();
   if (!course || course.user_id !== uid) return json({ error: 'not found' }, 404);
@@ -137,8 +140,9 @@ Deno.serve(async (req) => {
   const styleText = useStyle
     ? `Lecturer's question style (from their old questions): types in percent ${JSON.stringify((useStyle.distribution as { types?: unknown }).types)}, options per question ${(useStyle.distribution as { options?: number }).options ?? 5}, patterns: ${((useStyle.distribution as { patterns?: string[] }).patterns ?? []).join(' | ')}; topics asked most: ${(useStyle.top_topics as { title: string }[]).map((x) => x.title).join(', ')}`
     : 'Lecturer style unknown: mix short patient cases with knowledge questions.';
+  const wantedText = wanted.length ? `\nThe student asked for these question types only: ${wanted.join(', ')} (share them about equally).` : '';
 
-  const user = `Course: ${course.name}\nCONTENT LANGUAGE: ${LANG_NAMES[lang] ?? 'Turkish'}\nWrite ${count} questions.\n\n${styleText}\n\nLessons:\n${lessons.map((l, i) => `L${i + 1}: ${l.title}`).join('\n')}\n\nTopics:\n${topicText || '-'}\n\nWhat the lecturer said in recorded classes:\n${quotes || '-'}\n\nPages:\n${chosen.map((p) => `[L${p.lesson} p.${p.page}] ${p.text}`).join('\n')}`;
+  const user = `Course: ${course.name}\nCONTENT LANGUAGE: ${LANG_NAMES[lang] ?? 'Turkish'}\nWrite ${count} questions.\n\n${styleText}${wantedText}\n\nLessons:\n${lessons.map((l, i) => `L${i + 1}: ${l.title}`).join('\n')}\n\nTopics:\n${topicText || '-'}\n\nWhat the lecturer said in recorded classes:\n${quotes || '-'}\n\nPages:\n${chosen.map((p) => `[L${p.lesson} p.${p.page}] ${p.text}`).join('\n')}`;
 
   try {
     const client = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')!.trim() });
@@ -161,7 +165,7 @@ Deno.serve(async (req) => {
 
     const { data: quiz, error } = await db
       .from('quizzes')
-      .insert({ user_id: uid, course_id: courseId, kind: 'exam_prep', lang, teacher_style: !!useStyle, options: { count } })
+      .insert({ user_id: uid, course_id: courseId, kind: 'exam_prep', lang, teacher_style: !!useStyle, options: { count, styles: wanted } })
       .select('id')
       .single();
     if (error) throw error;

@@ -40,19 +40,6 @@
   font-weight: 400;
 }
 
-.styleBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 10px;
-  font-weight: 600;
-  line-height: 1;
-  padding: 4px 8px;
-  border-radius: 10px;
-  background: rgba(242, 179, 61, 0.2);
-  color: var(--text2);
-  white-space: nowrap;
-}
 
 .count {
   font-size: 13px;

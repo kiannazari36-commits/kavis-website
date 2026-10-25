@@ -5,7 +5,8 @@ import type { ExamTopic, QuizQuestion } from './types';
 import { runPlanner } from './plan';
 
 /** Exam-prep pack of a course: summary topics by importance + a quiz in the lecturer's style (made by the server). */
-export type ExamPack = { quizId: string; lang: Lang; topics: ExamTopic[]; questions: QuizQuestion[] };
+/** fromSamples: made in the style of the lecturer's sample questions the student added ("Soru örneklerim"). */
+export type ExamPack = { quizId: string; lang: Lang; fromSamples: boolean; topics: ExamTopic[]; questions: QuizQuestion[] };
 
 type QRow = {
   id: string;
@@ -35,10 +36,10 @@ const toQuestion = (r: QRow): QuizQuestion => ({
 
 /** The newest quiz of a kind for a course (or one lesson), with its questions in order. */
 async function latestQuiz(kind: 'exam_prep' | 'section_check' | 'lesson_end', filter: { course?: string; material?: string }) {
-  let q = supabase.from('quizzes').select('id, lang').eq('kind', kind).order('created_at', { ascending: false }).limit(1);
+  let q = supabase.from('quizzes').select('id, lang, teacher_style').eq('kind', kind).order('created_at', { ascending: false }).limit(1);
   if (filter.course) q = q.eq('course_id', filter.course);
   if (filter.material) q = q.eq('material_id', filter.material);
-  const { data: quiz, error } = await q.maybeSingle<{ id: string; lang: Lang }>();
+  const { data: quiz, error } = await q.maybeSingle<{ id: string; lang: Lang; teacher_style: boolean }>();
   if (error) console.error('latestQuiz', error);
   if (!quiz) return null;
   const { data, error: e2 } = await supabase
@@ -48,7 +49,7 @@ async function latestQuiz(kind: 'exam_prep' | 'section_check' | 'lesson_end', fi
     .order('sort_order')
     .returns<QRow[]>();
   if (e2) console.error('quiz_questions', e2);
-  return { quizId: quiz.id, lang: quiz.lang, questions: (data ?? []).map(toQuestion) };
+  return { quizId: quiz.id, lang: quiz.lang, fromSamples: quiz.teacher_style, questions: (data ?? []).map(toQuestion) };
 }
 
 /** null: the pack for this course is not made yet (the server makes it about a week before the exam). */

@@ -83,10 +83,6 @@ export default function Cards() {
         <h1>
           {t('cardsTitle')} {card?.deck && <span>· {card.deck}</span>}
         </h1>
-        <span className={s.styleBadge}>
-          <Icon name="spark" size={11} width={2} />
-          {t('teacherStyle')}
-        </span>
         <span className={s.count}>
           {num(pos, lang)} / {num(total, lang)}
         </span>

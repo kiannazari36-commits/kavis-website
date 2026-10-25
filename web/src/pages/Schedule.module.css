@@ -502,3 +502,71 @@
     flex-direction: column;
   }
 }
+
+/* Classes read from a timetable photo / PDF, before they are added */
+.found {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 22px;
+  border-radius: 26px;
+  background: var(--card);
+  border: 1px solid var(--line);
+}
+
+.found h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.found p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text2);
+}
+
+.found ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.found label {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--sub);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.found input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--pri);
+}
+
+.foundTime {
+  font-size: 12px;
+  color: var(--text2);
+  min-width: 140px;
+}
+
+.foundMeta {
+  font-size: 12px;
+  color: var(--text2);
+}
+
+.foundBtns {
+  display: flex;
+  gap: 10px;
+}
