@@ -56,8 +56,11 @@ async function groupedDoc(materialId: string, doc: ReaderDoc | null): Promise<Re
   return again.data?.reader_doc ?? doc;
 }
 
-/** Marks pages as read; returns the new percent. */
-export async function markRead(materialId: string, already: number[], pages: number[], pageCount: number) {
+/**
+ * Marks pages as read and remembers where the student is (`at`, the page on screen), so the lesson opens there
+ * next time; returns the new percent.
+ */
+export async function markRead(materialId: string, already: number[], pages: number[], pageCount: number, at: number) {
   const user = currentUser();
   if (!user) return null;
   const all = [...new Set([...already, ...pages])].sort((a, b) => a - b);
@@ -66,7 +69,7 @@ export async function markRead(materialId: string, already: number[], pages: num
     user_id: user.id,
     material_id: materialId,
     pages_read: all,
-    last_page: Math.max(...pages),
+    last_page: at,
     percent_read: percent,
     finished_at: percent === 100 ? new Date().toISOString() : null,
   });

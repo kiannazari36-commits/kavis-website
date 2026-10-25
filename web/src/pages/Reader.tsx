@@ -53,8 +53,6 @@ const PEN_COLORS = ['#9C2F3A', '#E0A12A', '#2F7D5B', '#2F5D9C'];
 /** The study timer stops by itself after this long without any activity. */
 const IDLE_MS = 5 * 60 * 1000;
 
-const blockPages = (b: ReaderBlock) => Array.from({ length: b.pageTo - b.pageFrom + 1 }, (_, i) => b.pageFrom + i);
-
 export default function Reader() {
   const { t, lang } = useI18n();
   const { theme } = useTheme();
@@ -211,19 +209,63 @@ export default function Reader() {
     };
   }, [courseId, pdfId]);
 
-  // Pages of the open section count as read.
-  useEffect(() => {
-    if (!lesson?.doc || !pdfInfo) return;
-    const pages = lesson.doc.sections[sec]?.blocks.flatMap(blockPages) ?? [];
-    if (!pages.length) return;
-    markRead(pdfId, pagesRead ?? lesson.pagesRead, pages, pdfInfo.pdf.pages).then((r) => {
-      if (r) {
-        setPagesRead(r.pagesRead);
-        setPct(r.percent);
+  // Where the student is: the page at the top of the screen. Pages that came on screen count as read; both are
+  // saved a moment after scrolling stops, so the lesson opens at the same page next time.
+  const [atPage, setAtPage] = useState<number | null>(null);
+  const seen = useRef<Set<number>>(new Set());
+  const trackPage = () => {
+    const box = scroller.current;
+    if (!box) return;
+    const top = box.getBoundingClientRect().top + 80;
+    const bottom = box.getBoundingClientRect().bottom;
+    let here: number | null = null;
+    for (const el of box.querySelectorAll<HTMLElement>('[data-from]')) {
+      const r = el.getBoundingClientRect();
+      if (r.top < bottom && r.bottom > top) {
+        here ??= Number(el.dataset.from);
+        for (let p = Number(el.dataset.from); p <= Number(el.dataset.to); p++) seen.current.add(p);
       }
-    });
+    }
+    if (here !== null) setAtPage(here);
+  };
+  useEffect(() => {
+    if (!lesson?.doc || atPage === null) return;
+    // Page count from the lesson list; a lesson outside any course counts its own pages.
+    const pageCount = pdfInfo?.pdf.pages ?? new Set(lesson.doc.sections.flatMap((x) => x.blocks.map((b) => b.pageFrom))).size;
+    const timer = setTimeout(() => {
+      markRead(pdfId, pagesRead ?? lesson.pagesRead, [...seen.current], pageCount, atPage).then((r) => {
+        if (r) {
+          setPagesRead(r.pagesRead);
+          setPct(r.percent);
+        }
+      });
+    }, 1500);
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lesson, pdfInfo, sec]);
+  }, [atPage, sec]);
+  // A newly opened section: what is on screen counts before any scrolling.
+  useEffect(() => {
+    const timer = setTimeout(trackPage, 400);
+    return () => clearTimeout(timer);
+  }, [lesson, sec]);
+
+  // Coming back to a lesson (no ?sec=): open the section and page where the student stopped.
+  const restored = useRef(false);
+  useEffect(() => {
+    if (!lesson?.doc || restored.current) return;
+    restored.current = true;
+    const last = lesson.lastPage;
+    if (params.get('sec') || last <= 1) return;
+    const i = lesson.doc.sections.findIndex((x) => x.blocks.some((b) => last >= b.pageFrom && last <= b.pageTo));
+    if (i < 0) return;
+    setSec(i);
+    setTimeout(() => {
+      const el = [...(scroller.current?.querySelectorAll<HTMLElement>('[data-from]') ?? [])].find((x) => last >= Number(x.dataset.from) && last <= Number(x.dataset.to));
+      el?.scrollIntoView({ block: 'start' });
+    }, 150);
+    toast(t('resumeAt').replace('{p}', num(last, lang)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lesson]);
 
   // Escape closes popups and leaves focus mode
   useEffect(() => {
@@ -276,7 +318,7 @@ export default function Reader() {
   const title = pdfInfo?.pdf.title ?? '';
   const sec_ = Math.min(sec, doc.sections.length - 1);
   const section = doc.sections[sec_];
-  const lastPage = Math.max(lesson.lastPage, ...(pagesRead ?? []));
+  const lastPage = atPage ?? lesson.lastPage;
   const pageInfo = pdfInfo
     ? `${pdfInfo.course.name.toLocaleUpperCase(lang)} · ${t('pageOf').replace('{p}', num(lastPage, lang)).replace('{n}', num(pdfInfo.pdf.pages, lang))} · ${percent(pct ?? lesson.percent, lang)}`
     : '';
@@ -441,7 +483,7 @@ export default function Reader() {
           )}
         </div>
 
-        <div className={s.scroll} ref={scroller}>
+        <div className={s.scroll} ref={scroller} onScroll={trackPage}>
           <div className={s.column}>
             {section.blocks.map((b, i) => (
               <Block
