@@ -14,7 +14,6 @@ import { COURSE_COLOR } from './courseColors';
 import Wordmark from './Wordmark';
 import TrialCard from '../trial/TrialCard';
 import Icon, { type IconName } from './Icon';
-import { useTrial } from '../trial/TrialProvider';
 import s from './AppShell.module.css';
 
 /** Shared with pages inside the shell (read with useOutletContext). */
@@ -36,7 +35,6 @@ const NAV: [string, IconName, string][] = [
 export default function AppShell() {
   const { t, lang } = useI18n();
   const { toggle } = useTheme();
-  const { guard } = useTrial();
   const navigate = useNavigate();
   const location = useLocation();
   const courses = useAsync(listCourses, []);
@@ -112,10 +110,6 @@ export default function AppShell() {
             <Icon name="close" />
           </button>
         </div>
-        <button className={s.upload} title={t('k33')} onClick={() => guard('pdf', () => navigate('/upload'))}>
-          <Icon name="upload" size={18} />
-          <span className={s.label}>{t('k33')}</span>
-        </button>
         {NAV.map(([to, icon, key]) => (
           <NavLink key={to} to={to} title={t(key)} className={({ isActive }) => (isActive ? `${s.nav} ${s.navOn}` : s.nav)}>
             <Icon name={icon} size={19} />
