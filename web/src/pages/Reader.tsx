@@ -364,12 +364,28 @@ export default function Reader() {
           />
         </header>
 
-        <div role="tablist" aria-label={t('sections')} className={s.tabs} lang={doc.language}>
-          {doc.sections.map((x, i) => (
-            <button key={x.title} dir="auto" role="tab" aria-selected={i === sec_} className={i === sec_ ? `${s.tab} ${s.tabOn}` : s.tab} onClick={() => goSection(i)}>
-              {x.title}
-            </button>
-          ))}
+        {/* Sections; in full screen (no header) also the page and the assistant star, top right. */}
+        <div className={s.tabsRow}>
+          <div role="tablist" aria-label={t('sections')} className={s.tabs} lang={doc.language}>
+            {doc.sections.map((x, i) => (
+              <button key={x.title} dir="auto" role="tab" aria-selected={i === sec_} className={i === sec_ ? `${s.tab} ${s.tabOn}` : s.tab} onClick={() => goSection(i)}>
+                {x.title}
+              </button>
+            ))}
+          </div>
+          {focus && (
+            <>
+              <span className={`mono ${s.focusPage}`}>{pageInfo}</span>
+              <button
+                className={panel ? `star-btn ${s.starOn}` : 'star-btn'}
+                style={{ width: 42, height: 42 }}
+                aria-label={t('panelToggle')}
+                title={t('panelToggle')}
+                aria-pressed={panel}
+                onClick={() => setPanel(!panel)}
+              />
+            </>
+          )}
         </div>
 
         <div className={s.scroll} ref={scroller}>
@@ -519,15 +535,6 @@ export default function Reader() {
           <button aria-label={t('cardsLabel')} title={t('cardsLabel')} onClick={() => navigate(`/cards?pdf=${pdfId}`)}>
             <Icon name="cards" size={20} />
           </button>
-          {focus && (
-            <button
-              className={panel ? `star-btn ${s.dockStar} ${s.starOn}` : `star-btn ${s.dockStar}`}
-              aria-label={t('panelToggle')}
-              title={t('panelToggle')}
-              aria-pressed={panel}
-              onClick={() => setPanel(!panel)}
-            />
-          )}
           <button
             aria-label={focus ? t('exitFullScreen') : t('fullScreen')}
             title={focus ? t('exitFullScreen') : t('fullScreen')}

@@ -138,13 +138,28 @@
 }
 
 /* Section tabs */
-.tabs {
+.tabsRow {
   flex: none;
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 12px;
   padding: 14px 28px 4px;
+}
+
+.tabs {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: 8px;
   overflow-x: auto;
   scrollbar-width: none;
+}
+
+/* Full screen: the page of the open section, next to the assistant star */
+.focusPage {
+  flex: none;
+  font-size: 11px;
+  color: var(--text2);
 }
 
 .tab {
@@ -909,7 +924,7 @@
     flex: 1;
     justify-content: center;
   }
-  .tabs,
+  .tabsRow,
   .scroll {
     padding-inline: 16px;
   }
@@ -936,23 +951,17 @@
   height: 100vh;
 }
 
-.wrap[data-focus] .header,
-.wrap[data-focus] .tabs {
+.wrap[data-focus] .header {
   display: none;
 }
 
-.wrap[data-focus] .scroll {
-  padding-top: 32px;
+.wrap[data-focus] .tabsRow {
+  padding-top: 18px;
 }
+
 
 .wrap[data-focus] .column {
   max-width: 720px;
-}
-
-/* The assistant star in the dock (full screen, where the header is hidden) */
-.dock > button.dockStar {
-  background: url(/star_btn.png) center / 88% no-repeat,
-    radial-gradient(circle at 50% 30%, #b8404d 0%, #9c2f3a 45%, #7a2230 100%);
 }
 
 .dock > button.dockOn {
