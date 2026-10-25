@@ -32,7 +32,7 @@ export class UploadFail extends Error {
  * Uploads the file, then creates the lesson; returns the lesson id. Then asks the server to prepare it.
  * The file goes first: a failed upload must not use up a trial lesson (the lesson row counts it).
  */
-export async function uploadLesson(file: File, title: string, courseId: string | null): Promise<string> {
+export async function uploadLesson(file: File, title: string, courseId: string | null, ocr = false): Promise<string> {
   const user = currentUser();
   if (!user) throw new UploadFail('network');
   if (file.size > MAX_MB * 1048576) throw new UploadFail('tooBig');
@@ -56,8 +56,65 @@ export async function uploadLesson(file: File, title: string, courseId: string |
     .insert({ material_id: id, user_id: user.id, storage_path: path, mime_type: 'application/pdf', size_bytes: file.size });
   if (f.error) console.error('material_files', f.error);
 
+  supabase.functions.invoke('process-material', { body: { material_id: id, ocr } }).then(({ error }) => error && console.error('process-material', error));
+  return id;
+}
+
+/** Photos of one lesson at most (each photo is one page). */
+export const MAX_PHOTOS = 30;
+const PHOTO_SIDE = 2000;
+
+/**
+ * A photo made ready for text recognition: turned upright, at most 2000 px on its long side, saved as JPEG
+ * (HEIC from iPhones can only be read by Safari; other browsers throw → the page shows a message).
+ */
+export async function shrinkPhoto(file: File): Promise<Blob> {
+  const img = await createImageBitmap(file, { imageOrientation: 'from-image' });
+  const scale = Math.min(1, PHOTO_SIDE / Math.max(img.width, img.height));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(img.width * scale);
+  canvas.height = Math.round(img.height * scale);
+  canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
+  img.close();
+  return new Promise((ok, fail) => canvas.toBlob((b) => (b ? ok(b) : fail(new Error('jpeg'))), 'image/jpeg', 0.85));
+}
+
+/**
+ * Photos of pages (slides, notes, handwriting) as one lesson: the pages go up first, in the chosen order, then the
+ * lesson; the server reads them with text recognition (process-material).
+ */
+export async function uploadPhotos(photos: Blob[], title: string, courseId: string | null): Promise<string> {
+  const user = currentUser();
+  if (!user) throw new UploadFail('network');
+  const id = crypto.randomUUID();
+  const paths = photos.map((_, i) => `${user.id}/${id}/page-${String(i + 1).padStart(3, '0')}.jpg`);
+  for (const [i, photo] of photos.entries()) {
+    const up = await supabase.storage.from('materials').upload(paths[i], photo, { contentType: 'image/jpeg', upsert: false });
+    if (up.error) {
+      console.error('upload', up.error);
+      await supabase.storage.from('materials').remove(paths.slice(0, i));
+      throw new UploadFail('network');
+    }
+  }
+  const row = await supabase.from('materials').insert({ id, user_id: user.id, course_id: courseId, kind: 'photo', title: title.trim() });
+  if (row.error) {
+    await supabase.storage.from('materials').remove(paths);
+    throw new UploadFail(row.error.code === '42501' ? 'trial' : 'network');
+  }
+  const f = await supabase.from('material_files').insert(
+    photos.map((p, i) => ({ material_id: id, user_id: user.id, storage_path: paths[i], mime_type: 'image/jpeg', size_bytes: p.size, sort_order: i })),
+  );
+  if (f.error) console.error('material_files', f.error);
   supabase.functions.invoke('process-material', { body: { material_id: id } }).then(({ error }) => error && console.error('process-material', error));
   return id;
+}
+
+/** "Metin tanıma ile dene" for a lesson the server found scanned; 'trial' = no trial lesson left. */
+export async function retryWithOcr(id: string): Promise<'ok' | 'trial' | 'failed'> {
+  const { error } = await supabase.functions.invoke('process-material', { body: { material_id: id, ocr: true } });
+  if (!error) return 'ok';
+  const status = (error as { context?: { status?: number } }).context?.status;
+  return status === 403 ? 'trial' : 'failed';
 }
 
 export type LessonStatus = { status: 'uploaded' | 'processing' | 'ready' | 'needs_ocr' | 'too_long' | 'failed'; pages: number | null; courseId: string | null; stats: Record<string, number> };

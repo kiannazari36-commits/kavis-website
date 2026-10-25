@@ -38,8 +38,8 @@ export default function Home() {
   const recent = useAsync(() => recentPdfs(3), []) ?? [];
   const firstName = profile?.name.split(' ')[0] ?? '';
   const navigate = useNavigate();
-  // PDF opens the upload screen; photos, recordings and questions come later.
-  const upload = (pdf: boolean) => guard('pdf', () => (pdf ? navigate('/upload') : toast(t('k165'))));
+  // PDF and photos open the upload screen; recordings and questions come later.
+  const upload = (to: string | null) => guard('pdf', () => (to ? navigate(to) : toast(t('k165'))));
   const { settings } = useSettings();
   const review = useAsync(getTodayReview, []);
   const [showReview, setShowReview] = useState(true);
@@ -72,11 +72,11 @@ export default function Home() {
   // The assistant is not in it (it opens from the star at the top).
   const [panelOpen, setPanelOpen] = usePanelPref('kavis.planOpen', 1440);
 
-  const uploads: [IconName, string, boolean][] = [
-    ['upload', 'k33', true],
-    ['camera', 'k69', false],
-    ['mic', 'k70', false],
-    ['help', 'k71', false],
+  const uploads: [IconName, string, string | null][] = [
+    ['upload', 'k33', '/upload'],
+    ['camera', 'k69', '/upload?mode=photo'],
+    ['mic', 'k70', null],
+    ['help', 'k71', null],
   ];
   const tools: [IconName, string, string, string, string][] = [
     ['list', 'k72', 'var(--pri-soft)', 'var(--pri-t)', '/quiz'],
@@ -118,8 +118,8 @@ export default function Home() {
         )}
 
         <div className={s.uploads}>
-          {uploads.map(([icon, key, primary]) => (
-            <button key={key} className={primary ? `${s.upload} ${s.uploadPri}` : s.upload} onClick={() => upload(primary)}>
+          {uploads.map(([icon, key, to], i) => (
+            <button key={key} className={i === 0 ? `${s.upload} ${s.uploadPri}` : s.upload} onClick={() => upload(to)}>
               <Icon name={icon} size={20} />
               {t(key)}
             </button>

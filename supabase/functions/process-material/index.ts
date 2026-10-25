@@ -4,9 +4,13 @@
 // materials.status / page_count, material_content (reader_doc + stats), material_terms, material_topics,
 // material_chunks (assistant search), card_decks + flashcards, quizzes + quiz_questions, usage_monthly,
 // and a "lesson ready" notification. The teacher's text is cut from the PDF, never written by the AI.
+// Photos of pages and scanned PDFs (POST { material_id, ocr: true }) first go through text recognition (ocr.ts):
+// the AI copies each page's text exactly, in batches of 4 pages, then the same steps follow.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 import { extractText, getDocumentProxy } from 'npm:unpdf';
+import { PDFDocument } from 'npm:pdf-lib@1.17.1';
+import { OCR_SCHEMA, OCR_SYSTEM, pageTexts, toBase64, type OcrBatch } from './ocr.ts';
 import { batches, cleanHints, costUsd, markTerms, paragraphsOf, readyNotice } from './lib.ts';
 import { SCHEMA, SYSTEM, contentLanguage, userMessage, type AiBatch } from './ai.ts';
 
@@ -14,6 +18,8 @@ declare const EdgeRuntime: { waitUntil(p: Promise<unknown>): void };
 
 const MODEL = 'claude-sonnet-5-5';
 const BATCH_PAGES = 8;
+/** Text recognition reads images, so fewer pages per run (each run has its own time limit). */
+const OCR_BATCH_PAGES = 4;
 const MAX_PAGES = 100;
 /** AI spending per student per month (US dollars); above it new lessons are not prepared. */
 const MONTHLY_BUDGET_USD = 3;
@@ -43,7 +49,7 @@ Deno.serve(async (req) => {
 
   // The next batch, started by this function itself.
   if (req.headers.get('x-internal-key') === secret) {
-    EdgeRuntime.waitUntil(runBatch(db, id, Number(body.batch) || 0));
+    EdgeRuntime.waitUntil(runBatch(db, id, Number(body.batch) || 0, body.ocr === true));
     return json({ ok: true });
   }
 
@@ -51,24 +57,90 @@ Deno.serve(async (req) => {
   const token = (req.headers.get('Authorization') ?? '').replace('Bearer ', '');
   const { data: who } = await db.auth.getUser(token);
   if (!who?.user) return json({ error: 'not signed in' }, 401);
-  const { data: m } = await db.from('materials').select('user_id, status, kind').eq('id', id).maybeSingle();
+  const { data: m } = await db.from('materials').select('user_id, status, kind, counted_in_trial').eq('id', id).maybeSingle();
   if (!m || m.user_id !== who.user.id) return json({ error: 'not found' }, 404);
-  if (m.kind !== 'pdf') return json({ error: 'only pdf for now' }, 400);
-  if (m.status !== 'uploaded' && m.status !== 'failed') return json({ status: m.status });
+  if (m.kind === 'audio') return json({ error: 'audio comes later' }, 400);
+  // Photos always need text recognition; a scanned PDF only when the student asks for it.
+  const ocr = m.kind === 'photo' || body.ocr === true;
+  const again = m.status === 'needs_ocr' && ocr;
+  if (m.status !== 'uploaded' && m.status !== 'failed' && !again) return json({ status: m.status });
+  // A scanned PDF gave its trial lesson back; reading it with text recognition uses one again.
+  if (again && !m.counted_in_trial && !(await chargeTrial(db, id, m.user_id))) return json({ error: 'trial' }, 403);
   await db.from('materials').update({ status: 'processing', error: null }).eq('id', id);
-  EdgeRuntime.waitUntil(runBatch(db, id, 0));
+  EdgeRuntime.waitUntil(runBatch(db, id, 0, ocr));
   return json({ status: 'processing' }, 202);
 });
 
-/** Reads the PDF text, page by page. */
-async function readPdf(db: SupabaseClient, materialId: string) {
-  const { data: file } = await db.from('material_files').select('storage_path').eq('material_id', materialId).order('sort_order').limit(1).single();
-  if (!file) throw new Error('file row missing');
-  const { data: blob, error } = await db.storage.from('materials').download(file.storage_path);
+type FileRow = { storage_path: string; mime_type: string | null };
+
+async function download(db: SupabaseClient, path: string) {
+  const { data: blob, error } = await db.storage.from('materials').download(path);
   if (error || !blob) throw new Error('download failed');
-  const pdf = await getDocumentProxy(new Uint8Array(await blob.arrayBuffer()));
-  const { totalPages, text } = await extractText(pdf, { mergePages: false });
-  return { totalPages, text: text as string[] };
+  return new Uint8Array(await blob.arrayBuffer());
+}
+
+/**
+ * The lesson's pages: a PDF with text gives every page's text now; a scanned PDF and photos give only the page
+ * count (their text comes from text recognition, batch by batch).
+ */
+async function readLesson(db: SupabaseClient, materialId: string, kind: string, ocr: boolean) {
+  const { data: files } = await db.from('material_files').select('storage_path, mime_type').eq('material_id', materialId).order('sort_order');
+  if (!files?.length) throw new Error('file row missing');
+  if (kind === 'photo') return { totalPages: files.length, text: [] as string[], files: files as FileRow[], pdf: null };
+  const bytes = await download(db, files[0].storage_path);
+  const doc = await getDocumentProxy(bytes.slice());
+  if (ocr) return { totalPages: doc.numPages, text: [] as string[], files: files as FileRow[], pdf: bytes };
+  const { totalPages, text } = await extractText(doc, { mergePages: false });
+  return { totalPages, text: text as string[], files: files as FileRow[], pdf: null };
+}
+
+/** Text recognition of pages from…to: photos as images, a scanned PDF as a small PDF of just those pages. */
+async function recognise(db: SupabaseClient, files: FileRow[], pdf: Uint8Array | null, from: number, to: number) {
+  const blocks: unknown[] = [];
+  if (pdf) {
+    const src = await PDFDocument.load(pdf, { ignoreEncryption: true });
+    const part = await PDFDocument.create();
+    const pages = await part.copyPages(src, Array.from({ length: to - from + 1 }, (_, i) => from - 1 + i));
+    pages.forEach((p) => part.addPage(p));
+    blocks.push({ type: 'text', text: `The PDF below holds pages ${from} to ${to}, in order.` });
+    blocks.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: toBase64(await part.save()) } });
+  } else {
+    for (let p = from; p <= to; p++) {
+      const f = files[p - 1];
+      blocks.push({ type: 'text', text: `[Page ${p}]` });
+      blocks.push({ type: 'image', source: { type: 'base64', media_type: f.mime_type ?? 'image/jpeg', data: toBase64(await download(db, f.storage_path)) } });
+    }
+  }
+  blocks.push({ type: 'text', text: `Copy the text of pages ${from}-${to}.` });
+  const client = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')!.trim() });
+  const params = {
+    model: MODEL,
+    max_tokens: 16000,
+    betas: ['server-side-fallback-2026-07-01'],
+    fallbacks: 'default',
+    output_config: { effort: 'low', format: { type: 'json_schema', schema: OCR_SCHEMA } },
+    system: OCR_SYSTEM,
+    messages: [{ role: 'user', content: blocks }],
+  };
+  // deno-lint-ignore no-explicit-any
+  const res = await client.beta.messages.create(params as any);
+  if (res.stop_reason === 'refusal') throw new Error('the AI declined this part');
+  if (res.stop_reason === 'max_tokens') throw new Error('the page text was cut off');
+  const text = res.content.find((b) => b.type === 'text');
+  if (!text || text.type !== 'text') throw new Error('no text from the AI');
+  return { texts: pageTexts(JSON.parse(text.text) as OcrBatch, from, to), usage: { input: res.usage.input_tokens, output: res.usage.output_tokens } };
+}
+
+/** Uses a trial lesson (or Premium) for a lesson that had given its lesson back; false = no lesson left. */
+async function chargeTrial(db: SupabaseClient, materialId: string, userId: string) {
+  const { data: premium } = await db.rpc('is_premium', { uid: userId });
+  if (premium) return true;
+  const { data: ok } = await db.rpc('can_use', { feature: 'upload', uid: userId });
+  if (!ok) return false;
+  const { data: t } = await db.from('trial_usage').select('lessons').eq('user_id', userId).maybeSingle();
+  await db.from('trial_usage').upsert({ user_id: userId, lessons: (t?.lessons ?? 0) + 1 });
+  await db.from('materials').update({ counted_in_trial: true }).eq('id', materialId);
+  return true;
 }
 
 /** A retry after a failure starts clean: removes what an earlier, unfinished run wrote. */
@@ -92,17 +164,17 @@ async function refundTrial(db: SupabaseClient, materialId: string, userId: strin
   if (t && t.lessons > 0) await db.from('trial_usage').update({ lessons: t.lessons - 1 }).eq('user_id', userId);
 }
 
-async function runBatch(db: SupabaseClient, materialId: string, batchNo: number) {
-  const { data: m } = await db.from('materials').select('user_id, course_id, title').eq('id', materialId).single();
+async function runBatch(db: SupabaseClient, materialId: string, batchNo: number, ocr: boolean) {
+  const { data: m } = await db.from('materials').select('user_id, course_id, title, kind').eq('id', materialId).single();
   if (!m) return;
   const uid = m.user_id as string;
   try {
-    const { totalPages, text } = await readPdf(db, materialId);
+    const { totalPages, text, files, pdf } = await readLesson(db, materialId, m.kind, ocr);
 
     if (batchNo === 0) {
       await clearOutput(db, materialId);
       const chars = text.reduce((a, t) => a + t.replace(/\s/g, '').length, 0);
-      if (chars < 20 * Math.min(totalPages, 5)) {
+      if (!ocr && chars < 20 * Math.min(totalPages, 5)) {
         await refundTrial(db, materialId, uid);
         await db.from('materials').update({ status: 'needs_ocr', page_count: totalPages }).eq('id', materialId);
         return;
@@ -118,8 +190,13 @@ async function runBatch(db: SupabaseClient, materialId: string, batchNo: number)
       await db.from('materials').update({ page_count: totalPages }).eq('id', materialId);
     }
 
-    const all = batches(totalPages, BATCH_PAGES);
+    const all = batches(totalPages, ocr ? OCR_BATCH_PAGES : BATCH_PAGES);
     const [from, to] = all[batchNo];
+    if (ocr) {
+      const seen = await recognise(db, files, pdf, from, to);
+      await saveUsage(db, uid, seen.usage.input, seen.usage.output);
+      seen.texts.forEach((t, i) => (text[from - 1 + i] = t));
+    }
     const pages = [];
     for (let p = from; p <= to; p++) pages.push({ page: p, paragraphs: paragraphsOf(text[p - 1] ?? '') });
 
@@ -243,7 +320,7 @@ async function runBatch(db: SupabaseClient, materialId: string, batchNo: number)
       const next = fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/process-material`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-internal-key': secretKey() },
-        body: JSON.stringify({ material_id: materialId, batch: batchNo + 1 }),
+        body: JSON.stringify({ material_id: materialId, batch: batchNo + 1, ocr }),
       });
       await next;
       return;
