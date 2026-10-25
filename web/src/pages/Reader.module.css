@@ -1300,3 +1300,12 @@
 .acts b {
   font-weight: 600;
 }
+
+/* "Kavis yapay zekâdır, hata yapabilir" under the question box */
+.aiNote {
+  flex: none;
+  font-size: 10.5px;
+  line-height: 1.4;
+  color: var(--text3);
+  text-align: center;
+}

@@ -210,7 +210,9 @@
   "voiceStop": "Dinlemeyi bitir",
   "webSources": "İNTERNET KAYNAKLARI",
   "actWeak": "Zayıf konularına eklendi:",
-  "actCard": "Kart eklendi:"
+  "actCard": "Kart eklendi:",
+  "thinking": "Düşünüyor…",
+  "aiNote": "Kavis bir yapay zekâdır ve hata yapabilir. Önemli bilgileri ders notundan kontrol et."
  },
  "en": {
   "heroA": "How can I",
@@ -423,7 +425,9 @@
   "voiceStop": "Stop listening",
   "webSources": "WEB SOURCES",
   "actWeak": "Added to your weak topics:",
-  "actCard": "Card added:"
+  "actCard": "Card added:",
+  "thinking": "Thinking…",
+  "aiNote": "Kavis is an AI and can make mistakes. Check important facts in your lecture notes."
  },
  "fa": {
   "heroA": "امروز چطور",
@@ -636,7 +640,9 @@
   "voiceStop": "پایان گوش دادن",
   "webSources": "منابع اینترنتی",
   "actWeak": "به مباحث ضعیفت اضافه شد:",
-  "actCard": "کارت اضافه شد:"
+  "actCard": "کارت اضافه شد:",
+  "thinking": "در حال فکر کردن…",
+  "aiNote": "Kavis یک هوش مصنوعی است و ممکن است اشتباه کند. اطلاعات مهم را در جزوه‌ات بررسی کن."
  },
  "ar": {
   "heroA": "كيف يمكنني اليوم",
@@ -849,6 +855,8 @@
   "voiceStop": "إيقاف الاستماع",
   "webSources": "مصادر من الإنترنت",
   "actWeak": "أُضيف إلى مواضيعك الضعيفة:",
-  "actCard": "أُضيفت بطاقة:"
+  "actCard": "أُضيفت بطاقة:",
+  "thinking": "يفكّر…",
+  "aiNote": "Kavis ذكاء اصطناعي وقد يخطئ. تحقّق من المعلومات المهمة في ملاحظات درسك."
  }
 }

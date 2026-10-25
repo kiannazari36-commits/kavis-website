@@ -10,6 +10,7 @@ import { addHighlight, getLesson, markRead, saveStudyTime, tapTerm, translate, t
 import { askAssistant, latestThread, type ChatMessage, type SourceMode } from '../api/assistant';
 import WebLinks from '../components/WebLinks';
 import ActNotes from '../components/ActNotes';
+import Thinking from '../components/Thinking';
 import { useVoice, VOICE_FAIL, voicePlaceholder } from '../speech/useVoice';
 import MicButton from '../components/MicButton';
 import { sectionCheckCounter } from '../api/quiz';
@@ -1085,11 +1086,14 @@ function AssistantPanel({ materialId, title, pages, asked, onClose }: PanelProps
             </div>
           ),
         )}
-        {waiting && (
-          <div className={s.ai} aria-live="polite">
-            {live || '…'}
-          </div>
-        )}
+        {waiting &&
+          (live ? (
+            <div className={s.ai} aria-live="polite">
+              {live}
+            </div>
+          ) : (
+            <Thinking />
+          ))}
         <div ref={end} />
       </div>
 
@@ -1112,6 +1116,7 @@ function AssistantPanel({ materialId, title, pages, asked, onClose }: PanelProps
           <Icon name="send" size={16} className="flip-rtl" />
         </button>
       </form>
+      <span className={s.aiNote}>{t('aiNote')}</span>
     </aside>
   );
 }

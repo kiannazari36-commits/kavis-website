@@ -20,6 +20,7 @@ import { useVoice, VOICE_FAIL, voicePlaceholder } from '../speech/useVoice';
 import MicButton from '../components/MicButton';
 import WebLinks from '../components/WebLinks';
 import ActNotes from '../components/ActNotes';
+import Thinking from '../components/Thinking';
 import { useTrial } from '../trial/TrialProvider';
 import s from './Assistant.module.css';
 
@@ -285,6 +286,7 @@ export default function Assistant() {
               </button>
             </div>
           </form>
+          <span className={s.aiNote}>{t('aiNote')}</span>
         </div>
       </div>
     </main>
@@ -410,13 +412,7 @@ function Chat({ topic, start, mode, onBack }: { topic: AssistantTopic; start: St
               <span>{live}</span>
             </div>
           )}
-          {((waiting && !live) || thread === undefined) && (
-            <div className={s.typing} aria-label="…">
-              <span />
-              <span />
-              <span />
-            </div>
-          )}
+          {((waiting && !live) || thread === undefined) && <Thinking />}
           {messages.length > 0 && !waiting && !start.teach && (
             <div className={s.follow}>
               {follow.map(([k, msg, action]) => (
@@ -459,6 +455,7 @@ function Chat({ topic, start, mode, onBack }: { topic: AssistantTopic; start: St
           </button>
         </div>
       </form>
+      <span className={s.aiNote}>{t('aiNote')}</span>
     </main>
   );
 }
