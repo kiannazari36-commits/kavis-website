@@ -678,3 +678,28 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* What the assistant did ("Zayıf konularına eklendi: …") */
+.acts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  white-space: normal;
+}
+
+.acts > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 12px;
+  background: var(--good-soft);
+  color: var(--good);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.acts b {
+  font-weight: 600;
+}

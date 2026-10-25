@@ -9,6 +9,7 @@ import { getPdf, recentPdfs } from '../api/courses';
 import { addHighlight, getLesson, markRead, saveStudyTime, tapTerm, translate, type TranslationStyle } from '../api/reader';
 import { askAssistant, latestThread, type ChatMessage, type SourceMode } from '../api/assistant';
 import WebLinks from '../components/WebLinks';
+import ActNotes from '../components/ActNotes';
 import { useVoice, VOICE_FAIL, voicePlaceholder } from '../speech/useVoice';
 import MicButton from '../components/MicButton';
 import { sectionCheckCounter } from '../api/quiz';
@@ -1014,7 +1015,7 @@ function AssistantPanel({ materialId, title, pages, asked, onClose }: PanelProps
     }
     if (waiting) return;
     guard('question', async () => {
-      setMine((m) => [...m, { id: crypto.randomUUID(), role: 'user', text: q, mode, sources: [], links: [], outsidePdf: false }]);
+      setMine((m) => [...m, { id: crypto.randomUUID(), role: 'user', text: q, mode, sources: [], links: [], acts: [], outsidePdf: false }]);
       setDraft('');
       setQuick(false);
       setWaiting(true);
@@ -1079,6 +1080,7 @@ function AssistantPanel({ materialId, title, pages, asked, onClose }: PanelProps
                     .join(', ')}
                 </span>
               )}
+              <ActNotes acts={m.acts} className={s.acts} />
               <WebLinks links={m.links} className={s.links} />
             </div>
           ),

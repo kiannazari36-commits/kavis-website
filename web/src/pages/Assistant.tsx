@@ -19,6 +19,7 @@ import { num } from '../i18n/format';
 import { useVoice, VOICE_FAIL, voicePlaceholder } from '../speech/useVoice';
 import MicButton from '../components/MicButton';
 import WebLinks from '../components/WebLinks';
+import ActNotes from '../components/ActNotes';
 import { useTrial } from '../trial/TrialProvider';
 import s from './Assistant.module.css';
 
@@ -329,7 +330,7 @@ function Chat({ topic, start, mode, onBack }: { topic: AssistantTopic; start: St
   // In "Ben anlatayım" the student's text goes with a request to check it against the lessons.
   const ask = async (q: string, photo?: QuestionPhoto) => {
     const shown = q || t('solveLabel');
-    setExtra((e) => [...e, { id: crypto.randomUUID(), role: 'user', text: shown, mode, sources: [], links: [], outsidePdf: false, photo: photo && `data:image/jpeg;base64,${photo.data}` }]);
+    setExtra((e) => [...e, { id: crypto.randomUUID(), role: 'user', text: shown, mode, sources: [], links: [], acts: [], outsidePdf: false, photo: photo && `data:image/jpeg;base64,${photo.data}` }]);
     setWaiting(true);
     setLive('');
     const sent = start.teach && !photo ? t('teachPrefix') + q : q;
@@ -398,6 +399,7 @@ function Chat({ topic, start, mode, onBack }: { topic: AssistantTopic; start: St
                     {t('sourcePrefix')} {sourceLine(m)}
                   </span>
                 )}
+                <ActNotes acts={m.acts} className={s.acts} />
                 <WebLinks links={m.links} className={s.links} />
               </div>
             ),

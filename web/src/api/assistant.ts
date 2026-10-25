@@ -16,6 +16,8 @@ export type ChatMessage = {
   sources: { lesson: string; page: number | null }[];
   /** Web pages the answer used ("AI + research" searches the web). */
   links: { url: string; title: string }[];
+  /** What the assistant did when asked: a topic added to the weak topics, or a flash card made. */
+  acts: { kind: 'weak' | 'card'; title: string }[];
   outsidePdf: boolean;
 };
 
@@ -56,7 +58,7 @@ export async function latestThread(courseId: string | null, materialId?: string)
     role: 'user' | 'assistant';
     content: string;
     source_mode: SourceMode;
-    sources: { material_id?: string; page?: number; url?: string; title?: string }[];
+    sources: { material_id?: string; page?: number; url?: string; title?: string; act?: 'weak' | 'card' }[];
     outside_pdf: boolean;
   };
   const messages = ((data ?? []) as Row[]).map((m) => ({
@@ -66,6 +68,7 @@ export async function latestThread(courseId: string | null, materialId?: string)
     mode: m.source_mode,
     sources: (m.sources ?? []).filter((x) => x.material_id).map((x) => ({ lesson: lessons.get(x.material_id!) || '', page: x.page ?? null })),
     links: (m.sources ?? []).filter((x) => x.url).map((x) => ({ url: x.url!, title: x.title || x.url! })),
+    acts: (m.sources ?? []).filter((x) => x.act).map((x) => ({ kind: x.act!, title: x.title ?? '' })),
     outsidePdf: m.outside_pdf,
   }));
   return { id: thread.id, messages };
@@ -115,7 +118,7 @@ export async function askAssistant(
   }
   if (!res.ok || !res.body) return { error: res.status === 403 ? 'locked' : res.status === 429 ? 'budget' : 'other' };
 
-  type Event = { t?: string; done?: boolean; error?: string; thread_id?: string; answer?: string; sources?: { lesson: string; page: number | null }[]; links?: { url: string; title: string }[]; outside_pdf?: boolean };
+  type Event = { t?: string; done?: boolean; error?: string; thread_id?: string; answer?: string; sources?: { lesson: string; page: number | null }[]; links?: { url: string; title: string }[]; acts?: ChatMessage['acts']; outside_pdf?: boolean };
   const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
   let buffer = '';
   let text = '';
@@ -137,7 +140,7 @@ export async function askAssistant(
       } else if (e.done) {
         return {
           threadId: e.thread_id!,
-          message: { id: crypto.randomUUID(), role: 'assistant', text: e.answer ?? visible(text), mode: where.mode, sources: e.sources ?? [], links: e.links ?? [], outsidePdf: !!e.outside_pdf },
+          message: { id: crypto.randomUUID(), role: 'assistant', text: e.answer ?? visible(text), mode: where.mode, sources: e.sources ?? [], links: e.links ?? [], acts: e.acts ?? [], outsidePdf: !!e.outside_pdf },
         };
       }
     }

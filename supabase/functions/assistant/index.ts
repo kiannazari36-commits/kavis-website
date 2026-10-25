@@ -2,13 +2,15 @@
 // POST { question, course_id?, material_id?, mode: 'pdf' | 'ai', thread_id?, lang, page_from?, page_to?,
 //        image?: { media_type, data } }  (image = "Soruyu çözdür": a photo of a question, solved step by step)
 //   → a stream of server-sent events: { t: "text…" } while the answer is written, then
-//     { done: true, thread_id, answer, sources: [{ material_id, lesson, page }], links: [{ url, title }], outside_pdf }, or { error }.
+//     { done: true, thread_id, answer, sources: [{ material_id, lesson, page }], links: [{ url, title }], acts, outside_pdf }, or { error }.
 // One chosen lesson (material_id): Claude gets the whole lesson (cached for 5 minutes, so follow-up questions are
 // cheap) and is told which pages are open. Otherwise, or for a very long lesson, it gets the best text pieces (the
 // open pages first, then material_chunks full-text search). Claude Sonnet 5.5 answers; the function saves the
 // thread and both messages, counts a trial question and the AI cost.
 // "AI + research" (mode 'ai') may add general knowledge and search the web (at most 3 searches, ~$0.01 each), marked
 // outside_pdf; the web pages it used come back as links. Apps never write answers themselves.
+// When the student asks, the assistant can also act: mark a topic as weak (it then comes into the study plan and
+// the weak-topic lists) or make a flash card in the lesson's deck. Each action is sent as { act: { kind, title } }.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 import { costUsd, lessonText, queryTerms, rankChunks, splitTail, tsQuery } from './lib.ts';
@@ -20,6 +22,45 @@ const PIECES = 6;
 const LESSON_MAX_CHARS = 120_000;
 const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const WEB_SEARCHES = 3;
+const MAX_TURNS = 3;
+
+// What the assistant can do for the student (run here, with the student's id; never other students' data).
+const TOOLS = [
+  {
+    name: 'mark_weak_topic',
+    description:
+      "Adds a topic of the student's lesson to their weak topics, so it comes into their study plan and review lists. Use it only when the student asks for that (e.g. 'zayıf konularıma ekle', 'bunu çalışmam gerekenlere ekle', 'plana ekle').",
+    strict: true,
+    input_schema: {
+      type: 'object',
+      properties: {
+        title: { type: 'string', description: 'Short topic title (2-5 words) in the lesson language, e.g. "K vitamini".' },
+        page: { type: 'integer', description: 'A page of the lesson where the topic is.' },
+        excerpt: { type: 'integer', description: 'The excerpt number [E n] the topic is from, or 0 if you got the whole lesson.' },
+      },
+      required: ['title', 'page', 'excerpt'],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'add_flashcard',
+    description: "Makes a flash card in the lesson's deck. Use it only when the student asks for a card ('karta ekle', 'kart yap').",
+    strict: true,
+    input_schema: {
+      type: 'object',
+      properties: {
+        question: { type: 'string', description: 'Short question, from the lesson text.' },
+        answer: { type: 'string', description: 'Short answer.' },
+        note: { type: 'string', description: 'One sentence that helps remember, or "".' },
+        page: { type: 'integer', description: 'The lesson page.' },
+        excerpt: { type: 'integer', description: 'The excerpt number [E n], or 0 if you got the whole lesson.' },
+      },
+      required: ['question', 'answer', 'note', 'page', 'excerpt'],
+      additionalProperties: false,
+    },
+  },
+];
+type Act = { kind: 'weak' | 'card'; title: string };
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -54,6 +95,7 @@ ${
     ? 'The student sends a photo of an exam question. Solve it step by step (numbered steps, short), say which option is right and why the others are not, and point to where it is in their lessons.'
     : 'Be short and clear: 2-6 sentences or a few bullet points. Explain simply, like a good classmate.'
 }
+You can act for the student with tools: mark_weak_topic and add_flashcard. Use them only when the student asks for it; after an action, confirm it in one short sentence. You cannot do anything else (no reminders, no notes); say so kindly if asked.
 Write in the language of the student's question (if unclear: ${LANG_NAMES[lang] ?? 'Turkish'}), plain text without markdown (no headings, no ** bold); never mention which language you use.
 End with one last line exactly like: SOURCES: [2, 5] OUTSIDE: no
 — ${whole ? 'the page numbers you used' : 'the excerpt numbers you used'} (empty [] if none), and OUTSIDE: yes only if you added general knowledge.`;
@@ -169,7 +211,7 @@ Deno.serve(async (req) => {
     betas: ['server-side-fallback-2026-07-01'],
     fallbacks: 'default',
     output_config: { effort: 'low' },
-    ...(mode === 'ai' ? { tools: [{ type: 'web_search_20260209', name: 'web_search', max_uses: WEB_SEARCHES }] } : {}),
+    tools: [...TOOLS, ...(mode === 'ai' ? [{ type: 'web_search_20260209', name: 'web_search', max_uses: WEB_SEARCHES }] : [])],
     system: [
       { type: 'text', text: system(mode, lang, !!whole, !!image) },
       // The lesson text is the same for every question on this lesson, so it is cached.
@@ -190,24 +232,47 @@ Deno.serve(async (req) => {
     async start(ctrl) {
       const send = (x: unknown) => ctrl.enqueue(enc.encode(`data: ${JSON.stringify(x)}\n\n`));
       try {
-        // deno-lint-ignore no-explicit-any
-        const s = client.beta.messages.stream(params as any);
-        s.on('text', (t: string) => send({ t }));
-        const res = await s.finalMessage();
-        if (res.stop_reason === 'refusal') {
-          send({ error: 'declined' });
-          return ctrl.close();
-        }
-        usage.input += res.usage.input_tokens;
-        usage.output += res.usage.output_tokens;
-        usage.cacheWrite += res.usage.cache_creation_input_tokens ?? 0;
-        usage.cacheRead += res.usage.cache_read_input_tokens ?? 0;
-        // Web searches cost $10 per 1,000.
-        usage.searches += res.usage.server_tool_use?.web_search_requests ?? 0;
         type Page = { url?: string; title?: string };
-        type Block = { type: string; text?: string; citations?: Page[] | null; content?: Page[] | { error_code: string } };
-        const blocks = res.content as Block[];
-        const full = blocks.filter((b) => b.type === 'text').map((b) => b.text ?? '').join('');
+        type Block = { type: string; id?: string; name?: string; input?: Record<string, unknown>; text?: string; citations?: Page[] | null; content?: Page[] | { error_code: string } };
+        const blocks: Block[] = [];
+        const acts: Act[] = [];
+        // The whole text as the student saw it (all rounds).
+        let full = '';
+        const write = (t: string) => {
+          full += t;
+          send({ t });
+        };
+        // The answer, with at most MAX_TURNS rounds of actions (the tools run here, then Claude goes on).
+        for (let turn = 0; turn < MAX_TURNS; turn++) {
+          // deno-lint-ignore no-explicit-any
+          const s = client.beta.messages.stream(params as any);
+          s.on('text', write);
+          const res = await s.finalMessage();
+          if (res.stop_reason === 'refusal') {
+            send({ error: 'declined' });
+            return ctrl.close();
+          }
+          usage.input += res.usage.input_tokens;
+          usage.output += res.usage.output_tokens;
+          usage.cacheWrite += res.usage.cache_creation_input_tokens ?? 0;
+          usage.cacheRead += res.usage.cache_read_input_tokens ?? 0;
+          // Web searches cost $10 per 1,000.
+          usage.searches += res.usage.server_tool_use?.web_search_requests ?? 0;
+          blocks.push(...(res.content as Block[]));
+          const calls = (res.content as Block[]).filter((b) => b.type === 'tool_use');
+          if (res.stop_reason !== 'tool_use' || !calls.length) break;
+          const results = [];
+          for (const c of calls) {
+            const r = await act(db, uid, c.name ?? '', c.input ?? {}, materialId ?? pieces[Number(c.input?.excerpt) - 1]?.material_id ?? ids[0] ?? null);
+            if (r.act) {
+              acts.push(r.act);
+              send({ act: r.act });
+            }
+            results.push({ type: 'tool_result', tool_use_id: c.id, content: r.text, ...(r.act ? {} : { is_error: true }) });
+          }
+          params.messages = [...params.messages, { role: 'assistant', content: res.content }, { role: 'user', content: results }] as typeof params.messages;
+          write('\n\n');
+        }
         // The web pages the answer cites (mode 'ai'), each once; without citations, the first pages the search found.
         const cited = blocks.flatMap((b) => b.citations ?? []);
         const found = blocks.filter((b) => b.type === 'web_search_tool_result' && Array.isArray(b.content)).flatMap((b) => b.content as Page[]);
@@ -219,9 +284,9 @@ Deno.serve(async (req) => {
           ? out.sources.filter((n) => lessonPages.includes(n)).sort((a, b) => a - b).map((page) => ({ material_id: materialId!, page }))
           : out.sources.map((n) => pieces[n - 1]).filter(Boolean).map((p) => ({ material_id: p.material_id, page: p.page }));
         const outside = mode === 'ai' && (out.outside || links.length > 0);
-        const saved = await save(db, uid, threadId, courseId, materialId, question, out.answer, mode, [...used, ...links], outside);
+        const saved = await save(db, uid, threadId, courseId, materialId, question, out.answer, mode, [...used, ...links, ...acts.map((a) => ({ act: a.kind, title: a.title }))], outside);
         await count(db, uid, month, usage);
-        send({ done: true, thread_id: saved, answer: out.answer, sources: used.map((p) => ({ ...p, lesson: titles.get(p.material_id) ?? '' })), links, outside_pdf: outside });
+        send({ done: true, thread_id: saved, answer: out.answer, sources: used.map((p) => ({ ...p, lesson: titles.get(p.material_id) ?? '' })), links, acts, outside_pdf: outside });
       } catch (e) {
         console.error('assistant', e);
         send({ error: 'ai' });
@@ -242,7 +307,7 @@ async function save(
   question: string,
   answer: string,
   mode: string,
-  sources: ({ material_id: string; page: number | null } | { url: string; title: string })[],
+  sources: ({ material_id: string; page: number | null } | { url: string; title: string } | { act: string; title: string })[],
   outside: boolean,
 ) {
   if (!threadId) {
@@ -262,6 +327,63 @@ async function save(
   ]);
   if (error) console.error('assistant_messages', error);
   return threadId;
+}
+
+/**
+ * Runs one action the assistant asked for, for this student only. Returns the text Claude gets back and, when it
+ * worked, what the app shows.
+ */
+async function act(db: SupabaseClient, uid: string, name: string, input: Record<string, unknown>, materialId: string | null): Promise<{ text: string; act?: Act }> {
+  if (!materialId) return { text: 'No lesson to add it to.' };
+  const page = Number.isInteger(input.page) ? (input.page as number) : null;
+  if (name === 'mark_weak_topic') {
+    const title = String(input.title ?? '').trim().slice(0, 120);
+    if (!title) return { text: 'The topic title is empty.' };
+    // The lesson's topic with this title or on this page; a new topic if the lesson has none.
+    const { data: topics } = await db.from('material_topics').select('id, title, page_from, page_to').eq('material_id', materialId).eq('user_id', uid);
+    const lower = title.toLocaleLowerCase('tr');
+    let topic =
+      (topics ?? []).find((x) => x.title.toLocaleLowerCase('tr') === lower) ??
+      (topics ?? []).find((x) => page !== null && x.page_from !== null && page >= x.page_from && page <= (x.page_to ?? x.page_from));
+    if (!topic) {
+      const { data: made } = await db
+        .from('material_topics')
+        .insert({ material_id: materialId, user_id: uid, title, page_from: page, page_to: page, importance: 2, sort_order: 999 })
+        .select('id, title, page_from, page_to')
+        .single();
+      topic = made ?? undefined;
+    }
+    if (!topic) return { text: 'Could not save the topic.' };
+    const { data: had } = await db.from('topic_progress').select('mastery').eq('user_id', uid).eq('topic_id', topic.id).maybeSingle();
+    const { error } = await db.from('topic_progress').upsert(
+      { user_id: uid, topic_id: topic.id, state: 'weak', mastery: Math.min(had?.mastery ?? 40, 40), next_review_at: new Date().toISOString().slice(0, 10) },
+      { onConflict: 'user_id,topic_id' },
+    );
+    if (error) return { text: 'Could not save the topic.' };
+    return { text: `Added "${topic.title}" to the student's weak topics; it will come into their study plan.`, act: { kind: 'weak', title: topic.title } };
+  }
+  if (name === 'add_flashcard') {
+    const question = String(input.question ?? '').trim().slice(0, 300);
+    const answer = String(input.answer ?? '').trim().slice(0, 500);
+    if (!question || !answer) return { text: 'The card needs a question and an answer.' };
+    const { data: mat } = await db.from('materials').select('course_id, title, language').eq('id', materialId).single();
+    const { data: decks } = await db.from('card_decks').select('id').eq('user_id', uid).eq('material_id', materialId).order('created_at').limit(1);
+    let deckId = decks?.[0]?.id as string | undefined;
+    if (!deckId) {
+      const lang = ['tr', 'en', 'fa', 'ar'].includes(mat?.language) ? mat!.language : 'tr';
+      const { data: deck } = await db.from('card_decks').insert({ user_id: uid, course_id: mat?.course_id ?? null, material_id: materialId, lang, title: mat?.title ?? null }).select('id').single();
+      deckId = deck?.id;
+    }
+    if (!deckId) return { text: 'Could not make the card.' };
+    const { data: same } = await db.from('flashcards').select('id').eq('deck_id', deckId).eq('question', question).maybeSingle();
+    if (same) return { text: 'This card is already in the deck.', act: { kind: 'card', title: question } };
+    const { data: last } = await db.from('flashcards').select('sort_order').eq('deck_id', deckId).order('sort_order', { ascending: false }).limit(1);
+    const note = String(input.note ?? '').trim().slice(0, 300) || null;
+    const { error } = await db.from('flashcards').insert({ deck_id: deckId, user_id: uid, question, answer, note, page, sort_order: (last?.[0]?.sort_order ?? 0) + 1 });
+    if (error) return { text: 'Could not make the card.' };
+    return { text: 'The card was added to the lesson deck.', act: { kind: 'card', title: question } };
+  }
+  return { text: 'Unknown action.' };
 }
 
 /** A trial question (not for Premium) and the month's AI cost. */
