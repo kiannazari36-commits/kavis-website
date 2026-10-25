@@ -11,8 +11,6 @@ import { recordingsOfCourse } from '../api/recording';
 import { clock } from '../speech/transcribe';
 import { useToast } from '../components/Toast';
 import type { Pdf } from '../api/types';
-import ContentLangPicker from '../components/ContentLangPicker';
-import { useContentLang, useSettings } from '../settings/SettingsProvider';
 import { useTrial } from '../trial/TrialProvider';
 import s from './CourseFolder.module.css';
 
@@ -41,8 +39,6 @@ export default function CourseFolder() {
     toast(ok ? p.title + t('lessonDeleted') : t('lessonDeleteFailed'));
     if (ok) setReload((n) => n + 1);
   };
-  const { settings, setCourseContentLang } = useSettings();
-  const contentLang = useContentLang(course ?? undefined);
 
   if (course === undefined) return <main className={s.main} />;
   if (course === null)
@@ -97,19 +93,6 @@ export default function CourseFolder() {
             <small>{t('study')}</small>
           </span>
         </div>
-      </section>
-
-      <section className={s.langBox}>
-        <span className={s.langTitle}>
-          <b>{t('contentLang')}</b>
-          <span>{t('clCourseHint')}</span>
-        </span>
-        <ContentLangPicker
-          withDefault
-          value={settings.courseContentLang[course.id] ?? null}
-          resolved={contentLang}
-          onChange={(v) => setCourseContentLang(course.id, v)}
-        />
       </section>
 
       {course.pdfs.length > 0 ? (
