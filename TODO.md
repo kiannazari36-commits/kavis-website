@@ -48,8 +48,8 @@ Everything that is not finished yet. Updated after every step.
   - [x] Recordings are listed on the course page ("Ders ses kayıtları"), and the reading page shows the lecturer's notes on each page ("Hoca burada sınavda çıkar dedi" with the quote, "… dk durdu"); a tap opens the recording at that moment
   - [ ] Recordings over 50 MB: only the text is kept (no playback) until the Pro plan; Whisper still mishears some drug names (the text shown is not exact)
   - [x] "Soru örneklerim" (25 Oct 2026): the lecturer's old/class questions per course (photo, PDF, typed) → Edge `analyze-style` → `teacher_styles` (question types %, topics asked most, patterns, options); switches Sınavlarda/Kartlarda/Özetlerde. Edge `generate-quiz` makes the course's exam pack ("Sınava özel": 10 questions + exam summary) from its lessons in that style, weighting what the lecturer said will be in the exam and weak topics; new PDFs get their questions in the style too. Tested locally: style found from 4 sample questions, 10 questions in the style, $0.05 for both
-  - [ ] Teacher style in cards and summaries (switches saved, not used yet)
-  - [ ] Lectures longer than 100 pages: split into parts
+  - [x] No claimed lecturer style (25 Oct 2026): "Örnek sorularına benzer" shows only when the student added sample questions; the exam pack asks "Hangi tarzda soru istersin?" (types → Edge generate-quiz `styles`); card/summary style switches removed
+  - [x] Lectures longer than 100 pages: cut in the browser (pdf-lib) into equal parts of at most 100 pages, each its own lesson "Name (1/3)"; in the trial each part counts as a lesson
   - [ ] HEIC photos from iPhones: only Safari can read them in the browser; the iOS app will send JPEG
   - [ ] PDFs over 50 MB (slides with many images are often bigger): Supabase free plan allows 50 MB per file. Before launch: Pro plan (higher limit) or shrink / split the PDF in the browser before uploading. Now the upload screen stops them with a message
   - [x] Notification text of "lesson ready" in the student's app language (`profiles.app_lang`, `readyNotice` in `process-material/lib.ts`)
@@ -69,7 +69,7 @@ Everything that is not finished yet. Updated after every step.
   - [x] App language and theme are saved in the account (`profiles.app_lang`, `user_settings.app_theme`): used after sign-in on every device, saved on change (`settings/PrefsSync.tsx`)
   - [x] Trial card and Premium status from `access_status()`; devices: login registers the web (all browsers share install id `web` = one slot), My devices list, sign out, 3rd-device screen, signed-out-elsewhere check at start, log out frees the slot
   - [x] School timetable screen `/schedule` (design NewSchedule; from the plan page's "Okul programım"): tomorrow's classes, day tabs, reminder bell per class, add / delete classes (`timetable_entries`), reminder switches and time (`user_settings.class_*`), notification preview + sample browser notification
-  - [ ] Timetable from a photo / PDF: Edge Function `import-timetable` (buttons say "coming soon")
+  - [x] Timetable from a photo / PDF: Edge Function `import-timetable` reads it (AI, ~1-2 cents), the student unticks wrong rows and adds the rest
 - [x] Local test copy of the backend (`supabase start` + `dev:local`), so Claude can test with fake accounts (25 Oct 2026)
 - [ ] Email sending for the 6-digit code: Supabase's built-in email is only for testing (few emails per hour); a real email provider (custom SMTP) before launch
 - [ ] Edge Functions (none built yet; list in `docs/BACKEND.md`); secrets only in Supabase secrets
@@ -108,7 +108,7 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Real device names from the apps (the web name comes from the browser)
 
 ## Sharing
-- [ ] Real share links for app-made content (quizzes, summaries, cards — never the PDF). Web UI ready: share dialog in the reader (Premium only) and the link page `/s/:id` with mock links
+- [x] Real share links for app-made content (quizzes, summaries, cards — never the PDF, it belongs to the teacher): Edge `create-share` (Premium only) writes `shares`; the link page `/s/:id` only says "download the app". Receiving / copying the items happens in the iPhone app
 - [ ] iPhone app opens share links (universal links); non-Premium receiver sees "This lesson can only be opened with Premium." (text is ready in `web/src/i18n/app.json` → `sharePremiumOnly`)
 
 ## Web app — not built yet

@@ -1,8 +1,9 @@
-// Edge Function generate-quiz: "Hocanın tarzında yeni sorular" — the exam pack of a course ("Sınava özel").
+// Edge Function generate-quiz: the exam pack of a course ("Sınava özel").
 // POST { course_id, count?, styles? } → { quiz_id, questions }. styles = the question types the student chose
-// ("İstediğin tarzda"): case, side_effects, dose, knowledge, structure; none = a mix. From the course's lessons (most important pages first: what the
-// lecturer said will be in the exam, weak topics, central topics), in the lecturer's question style when it is
-// known (teacher_styles, "Sınavlarda" on), the AI writes exam questions with hints and a short exam summary.
+// ("Hangi tarzda soru istersin?"): case, side_effects, dose, knowledge, structure; none = a mix. From the course's
+// lessons (most important pages first: what the lecturer said will be in the exam, weak topics, central topics),
+// like the student's sample questions when they added some (teacher_styles, "Sınavlarda" on), the AI writes exam
+// questions with hints and a short exam summary.
 // Writes (service role): quizzes (kind exam_prep) + quiz_questions, summaries (kind exam_prep), usage_monthly.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
@@ -57,7 +58,7 @@ type Out = {
 
 const SYSTEM = `You write an exam-prep pack for one university course in a study app: exam questions and a short exam summary, from the lecturer's own lesson text.
 Rules for questions: only facts from the given pages; prefer what the lecturer said will be in the exam, the student's weak topics and central topics. Exactly 5 options unless the lecturer's style says otherwise, answer_index 0-based, explanation = why the answer is right (1-2 sentences), lesson and page = where the answer is. 3 hints that help the student THINK: 1 = the key concept to recall, 2 = something that rules out some options, 3 = narrows it to about two options; hints never mention pages and never contain the answer. If a lecturer style is given, follow its share of question types and its patterns.
-topics: 4-6 topics to revise most for this exam, most important first: lesson, pages, 3-4 short points each, reason ("teacher" = the lecturer stressed it or said it will be in the exam, "weak" = the student's weak topic, "samples" = asked often in the lecturer's old questions, "base" = central to the course), teacher = the lecturer's words about it if given, else "".
+topics: 4-6 topics to revise most for this exam, most important first: lesson, pages, 3-4 short points each, reason ("teacher" = the lecturer stressed it or said it will be in the exam, "weak" = the student's weak topic, "samples" = asked often in the lecturer's old questions (only when a lecturer style is given), "base" = central to the course), teacher = the lecturer's words about it if given, else "".
 Write everything in the CONTENT LANGUAGE given.`;
 
 Deno.serve(async (req) => {
