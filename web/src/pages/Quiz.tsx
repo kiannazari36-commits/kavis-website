@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useI18n } from '../i18n/I18nProvider';
-import { examLabel, num, pagesShort, percent, shortDate } from '../i18n/format';
+import { examLabel, num, pagesShort, percent } from '../i18n/format';
 import { useToast } from '../components/Toast';
 import Icon from '../components/Icon';
 import MolViewer from '../components/MolViewer';
 import { addWrongsToPlan, coursesWithPack, getExamPack, getSectionCheck, saveAttempt, setStudyReminder } from '../api/quiz';
+import { generateExamPack } from '../api/samples';
 import { daysUntil, listCourses } from '../api/courses';
 import { useAsync } from '../hooks/useAsync';
 import { dirOf } from '../settings/SettingsProvider';
@@ -50,7 +51,20 @@ export default function Quiz() {
   const [picked, setPicked] = useState<string | null>(params.get('course'));
   const courseId = picked ?? chips.find((c) => ready?.includes(c.id))?.id ?? chips[0]?.id ?? '';
   const pdfId = params.get('pdf') ?? '';
-  const pack = useAsync(() => (courseId ? getExamPack(courseId) : Promise.resolve(null)), [courseId]);
+  const [made, setMade] = useState(0);
+  const pack = useAsync(() => (courseId ? getExamPack(courseId) : Promise.resolve(null)), [courseId, made]);
+  const [making, setMaking] = useState(false);
+  // "Hocanın tarzında yeni sorular": a new exam pack for this course (AI, Edge generate-quiz).
+  const makePack = () =>
+    guard('generate', async () => {
+      if (!courseId || making) return;
+      setMaking(true);
+      const r = await generateExamPack(courseId);
+      setMaking(false);
+      if ('error' in r) return toast(t(r.error === 'locked' ? 'trialQFull' : r.error === 'budget' ? 'askBudget' : 'packFailed'));
+      toast(t('packMade').replace('{n}', String(r.questions)));
+      setMade((n) => n + 1);
+    });
   // From the reader: the questions of the section just read (its pages ?pf=…&pt=…).
   const pf = params.get('pf') ? Number(params.get('pf')) : undefined;
   const pt = params.get('pt') ? Number(params.get('pt')) : undefined;
@@ -200,9 +214,7 @@ export default function Quiz() {
               role="radio"
               aria-checked={c.id === courseId}
               className={c.id === courseId ? `${s.courseChip} ${s.courseOn}` : s.courseChip}
-              onClick={() =>
-                ready?.includes(c.id) ? setPicked(c.id) : toast((c.short ?? c.name) + t('pkgA') + shortDate(c.examDate!, lang) + t('pkgB'))
-              }
+              onClick={() => setPicked(c.id)}
             >
               {c.short ?? c.name}
             </button>
@@ -224,7 +236,27 @@ export default function Quiz() {
         ))}
       </div>
 
-      {tab === 'sum' && topics.length === 0 && <p className={s.muted}>{t('noPack')}</p>}
+      {!fromReader && pack === null && (
+        <section className={s.makeBox}>
+          <b>{t('noPack')}</b>
+          <span>{t('packHow')}</span>
+          <div className={s.makeBtns}>
+            <button className={s.pri} aria-busy={making} onClick={makePack}>
+              {making ? t('packMaking') : t('packMake')}
+            </button>
+            <button className={s.ghost} onClick={() => navigate(`/samples?course=${courseId}`)}>
+              {t('packSamples')}
+            </button>
+          </div>
+        </section>
+      )}
+      {!fromReader && pack && (
+        <button className={s.remake} aria-busy={making} onClick={makePack}>
+          <Icon name="spark" size={14} />
+          {making ? t('packMaking') : t('packRemake')}
+        </button>
+      )}
+      {tab === 'sum' && topics.length === 0 && pack && <p className={s.muted}>{t('noPack')}</p>}
 
       {tab === 'sum' && topics.length > 0 && (
         <div className={s.sumGrid}>
@@ -284,7 +316,7 @@ export default function Quiz() {
         </div>
       )}
 
-      {tab === 'quiz' && !Q && <p className={s.muted}>{t(fromReader ? 'noSectionQs' : 'noPack')}</p>}
+      {tab === 'quiz' && !Q && (fromReader || pack) && <p className={s.muted}>{t(fromReader ? 'noSectionQs' : 'noPack')}</p>}
 
       {tab === 'quiz' && Q && (
         <section className={s.qCard}>

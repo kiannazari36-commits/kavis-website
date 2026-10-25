@@ -54,10 +54,26 @@ Return JSON with:
 
 Rules: use only facts from the given text for cards and questions; term explanations may use general textbook knowledge. Write cards, notes, topics, questions, options, explanations and hints in the CONTENT LANGUAGE given by the user message. Page numbers are the PDF page numbers shown in the input. If the pages contain no teachable content (title page, references, blank), return empty arrays for that material.`;
 
-/** The user message: lesson, content language and the numbered paragraphs of each page. */
-export function userMessage(title: string, course: string, contentLang: string, pages: { page: number; paragraphs: string[] }[]) {
+/**
+ * The user message: lesson, content language, the lecturer's question style when it is known (from their old
+ * questions, "Soru örneklerim"), and the numbered paragraphs of each page.
+ */
+export function userMessage(title: string, course: string, contentLang: string, pages: { page: number; paragraphs: string[] }[], style = '') {
   const body = pages.map((p) => `[Page ${p.page}]\n${p.paragraphs.map((t, i) => `¶${i + 1} ${t}`).join('\n')}`).join('\n\n');
-  return `Lesson: ${title}\nCourse: ${course || '-'}\nCONTENT LANGUAGE: ${contentLang}\n\n${body}`;
+  const styleLine = style ? `LECTURER'S QUESTION STYLE (write the questions like this): ${style}\n` : '';
+  return `Lesson: ${title}\nCourse: ${course || '-'}\nCONTENT LANGUAGE: ${contentLang}\n${styleLine}\n${body}`;
+}
+
+type Style = { distribution: { types?: Record<string, number>; options?: number; patterns?: string[] }; use_in_quizzes: boolean } | null;
+
+/** The lecturer's style in one line for the AI, or "" when it is unknown or switched off for exams. */
+export function styleNote(style: Style) {
+  if (!style || !style.use_in_quizzes || !style.distribution?.types) return '';
+  const types = Object.entries(style.distribution.types)
+    .filter(([, v]) => v > 0)
+    .map(([k, v]) => `${k} ${v}%`)
+    .join(', ');
+  return [`question types ${types}`, `${style.distribution.options ?? 5} options`, ...(style.distribution.patterns ?? [])].join('; ');
 }
 
 const LANG_NAMES: Record<string, string> = { tr: 'Turkish', en: 'English', fa: 'Persian', ar: 'Arabic' };

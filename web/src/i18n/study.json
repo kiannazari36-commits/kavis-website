@@ -186,7 +186,14 @@
   "askDeclined": "Bu soruya cevap veremedim. Soruyu biraz farklı sormayı dene.",
   "askFailed": "Cevap alınamadı. İnternetini kontrol edip tekrar dene.",
   "followEasyQ": "Bunu daha kolay anlatır mısın?",
-  "noSectionQs": "Bu bölüm için soru yok. Okumaya devam edip sonraki bölümün sonunda tekrar dene."
+  "noSectionQs": "Bu bölüm için soru yok. Okumaya devam edip sonraki bölümün sonunda tekrar dene.",
+  "packHow": "Bu dersin PDF’lerinden, hocanın tarzında sorular ve sınav özeti hazırlayabiliriz. Hocanın eski sorularını eklersen tarzı daha iyi tutar.",
+  "packMake": "Hocanın tarzında sorular üret",
+  "packMaking": "Sorular hazırlanıyor…",
+  "packSamples": "Soru örneklerini ekle",
+  "packRemake": "Yeni sorular üret",
+  "packMade": "{n} yeni soru hazır",
+  "packFailed": "Sorular şu an hazırlanamadı, biraz sonra tekrar dene."
  },
  "en": {
   "heroA": "How can I",
@@ -375,7 +382,14 @@
   "askDeclined": "I couldn't answer this question. Try asking it a bit differently.",
   "askFailed": "Couldn't get an answer. Check your connection and try again.",
   "followEasyQ": "Can you explain this more simply?",
-  "noSectionQs": "No questions for this section. Keep reading and try again at the end of the next section."
+  "noSectionQs": "No questions for this section. Keep reading and try again at the end of the next section.",
+  "packHow": "We can prepare questions in the lecturer's style and an exam summary from this course's PDFs. Adding the lecturer's old questions makes the style closer.",
+  "packMake": "Make questions in the lecturer's style",
+  "packMaking": "Preparing questions…",
+  "packSamples": "Add question samples",
+  "packRemake": "Make new questions",
+  "packMade": "{n} new questions ready",
+  "packFailed": "The questions could not be made now, try again soon."
  },
  "fa": {
   "heroA": "امروز چطور",
@@ -564,7 +578,14 @@
   "askDeclined": "نتوانستم به این سؤال جواب بدهم. کمی متفاوت بپرس.",
   "askFailed": "پاسخی دریافت نشد. اینترنتت را بررسی کن و دوباره امتحان کن.",
   "followEasyQ": "می‌شود این را ساده‌تر توضیح بدهی؟",
-  "noSectionQs": "برای این بخش سؤالی نیست. ادامه بده و در پایان بخش بعد دوباره امتحان کن."
+  "noSectionQs": "برای این بخش سؤالی نیست. ادامه بده و در پایان بخش بعد دوباره امتحان کن.",
+  "packHow": "از PDFهای این درس می‌توانیم سؤال‌هایی به سبک استاد و خلاصهٔ امتحان آماده کنیم. اگر سؤال‌های قبلی استاد را اضافه کنی، سبک دقیق‌تر می‌شود.",
+  "packMake": "ساخت سؤال به سبک استاد",
+  "packMaking": "سؤال‌ها آماده می‌شوند…",
+  "packSamples": "افزودن نمونه سؤال",
+  "packRemake": "ساخت سؤال‌های جدید",
+  "packMade": "{n} سؤال جدید آماده است",
+  "packFailed": "الان سؤال‌ها آماده نشد، کمی بعد دوباره امتحان کن."
  },
  "ar": {
   "heroA": "كيف يمكنني اليوم",
@@ -753,6 +774,13 @@
   "askDeclined": "لم أستطع الإجابة عن هذا السؤال. جرّب صياغته بشكل مختلف.",
   "askFailed": "تعذّر الحصول على إجابة. تحقق من الاتصال وحاول مجددًا.",
   "followEasyQ": "هل يمكنك شرح هذا بطريقة أبسط؟",
-  "noSectionQs": "لا توجد أسئلة لهذا القسم. تابع القراءة وجرّب مجددًا في نهاية القسم التالي."
+  "noSectionQs": "لا توجد أسئلة لهذا القسم. تابع القراءة وجرّب مجددًا في نهاية القسم التالي.",
+  "packHow": "يمكننا تجهيز أسئلة بأسلوب الأستاذ وملخص للامتحان من ملفات PDF لهذه المادة. إضافة أسئلة الأستاذ السابقة تجعل الأسلوب أدق.",
+  "packMake": "أنشئ أسئلة بأسلوب الأستاذ",
+  "packMaking": "يجري تجهيز الأسئلة…",
+  "packSamples": "أضف نماذج أسئلة",
+  "packRemake": "أنشئ أسئلة جديدة",
+  "packMade": "{n} أسئلة جديدة جاهزة",
+  "packFailed": "تعذّر تجهيز الأسئلة الآن، حاول بعد قليل."
  }
 }

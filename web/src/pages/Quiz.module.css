@@ -830,3 +830,42 @@
     width: 100%;
   }
 }
+
+/* No exam pack yet: make one in the lecturer's style */
+.makeBox {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px 22px;
+  border-radius: 26px;
+  background: var(--card);
+  border: 1px dashed var(--line);
+}
+
+.makeBox span {
+  color: var(--text2);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.makeBtns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.remake {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}

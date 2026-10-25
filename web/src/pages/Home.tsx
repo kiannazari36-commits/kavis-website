@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n/I18nProvider';
-import { useToast } from '../components/Toast';
 import TopBar from '../components/TopBar';
 import Icon, { type IconName } from '../components/Icon';
 import { COURSE_COLOR } from '../components/courseColors';
@@ -30,7 +29,6 @@ const addTime = (hm: string, minutes: number) => {
 
 export default function Home() {
   const { t, lang } = useI18n();
-  const toast = useToast();
   const { guard } = useTrial();
   const profile = useAsync(getProfile, []);
   const courses = useAsync(listCourses, []);
@@ -38,8 +36,8 @@ export default function Home() {
   const recent = useAsync(() => recentPdfs(3), []) ?? [];
   const firstName = profile?.name.split(' ')[0] ?? '';
   const navigate = useNavigate();
-  // PDF, photos and recordings open their screens; question samples come later.
-  const upload = (to: string | null) => guard('pdf', () => (to ? navigate(to) : toast(t('k165'))));
+  // PDF, photos, recordings and question samples open their screens.
+  const upload = (to: string) => (to === '/samples' ? navigate(to) : guard('pdf', () => navigate(to)));
   const { settings } = useSettings();
   const review = useAsync(getTodayReview, []);
   const [showReview, setShowReview] = useState(true);
@@ -72,11 +70,11 @@ export default function Home() {
   // The assistant is not in it (it opens from the star at the top).
   const [panelOpen, setPanelOpen] = usePanelPref('kavis.planOpen', 1440);
 
-  const uploads: [IconName, string, string | null][] = [
+  const uploads: [IconName, string, string][] = [
     ['upload', 'k33', '/upload'],
     ['camera', 'k69', '/upload?mode=photo'],
     ['mic', 'k70', '/record'],
-    ['help', 'k71', null],
+    ['help', 'k71', '/samples'],
   ];
   const tools: [IconName, string, string, string, string][] = [
     ['list', 'k72', 'var(--pri-soft)', 'var(--pri-t)', '/quiz'],

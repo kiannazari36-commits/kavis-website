@@ -12,7 +12,7 @@ import { extractText, getDocumentProxy } from 'npm:unpdf';
 import { PDFDocument } from 'npm:pdf-lib@1.17.1';
 import { OCR_SCHEMA, OCR_SYSTEM, pageTexts, toBase64, type OcrBatch } from './ocr.ts';
 import { batches, cleanHints, costUsd, markTerms, paragraphsOf, readyNotice } from './lib.ts';
-import { SCHEMA, SYSTEM, contentLanguage, userMessage, type AiBatch } from './ai.ts';
+import { SCHEMA, SYSTEM, contentLanguage, styleNote, userMessage, type AiBatch } from './ai.ts';
 
 declare const EdgeRuntime: { waitUntil(p: Promise<unknown>): void };
 
@@ -201,15 +201,16 @@ async function runBatch(db: SupabaseClient, materialId: string, batchNo: number,
     for (let p = from; p <= to; p++) pages.push({ page: p, paragraphs: paragraphsOf(text[p - 1] ?? '') });
 
     // Settings for the content language and the course name.
-    const [{ data: course }, { data: settings }, { data: profile }] = await Promise.all([
+    const [{ data: course }, { data: settings }, { data: profile }, { data: style }] = await Promise.all([
       m.course_id ? db.from('courses').select('name, content_lang_override').eq('id', m.course_id).maybeSingle() : Promise.resolve({ data: null }),
       db.from('user_settings').select('content_lang').eq('user_id', uid).single(),
       db.from('profiles').select('app_lang').eq('id', uid).single(),
+      m.course_id ? db.from('teacher_styles').select('distribution, use_in_quizzes').eq('course_id', m.course_id).maybeSingle() : Promise.resolve({ data: null }),
     ]);
     const choice = (course?.content_lang_override ?? settings?.content_lang ?? 'pdf') as string;
     const langText = contentLanguage(course?.content_lang_override ?? null, settings?.content_lang ?? 'pdf', profile?.app_lang ?? 'tr');
 
-    const ai = await askClaude(m.title, course?.name ?? '', langText, pages);
+    const ai = await askClaude(m.title, course?.name ?? '', langText, pages, styleNote(style));
     await saveUsage(db, uid, ai.usage.input, ai.usage.output);
     const out = ai.data;
     const docLang = out.language === 'other' ? 'en' : out.language;
@@ -351,7 +352,7 @@ async function finish(db: SupabaseClient, materialId: string, uid: string, title
 }
 
 /** One AI call for a batch of pages; the answer must match SCHEMA. */
-async function askClaude(title: string, course: string, contentLang: string, pages: { page: number; paragraphs: string[] }[]) {
+async function askClaude(title: string, course: string, contentLang: string, pages: { page: number; paragraphs: string[] }[], style = '') {
   const client = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')!.trim() });
   const params = {
     model: MODEL,
@@ -361,7 +362,7 @@ async function askClaude(title: string, course: string, contentLang: string, pag
     fallbacks: 'default',
     output_config: { effort: 'medium', format: { type: 'json_schema', schema: SCHEMA } },
     system: SYSTEM,
-    messages: [{ role: 'user', content: userMessage(title, course, contentLang, pages) }],
+    messages: [{ role: 'user', content: userMessage(title, course, contentLang, pages, style) }],
   };
   // deno-lint-ignore no-explicit-any
   const res = await client.beta.messages.create(params as any);
