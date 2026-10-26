@@ -28,6 +28,8 @@ struct RootView: View {
                 ProfileView()
             case .settings:
                 SettingsView()
+            case .examCenter:
+                ExamCenterView()
             case .deviceLimit:
                 DeviceLimitView()
             case .courses:

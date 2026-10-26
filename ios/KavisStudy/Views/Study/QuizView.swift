@@ -2,9 +2,11 @@ import SwiftUI
 
 /// What to play: the check after a section of the reader (its pages), or the end-of-lesson exam.
 struct QuizTarget: Equatable {
-    enum Kind: Equatable { case check, final }
+    /// `exam`: an exam from the exam center (`quizId`), its questions from several lessons.
+    enum Kind: Equatable { case check, final, exam }
     let materialId: String
     let kind: Kind
+    var quizId: String? = nil
     var pageFrom = 0
     var pageTo = 0
 }
@@ -80,15 +82,25 @@ struct QuizView: View {
         .task {
             guard !loaded else { return }
             loaded = true
-            let q = target.kind == .check
-                ? await QuizAPI.sectionCheck(materialId: target.materialId, pageFrom: target.pageFrom, pageTo: target.pageTo)
-                : await QuizAPI.lessonExam(materialId: target.materialId)
+            let q: Quiz? = switch target.kind {
+            case .check: await QuizAPI.sectionCheck(materialId: target.materialId, pageFrom: target.pageFrom, pageTo: target.pageTo)
+            case .final: await QuizAPI.lessonExam(materialId: target.materialId)
+            case .exam: target.quizId == nil ? nil : await QuizAPI.load(quizId: target.quizId!)
+            }
             if let q, !q.questions.isEmpty { quiz = q } else {
                 toast.show(t("quiz.none"))
                 app.back()
             }
         }
         .animation(.easeOut(duration: 0.2), value: phase)
+    }
+
+    private var headerTitle: String {
+        switch target.kind {
+        case .check: d("BÖLÜM KONTROLÜ")
+        case .final: d("DERS SONU SINAVI")
+        case .exam: d("Sınav merkezi").uppercased(with: lang.locale)
+        }
     }
 
     // MARK: Header
@@ -101,7 +113,7 @@ struct QuizView: View {
                 }
                 .accessibilityLabel(d("Sınavdan çık"))
                 .padding(.leading, -10)
-                Text("\(d(target.kind == .check ? "BÖLÜM KONTROLÜ" : "DERS SONU SINAVI")) · \(Format.num(min(index + 1, total), lang))/\(Format.num(total, lang))")
+                Text("\(headerTitle) · \(Format.num(min(index + 1, total), lang))/\(Format.num(total, lang))")
                     .font(KFont.mono(11, .regular)).tracking(lang.isRTL ? 0 : 1.1).foregroundStyle(C.text2)
                     .frame(maxWidth: .infinity)
                 Color.clear.frame(width: 34, height: 1)
@@ -240,8 +252,8 @@ struct QuizView: View {
                 Text(q.why).font(KFont.reading(15, lang: qLang)).kLineHeight(1.6, size: 15, lang: qLang).foregroundStyle(KPhone.text)
                     .environment(\.layoutDirection, qLang.layoutDirection)
             }
-            if let page = q.page {
-                Button { app.readerPage = page; app.go(.reader(target.materialId)) } label: {
+            if let page = q.page, let material = q.materialId ?? (target.materialId.isEmpty ? nil : target.materialId) {
+                Button { app.readerPage = page; app.go(.reader(material)) } label: {
                     HStack(spacing: 6) {
                         Text(Self.lookAt(page, lang))
                         KIcon(name: .arrowRight, size: 16, width: 2, flipsInRTL: true)
@@ -377,6 +389,8 @@ struct QuizView: View {
                         secondaryLabel(gettingNew ? t("packMaking") : t("newA") + Format.num(3, lang) + t("retryB"))
                     }
                     .disabled(gettingNew)
+                } else if target.kind == .exam {
+                    Button { app.back() } label: { primaryLabel(t("k47")) }
                 } else {
                     // After the end-of-lesson exam: this lesson's summary ("Ders özeti"), as on the web.
                     Button { app.replace(.lessonSummary(target.materialId)) } label: { primaryLabel(t("lessonSummary")) }

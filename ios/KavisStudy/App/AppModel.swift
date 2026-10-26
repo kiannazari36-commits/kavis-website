@@ -22,6 +22,8 @@ enum Route: Equatable {
     case home
     case profile
     case settings
+    /// "Sınav merkezi" (home tile).
+    case examCenter
     /// An account already on 2 devices: the student signs one out first (`AppModel.limitDevices`).
     case deviceLimit
     case courses
@@ -68,6 +70,7 @@ final class AppModel {
         case "home": route = .home
         case "profile", "profileEdit": route = .profile
         case "settings": route = .settings
+        case "exam": route = .examCenter
         case "devices": route = .deviceLimit
         case "courses": route = .courses
         case "cards": route = .cards(nil)

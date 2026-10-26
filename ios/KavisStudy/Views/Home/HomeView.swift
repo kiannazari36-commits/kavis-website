@@ -331,6 +331,7 @@ struct HomeView: View {
     private func tileTapped(_ key: String) {
         switch key {
         case "home.tileCards": app.go(.cards(nil))
+        case "home.tileExam": app.go(.examCenter)
         default: soon()
         }
     }

@@ -11,6 +11,8 @@ struct QuizQuestion: Identifiable, Equatable {
     let why: String
     let page: Int?
     let hints: [String]
+    /// The lesson the question is from, when the quiz mixes lessons (exam center).
+    var materialId: String? = nil
 }
 
 /// A quiz ready to play: its questions in the language of the lesson (the content language).
@@ -43,6 +45,30 @@ enum QuizAPI {
             guard let options = $0.options, options.count > 1 else { return nil } // the phone plays multiple choice
             return QuizQuestion(id: $0.id, text: $0.text, options: options, answer: $0.answer_index ?? 0, why: $0.explanation ?? "",
                                 page: $0.source_page, hints: $0.hints ?? [])
+        })
+    }
+
+    /// A quiz by its id (an exam from the exam center): its questions, each with the lesson it came from.
+    static func load(quizId: String) async -> Quiz? {
+        struct Options: Decodable { let sources: [String: String?]? }
+        struct Row: Decodable { let id: String; let lang: String?; let options: Options? }
+        guard let quiz = (try? await supabase.from("quizzes").select("id, lang, options").eq("id", value: quizId).limit(1).execute().value as [Row])?.first
+        else { return nil }
+        struct Q: Decodable {
+            let id, text: String
+            let options: [String]?
+            let answer_index: Int?
+            let explanation: String?
+            let source_page: Int?
+            let hints: [String]?
+        }
+        let rows: [Q] = (try? await supabase.from("quiz_questions").select("id, text, options, answer_index, explanation, source_page, hints")
+            .eq("quiz_id", value: quizId).order("sort_order").execute().value) ?? []
+        let sources = quiz.options?.sources ?? [:]
+        return Quiz(id: quiz.id, lang: Lang(rawValue: quiz.lang ?? "") ?? .tr, questions: rows.compactMap {
+            guard let options = $0.options, options.count > 1 else { return nil }
+            return QuizQuestion(id: $0.id, text: $0.text, options: options, answer: $0.answer_index ?? 0, why: $0.explanation ?? "",
+                                page: $0.source_page, hints: $0.hints ?? [], materialId: sources[$0.id] ?? nil)
         })
     }
 
