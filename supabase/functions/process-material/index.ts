@@ -1,6 +1,9 @@
 // Edge Function process-material: turns an uploaded lesson PDF into the reading page and study material.
 // POST { material_id } by the student (Authorization: their login), then it continues by itself in batches of
-// 8 pages (each batch calls itself for the next one, with the service key). Writes with the service role:
+// 8 pages (each batch calls itself for the next one, with the service key). The PDF's page texts are read once
+// and kept next to the file (pages.json): reading a big PDF again in every batch used up a run's CPU time.
+// A lesson whose run was stopped (still "processing" after STALE_MS) goes on from its last finished batch when
+// the student's app asks again. Writes with the service role:
 // materials.status / page_count, material_content (reader_doc + stats), material_terms, material_topics,
 // material_chunks (assistant search), card_decks + flashcards, quizzes + quiz_questions, usage_monthly,
 // and a "lesson ready" notification. The teacher's text is cut from the PDF, never written by the AI.
@@ -21,6 +24,8 @@ const BATCH_PAGES = 8;
 /** Text recognition reads images, so fewer pages per run (each run has its own time limit). */
 const OCR_BATCH_PAGES = 4;
 const MAX_PAGES = 100;
+/** A "processing" lesson not touched for this long was stopped; asking again continues it. */
+const STALE_MS = 5 * 60 * 1000;
 /** AI spending per student per month (US dollars); above it new lessons are not prepared. */
 const MONTHLY_BUDGET_USD = 3;
 
@@ -57,8 +62,20 @@ Deno.serve(async (req) => {
   const token = (req.headers.get('Authorization') ?? '').replace('Bearer ', '');
   const { data: who } = await db.auth.getUser(token);
   if (!who?.user) return json({ error: 'not signed in' }, 401);
-  const { data: m } = await db.from('materials').select('user_id, status, kind, counted_in_trial').eq('id', id).maybeSingle();
+  const { data: m } = await db.from('materials').select('user_id, status, kind, counted_in_trial, updated_at').eq('id', id).maybeSingle();
   if (!m || m.user_id !== who.user.id) return json({ error: 'not found' }, 404);
+  // A run that was stopped: go on from the last finished batch (nothing done is made again).
+  if (m.status === 'processing' && Date.now() - new Date(m.updated_at).getTime() > STALE_MS) {
+    const { data: c } = await db.from('material_content').select('stats').eq('material_id', id).maybeSingle();
+    const st = (c?.stats ?? {}) as Record<string, number>;
+    const resumeOcr = m.kind === 'photo' || st.ocr === 1;
+    // All pages done but the last step was stopped: past the last batch (runBatch then only finishes).
+    const allDone = !!st.pages && (st.done_pages ?? 0) >= st.pages;
+    const batch = allDone ? 9999 : Math.floor((st.done_pages ?? 0) / (resumeOcr ? OCR_BATCH_PAGES : BATCH_PAGES));
+    await db.from('materials').update({ error: null }).eq('id', id);
+    EdgeRuntime.waitUntil(runBatch(db, id, batch, resumeOcr));
+    return json({ status: 'processing', resumed: batch }, 202);
+  }
   if (m.kind === 'audio') return json({ error: 'audio comes later' }, 400);
   // Photos always need text recognition; a scanned PDF only when the student asks for it.
   const ocr = m.kind === 'photo' || body.ocr === true;
@@ -86,12 +103,32 @@ async function download(db: SupabaseClient, path: string) {
 async function readLesson(db: SupabaseClient, materialId: string, kind: string, ocr: boolean) {
   const { data: files } = await db.from('material_files').select('storage_path, mime_type').eq('material_id', materialId).order('sort_order');
   if (!files?.length) throw new Error('file row missing');
-  if (kind === 'photo') return { totalPages: files.length, text: [] as string[], files: files as FileRow[], pdf: null };
+  if (kind === 'photo') return { totalPages: files.length, text: [] as string[], files: files as FileRow[], pdf: null, cached: true };
+  // The page texts read before (pages.json next to the PDF): no need to open the PDF again.
+  if (!ocr) {
+    const { data: saved } = await db.storage.from('materials').download(pagesPath(files[0].storage_path));
+    if (saved) {
+      const p = JSON.parse(await saved.text()) as { totalPages: number; text: string[] };
+      return { totalPages: p.totalPages, text: p.text, files: files as FileRow[], pdf: null, cached: true };
+    }
+  }
   const bytes = await download(db, files[0].storage_path);
   const doc = await getDocumentProxy(bytes.slice());
-  if (ocr) return { totalPages: doc.numPages, text: [] as string[], files: files as FileRow[], pdf: bytes };
+  if (ocr) return { totalPages: doc.numPages, text: [] as string[], files: files as FileRow[], pdf: bytes, cached: true };
   const { totalPages, text } = await extractText(doc, { mergePages: false });
-  return { totalPages, text: text as string[], files: files as FileRow[], pdf: null };
+  return { totalPages, text: text as string[], files: files as FileRow[], pdf: null, cached: false };
+}
+
+/** Where the lesson's page texts are kept: next to the PDF. */
+const pagesPath = (pdfPath: string) => pdfPath.replace(/[^/]+$/, 'pages.json');
+
+/** The next (or the same) batch in a fresh run of this function: each run has its own time limit. */
+function runAgain(materialId: string, batch: number, ocr: boolean) {
+  return fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/process-material`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-internal-key': secretKey() },
+    body: JSON.stringify({ material_id: materialId, batch, ocr }),
+  });
 }
 
 /** Text recognition of pages from…to: photos as images, a scanned PDF as a small PDF of just those pages. */
@@ -169,7 +206,16 @@ async function runBatch(db: SupabaseClient, materialId: string, batchNo: number,
   if (!m) return;
   const uid = m.user_id as string;
   try {
-    const { totalPages, text, files, pdf } = await readLesson(db, materialId, m.kind, ocr);
+    const { totalPages, text, files, pdf, cached } = await readLesson(db, materialId, m.kind, ocr);
+    // The PDF was just opened and read: keep its page texts, and do the AI part in a fresh run.
+    if (!cached) {
+      const up = await db.storage
+        .from('materials')
+        .upload(pagesPath(files[0].storage_path), JSON.stringify({ totalPages, text }), { contentType: 'application/json', upsert: true });
+      if (up.error) throw new Error('could not keep the page texts');
+      await runAgain(materialId, batchNo, ocr);
+      return;
+    }
 
     if (batchNo === 0) {
       await clearOutput(db, materialId);
@@ -191,6 +237,8 @@ async function runBatch(db: SupabaseClient, materialId: string, batchNo: number,
     }
 
     const all = batches(totalPages, ocr ? OCR_BATCH_PAGES : BATCH_PAGES);
+    // A resumed lesson whose last batch was already done.
+    if (!all[batchNo]) return await finish(db, materialId, uid, m.title);
     const [from, to] = all[batchNo];
     if (ocr) {
       const seen = await recognise(db, files, pdf, from, to);
@@ -312,18 +360,14 @@ async function runBatch(db: SupabaseClient, materialId: string, batchNo: number,
       cards: (stats.cards ?? 0) + out.cards.length,
       questions: (stats.questions ?? 0) + out.questions.length,
       done_pages: to,
+      ocr: ocr ? 1 : 0,
     };
     await db.from('material_content').upsert({ material_id: materialId, user_id: uid, reader_doc: doc, stats: newStats });
     await db.from('materials').update({ language: docLang }).eq('id', materialId);
 
     if (batchNo + 1 < all.length) {
       // Next 8 pages in a fresh run of this function (each run has its own time limit).
-      const next = fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/process-material`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-internal-key': secretKey() },
-        body: JSON.stringify({ material_id: materialId, batch: batchNo + 1, ocr }),
-      });
-      await next;
+      await runAgain(materialId, batchNo + 1, ocr);
       return;
     }
     await finish(db, materialId, uid, m.title);

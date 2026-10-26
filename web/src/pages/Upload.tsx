@@ -12,6 +12,7 @@ import {
   partsFor,
   splitPdf,
   MAX_PHOTOS,
+  resumeStuckLessons,
   retryWithOcr,
   shrinkPhoto,
   uploadLesson,
@@ -67,6 +68,8 @@ export default function Upload() {
       if (!alive || !st) return;
       setStatus(st);
       if (st.status === 'needs_ocr') setStage('noText');
+      // Stopped on the server (no progress for 5 minutes): ask it to go on.
+      if (st.status === 'processing' && st.updatedAt && Date.now() - new Date(st.updatedAt).getTime() > 5 * 60 * 1000) resumeStuckLessons();
     };
     tick();
     const id = setInterval(tick, 4000);

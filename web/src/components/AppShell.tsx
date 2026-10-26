@@ -6,6 +6,7 @@ import { listCourses } from '../api/courses';
 import { currentUser, logOut } from '../api/auth';
 import { cancelDeletion, clearProfile, DELETION_EVENT, deletionDate, getProfile } from '../api/account';
 import { needsOnboarding } from '../api/onboarding';
+import { resumeStuckLessons } from '../api/upload';
 import { useToast } from './Toast';
 import { checkThisDevice, signOutThisDevice } from '../api/devices';
 import { studyLine } from '../i18n/format';
@@ -88,6 +89,8 @@ export default function AppShell() {
     });
     // A new account first answers the welcome steps (school, department, plan, courses).
     needsOnboarding().then((n) => n && navigate('/welcome', { replace: true }));
+    // A lesson whose preparation stopped on the server goes on by itself.
+    resumeStuckLessons();
   }, [navigate]);
 
   // App pages need a signed-in student.

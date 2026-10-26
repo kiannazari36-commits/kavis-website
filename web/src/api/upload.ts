@@ -141,15 +141,22 @@ export async function retryWithOcr(id: string): Promise<'ok' | 'trial' | 'failed
   return status === 403 ? 'trial' : 'failed';
 }
 
-export type LessonStatus = { status: 'uploaded' | 'processing' | 'ready' | 'needs_ocr' | 'too_long' | 'failed'; pages: number | null; courseId: string | null; stats: Record<string, number> };
+export type LessonStatus = {
+  status: 'uploaded' | 'processing' | 'ready' | 'needs_ocr' | 'too_long' | 'failed';
+  pages: number | null;
+  courseId: string | null;
+  stats: Record<string, number>;
+  /** Last change on the server (a "processing" lesson unchanged for long was stopped). */
+  updatedAt: string | null;
+};
 
 /** Where the server is with a lesson (polled by the processing screen). */
 export async function lessonStatus(id: string): Promise<LessonStatus | null> {
-  const { data } = await supabase.from('materials').select('status, page_count, course_id, material_content(stats)').eq('id', id).maybeSingle();
+  const { data } = await supabase.from('materials').select('status, page_count, course_id, updated_at, material_content(stats)').eq('id', id).maybeSingle();
   if (!data) return null;
   const content = data.material_content as unknown as { stats: Record<string, number> } | { stats: Record<string, number> }[] | null;
   const stats = (Array.isArray(content) ? content[0]?.stats : content?.stats) ?? {};
-  return { status: data.status, pages: data.page_count, courseId: data.course_id, stats };
+  return { status: data.status, pages: data.page_count, courseId: data.course_id, stats, updatedAt: data.updated_at };
 }
 
 /**
@@ -172,4 +179,15 @@ export async function deleteLesson(materialId: string) {
     if (e2) console.error('deleteLesson files', e2);
   }
   return true;
+}
+
+/**
+ * Lessons whose preparation was stopped on the server (still "processing" after 5 minutes): asking the server
+ * again makes it go on from the last finished part. Called once when the app opens.
+ */
+export async function resumeStuckLessons() {
+  const since = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+  const { data, error } = await supabase.from('materials').select('id').eq('status', 'processing').lt('updated_at', since);
+  if (error) return console.error('resumeStuckLessons', error);
+  for (const m of data ?? []) supabase.functions.invoke('process-material', { body: { material_id: m.id } }).then(({ error: e }) => e && console.error('resume', e));
 }
