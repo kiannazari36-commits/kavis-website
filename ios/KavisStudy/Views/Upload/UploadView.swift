@@ -70,11 +70,11 @@ struct UploadView: View {
             }
             if longSheet { longPdfSheet }
         }
-        .fileImporter(isPresented: $showPDFImporter, allowedContentTypes: [.pdf]) { result in
-            if case .success(let url) = result { handlePicked(url) }
-        }
-        .fileImporter(isPresented: $showAudioImporter, allowedContentTypes: [.audio]) { result in
-            if case .success(let url) = result { audioName = url.lastPathComponent }
+        // One picker for both kinds: SwiftUI shows only one `.fileImporter` per view.
+        .fileImporter(isPresented: Binding(get: { showPDFImporter || showAudioImporter }, set: { if !$0 { showPDFImporter = false; showAudioImporter = false } }),
+                      allowedContentTypes: showAudioImporter ? [.audio] : [.pdf]) { result in
+            guard case .success(let url) = result else { return }
+            if mode == .audio { audioName = url.lastPathComponent } else { handlePicked(url) }
         }
         .animation(.easeOut(duration: 0.2), value: longSheet)
         .animation(.easeInOut(duration: 0.2), value: mode)

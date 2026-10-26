@@ -145,7 +145,9 @@ Step 3 of the app plan (26 Oct 2026): upload and reader on the server
 - [x] Trial status from the server (`access_status`) on home, profile and upload (the old mock numbers are gone)
 - [x] Reader on real lessons (`material_content.reader_doc`, same format as the web): sections, page labels, block tags, hard words with the server's explanation, "Kartlara ekle" (Edge `add-card`), word taps counted (`tap_term`), pages seen saved as read, opens where the student stopped ("Kaldığın yerden devam: sayfa N"), reading time saved (`study_sessions`, 1 minute or more), "Çevir" uses saved translations or Edge `translate`; too many small sections are grouped once (Edge `group-sections`)
 - [x] Checked in the simulator with test1 (local): onboarding saves school + class year; course folder → lesson opens at page 2 with the right section; "NAPQI" explanation, card added, progress saved
-- [ ] Not tried yet (costs a few cents of AI, needs Kian's OK): a real PDF upload from the iPhone and a new translation
+- [x] Real PDF upload from the iPhone tried locally (26 Oct 2026, test3, 2-page PDF): uploaded, prepared in about 10 s (2 terms, 2 questions, 4 cards), "Derse git" opened it in the reader; AI cost $0.0234. Fixed on the way: the "Dosya seç" picker did not open (two `.fileImporter`s on one screen)
+- [ ] Not tried yet (costs a little AI, needs Kian's OK): a new translation from the iPhone
+- [ ] Small: a PDF under 0.05 MB shows "0,0 MB" (the web shows the same rounding)
 - [ ] Photos and lecture recordings are still not sent to the server from the phone ("Dersi hazırla" shows a toast)
 - [ ] Profile screen numbers (42 sa, 6 gün, 5 ders, 13 PDF, 35 soru …) and the home "Bugün tekrar günü" card are still the design's sample data
 - [ ] The UI tests (`KavisStudyUITests/FlowTests.swift`) were written for the mock data (demo code 481920, sample lesson) and need rewriting for the server
