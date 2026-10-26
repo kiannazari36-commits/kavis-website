@@ -151,7 +151,8 @@ Step 3 of the app plan (26 Oct 2026): upload and reader on the server
 
 Step 4 of the app plan (26 Oct 2026): assistant, cards, quiz, plan (progress screen still to do)
 - [x] Assistant on the server (Edge `assistant`, same as the web): the student's real courses, "only my PDFs" / "AI + research", the answer appears while it is written, sources ("↗ lesson · SAYFA n"), web links, what the assistant did (weak topic / card), conversation kept per course, AI note under the box, trial / budget errors. Quick actions ask in the student's words; "PDF ekle" opens the upload into the chosen course
-- [ ] Assistant not tried with a real question yet (a few cents of AI, needs Kian's OK). Photo / recording attachments, "Soruyu çözdür", voice and "Ben anlatayım" still a toast
+- [x] Assistant tried locally with a real question (26 Oct 2026, test3, "only my PDFs"): answer streamed from the lesson with "↗ ANTİHİSTAMİNİKLER · SAYFA 1 / 2", said honestly what the notes do not explain, chat saved, trial question counted; cost $0.0052
+- [ ] Assistant: photo / recording attachments, "Soruyu çözdür", voice and "Ben anlatayım" still a toast; "AI + research" (web search) not tried from the phone yet
 - [x] Cards (design `ScrCards.dc.html`): cards due now from the server, flip, Bilmedim / Zor / Bildim with the web's spaced-repetition rule, saved to `flashcards`; home "Kartlar" tile opens it. Checked locally (rating saved, back in 4 days)
 - [x] Quiz (design `ScrQuiz.dc.html`, multiple choice): reader "Başla" opens the section check (last section: the whole lesson exam), hints (half point), "how sure", right / wrong, "emin olduğun bir hata" warning, explanation + "Sayfa n'e bak", result; the server grades (grade-quiz) and puts sure mistakes into "Hatalarım". Checked locally
 - [x] Home: "Bugünün planı" shows today's tasks of the server's week plan (build-plan, free, no AI) and opens them; the "Bugün tekrar günü" card only shows when the planner made a review for today
