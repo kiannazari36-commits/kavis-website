@@ -148,6 +148,16 @@ Step 3 of the app plan (26 Oct 2026): upload and reader on the server
 - [x] Real PDF upload from the iPhone tried locally (26 Oct 2026, test3, 2-page PDF): uploaded, prepared in about 10 s (2 terms, 2 questions, 4 cards), "Derse git" opened it in the reader; AI cost $0.0234. Fixed on the way: the "Dosya seç" picker did not open (two `.fileImporter`s on one screen)
 - [ ] Not tried yet (costs a little AI, needs Kian's OK): a new translation from the iPhone
 - [ ] Small: a PDF under 0.05 MB shows "0,0 MB" (the web shows the same rounding)
+
+Step 4 of the app plan (26 Oct 2026): assistant, cards, quiz, plan (progress screen still to do)
+- [x] Assistant on the server (Edge `assistant`, same as the web): the student's real courses, "only my PDFs" / "AI + research", the answer appears while it is written, sources ("↗ lesson · SAYFA n"), web links, what the assistant did (weak topic / card), conversation kept per course, AI note under the box, trial / budget errors. Quick actions ask in the student's words; "PDF ekle" opens the upload into the chosen course
+- [ ] Assistant not tried with a real question yet (a few cents of AI, needs Kian's OK). Photo / recording attachments, "Soruyu çözdür", voice and "Ben anlatayım" still a toast
+- [x] Cards (design `ScrCards.dc.html`): cards due now from the server, flip, Bilmedim / Zor / Bildim with the web's spaced-repetition rule, saved to `flashcards`; home "Kartlar" tile opens it. Checked locally (rating saved, back in 4 days)
+- [x] Quiz (design `ScrQuiz.dc.html`, multiple choice): reader "Başla" opens the section check (last section: the whole lesson exam), hints (half point), "how sure", right / wrong, "emin olduğun bir hata" warning, explanation + "Sayfa n'e bak", result; the server grades (grade-quiz) and puts sure mistakes into "Hatalarım". Checked locally
+- [x] Home: "Bugünün planı" shows today's tasks of the server's week plan (build-plan, free, no AI) and opens them; the "Bugün tekrar günü" card only shows when the planner made a review for today
+- [ ] Still to build: progress screen (design NewProgress / ScrProgress), weekly plan screen ("Haftalık plan" is a toast), exam center ("Sınav merkezi"), lesson summary ("Ders özeti"), written questions of the quiz design
+- [x] Design texts of the study screens (cards, quiz, plan, progress, exam prep) added to `i18n-design.json` (`extract-design-texts.mjs` reads them now; older texts kept as they were)
+- Note: after the Mac restarts, `supabase start` may leave the Edge Functions container stopped (quiz grading then fails with 503); `supabase stop` + `supabase start` fixes it
 - [ ] Photos and lecture recordings are still not sent to the server from the phone ("Dersi hazırla" shows a toast)
 - [ ] Profile screen numbers (42 sa, 6 gün, 5 ders, 13 PDF, 35 soru …) and the home "Bugün tekrar günü" card are still the design's sample data
 - [ ] The UI tests (`KavisStudyUITests/FlowTests.swift`) were written for the mock data (demo code 481920, sample lesson) and need rewriting for the server

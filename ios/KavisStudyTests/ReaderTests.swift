@@ -76,3 +76,33 @@ final class ReaderTests: XCTestCase {
         XCTAssertEqual(back?.readerPaperChosen, true)
     }
 }
+
+final class StudyTests: XCTestCase {
+    private func card(reps: Int, interval: Double, ease: Double) -> FlashCard {
+        FlashCard(id: "c", q: "Soru?\n\nA) bir\nB) iki", a: "B", note: "", page: 3, deck: "D", lang: .tr,
+                  intervalDays: interval, ease: ease, reps: reps, againCount: 0)
+    }
+
+    /// Same spaced-repetition rule as the web: first "Bildim" 4 days, then interval × ease.
+    func testGoodIntervalLikeTheWeb() {
+        XCTAssertEqual(CardsAPI.goodInterval(card(reps: 0, interval: 0, ease: 2.5)), 4)
+        XCTAssertEqual(CardsAPI.goodInterval(card(reps: 1, interval: 4, ease: 2.5)), 10)
+        XCTAssertEqual(CardsAPI.goodInterval(card(reps: 2, interval: 1, ease: 2.0)), 8)
+    }
+
+    func testTestCardKeepsItsOptions() {
+        let c = card(reps: 0, interval: 0, ease: 2.5)
+        XCTAssertEqual(c.question, "Soru?")
+        XCTAssertEqual(c.options, "A) bir\nB) iki")
+    }
+
+    func testTurkishPageEndings() {
+        XCTAssertEqual(QuizView.lookAt(14, .tr), "Sayfa 14'e bak")
+        XCTAssertEqual(QuizView.lookAt(13, .tr), "Sayfa 13'e bak")
+        XCTAssertEqual(QuizView.lookAt(6, .tr), "Sayfa 6'ya bak")
+        XCTAssertEqual(QuizView.lookAt(10, .tr), "Sayfa 10'a bak")
+        XCTAssertEqual(QuizView.lookAt(2, .tr), "Sayfa 2'ye bak")
+        XCTAssertEqual(QuizView.lookAt(9, .tr), "Sayfa 9'a bak")
+        XCTAssertEqual(QuizView.lookAt(100, .tr), "Sayfa 100'e bak")
+    }
+}

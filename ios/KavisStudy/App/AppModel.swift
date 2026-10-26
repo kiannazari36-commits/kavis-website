@@ -23,6 +23,9 @@ enum Route: Equatable {
     case profile
     case courses
     case course(String)
+    /// Flash cards due now: all, or one course's.
+    case cards(String?)
+    case quiz(QuizTarget)
     case upload(UploadKind)
     case reader(String)
     case assistant
@@ -52,6 +55,7 @@ final class AppModel {
         case "home": route = .home
         case "profile", "profileEdit": route = .profile
         case "courses": route = .courses
+        case "cards": route = .cards(nil)
         case "upload": route = .upload(.pdf)
         case "uploadPhoto": route = .upload(.photo)
         case "uploadAudio": route = .upload(.audio)

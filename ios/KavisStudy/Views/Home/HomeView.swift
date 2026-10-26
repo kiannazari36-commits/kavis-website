@@ -15,6 +15,8 @@ struct HomeView: View {
     @State private var planOpen = false
     @State private var settings = SettingsAPI.loadNow()
     @State private var courses: [Course] = CoursesAPI.lastCourses
+    @State private var todayTasks: [PlanTask] = []
+    @State private var todayReview: TodayReview?
 
     private var lang: Lang { prefs.lang }
     private func t(_ key: String, _ vars: [String: String] = [:]) -> String { prefs.t(key, vars) }
@@ -46,12 +48,12 @@ struct HomeView: View {
                 .frame(maxHeight: .infinity, alignment: .bottom)
                 .padding(.bottom, 8)
             if !planOpen {
-                PlanTab { withAnimation(.easeOut(duration: 0.25)) { planOpen = true } }
+                PlanTab(count: todayTasks.filter { $0.status != "done" }.count) { withAnimation(.easeOut(duration: 0.25)) { planOpen = true } }
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                     .padding(.top, KLayout.top(296, minimum: 120))
             }
             if planOpen {
-                PlanPanel(onClose: { withAnimation(.easeOut(duration: 0.25)) { planOpen = false } }, onItem: soon, onWeek: soon)
+                PlanPanel(tasks: todayTasks, onClose: { withAnimation(.easeOut(duration: 0.25)) { planOpen = false } }, onItem: openTask, onWeek: soon)
             }
             if let key = trial.lockedKey {
                 TrialLockedDialog(
@@ -67,8 +69,12 @@ struct HomeView: View {
         .animation(.easeOut(duration: 0.2), value: reviewMenuOpen)
         .task {
             async let list = CoursesAPI.listCourses()
+            async let week = PlanAPI.weekTasks()
+            async let review = PlanAPI.todayReview()
             await trial.refresh()
             courses = await list
+            todayTasks = await week.filter { $0.day == CoursesAPI.todayISO() }
+            todayReview = await review
         }
     }
 
@@ -196,12 +202,25 @@ struct HomeView: View {
 
     // MARK: Today's review
 
+    /// Only when the daily planner made a review for today (summary + cards + questions).
     @ViewBuilder private var review: some View {
-        if let later { laterCard(later) } else { reviewHero }
-        if reviewMenuOpen && later == nil { reviewMenu }
+        if let later { laterCard(later) } else if let todayReview { reviewHero(todayReview) }
+        if reviewMenuOpen && later == nil && todayReview != nil { reviewMenu }
     }
 
-    private var reviewHero: some View {
+    /// A plan task opens where it is done: the lesson, its quiz, or the cards.
+    private func openTask(_ task: PlanTask) {
+        planOpen = false
+        switch task.target {
+        case "reader" where task.materialId != nil: app.go(.reader(task.materialId!))
+        case "cards", "review": app.go(.cards(task.courseId))
+        case "quiz", "exam_prep" where task.materialId != nil: app.go(.quiz(QuizTarget(materialId: task.materialId!, kind: .final)))
+        default: if let c = task.courseId { app.go(.course(c)) } else { app.go(.courses) }
+        }
+        if task.status != "done" { Task { await PlanAPI.setDone(task.id, true) } }
+    }
+
+    private func reviewHero(_ r: TodayReview) -> some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 12) {
                 KIcon(name: .sync, size: 22, width: 1.7)
@@ -209,7 +228,8 @@ struct HomeView: View {
                     .background(KPhone.heroChip, in: Circle())
                 VStack(alignment: .leading, spacing: 2) {
                     Text(t("home.k602")).font(KFont.ui(18, .semibold, lang: lang))
-                    Text(t("home.k1207")).font(KFont.ui(13, lang: lang)).opacity(0.8)
+                    Text(t("home.reviewSub", ["t": r.title, "c": Format.num(r.cards, lang), "q": Format.num(r.questions, lang), "m": Format.num(r.minutes, lang)]))
+                        .font(KFont.ui(13, lang: lang)).opacity(0.8)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -224,7 +244,10 @@ struct HomeView: View {
                 }
                 .accessibilityLabel(t("home.k1884"))
                 .accessibilityAddTraits(reviewMenuOpen ? .isSelected : [])
-                Button(action: soon) {
+                Button {
+                    Task { await PlanAPI.setReview(r.id, done: true) }
+                    app.go(.cards(nil))
+                } label: {
                     HStack(spacing: 8) {
                         KIcon(name: .play, size: 14)
                         Text(t("home.k2062")).font(KFont.ui(15, .medium, lang: lang))
@@ -252,6 +275,8 @@ struct HomeView: View {
                 Button {
                     later = option
                     reviewMenuOpen = false
+                    // "Yarın" and "Bugün atla" move the review on the server; "Akşam" keeps it for today.
+                    if option != .evening, let id = todayReview?.id { Task { await PlanAPI.setReview(id, done: false) } }
                     toast.show(t(Self.messageKeys[option]!.title))
                 } label: {
                     HStack(spacing: 8) {
@@ -308,6 +333,13 @@ struct HomeView: View {
 
     // MARK: Tiles and courses
 
+    private func tileTapped(_ key: String) {
+        switch key {
+        case "home.tileCards": app.go(.cards(nil))
+        default: soon()
+        }
+    }
+
     private var tiles: some View {
         let items: [(KIconName, String, Color, Color, Color)] = [
             (.checklist, "home.tileExam", KPhone.tile1, KPhone.tile1Text, KPhone.card),
@@ -316,7 +348,7 @@ struct HomeView: View {
         ]
         return HStack(spacing: 10) {
             ForEach(items, id: \.1) { icon, key, chip, fg, bg in
-                Button(action: soon) {
+                Button { tileTapped(key) } label: {
                     VStack(spacing: 10) {
                         KIcon(name: icon, size: 20, width: 1.6)
                             .foregroundStyle(fg)

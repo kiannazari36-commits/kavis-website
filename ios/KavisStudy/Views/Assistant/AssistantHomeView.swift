@@ -11,21 +11,12 @@ struct AssistantHomeView: View {
 
     private enum Panel { case none, menu, add, quick }
 
-    @State private var topics: [AssistantTopic] = AssistantAPI.topics
+    @State private var topics: [AssistantTopic] = []
     @State private var topicId: String?
     @State private var ai = false
     @State private var panel: Panel = .none
     @State private var draft = ""
-    @State private var attachment: Attached?
     @FocusState private var focused: Bool
-
-    /// A file the student just added and the course the assistant thinks it belongs to.
-    private struct Attached {
-        var kind: AttachmentKind
-        var data: AssistantAttachment
-        var topicId: String
-        var done = false
-    }
 
     private var lang: Lang { prefs.lang }
     private func d(_ turkish: String) -> String { prefs.d(turkish) }
@@ -37,7 +28,6 @@ struct AssistantHomeView: View {
             topBar
             hero
             VStack(spacing: 10) {
-                if let attachment { attachmentCard(attachment) }
                 switch panel {
                 case .menu: menuPanel
                 case .add: addPanel
@@ -51,8 +41,10 @@ struct AssistantHomeView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(background.ignoresSafeArea())
         .animation(.easeOut(duration: 0.2), value: panel)
-        .animation(.easeOut(duration: 0.2), value: attachment?.done)
-        .task { if MockFlag.value("assistantPanel") == "menu" { panel = .menu } }
+        .task {
+            topics = await AssistantAPI.listTopics()
+            if MockFlag.value("assistantPanel") == "menu" { panel = .menu }
+        }
     }
 
     private var background: some View {
@@ -91,7 +83,7 @@ struct AssistantHomeView: View {
         .accessibilityLabel(label)
     }
 
-    private var compact: Bool { panel != .none || attachment != nil }
+    private var compact: Bool { panel != .none }
 
     private var hero: some View {
         VStack(spacing: 26) {
@@ -188,14 +180,16 @@ struct AssistantHomeView: View {
 
     private func toggle(_ next: Panel) { panel = panel == next ? .none : next }
 
-    private func send() {
+    private func send() { ask(draft.trimmingCharacters(in: .whitespacesAndNewlines)) }
+
+    /// Opens the chat with the question (a quick action sends its own words as the question).
+    private func ask(_ question: String) {
         guard let topic else {
             panel = .menu
             toast.show(d("Önce sorunun hangi dersle ilgili olduğunu seç"))
             return
         }
         trial.perform(.question) {
-            let question = draft.trimmingCharacters(in: .whitespacesAndNewlines)
             draft = ""
             app.go(.assistantChat(AssistantChatTarget(topicId: topic.id, question: question, ai: ai)))
         }
@@ -209,10 +203,9 @@ struct AssistantHomeView: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
                 ForEach(topics.filter { !(assign && $0.isAll) }) { t in
-                    let on = assign ? attachment?.topicId == t.id : topicId == t.id
+                    let on = topicId == t.id
                     Button {
-                        if assign, var a = attachment { a.topicId = t.id; attachment = a; panel = .none }
-                        else { topicId = t.id; toast.show(d("Ders: ") + t.name[lang]); panel = .none }
+                        topicId = t.id; toast.show(d("Ders: ") + t.name[lang]); panel = .none
                     } label: {
                         VStack(alignment: .leading, spacing: 6) {
                             Circle().fill(dot(t)).frame(width: 9, height: 9)
@@ -290,10 +283,11 @@ struct AssistantHomeView: View {
 
     private var quickPanel: some View {
         let items: [(KIconName, String, () -> Void)] = [
-            (.headphones, "Önemli ve zayıf konularımı anlat", { panel = .none; toast.show(d("Sesli anlatım başladı · 5 kısa bölüm, ~6 dk")) }),
-            (.lines, "Bu konuyu özetle", { panel = .none; soon() }),
-            (.checklist, "Bana 5 soru sor", { panel = .none; soon() }),
-            (.target, "Zayıf konularım", { panel = .none; soon() }),
+            // These ask the assistant in the student's own words (the server answers from their lessons).
+            (.headphones, "Önemli ve zayıf konularımı anlat", { panel = .none; ask(d("Önemli ve zayıf konularımı anlat")) }),
+            (.lines, "Bu konuyu özetle", { panel = .none; ask(d("Bu konuyu özetle")) }),
+            (.checklist, "Bana 5 soru sor", { panel = .none; ask(d("Bana 5 soru sor")) }),
+            (.target, "Zayıf konularım", { panel = .none; ask(d("Zayıf konularım")) }),
             (.mic, "Ben anlatayım", { panel = .none; soon() }),
         ]
         return VStack(spacing: 0) {
@@ -330,9 +324,13 @@ struct AssistantHomeView: View {
             ForEach(Array(items.enumerated()), id: \.offset) { _, item in
                 Button {
                     panel = .none
-                    guard let kind = item.0 else { toast.show(d("Soru fotoğrafı okundu · çözüm hazır")); return }
-                    // Uploading is Premium-only after the trial.
-                    trial.perform(.pdf) { Task { await attach(kind) } }
+                    // A PDF goes through the upload screen into the chosen course; photos, recordings and
+                    // "Soruyu çözdür" come with the camera and microphone work (see TODO.md).
+                    guard item.0 == .pdf else { return soon() }
+                    trial.perform(.pdf) {
+                        app.uploadCourseId = topic?.courseId
+                        app.go(.upload(.pdf))
+                    }
                 } label: {
                     HStack(spacing: 12) {
                         KIcon(name: item.1, size: 18, width: 1.7)
@@ -354,71 +352,6 @@ struct AssistantHomeView: View {
         .shadow(color: Color(hex: 0x2A2420, opacity: 0.1), radius: 13, y: 10)
     }
 
-    // MARK: Added file
-
-    private func attach(_ kind: AttachmentKind) async {
-        guard let data = await AssistantAPI.attachment(kind) else { return }
-        attachment = Attached(kind: kind, data: data, topicId: data.topic)
-    }
-
-    private func attachmentCard(_ a: Attached) -> some View {
-        let course = topics.first { $0.id == a.topicId }?.name[lang] ?? ""
-        let photo = a.kind == .photo
-        return VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 10) {
-                Text(a.data.tag[lang]).font(KFont.mono(10, .semibold)).foregroundStyle(KOnb.priText)
-                    .frame(width: 40, height: 40).background(KOnb.priSoft, in: RoundedRectangle(cornerRadius: 11))
-                VStack(alignment: .leading, spacing: 1) {
-                    Text(a.data.name[lang]).font(KFont.ui(14, .semibold, lang: lang)).lineLimit(1).truncationMode(.middle).foregroundStyle(KPhone.text)
-                    Text(a.data.meta[lang]).font(KFont.ui(12, lang: lang)).foregroundStyle(KPhone.text2)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                Button { attachment = nil } label: {
-                    KIcon(name: .close, size: 12, width: 2).foregroundStyle(KPhone.text2)
-                        .frame(width: 30, height: 30).overlay(Circle().stroke(KPhone.line, lineWidth: 1))
-                }
-                .accessibilityLabel(d("Eki kaldır"))
-            }
-            if a.done {
-                Text(course + d(photo ? " soru örneklerine eklendi" : " klasörüne eklendi"))
-                    .font(KFont.ui(12, .semibold, lang: lang)).foregroundStyle(KPhone.good)
-                    .padding(.horizontal, 10).padding(.vertical, 5)
-                    .background(Color.pair(0xE3F1E7, 0x1F3328), in: RoundedRectangle(cornerRadius: 12))
-            } else {
-                VStack(alignment: .leading, spacing: 8) {
-                    (Text("\(prefs.t("attThinks")) ") + Text(course).fontWeight(.semibold) + Text(" \(prefs.t("attBelongs")) ")
-                        + Text("· \(a.data.why[lang])").foregroundColor(KPhone.text2))
-                        .font(KFont.ui(13, lang: lang)).kLineHeight(1.45, size: 13, lang: lang).foregroundStyle(KPhone.text)
-                    HStack(spacing: 6) {
-                        Button {
-                            attachment?.done = true
-                            topicId = a.topicId
-                            toast.show(photo ? course + d(" · soru örneklerine eklendi") : course + d(" klasörüne eklendi · asistan artık bunu da kullanır"))
-                        } label: {
-                            Text(photo ? d("Soru örneklerine ekle") : d("Bu derse ekle")).font(KFont.ui(13, .medium, lang: lang)).foregroundStyle(KPhone.ctaText)
-                                .frame(maxWidth: .infinity, minHeight: 38).background(Color(hex: 0x9C2F3A), in: Capsule())
-                        }
-                        Button { panel = .none; changeCourseOfAttachment() } label: {
-                            Text(d("Başka ders")).font(KFont.ui(13, lang: lang)).foregroundStyle(KPhone.text)
-                                .padding(.horizontal, 14).frame(height: 38)
-                                .background(KPhone.card, in: Capsule()).overlay(Capsule().stroke(KPhone.bannerLine, lineWidth: 1))
-                        }
-                    }
-                }
-                .padding(.horizontal, 12).padding(.vertical, 10)
-                .background(KPhone.tile2, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-            }
-        }
-        .padding(12)
-        .kPhoneCard(radius: 22)
-    }
-
-    /// "Başka ders": the student chooses the course of the file.
-    private func changeCourseOfAttachment() {
-        guard var a = attachment, let next = topics.first(where: { $0.id != a.topicId && !$0.isAll }) else { return }
-        a.topicId = next.id
-        attachment = a
-    }
 }
 
 extension KPhone {

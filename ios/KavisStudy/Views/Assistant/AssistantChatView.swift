@@ -1,8 +1,8 @@
 import SwiftUI
 
 /// Design: design/ScrAssistant.dc.html (chat). The assistant answers only from the student's material; what it does
-/// not find in the lesson it says so. Answers are a mock until the server exists. Voice, teach-back and
-/// "easy explanation" modes of the design come later.
+/// not find in the lesson it says so. Answers come from the server (Edge Function "assistant", like the web) and
+/// appear while they are written; the conversation is kept. Voice, teach-back and "easy explanation" come later.
 struct AssistantChatView: View {
     @Environment(AppPrefs.self) private var prefs
     @Environment(AppModel.self) private var app
@@ -12,15 +12,10 @@ struct AssistantChatView: View {
 
     let target: AssistantChatTarget
 
-    private struct Message: Identifiable {
-        enum Role { case assistant, user }
-        let id = UUID().uuidString
-        let role: Role
-        var text: String
-        var source: String?
-    }
-
-    @State private var messages: [Message] = []
+    @State private var messages: [ChatMessage] = []
+    /// The answer while the server writes it ("" = thinking, nothing written yet).
+    @State private var streaming: String?
+    @State private var threadId: String?
     @State private var draft = ""
     @State private var waiting = false
     @State private var listening = false
@@ -34,7 +29,8 @@ struct AssistantChatView: View {
 
     private var lang: Lang { prefs.lang }
     private func d(_ turkish: String) -> String { prefs.d(turkish) }
-    private var topic: AssistantTopic? { AssistantAPI.topics.first { $0.id == target.topicId } }
+    private var isAll: Bool { target.topicId == "all" }
+    private var course: Course? { CoursesAPI.lastCourses.first { $0.id == target.topicId } }
     private var offline: Bool { !network.isOnline }
 
     var body: some View {
@@ -47,8 +43,10 @@ struct AssistantChatView: View {
         .task {
             guard !started else { return }
             started = true
-            messages = [Message(role: .assistant, text: welcome)]
-            if !target.question.isEmpty { await ask(target.question, alreadyShown: false) }
+            let thread = await AssistantAPI.latestThread(courseId: isAll ? nil : target.topicId)
+            threadId = thread.id
+            messages = [ChatMessage(role: .assistant, text: welcome)] + thread.messages
+            if !target.question.isEmpty { await ask(target.question) }
         }
         .onDisappear { speaker.stop() }
     }
@@ -73,7 +71,7 @@ struct AssistantChatView: View {
     }
 
     private var sourceLabel: String {
-        let name = topic?.isAll == true ? d("Tüm derslerim") : "\(topic?.name[lang] ?? "").pdf"
+        let name = isAll ? d("Tüm derslerim") : (course?.name[lang] ?? "")
         return "\(d("KAYNAK ·")) \(name)"
     }
 
@@ -151,19 +149,15 @@ struct AssistantChatView: View {
 
     // MARK: Messages
 
+    /// The design's greeting with the student's course ("Merhaba! Yalnızca “Farmakoloji” PDF'ine dayanarak cevap veriyorum.").
     private var welcome: String {
-        if topic?.isAll == true {
-            return d("Merhaba! Tüm derslerindeki PDF, ses kaydı ve sınav sonuçlarına bakarak cevap veriyorum.")
-        }
+        if isAll { return d("Merhaba! Tüm derslerindeki PDF, ses kaydı ve sınav sonuçlarına bakarak cevap veriyorum.") }
         var text = d("Merhaba! Yalnızca “Hipertansiyon” PDF'ine dayanarak cevap veriyorum. Şu an sayfa 12'desin.")
-        guard target.topicId != "hypertension", let me = topic?.name[lang],
-              let hyper = AssistantAPI.topics.first(where: { $0.id == "hypertension" })?.name[lang] else { return text }
-        text = text.replacingOccurrences(of: hyper, with: me)
-        // The page remark only fits the lesson the student is reading.
-        if let end = text.firstIndex(of: "."), let next = text[end...].firstIndex(of: "."), next != end {
-            text = String(text[...text.index(after: end)])
-            if let cut = text.range(of: ". ") { text = String(text[..<cut.upperBound]).trimmingCharacters(in: .whitespaces) }
+        // The page remark belongs to the reader; here only the first sentence, with the course name.
+        if let open = text.firstIndex(where: { "“«\"".contains($0) }), let close = text[text.index(after: open)...].firstIndex(where: { "”»\"".contains($0) }) {
+            text.replaceSubrange(text.index(after: open)..<close, with: course?.name[lang] ?? "")
         }
+        if let end = text.range(of: ". ") { text = String(text[..<end.lowerBound]) + "." }
         return text
     }
 
@@ -173,9 +167,16 @@ struct AssistantChatView: View {
                 VStack(spacing: 12) {
                     if offline { offlineBanner }
                     ForEach(messages) { message in bubble(message).id(message.id) }
-                    if waiting {
-                        Text(d("Asistan cevap yazıyor…")).font(KFont.ui(12, lang: lang)).foregroundStyle(KOnb.text3)
-                            .frame(maxWidth: .infinity, alignment: .leading).id("typing")
+                    if let streaming {
+                        Group {
+                            if streaming.isEmpty {
+                                Text(prefs.t("thinking")).font(KFont.ui(13, lang: lang)).foregroundStyle(KOnb.text3)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            } else {
+                                bubble(ChatMessage(role: .assistant, text: streaming))
+                            }
+                        }
+                        .id("typing")
                     }
                 }
                 .padding(.horizontal, 16).padding(.vertical, 14)
@@ -187,10 +188,11 @@ struct AssistantChatView: View {
             .onChange(of: waiting) { _, _ in
                 withAnimation { proxy.scrollTo(waiting ? "typing" : (messages.last?.id ?? "typing"), anchor: .bottom) }
             }
+            .onChange(of: streaming) { _, _ in proxy.scrollTo("typing", anchor: .bottom) }
         }
     }
 
-    private func bubble(_ message: Message) -> some View {
+    private func bubble(_ message: ChatMessage) -> some View {
         let mine = message.role == .user
         return VStack(alignment: mine ? .trailing : .leading, spacing: 6) {
             Text(message.text)
@@ -203,13 +205,45 @@ struct AssistantChatView: View {
                 .frame(maxWidth: mine ? 300 : 340, alignment: mine ? .trailing : .leading)
                 .onTapGesture { if !mine { speak(message.text) } }
                 .accessibilityHint(mine ? "" : d("Dinle"))
-            if let source = message.source {
-                Text(source.uppercased()).font(KFont.mono(10, .regular)).foregroundStyle(KOnb.priText)
-                    .padding(.horizontal, 10).padding(.vertical, 5)
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(KPhone.line, lineWidth: 1))
-            }
+            if !mine { extras(message) }
         }
         .frame(maxWidth: .infinity, alignment: mine ? .trailing : .leading)
+    }
+
+    /// Where the answer came from ("↗ FARMAKOLOJİ · S. 13"), web pages it used, and what the assistant did.
+    @ViewBuilder private func extras(_ m: ChatMessage) -> some View {
+        let chips = m.outsidePdf ? [prefs.t("outsidePdf")] : m.sources.map { s in
+            s.page.map { "↗ \(s.lesson) · \(prefs.t("pageLabel", ["n": Format.num($0, lang)]))" } ?? "↗ \(s.lesson)"
+        }
+        if !chips.isEmpty || !m.links.isEmpty || !m.acts.isEmpty {
+            FlowLayout(spacing: 6, rowSpacing: 6) {
+                ForEach(Array(chips.enumerated()), id: \.offset) { _, chip in
+                    Text(chip.uppercased(with: lang.locale)).font(KFont.mono(10, .regular)).foregroundStyle(KOnb.priText)
+                        .padding(.horizontal, 10).padding(.vertical, 5)
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(KPhone.line, lineWidth: 1))
+                }
+                ForEach(Array(m.links.enumerated()), id: \.offset) { _, link in
+                    if let url = URL(string: link.url) {
+                        Link(destination: url) {
+                            HStack(spacing: 4) {
+                                KIcon(name: .globe, size: 11, width: 1.8)
+                                Text(link.title).lineLimit(1)
+                            }
+                            .font(KFont.ui(11, lang: lang)).foregroundStyle(KPhone.text2)
+                            .padding(.horizontal, 10).padding(.vertical, 5)
+                            .background(KPhone.sub, in: Capsule())
+                        }
+                    }
+                }
+                ForEach(Array(m.acts.enumerated()), id: \.offset) { _, act in
+                    Text("\(prefs.t(act.kind == "weak" ? "actWeak" : "actCard")) \(act.title)")
+                        .font(KFont.ui(11, .medium, lang: lang)).foregroundStyle(KPhone.good)
+                        .padding(.horizontal, 10).padding(.vertical, 5)
+                        .background(Color.pair(0xE3F1E7, 0x1F3328), in: Capsule())
+                }
+            }
+            .frame(maxWidth: 340, alignment: .leading)
+        }
     }
 
     private var offlineBanner: some View {
@@ -242,6 +276,7 @@ struct AssistantChatView: View {
     // MARK: Composer
 
     private var composer: some View {
+        VStack(spacing: 6) {
         HStack(spacing: 10) {
             Button { toast.show(prefs.t("k165")) } label: {
                 KIcon(name: .sparkle, size: 20, width: 1.7).foregroundStyle(KPhone.text)
@@ -266,7 +301,10 @@ struct AssistantChatView: View {
             .disabled(offline)
             .accessibilityLabel(empty ? prefs.t("talk") : prefs.t("send"))
         }
-        .padding(.horizontal, 16).padding(.top, 10).padding(.bottom, 10)
+        // Like every AI app: the assistant can be wrong.
+        Text(prefs.t("aiNote")).font(KFont.ui(10.5, lang: lang)).foregroundStyle(KOnb.text3).multilineTextAlignment(.center)
+        }
+        .padding(.horizontal, 16).padding(.top, 10).padding(.bottom, 8)
     }
 
     // MARK: Actions
@@ -276,18 +314,29 @@ struct AssistantChatView: View {
         guard !question.isEmpty, !waiting, !offline else { return }
         trial.perform(.question) {
             draft = ""
-            Task { await ask(question, alreadyShown: false) }
+            Task { await ask(question) }
         }
     }
 
-    /// Adds the question, waits for the (mock) server and adds the answer. Every question counts for the trial.
-    private func ask(_ question: String, alreadyShown: Bool) async {
-        messages.append(Message(role: .user, text: question))
+    /// Adds the question and the answer while the server writes it; the server saves both and counts the question.
+    private func ask(_ question: String) async {
+        messages.append(ChatMessage(role: .user, text: question))
         waiting = true
-        if !trial.status.premium { trial.status.questionsUsed += 1 }
-        let reply = await AssistantAPI.ask(topicId: target.topicId, question: question, ai: target.ai, lang: lang)
+        streaming = ""
+        let result = await AssistantAPI.ask(question, courseId: isAll ? nil : target.topicId, threadId: threadId,
+                                            mode: target.ai ? .ai : .pdf, lang: lang) { soFar in streaming = soFar }
         waiting = false
-        messages.append(Message(role: .assistant, text: reply.text, source: reply.source))
+        streaming = nil
+        switch result {
+        case .success(let r):
+            threadId = r.threadId
+            messages.append(r.message)
+        case .failure(let e):
+            if e == .locked { trial.lockedKey = "trialQFull" } else {
+                toast.show(prefs.t(e == .budget ? "askBudget" : e == .declined ? "askDeclined" : "askFailed"))
+            }
+        }
+        await trial.refresh()
     }
 
     private func speak(_ text: String) {

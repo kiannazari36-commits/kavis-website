@@ -65,32 +65,28 @@ struct FloatingTabBar: View {
     }
 }
 
-/// One line of today's plan.
-struct PlanItem: Identifiable {
-    let id: Int
-    let icon: KIconName
-    let chip: Color
-    let fg: Color
-    let title: String
-    let sub: String
-
-    static let today: [PlanItem] = [
-        PlanItem(id: 1, icon: .checklist, chip: KPhone.tile1, fg: KPhone.tile1Text, title: "home.plan1", sub: "home.plan1s"),
-        PlanItem(id: 2, icon: .syncHalf, chip: KPhone.tile2, fg: KPhone.tile2Text, title: "home.plan2", sub: "home.plan2s"),
-        PlanItem(id: 3, icon: .mic, chip: KPhone.tile3, fg: KPhone.tile3Text, title: "home.plan3", sub: "home.plan3s"),
-    ]
+/// Icon and colours of a plan task by its kind (read, quiz, cards …).
+extension PlanTask {
+    var look: (icon: KIconName, chip: Color, fg: Color) {
+        switch kind {
+        case "quiz", "exam_prep", "placement": (.checklist, KPhone.tile1, KPhone.tile1Text)
+        case "cards", "review", "mistakes": (.syncHalf, KPhone.tile2, KPhone.tile2Text)
+        default: (.book, KPhone.tile3, KPhone.tile3Text)
+        }
+    }
 }
 
 /// The tab on the screen edge that opens today's plan.
 struct PlanTab: View {
     @Environment(AppPrefs.self) private var prefs
+    let count: Int
     var action: () -> Void
 
     var body: some View {
         let lang = prefs.lang
         Button(action: action) {
             VStack(spacing: 10) {
-                Text(Format.num(PlanItem.today.count, lang))
+                Text(Format.num(count, lang))
                     .font(KFont.ui(11, .bold, lang: lang))
                     .foregroundStyle(KPhone.ctaText)
                     .frame(width: 24, height: 24)
@@ -118,8 +114,9 @@ struct PlanTab: View {
 /// Today's plan slides in from the screen edge over a dimmed page.
 struct PlanPanel: View {
     @Environment(AppPrefs.self) private var prefs
+    let tasks: [PlanTask]
     var onClose: () -> Void
-    var onItem: () -> Void
+    var onItem: (PlanTask) -> Void
     var onWeek: () -> Void
 
     var body: some View {
@@ -151,16 +148,24 @@ struct PlanPanel: View {
                     .padding(.horizontal, 18).padding(.top, 8).padding(.bottom, 12)
                     ScrollView {
                         VStack(spacing: 12) {
-                            ForEach(PlanItem.today) { item in
-                                Button(action: onItem) {
+                            if tasks.isEmpty {
+                                Text(prefs.t("plan.empty")).font(KFont.ui(14, lang: lang)).foregroundStyle(KPhone.text2)
+                                    .frame(maxWidth: .infinity, alignment: .leading).padding(.top, 8)
+                            }
+                            ForEach(tasks) { item in
+                                let look = item.look
+                                let done = item.status == "done"
+                                Button { onItem(item) } label: {
                                     HStack(spacing: 12) {
-                                        KIcon(name: item.icon, size: 19, width: 1.6)
-                                            .foregroundStyle(item.fg)
+                                        KIcon(name: done ? .check : look.icon, size: 19, width: 1.6)
+                                            .foregroundStyle(look.fg)
                                             .frame(width: 44, height: 44)
-                                            .background(item.chip, in: Circle())
+                                            .background(look.chip, in: Circle())
                                         VStack(alignment: .leading, spacing: 2) {
-                                            Text(prefs.t(item.title)).font(KFont.ui(15, .medium, lang: lang)).foregroundStyle(KPhone.text)
-                                            Text(prefs.t(item.sub)).font(KFont.ui(12, lang: lang)).foregroundStyle(KPhone.text2)
+                                            Text(item.title).font(KFont.ui(15, .medium, lang: lang)).foregroundStyle(KPhone.text)
+                                                .strikethrough(done).lineLimit(2).multilineTextAlignment(.leading)
+                                            Text([prefs.t("plan.min", ["m": Format.num(item.minutes, lang)]), item.why].filter { !$0.isEmpty }.joined(separator: " · "))
+                                                .font(KFont.ui(12, lang: lang)).foregroundStyle(KPhone.text2).lineLimit(2).multilineTextAlignment(.leading)
                                         }
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                         KIcon(name: .chevron, size: 14, width: 2, flipsInRTL: true)
@@ -171,6 +176,7 @@ struct PlanPanel: View {
                                     .padding(.horizontal, 14).padding(.vertical, 12)
                                     .frame(minHeight: 72)
                                     .kPhoneCard(radius: 22)
+                                    .opacity(done ? 0.6 : 1)
                                 }
                             }
                         }

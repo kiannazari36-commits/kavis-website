@@ -361,8 +361,11 @@ struct ReaderView: View {
         return VStack(alignment: .leading, spacing: 10) {
             Text(last ? t("s4end") : t("secEnd", ["n": Format.num(sectionIndex + 1, lang)])).font(KFont.ui(14, .medium, lang: lang)).foregroundStyle(KRead.text)
             HStack(spacing: 8) {
-                // The section check quiz comes with the quiz screens (step 4 of the app plan).
-                Button { toast.show(prefs.t("k165")) } label: {
+                // The short check of this section's pages; the last section opens the whole end-of-lesson exam.
+                Button {
+                    guard let lesson, let section else { return }
+                    app.go(.quiz(QuizTarget(materialId: lesson.id, kind: last ? .final : .check, pageFrom: section.pageFrom, pageTo: section.pageTo)))
+                } label: {
                     Text(t("start")).font(KFont.ui(13, .semibold, lang: lang)).foregroundStyle(KPhone.ctaText)
                         .padding(.horizontal, 18).frame(height: 40).background(KPhone.cta, in: Capsule())
                 }

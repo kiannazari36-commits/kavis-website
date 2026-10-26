@@ -1,105 +1,140 @@
 import Foundation
+import Supabase
 
-/// A course (or "all my courses") the assistant can answer about. Mock data copied from the web (`mock-assistant.json`).
-struct AssistantTopic: Decodable, Identifiable, Hashable {
+/// A course (or "all my courses") the assistant can answer about: the student's own courses, like the web.
+struct AssistantTopic: Identifiable, Hashable {
     let id: String
+    /// nil for "all my courses".
+    let courseId: String?
     let name: L10n
+    /// The first lessons of the course.
     let sub: L10n
     /// Dot color as "#RRGGBB".
     let color: String
-    let folder: String?
-    let sample: Sample
-
-    struct Sample: Decodable, Hashable {
-        let q: L10n
-        let a: L10n
-        let src: L10n
-    }
 
     var isAll: Bool { id == "all" }
 }
 
-/// A file the student adds in the assistant; the server guesses which course it belongs to.
-struct AssistantAttachment: Decodable {
-    let tag: L10n
-    let name: L10n
-    let meta: L10n
-    let topic: String
-    let why: L10n
-}
-
 enum AttachmentKind: String, CaseIterable { case pdf, photo, audio }
 
-/// What the assistant says back.
-struct AssistantReply: Equatable {
+/// "Only my PDFs" or "AI + research" (the server may then also search the web).
+enum SourceMode: String, Codable { case pdf, ai }
+
+/// One message of a conversation, as the server saves it (`assistant_messages`).
+struct ChatMessage: Identifiable, Equatable {
+    enum Role: String { case user, assistant }
+    struct Source: Equatable { let lesson: String; let page: Int? }
+    struct Link: Equatable { let url: String; let title: String }
+    /// What the assistant did when asked: a topic added to the weak topics, or a flash card made.
+    struct Act: Equatable { let kind: String; let title: String }
+
+    var id = UUID().uuidString
+    let role: Role
     var text: String
-    /// Where in the student's material the answer comes from, as shown on the chip: "↗ SAYFA 14".
-    var source: String?
-    /// True when the answer is not from the student's PDFs (only possible with "AI + research").
-    var outsidePDF = false
+    var sources: [Source] = []
+    var links: [Link] = []
+    var acts: [Act] = []
+    var outsidePdf = false
 }
 
 enum AssistantAPI {
-    private struct Mock: Decodable {
-        let topics: [AssistantTopic]
-        let attachments: [String: AssistantAttachment]
-    }
+    /// Main colours of the course folders (the dots on the course cards).
+    private static let colors: [CourseColor: String] = [.red: "#9C2F3A", .amb: "#A86F0E", .vio: "#4A3F9A", .grn: "#2E7D4F", .teal: "#1F6E75"]
 
-    private static let mock: Mock = MockData.load("mock-assistant")
+    private static func same(_ s: String) -> L10n { L10n(tr: s, en: s, fa: s, ar: s) }
 
+    /// The student's courses with their first lessons, then "all my courses".
     static func listTopics() async -> [AssistantTopic] {
-        await fakeRequest(mock.topics, ms: 120)
+        let courses = await CoursesAPI.listCourses()
+        return courses.map { c in
+            AssistantTopic(id: c.id, courseId: c.id, name: c.short ?? c.name,
+                           sub: same(c.pdfs.prefix(2).map { $0.title.tr }.joined(separator: " · ")), color: colors[c.color] ?? "#9C2F3A")
+        } + [AssistantTopic(id: "all", courseId: nil, name: L10n(tr: Strings.design("Tüm derslerim", .tr), en: Strings.design("Tüm derslerim", .en), fa: Strings.design("Tüm derslerim", .fa), ar: Strings.design("Tüm derslerim", .ar)),
+                            sub: same(""), color: "#F2B33D")]
     }
 
-    static var topics: [AssistantTopic] { mock.topics }
-
-    static func attachment(_ kind: AttachmentKind) async -> AssistantAttachment? {
-        await fakeRequest(mock.attachments[kind.rawValue], ms: 300)
+    /// The latest conversation about a course (or all courses), oldest message first. Written by the server.
+    static func latestThread(courseId: String?) async -> (id: String?, messages: [ChatMessage]) {
+        struct Thread: Decodable { let id: String }
+        var q = supabase.from("assistant_threads").select("id")
+        q = courseId.map { q.eq("course_id", value: $0) } ?? q.is("course_id", value: nil)
+        guard let thread = (try? await q.order("updated_at", ascending: false).limit(1).execute().value as [Thread])?.first else { return (nil, []) }
+        struct Src: Decodable { let material_id: String?; let page: Int?; let url: String?; let title: String?; let act: String? }
+        struct Row: Decodable { let role: String; let content: String; let sources: [Src]?; let outside_pdf: Bool? }
+        let rows: [Row] = (try? await supabase.from("assistant_messages").select("role, content, sources, outside_pdf")
+            .eq("thread_id", value: thread.id).order("created_at").execute().value) ?? []
+        let lessons = Dictionary(CoursesAPI.lastCourses.flatMap { c in c.pdfs.map { ($0.id, $0.title.tr) } }, uniquingKeysWith: { a, _ in a })
+        return (thread.id, rows.map { r in
+            let s = r.sources ?? []
+            return ChatMessage(role: ChatMessage.Role(rawValue: r.role) ?? .assistant, text: r.content,
+                               sources: s.compactMap { x in x.material_id.map { ChatMessage.Source(lesson: lessons[$0] ?? "", page: x.page) } },
+                               links: s.compactMap { x in x.url.map { ChatMessage.Link(url: $0, title: x.title ?? $0) } },
+                               acts: s.compactMap { x in x.act.map { ChatMessage.Act(kind: $0, title: x.title ?? "") } },
+                               outsidePdf: r.outside_pdf ?? false)
+        })
     }
 
-    /// Words that point a question to one of the lesson's answers (the real assistant reads the PDF instead).
-    private static let keywords: [(topic: String, words: [String])] = [
-        ("hypertension", ["öksürük", "cough", "سرفه", "سعال"]),
-        ("diabetes", ["metformin", "متفورمین", "ميتفورمين", "الميتفورمين"]),
-        ("toxicology", ["antidot", "atropin", "atropine", "پادزهر", "ترياق"]),
-    ]
-    private static let pregnancy = ["gebelik", "pregnan", "حاملگی", "حمل", "الحمل"]
-    private static let thiazide = ["tiyazid", "thiazide", "تیازید", "الثيازيد"]
+    enum AskError: Error { case locked, budget, declined, other }
 
-    /// The mock assistant. It answers only from the lesson texts it knows (CLAUDE.md: only the student's material);
-    /// what it does not know is said honestly. A real server will read the student's PDFs.
-    static func ask(topicId: String, question: String, ai: Bool, lang: Lang) async -> AssistantReply {
-        let q = question.lowercased()
-        let reply = answer(topicId: topicId, question: q, ai: ai, lang: lang)
-        return await fakeRequest(reply, ms: 700)
-    }
-
-    static func answer(topicId: String, question q: String, ai: Bool, lang: Lang) -> AssistantReply {
-        let inHypertension = topicId == "hypertension" || topicId == "all"
-        if inHypertension, pregnancy.contains(where: q.contains) {
-            return AssistantReply(
-                text: Strings.design("PDF'inde (s. 14) ACE inhibitörleri ve ARB'lerin gebelikte kontrendike olduğu yazıyor. Nedeni bu derste anlatılmamış; bu yüzden PDF dışından bilgi eklemiyorum.", lang),
-                source: Strings.design("↗ SAYFA 14", lang))
+    /// The answer while it is written: the closing "SOURCES: …" line is the server's, not for the student; no ** bold.
+    static func visible(_ text: String) -> String {
+        var t = text
+        if let at = t.range(of: "SOURCES:") {
+            t = String(t[..<at.lowerBound])
+        } else if let tail = t.range(of: #"\n?S(O(U(R(C(E(S)?)?)?)?)?)?$"#, options: .regularExpression) {
+            t.removeSubrange(tail)
         }
-        if inHypertension, thiazide.contains(where: q.contains) {
-            return AssistantReply(
-                text: Strings.design("Gut öyküsü olan hastalarda. Tiyazidler serum ürik asit düzeyini artırır", lang) + ".",
-                source: Strings.design("↗ SAYFA 14", lang))
-        }
-        for (topic, words) in keywords where (topicId == topic || topicId == "all") && words.contains(where: q.contains) {
-            if let t = mock.topics.first(where: { $0.id == topic }) { return AssistantReply(text: t.sample.a[lang], source: "↗ \(t.sample.src[lang])") }
-        }
-        return AssistantReply(text: notFound(ai: ai, lang: lang), source: nil, outsidePDF: false)
+        return t.replacingOccurrences(of: "**", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    /// Honest answer when nothing in the student's material matches.
-    private static func notFound(ai: Bool, lang: Lang) -> String {
-        if ai { return Strings.text("k165", lang) } // "AI + research" needs the server
-        switch lang {
-        case .tr: return "Bunu senin PDF'lerinde bulamadım. Materyalinin dışına çıkmak istersen \"Yapay zekâ + araştırma\" seçeneğini aç."
-        case .en: return "I couldn't find this in your PDFs. Turn on \"AI + research\" if you want me to go beyond your material."
-        case .fa: return "این را در PDFهای تو پیدا نکردم. اگر می‌خواهی از مطالبت فراتر بروم، «هوش مصنوعی + پژوهش» را روشن کن."
-        case .ar: return "لم أجد هذا في ملفات PDF الخاصة بك. فعّل «الذكاء الاصطناعي + البحث» إن أردت أن أتجاوز موادك."
+    /// Asks the assistant (Edge Function "assistant", the same as the web): it searches the student's lessons,
+    /// answers only from them (or also from general knowledge and the web in "AI + research"), saves the chat and
+    /// counts the trial question. The answer arrives piece by piece (`onText` gets the text so far).
+    static func ask(_ question: String, courseId: String?, threadId: String?, mode: SourceMode, lang: Lang,
+                    onText: @escaping @MainActor (String) -> Void) async -> Result<(threadId: String, message: ChatMessage), AskError> {
+        guard let token = try? await supabase.auth.session.accessToken else { return .failure(.other) }
+        var req = URLRequest(url: Config.supabaseURL.appendingPathComponent("functions/v1/assistant"))
+        req.httpMethod = "POST"
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.setValue(Config.supabaseKey, forHTTPHeaderField: "apikey")
+        req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        let body: [String: Any?] = ["question": question, "course_id": courseId, "material_id": nil, "thread_id": threadId,
+                                    "mode": mode.rawValue, "lang": lang.rawValue, "page_from": nil, "page_to": nil, "image": nil]
+        req.httpBody = try? JSONSerialization.data(withJSONObject: body.mapValues { $0 ?? NSNull() })
+
+        struct Event: Decodable {
+            struct Src: Decodable { let lesson: String; let page: Int? }
+            struct Link: Decodable { let url: String; let title: String }
+            struct Act: Decodable { let kind: String; let title: String }
+            let t: String?; let done: Bool?; let error: String?; let thread_id: String?; let answer: String?
+            let sources: [Src]?; let links: [Link]?; let acts: [Act]?; let outside_pdf: Bool?
+        }
+        do {
+            let (bytes, response) = try await URLSession.shared.bytes(for: req)
+            let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+            guard status == 200 else { return .failure(status == 403 ? .locked : status == 429 ? .budget : .other) }
+            var text = ""
+            // Server-sent events: one "data: {json}" line per event.
+            for try await line in bytes.lines where line.hasPrefix("data: ") {
+                guard let e = try? JSONDecoder().decode(Event.self, from: Data(line.dropFirst(6).utf8)) else { continue }
+                if let t = e.t {
+                    text += t
+                    let soFar = visible(text)
+                    await onText(soFar)
+                } else if let err = e.error {
+                    return .failure(err == "declined" ? .declined : .other)
+                } else if e.done == true, let id = e.thread_id {
+                    return .success((id, ChatMessage(
+                        role: .assistant, text: visible(e.answer ?? text),
+                        sources: (e.sources ?? []).map { .init(lesson: $0.lesson, page: $0.page) },
+                        links: (e.links ?? []).map { .init(url: $0.url, title: $0.title) },
+                        acts: (e.acts ?? []).map { .init(kind: $0.kind, title: $0.title) },
+                        outsidePdf: e.outside_pdf ?? false)))
+                }
+            }
+            return .failure(.other)
+        } catch {
+            return .failure(.other)
         }
     }
 }
