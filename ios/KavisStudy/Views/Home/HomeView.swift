@@ -14,9 +14,10 @@ struct HomeView: View {
     @State private var reviewMenuOpen = false
     @State private var planOpen = false
     @State private var settings = SettingsAPI.loadNow()
+    @State private var courses: [Course] = CoursesAPI.lastCourses
 
     private var lang: Lang { prefs.lang }
-    private func t(_ key: String) -> String { prefs.t(key) }
+    private func t(_ key: String, _ vars: [String: String] = [:]) -> String { prefs.t(key, vars) }
     private func soon() { toast.show(t("k165")) }
     private var offline: Bool { !network.isOnline || settings.offlineMode }
 
@@ -41,7 +42,7 @@ struct HomeView: View {
                 }
                 .scrollIndicators(.hidden)
             }
-            FloatingTabBar(onCourses: soon, onProgress: soon, onSettings: soon)
+            FloatingTabBar(onCourses: { app.go(.courses) }, onProgress: soon, onSettings: soon)
                 .frame(maxHeight: .infinity, alignment: .bottom)
                 .padding(.bottom, 8)
             if !planOpen {
@@ -64,6 +65,7 @@ struct HomeView: View {
         .animation(.easeOut(duration: 0.2), value: trial.lockedKey)
         .animation(.easeOut(duration: 0.2), value: later)
         .animation(.easeOut(duration: 0.2), value: reviewMenuOpen)
+        .task { courses = await CoursesAPI.listCourses() }
     }
 
     // MARK: Top bar
@@ -328,7 +330,7 @@ struct HomeView: View {
     }
 
     private var coursesCard: some View {
-        Button(action: soon) {
+        Button { app.go(.courses) } label: {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 12) {
                     KIcon(name: .folder, size: 21, width: 1.6)
@@ -337,22 +339,44 @@ struct HomeView: View {
                         .background(KPhone.tile2, in: Circle())
                     VStack(alignment: .leading, spacing: 2) {
                         Text(t("home.k787")).font(KFont.ui(16, .semibold, lang: lang)).foregroundStyle(KPhone.text)
-                        Text(t("home.k1103")).font(KFont.ui(12, lang: lang)).foregroundStyle(KPhone.text2)
+                        Text(coursesLine).font(KFont.ui(12, lang: lang)).foregroundStyle(KPhone.text2)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     KIcon(name: .arrowRight, size: 16, width: 2, flipsInRTL: true).foregroundStyle(KPhone.text)
                 }
-                // The three chips are the design's fixed texts until the real course data comes.
-                HStack(spacing: 6) {
-                    chip(t("home.k979"), bg: KPhone.tile1, fg: KPhone.tile1Text)
-                    chip(t("home.k2120"), bg: KPhone.tile2, fg: KPhone.tile2Text)
-                    chip(t("home.k107"), bg: KPhone.tile4, fg: KPhone.tile4Text)
+                // The student's first three courses (the design's three chips), in their folder colours.
+                if !courses.isEmpty {
+                    HStack(spacing: 6) {
+                        ForEach(courses.prefix(3)) { c in
+                            let (bg, fg) = chipColors(c.color)
+                            chip(c.short?[lang] ?? c.name[lang], bg: bg, fg: fg)
+                        }
+                    }
                 }
             }
             .padding(14)
             .kPhoneCard()
         }
         .buttonStyle(.plain)
+    }
+
+    /// "Güz dönemi · 5 ders · 13 PDF · 19 sa" from the student's courses.
+    private var coursesLine: String {
+        let minutes = courses.reduce(0) { $0 + CoursesAPI.stats($1).minutes }
+        return t("home.coursesSub", [
+            "term": t(CoursesAPI.termName().hasSuffix("Güz") ? "home.termFall" : "home.termSpring"),
+            "c": Format.num(courses.count, lang),
+            "p": Format.num(courses.reduce(0) { $0 + $1.pdfs.count }, lang),
+            "h": Format.num(minutes / 60, lang),
+        ])
+    }
+
+    private func chipColors(_ c: CourseColor) -> (Color, Color) {
+        switch c {
+        case .red: (KPhone.tile1, KPhone.tile1Text)
+        case .amb: (KPhone.tile4, KPhone.tile4Text)
+        default: (KPhone.tile2, KPhone.tile2Text)
+        }
     }
 
     private func chip(_ text: String, bg: Color, fg: Color) -> some View {

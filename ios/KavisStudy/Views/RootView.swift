@@ -26,6 +26,10 @@ struct RootView: View {
                 HomeView()
             case .profile:
                 ProfileView()
+            case .courses:
+                CoursesListView()
+            case .course(let id):
+                CourseFolderView(courseId: id)
             case .upload(let kind):
                 UploadView(kind: kind)
             case .reader(let id):

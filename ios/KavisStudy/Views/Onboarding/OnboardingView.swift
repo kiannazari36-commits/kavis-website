@@ -15,6 +15,9 @@ struct OnboardingView: View {
     @State private var days = 4
     @State private var hours = 1.5
     @State private var dept = 0
+    /// School and class year are asked with the department (as on the web).
+    @State private var school = ""
+    @State private var year: Int?
 
     private var lang: Lang { prefs.lang }
     private func d(_ turkish: String) -> String { prefs.d(turkish) }
@@ -137,18 +140,21 @@ struct OnboardingView: View {
 
     private func skip() { finish(then: .home) }
 
-    /// Saves what the student chose (mock: on the phone) and moves on.
+    /// Saves what the student chose in the account (plan, department, school, year, app language) and moves on.
     private func finish(then route: Route) {
         var settings = SettingsAPI.loadNow()
         settings.studyDays = days
         settings.studyHours = hours
         var profile = AccountAPI.loadProfile(for: app.user)
         profile.department = Self.departments[dept]
+        profile.school = school.trimmingCharacters(in: .whitespaces)
+        profile.year = year
+        let chosen = lang
         Task {
             _ = await SettingsAPI.save(settings)
             _ = await AccountAPI.saveProfile(profile)
+            await AccountAPI.finishOnboarding(lang: chosen)
         }
-        UserDefaults.standard.set(true, forKey: "kavis.onboarded")
         if route == .home { app.reset(to: .home) } else { app.go(route) }
     }
 
@@ -312,9 +318,18 @@ struct OnboardingView: View {
     private var departmentStep: some View {
         VStack(alignment: .leading, spacing: 10) {
             eyebrow("\(Format.num(3, lang)) / \(Format.num(6, lang))")
-            title(d("Hangi bölümde okuyorsun?"), size: 32, lineHeight: 1.12)
-            lead(d("Terim açıklamalarını ve soru tarzını bölümüne göre ayarlarız."), size: 15).padding(.bottom, 14)
-            LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
+            title(d("Hangi bölümde okuyorsun?"), size: 28, lineHeight: 1.12)
+            lead(d("Terim açıklamalarını ve soru tarzını bölümüne göre ayarlarız."), size: 14).padding(.bottom, 4)
+            TextField("", text: $school, prompt: Text(prefs.t("wel_schoolPh")).foregroundStyle(KPhone.text3))
+                .font(KFont.ui(15, lang: lang))
+                .foregroundStyle(KPhone.text)
+                .textContentType(.organizationName)
+                .padding(.horizontal, 18)
+                .frame(height: 48)
+                .background(KPhone.card, in: Capsule())
+                .overlay(Capsule().stroke(KPhone.line, lineWidth: 1))
+                .accessibilityLabel(prefs.t("wel_school"))
+            LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)], spacing: 10) {
                 ForEach(Array(Self.departments.enumerated()), id: \.offset) { i, name in
                     let on = i == dept
                     Button { dept = i } label: {
@@ -328,8 +343,8 @@ struct OnboardingView: View {
                                 .kLineHeight(1.2, size: 16, lang: lang)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(16)
-                        .frame(height: 112)
+                        .padding(14)
+                        .frame(height: 96)
                         .background(on ? KOnb.priSoft : KPhone.card, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
                         .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).stroke(on ? KOnb.pri : KPhone.line, lineWidth: on ? 2 : 1))
                     }
@@ -337,9 +352,25 @@ struct OnboardingView: View {
                     .accessibilityAddTraits(on ? .isSelected : [])
                 }
             }
+            Text(prefs.t("wel_year")).font(KFont.ui(13, lang: lang)).foregroundStyle(KPhone.text2).padding(.top, 4)
+            HStack(spacing: 6) {
+                ForEach(1...6, id: \.self) { n in
+                    let on = year == n
+                    Button { year = n } label: {
+                        Text(Format.num(n, lang))
+                            .font(KFont.ui(15, .semibold, lang: lang))
+                            .foregroundStyle(on ? KPhone.ctaText : KPhone.text)
+                            .frame(maxWidth: .infinity, minHeight: 42)
+                            .background(on ? KOnb.pri : KPhone.card, in: Capsule())
+                            .overlay(Capsule().stroke(on ? .clear : KPhone.line, lineWidth: 1))
+                    }
+                    .accessibilityLabel(prefs.t("wel_yearN", ["n": Format.num(n, lang)]))
+                    .accessibilityAddTraits(on ? .isSelected : [])
+                }
+            }
         }
         .padding(.horizontal, 24)
-        .padding(.top, 28)
+        .padding(.top, 20)
     }
 
     // MARK: Steps 4–6: intro cards

@@ -2,28 +2,34 @@ import XCTest
 @testable import KavisStudy
 
 final class APITests: XCTestCase {
-    func testMockCoursesAreComplete() async {
-        let courses = await CoursesAPI.listCourses()
-        XCTAssertFalse(courses.isEmpty)
-        for c in courses {
-            for lang in Lang.allCases {
-                XCTAssertFalse(c.name[lang].isEmpty, "\(c.id) has no \(lang) name")
-                XCTAssertFalse(c.exam[lang].isEmpty, "\(c.id) has no \(lang) exam")
-            }
-            let s = CoursesAPI.stats(c)
-            XCTAssertTrue((0...100).contains(s.percent), "\(c.id) percent \(s.percent)")
-        }
-        let first = await CoursesAPI.getCourse(id: courses[0].id)
-        XCTAssertEqual(first?.id, courses[0].id)
+    /// A course as the server sends it (courses are real data now, so the tests build one).
+    private func sampleCourse() -> Course {
+        let pdfs = [
+            Pdf(id: "p1", title: L10n(tr: "Ünite 1", en: "Ünite 1", fa: "Ünite 1", ar: "Ünite 1"), read: 100, minutes: 30, pages: 20),
+            Pdf(id: "p2", title: L10n(tr: "Ünite 2", en: "Ünite 2", fa: "Ünite 2", ar: "Ünite 2"), read: 0, minutes: 0, pages: 20),
+        ]
+        return Course(id: "c1", name: L10n(tr: "Farmakoloji", en: "Farmakoloji", fa: "Farmakoloji", ar: "Farmakoloji"), short: nil,
+                      color: .red, language: .tr, exam: CoursesAPI.examLabel("midterm", "2026-11-19"), examDate: "2026-11-19", rank: 0, pdfs: pdfs)
+    }
+
+    func testCourseStatsAndExamLabels() {
+        let s = CoursesAPI.stats(sampleCourse())
+        XCTAssertEqual(s.minutes, 30)
+        XCTAssertEqual(s.pages, 40)
+        XCTAssertEqual(s.percent, 50)
+        let label = CoursesAPI.examLabel("final", "2026-01-12")
+        for lang in Lang.allCases { XCTAssertFalse(label[lang].isEmpty) }
+        XCTAssertTrue(label.tr.hasPrefix("Final · 12"), label.tr)
+        XCTAssertEqual(CoursesAPI.examLabel(nil, nil).tr, "Sınav tarihi yok")
+        XCTAssertTrue(CoursesAPI.termName(Date(timeIntervalSince1970: 1_793_000_000)).hasSuffix("Güz"))
     }
 
     func testDaysUntilExam() {
-        XCTAssertEqual(CoursesAPI.daysUntil("2026-10-19"), 7)
+        XCTAssertEqual(CoursesAPI.daysUntil("2026-10-19", today: "2026-10-12"), 7)
     }
 
     func testContentLanguageRules() async throws {
-        let all = await CoursesAPI.listCourses()
-        let course = try XCTUnwrap(all.first { $0.language == .tr })
+        let course = sampleCourse()
         var s = Settings()
         XCTAssertEqual(s.contentLanguage(for: course, appLang: .en), .tr, "default is the PDF language")
         s.contentLang = .app

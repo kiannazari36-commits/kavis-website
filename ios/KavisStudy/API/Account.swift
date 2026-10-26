@@ -1,28 +1,76 @@
 import Foundation
+import Supabase
 
 struct Profile: Codable, Equatable {
     var name: String
     var email: String
     var school: String
     /// Department as the design writes it in Turkish ("Eczacılık"); shown through `prefs.d(...)`.
-    var department: String = "Eczacılık"
-    var year: Int = 3
+    var department: String = ""
+    var year: Int?
 }
 
+/// The student's profile (table profiles, the same as the web; the email comes from the login).
+/// The phone keeps a copy so screens open at once; `fetchProfile` refreshes it from the server.
 enum AccountAPI {
     private static let profileKey = "kavis.profile"
 
-    /// Profile of the signed-in student. Mock: kept on the phone; the first time it is made from the account.
+    /// The phone's copy, or one made from the login.
     static func loadProfile(for user: User?) -> Profile {
         if let data = UserDefaults.standard.data(forKey: profileKey),
-           let saved = try? JSONDecoder().decode(Profile.self, from: data) { return saved }
-        return Profile(name: user?.name ?? "Elif Yıldız", email: user?.email ?? "elif@ogrenci.edu.tr", school: "Ankara Üniversitesi")
+           let saved = try? JSONDecoder().decode(Profile.self, from: data),
+           saved.email == (user?.email ?? saved.email) { return saved }
+        return Profile(name: user?.name ?? "", email: user?.email ?? "", school: "")
     }
 
-    static func saveProfile(_ p: Profile) async -> Profile {
+    private static func cache(_ p: Profile) {
         if let data = try? JSONEncoder().encode(p) { UserDefaults.standard.set(data, forKey: profileKey) }
-        return await fakeRequest(p)
     }
+
+    private struct Row: Codable { let full_name: String; let school: String?; let department: String?; let class_year: Int? }
+
+    /// The profile from the server (kept on the phone), or the phone's copy when offline.
+    static func fetchProfile(for user: User?) async -> Profile {
+        guard let id = supabase.auth.currentUser?.id,
+              let rows: [Row] = try? await supabase.from("profiles").select("full_name, school, department, class_year").eq("id", value: id).limit(1).execute().value,
+              let r = rows.first
+        else { return loadProfile(for: user) }
+        let p = Profile(name: r.full_name, email: user?.email ?? "", school: r.school ?? "", department: r.department ?? "", year: r.class_year)
+        cache(p)
+        return p
+    }
+
+    /// Name, school, department and class year (the email is changed through the login, on the web for now).
+    static func saveProfile(_ p: Profile) async -> Profile {
+        cache(p)
+        guard let id = supabase.auth.currentUser?.id else { return p }
+        struct Update: Encodable { let full_name: String; let school: String?; let department: String?; let class_year: Int? }
+        let name = p.name.trimmingCharacters(in: .whitespaces)
+        let school = p.school.trimmingCharacters(in: .whitespaces)
+        _ = try? await supabase.from("profiles")
+            .update(Update(full_name: name, school: school.isEmpty ? nil : school, department: p.department.isEmpty ? nil : p.department, class_year: p.year))
+            .eq("id", value: id).execute()
+        // Keep the login's name in step, so the home screen shows it.
+        _ = try? await supabase.auth.update(user: UserAttributes(data: ["full_name": .string(name)]))
+        return p
+    }
+
+    /// The first steps are done (profiles.onboarding_done); also keeps the app language in the account.
+    static func finishOnboarding(lang: Lang) async {
+        guard let id = supabase.auth.currentUser?.id else { return }
+        struct Update: Encodable { let onboarding_done: Bool; let app_lang: String }
+        _ = try? await supabase.from("profiles").update(Update(onboarding_done: true, app_lang: lang.rawValue)).eq("id", value: id).execute()
+    }
+
+    /// The app language in the account (notifications and emails use it).
+    static func saveLang(_ lang: Lang) async {
+        guard let id = supabase.auth.currentUser?.id else { return }
+        struct Update: Encodable { let app_lang: String }
+        _ = try? await supabase.from("profiles").update(Update(app_lang: lang.rawValue)).eq("id", value: id).execute()
+    }
+
+    /// Forget the phone's copy (after logging out).
+    static func clear() { UserDefaults.standard.removeObject(forKey: profileKey) }
 
     /// Emails the student a copy of their data.
     static func requestMyData() async -> Bool {

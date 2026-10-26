@@ -65,7 +65,6 @@
   "home.k1016": "Fotoğraf çek",
   "home.k1053": "Geri al",
   "home.k1087": "GÜN",
-  "home.k1103": "Güz dönemi · 5 ders · 13 PDF · 19 sa",
   "home.k1116": "Haftalık plan ›",
   "home.k1207": "Hipertansiyon · özet, 6 kart, 3 soru · 8 dk",
   "home.k1310": "Kapat",
@@ -114,7 +113,11 @@
   "home.plan3s": "Hocanın vurguladığı 3 konu",
   "signup.linkDone": "E-postadaki bağlantıya tıkladım",
   "signup.linkHint": "E-postada kod yerine bir bağlantı varsa ona tıkla, sonra buraya dön.",
-  "signup.noClip": "Panoda 6 haneli bir kod yok."
+  "signup.noClip": "Panoda 6 haneli bir kod yok.",
+  "course.done": "bitti",
+  "home.coursesSub": "{term} · {c} ders · {p} PDF · {h} sa",
+  "home.termFall": "Güz dönemi",
+  "home.termSpring": "Bahar dönemi"
  },
  "en": {
   "splash.k388": "Now you have Kavis by your side.",
@@ -182,7 +185,6 @@
   "home.k1016": "Take photo",
   "home.k1053": "Undo",
   "home.k1087": "DAYS",
-  "home.k1103": "Fall term · 5 courses · 13 PDFs · 19 h",
   "home.k1116": "Weekly plan ›",
   "home.k1207": "Hypertension · summary, 6 cards, 3 questions · 8 min",
   "home.k1310": "Close",
@@ -231,7 +233,11 @@
   "home.plan3s": "3 topics the lecturer stressed",
   "signup.linkDone": "I clicked the link in the email",
   "signup.linkHint": "If the email has a link instead of a code, tap it, then come back here.",
-  "signup.noClip": "There is no 6-digit code on the clipboard."
+  "signup.noClip": "There is no 6-digit code on the clipboard.",
+  "course.done": "finished",
+  "home.coursesSub": "{term} · {c} courses · {p} PDFs · {h} h",
+  "home.termFall": "Fall term",
+  "home.termSpring": "Spring term"
  },
  "fa": {
   "splash.k388": "حالا Kavis کنارت است.",
@@ -299,7 +305,6 @@
   "home.k1016": "عکس بگیر",
   "home.k1053": "واگرد",
   "home.k1087": "روز",
-  "home.k1103": "ترم پاییز · 5 درس · 13 PDF · 19 ساعت",
   "home.k1116": "برنامه هفتگی ›",
   "home.k1207": "فشار خون بالا · خلاصه، 6 کارت، 3 سؤال · 8 دقیقه",
   "home.k1310": "بستن",
@@ -348,7 +353,11 @@
   "home.plan3s": "3 مبحثی که استاد تأکید کرد",
   "signup.linkDone": "روی لینک ایمیل زدم",
   "signup.linkHint": "اگر در ایمیل به‌جای کد یک لینک هست، رویش بزن و بعد به اینجا برگرد.",
-  "signup.noClip": "کد ۶ رقمی در کلیپ‌بورد نیست."
+  "signup.noClip": "کد ۶ رقمی در کلیپ‌بورد نیست.",
+  "course.done": "تمام شد",
+  "home.coursesSub": "{term} · {c} درس · {p} PDF · {h} ساعت",
+  "home.termFall": "ترم پاییز",
+  "home.termSpring": "ترم بهار"
  },
  "ar": {
   "splash.k388": "الآن Kavis بجانبك.",
@@ -416,7 +425,6 @@
   "home.k1016": "التقط صورة",
   "home.k1053": "تراجع",
   "home.k1087": "يوم",
-  "home.k1103": "الفصل الخريفي · 5 مواد · 13 PDF · 19 س",
   "home.k1116": "الخطة الأسبوعية ›",
   "home.k1207": "ارتفاع ضغط الدم · ملخص، 6 بطاقات، 3 أسئلة · 8 د",
   "home.k1310": "إغلاق",
@@ -465,6 +473,10 @@
   "home.plan3s": "3 مواضيع ركّز عليها الأستاذ",
   "signup.linkDone": "ضغطت على الرابط في البريد",
   "signup.linkHint": "إذا كان في البريد رابط بدل الرمز، اضغط عليه ثم عد إلى هنا.",
-  "signup.noClip": "لا يوجد رمز من 6 أرقام في الحافظة."
+  "signup.noClip": "لا يوجد رمز من 6 أرقام في الحافظة.",
+  "course.done": "انتهى",
+  "home.coursesSub": "{term} · {c} مواد · {p} PDF · {h} س",
+  "home.termFall": "الفصل الخريفي",
+  "home.termSpring": "الفصل الربيعي"
  }
 }

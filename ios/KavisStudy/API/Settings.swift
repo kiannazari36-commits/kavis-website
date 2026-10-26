@@ -1,4 +1,5 @@
 import Foundation
+import Supabase
 
 /// Language for quiz questions, cards and summaries (CLAUDE.md "Content language").
 /// `pdf` = same as the uploaded PDF (default), `app` = same as the interface, or a chosen language.
@@ -66,10 +67,30 @@ struct Settings: Codable, Equatable {
     }
 }
 
+/// Settings live in the account (table user_settings, one row per student, the same as the web). The phone keeps a
+/// copy so the first screen opens with the right reader paper / text size before the server answers.
+/// The per-course content language is courses.content_lang_override (server); the copy here is the phone's.
 enum SettingsAPI {
     private static let key = "kavis.settings"
 
-    // The mock keeps settings on the phone; a real server will store them in the account.
+    private struct Row: Codable {
+        var content_lang: ContentLangChoice
+        var plan_mode: PlanMode
+        var study_days: Int
+        var study_hours: Double
+        var reader_paper: ReaderPaper
+        var reader_font_size: Int
+        var translation_style: TranslationStyle
+        var push_notifications: Bool
+        var sync: Bool
+        var cheer_notifications: Bool
+        var offline_mode: Bool
+        var auto_download: Bool
+    }
+    private static let columns =
+        "content_lang, plan_mode, study_days, study_hours, reader_paper, reader_font_size, translation_style, push_notifications, sync, cheer_notifications, offline_mode, auto_download"
+
+    /// The phone's copy (instant, may be old).
     static func loadNow() -> Settings {
         guard let data = UserDefaults.standard.data(forKey: key),
               let s = try? JSONDecoder().decode(Settings.self, from: data)
@@ -77,8 +98,42 @@ enum SettingsAPI {
         return s
     }
 
-    static func save(_ s: Settings) async -> Settings {
+    private static func cache(_ s: Settings) {
         if let data = try? JSONEncoder().encode(s) { UserDefaults.standard.set(data, forKey: key) }
-        return await fakeRequest(s, ms: 0)
+    }
+
+    /// The account's settings from the server (kept as the phone's copy), or nil when offline / signed out.
+    static func fetch() async -> Settings? {
+        guard let id = supabase.auth.currentUser?.id else { return nil }
+        guard let rows: [Row] = try? await supabase.from("user_settings").select(columns).eq("user_id", value: id).limit(1).execute().value,
+              let r = rows.first
+        else { return nil }
+        var s = loadNow()
+        s.contentLang = r.content_lang
+        s.planMode = r.plan_mode
+        s.studyDays = r.study_days
+        s.studyHours = r.study_hours
+        s.readerPaper = r.reader_paper
+        s.readerFontSize = r.reader_font_size
+        s.translationStyle = r.translation_style
+        s.pushNotifications = r.push_notifications
+        s.sync = r.sync
+        s.cheerNotifications = r.cheer_notifications
+        s.offlineMode = r.offline_mode
+        s.autoDownload = r.auto_download
+        cache(s)
+        return s
+    }
+
+    /// Saves on the phone at once and in the account when signed in.
+    static func save(_ s: Settings) async -> Settings {
+        cache(s)
+        guard let id = supabase.auth.currentUser?.id else { return s }
+        let row = Row(content_lang: s.contentLang, plan_mode: s.planMode, study_days: s.studyDays, study_hours: s.studyHours,
+                      reader_paper: s.readerPaper, reader_font_size: s.readerFontSize, translation_style: s.translationStyle,
+                      push_notifications: s.pushNotifications, sync: s.sync, cheer_notifications: s.cheerNotifications,
+                      offline_mode: s.offlineMode, auto_download: s.autoDownload)
+        _ = try? await supabase.from("user_settings").update(row).eq("user_id", value: id).execute()
+        return s
     }
 }

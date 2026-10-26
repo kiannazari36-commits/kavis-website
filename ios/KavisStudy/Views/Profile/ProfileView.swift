@@ -28,7 +28,12 @@ struct ProfileView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(background.ignoresSafeArea())
         .task {
-            if !loaded { profile = AccountAPI.loadProfile(for: app.user); loaded = true }
+            if !loaded {
+                // The phone's copy at once, then the account's profile from the server.
+                profile = AccountAPI.loadProfile(for: app.user)
+                loaded = true
+                profile = await AccountAPI.fetchProfile(for: app.user)
+            }
         }
         .animation(.easeInOut(duration: 0.2), value: mode)
     }
@@ -151,8 +156,9 @@ struct ProfileView: View {
                 .padding(.top, 10)
             Text(profile.email).font(KFont.ui(13, lang: lang)).foregroundStyle(KPhone.text2)
             FlowLayout(spacing: 6, rowSpacing: 6, alignment: .center) {
-                chip("\(d(profile.department)) · \(Format.yearLabel(profile.year, lang))")
-                chip(d(profile.school))
+                let dept = [profile.department.isEmpty ? nil : d(profile.department), profile.year.map { Format.yearLabel($0, lang) }].compactMap { $0 }
+                if !dept.isEmpty { chip(dept.joined(separator: " · ")) }
+                if !profile.school.isEmpty { chip(profile.school) }
             }
             .frame(maxWidth: .infinity)
             .padding(.top, 4)
@@ -359,10 +365,8 @@ struct ProfileView: View {
         }
     }
 
-    /// The edit page shows the department and university in the current language (they are the student's own words).
+    /// The department and university are the student's own words: edited as they are saved in the account.
     private func enterEdit() {
-        profile.department = d(profile.department)
-        profile.school = d(profile.school)
         saved = false
         mode = .edit
     }

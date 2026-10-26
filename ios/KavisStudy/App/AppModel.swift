@@ -21,6 +21,8 @@ enum Route: Equatable {
     case courseSetup
     case home
     case profile
+    case courses
+    case course(String)
     case upload(UploadKind)
     case reader(String)
     case assistant
@@ -37,7 +39,7 @@ final class AppModel {
 
     init() {
         user = AuthAPI.currentUser()
-        // Test switch: `-kavis.route welcome | login | signup | verify | onboarding | setup | home | profile | upload | uploadPhoto | uploadAudio | reader | assistant | chat`
+        // Test switch: `-kavis.route welcome | login | signup | verify | onboarding | setup | home | profile | courses | upload | uploadPhoto | uploadAudio | reader | assistant | chat`
         // jumps to a screen (removed before launch, see TODO.md).
         switch MockFlag.value("route") {
         case "welcome": route = .welcome
@@ -47,6 +49,7 @@ final class AppModel {
         case "setup": route = .courseSetup
         case "home": route = .home
         case "profile", "profileEdit": route = .profile
+        case "courses": route = .courses
         case "upload": route = .upload(.pdf)
         case "uploadPhoto": route = .upload(.photo)
         case "uploadAudio": route = .upload(.audio)

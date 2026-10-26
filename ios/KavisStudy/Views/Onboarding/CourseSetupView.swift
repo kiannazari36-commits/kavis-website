@@ -7,12 +7,18 @@ struct CourseSetupView: View {
     @Environment(AppModel.self) private var app
     @Environment(ToastCenter.self) private var toast
 
-    /// Suggestions of the design (pharmacy, year 3). Per-department suggestions come with the real server.
-    static let suggestions = ["Farmakoterapi", "Toksikoloji", "Farmasötik Teknoloji III", "Farmakognozi", "Farmasötik Kimya II", "Biyofarmasötik", "Klinik Eczacılık"]
-    private static let defaultSelection = ["Farmakoterapi", "Toksikoloji", "Farmasötik Teknoloji III", "Farmakognozi", "Farmasötik Kimya II"]
+    /// Course suggestions per department (the same lists as the web, web/src/api/onboarding.ts; the course_catalog
+    /// table is still empty). The student can always type any other course.
+    static let suggestions: [String: [String]] = [
+        "Eczacılık": ["Farmakoterapi", "Toksikoloji", "Farmasötik Teknoloji", "Farmakognozi", "Farmasötik Kimya", "Biyofarmasötik", "Klinik Eczacılık", "Farmakoloji", "Biyokimya"],
+        "Tıp": ["Anatomi", "Fizyoloji", "Histoloji", "Biyokimya", "Farmakoloji", "Patoloji", "Mikrobiyoloji", "İç Hastalıkları"],
+        "Diş Hekimliği": ["Anatomi", "Diş Morfolojisi", "Oral Diagnoz", "Endodonti", "Periodontoloji", "Protetik Diş Tedavisi", "Ortodonti"],
+        "Hemşirelik": ["Hemşirelik Esasları", "Anatomi", "Fizyoloji", "Farmakoloji", "İç Hastalıkları Hemşireliği", "Cerrahi Hastalıkları Hemşireliği"],
+        "Sağlık Bilimleri": ["Anatomi", "Fizyoloji", "Biyokimya", "Halk Sağlığı", "Beslenme İlkeleri"],
+    ]
 
-    @State private var all = CourseSetupView.suggestions
-    @State private var selected = CourseSetupView.defaultSelection
+    @State private var all: [String] = []
+    @State private var selected: [String] = []
     @State private var started = false
     @State private var done: Set<String> = []
     @State private var typed = ""
@@ -28,7 +34,7 @@ struct CourseSetupView: View {
             header
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    Text(d("2026–2027 Güz dönemi"))
+                    Text(CoursesAPI.termName())
                         .font(KFont.ui(12, .semibold, lang: lang))
                         .foregroundStyle(KPhone.tile2Text)
                         .padding(.horizontal, 14).frame(height: 32)
@@ -54,6 +60,11 @@ struct CourseSetupView: View {
                 .padding(.bottom, 8)
             }
             .scrollDismissesKeyboard(.interactively)
+            // Suggestions for the department chosen in the first steps (none for "Diğer").
+            .task {
+                let dept = AccountAPI.loadProfile(for: app.user).department
+                if all.isEmpty { all = Self.suggestions[dept] ?? [] }
+            }
             .scrollIndicators(.hidden)
             footer
         }
@@ -117,7 +128,7 @@ struct CourseSetupView: View {
 
     private var suggestionChips: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(d("Eczacılık 3. sınıf için öneriler · dokunarak seç")).font(KFont.ui(13, lang: lang)).foregroundStyle(KPhone.text2)
+            Text(prefs.t("wel_suggest")).font(KFont.ui(13, lang: lang)).foregroundStyle(KPhone.text2)
             FlowLayout(spacing: 8, rowSpacing: 8) {
                 ForEach(all, id: \.self) { name in
                     let on = selected.contains(name)
@@ -210,9 +221,13 @@ struct CourseSetupView: View {
                 let name = d("Klasörümü oluştur · ").trimmingCharacters(in: CharacterSet(charactersIn: " ·"))
                 let count = "\(selected.count)\(d(" ders"))"
                 HStack(spacing: 6) {
-                    Text(name)
-                    Text("·")
-                    Text(count)
+                    if selected.isEmpty {
+                        Text(prefs.t("wel_later"))
+                    } else {
+                        Text(name)
+                        Text("·")
+                        Text(count)
+                    }
                 }
                 .font(KFont.ui(17, .medium, lang: lang))
                 .foregroundStyle(KPhone.ctaText)

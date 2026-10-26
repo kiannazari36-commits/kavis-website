@@ -134,17 +134,22 @@ Connected to Supabase (26 Oct 2026, step 1 of the app plan):
 - [x] Device limit on the server: `register_device` after login and at start (install id per install), a phone signed out from another device logs out, log out frees the slot. The 3rd-device screen is still a toast
 - [x] After login: accounts that have not finished the first steps (`profiles.onboarding_done`) go to the onboarding
 
+Step 2 of the app plan (26 Oct 2026): profile, first steps and courses on the server
+- [x] Profile (name, school, department, class year) read from and saved to `profiles`; settings (study days / hours …) to `user_settings`; the first steps set `onboarding_done` and `app_lang`
+- [x] Onboarding: school field and class-year chips on the department step (as on the web); term course setup suggests the courses of the chosen department and creates the course folders on the server
+- [x] "Derslerim" list and "Ders klasörü" (design `NewCourses.dc.html`): real courses, PDFs, reading % and study minutes; "Ders ekle" creates a course; home tab bar "Derslerim" and the home folder card (real numbers + first three courses) open it
+- [ ] Course folder: tapping a PDF opens the reader (step 3, the reader is still the sample lesson); the "Cihazımdakiler" filter and "CİHAZDA" tags wait for offline downloads; renaming / deleting a course, exam dates
+- [ ] Not checked in the simulator yet: school + class year typed in the onboarding (department was saved; my test taps missed the field)
+
 Still to build (screens):
 - [ ] **Settings** (language, appearance, study plan, notifications, offline, privacy, devices). Language and theme can only be changed in the onboarding (language) and by the phone's own dark mode until this exists
-- [ ] Course folder ("Derslerim") + course page, quiz, cards, study plan, progress, paywall (Apple in-app purchase, prices from the App Store), notifications, "Bugünün tekrarı" review flow, exam center, share sheet, placement test after upload
+- [ ] Quiz, cards, study plan, progress, paywall (Apple in-app purchase, prices from the App Store), notifications, "Bugünün tekrarı" review flow, exam center, share sheet, placement test after upload
 - [ ] Reader extras: molecule viewer, audio per page, notes with Apple Pencil, section check quiz ("Başla"), translations of sentences other than the sample one (needs the server)
 - [ ] Assistant extras: "Ben anlatayım" (teach-back), voice mode, easy explanation, "Soruyu çözdür", conversation history, real "Sürekli dinle" (speech recognition), real AI answers (now a mock that knows a few lesson answers and says "bulamadım" otherwise)
 - [ ] Upload extras: real camera and microphone capture (permission texts), the trial-limit sheet and fair-use sheet of the design (the lock dialog is used now); processing is a mock and always opens the sample lesson
 - [ ] Step 4: StoreKit, trial limits on the server, 3rd-device screen (after login with `-kavis.devices full` only a toast is shown), share links, delete account
-- [ ] Onboarding: course suggestions are the design's pharmacy list for every department; the chosen courses are only saved on the phone
 - [ ] Real "Sign in with Apple" and Google sign-in; real email code (every account uses the demo code 481920 and "Kodu e-postadan yapıştır" fills it)
-- [ ] Profile photo picker (now a toast); profile and settings are saved on the phone, not in the account
-- [ ] Home: the three course chips and "Güz dönemi · 5 ders…" are fixed design texts until real course data
+- [ ] Profile photo picker (now a toast)
 
 Known differences from the designs (decided on purpose):
 - The designs still show the old free plan ("Bu ay 2 dersten 1'i kullanıldı", "BU AY 1/2 ÜCRETSİZ DERS"). The app shows the 3-day trial (2 PDFs, 60 questions) instead, as in CLAUDE.md
