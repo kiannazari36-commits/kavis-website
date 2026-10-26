@@ -84,6 +84,8 @@ export default function Quiz() {
       if ('error' in r) return toast(t(r.error === 'locked' ? 'trialQFull' : r.error === 'budget' ? 'askBudget' : 'packFailed'));
       toast(t('packMade').replace('{n}', String(r.questions)));
       setMade((n) => n + 1);
+      // The new questions open right away, unanswered.
+      setTab('quiz');
     });
   // From the reader: the questions of the section just read (its pages ?pf=…&pt=…).
   const pf = params.get('pf') ? Number(params.get('pf')) : undefined;
@@ -109,7 +111,9 @@ export default function Quiz() {
   const [savedRun, setSavedRun] = useState(-1);
   const [run, setRun] = useState(0);
 
-  // A new course: start over on the summary.
+  // A new course or new questions ("Yeni sorular üret"): start over, so old answers never stick to new questions.
+  // A new run, so the new answers are saved too.
+  const packId = pack?.quizId;
   useEffect(() => {
     setTopic(0);
     setList(null);
@@ -118,7 +122,8 @@ export default function Quiz() {
     setConf({});
     setHints({});
     setFinds({});
-  }, [courseId]);
+    setRun((r) => r + 1);
+  }, [courseId, packId]);
 
   if (!courses || pack === undefined || (fromReader && check === undefined)) return <main className={s.main} />;
 

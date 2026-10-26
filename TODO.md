@@ -130,6 +130,7 @@ Everything that is not finished yet. Updated after every step.
 - [x] Tried locally (test3): all three work; AI cost $0.0237
 - [x] Live (26 Oct 2026): `assistant` v7, `more-questions` v1, `lesson-summary` v1 deployed; web pushed
 - [x] Weak topics everywhere (27 Oct 2026): the assistant reads the student's weak topics (saved by 'bu konuda zayıfım' or wrong quiz answers) and can list them; new section questions favour them (and link their topic); section checks show weak-topic questions first; the lesson summary gives them more detail (marked) and is remade when the weak list changes. Tried locally (test3, $0.0269); live: `assistant` v8, `more-questions` v2, `lesson-summary` v2
+- [x] Exam prep: after "Yeni sorular üret" the new questions open unanswered (old answers no longer stick to them) and their answers are saved (27 Oct 2026)
 - [ ] iOS: show tables in the assistant, the new questions, the lesson summary and the weak-topic marks too
 - Kian's own live account is Premium by hand (subscriptions row "manual.owner", no end date), 26 Oct 2026
 
