@@ -20,6 +20,8 @@ struct SettingsView: View {
     @State private var deleteOpen = false
     @State private var exportFile: ExportFile?
     @State private var timeOpen = false
+    /// The day the account will be deleted, when a deletion was asked for.
+    @State private var deletionDate: Date?
     @State private var pickedTime = Date()
 
     /// The design's own colours for this screen (c.* in ScrSettings).
@@ -109,10 +111,8 @@ struct SettingsView: View {
             if deleteOpen {
                 DeleteAccountSheet(onClose: { deleteOpen = false }) { date in
                     deleteOpen = false
-                    let f = DateFormatter()
-                    f.locale = lang.locale
-                    f.setLocalizedDateFormatFromTemplate("d MMMM")
-                    toast.show(prefs.t("delScheduled", ["date": f.string(from: date)]))
+                    deletionDate = date
+                    toast.show(prefs.t("delScheduled", ["date": dayText(date)]))
                 }
                 .transition(.opacity)
             }
@@ -140,13 +140,26 @@ struct SettingsView: View {
         devices = await list
         weekMinutes = await progress.weekMinutes.reduce(0, +)
         pdfCount = await courses.reduce(0) { $0 + $1.pdfs.count }
+        deletionDate = await AccountAPI.deletionDate()
     }
 
     /// Changes a setting here at once and saves it in the account.
-    private func update(_ change: (inout Settings) -> Void) {
+    /// `reminder`: the reminder switch or time changed, so the phone's daily reminder is set again.
+    private func update(reminder: Bool = false, _ change: (inout Settings) -> Void) {
         change(&settings)
         let s = settings
-        Task { _ = await SettingsAPI.save(s) }
+        let l = lang
+        Task {
+            _ = await SettingsAPI.save(s)
+            if reminder { await ReminderService.refresh(s, lang: l) }
+        }
+    }
+
+    private func dayText(_ date: Date) -> String {
+        let f = DateFormatter()
+        f.locale = lang.locale
+        f.setLocalizedDateFormatFromTemplate("d MMMM")
+        return f.string(from: date)
     }
 
     // MARK: Pieces
@@ -467,7 +480,7 @@ struct SettingsView: View {
             set: { date in
                 let c = Calendar.current.dateComponents([.hour, .minute], from: date)
                 let text = String(format: "%02d:%02d", c.hour ?? 9, c.minute ?? 0)
-                if text != settings.notifyTime { update { $0.notifyTime = text } }
+                if text != settings.notifyTime { update(reminder: true) { $0.notifyTime = text } }
             }
         )
     }
@@ -475,7 +488,7 @@ struct SettingsView: View {
     private var notifCard: some View {
         card {
             switchRow(d("Tekrar hatırlatıcısı"), d("Tekrar günlerinde bildirim gönder"), on: settings.reviewReminder) {
-                update { $0.reviewReminder.toggle() }
+                update(reminder: true) { $0.reviewReminder.toggle() }
             }
             switchRow(d("Tebrik bildirimleri"), d("Bir dersinde ortalaman %10'dan fazla artınca"), on: settings.cheerNotifications) {
                 update { $0.cheerNotifications.toggle() }
@@ -602,16 +615,6 @@ struct SettingsView: View {
 
     // MARK: My devices (max 2 per account; the web counts as one)
 
-    private func lastSeen(_ iso: String) -> String {
-        let f = ISO8601DateFormatter()
-        f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        let plain = ISO8601DateFormatter()
-        guard let date = f.date(from: iso) ?? plain.date(from: iso) else { return "" }
-        let r = RelativeDateTimeFormatter()
-        r.locale = lang.locale
-        return r.localizedString(for: date, relativeTo: Date())
-    }
-
     private var devicesCard: some View {
         card {
             Text(prefs.t("devHint"))
@@ -627,7 +630,7 @@ struct SettingsView: View {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(device.name).font(KFont.ui(15, lang: lang)).foregroundStyle(C.text)
                         Text(device.current ? prefs.t("devThis") + " · " + prefs.t("devActiveNow")
-                             : device.lastUsed.map { prefs.t("devLastUsed", ["t": lastSeen($0)]) } ?? "")
+                             : device.lastUsed.map { prefs.t("devLastUsed", ["t": Format.lastSeen($0, lang)]) } ?? "")
                             .font(KFont.ui(12, lang: lang)).foregroundStyle(C.text3)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -727,7 +730,34 @@ struct SettingsView: View {
                 }
             }
             divider
-            plainRow(d("Hesabı sil"), color: C.bad, arrow: false) { deleteOpen = true }
+            if let date = deletionDate {
+                // A deletion was asked for: the account stays until that day, "Vazgeç" cancels it.
+                HStack(spacing: 10) {
+                    Text(prefs.t("delBanner", ["date": dayText(date)]))
+                        .font(KFont.ui(14, lang: lang)).foregroundStyle(C.bad)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Button {
+                        Task {
+                            if await AccountAPI.cancelDeletion() {
+                                deletionDate = nil
+                                toast.show(prefs.t("delUndone"))
+                            } else {
+                                toast.show(prefs.t("delFailed"))
+                            }
+                        }
+                    } label: {
+                        Text(prefs.t("delUndo"))
+                            .font(KFont.ui(12, .medium, lang: lang)).foregroundStyle(C.text)
+                            .padding(.horizontal, 12).frame(height: 34)
+                            .overlay(Capsule().stroke(C.line, lineWidth: 1))
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.vertical, 10)
+                .frame(minHeight: 52)
+            } else {
+                plainRow(d("Hesabı sil"), color: C.bad, arrow: false) { deleteOpen = true }
+            }
         }
     }
 }

@@ -62,6 +62,14 @@ enum AccountAPI {
         _ = try? await supabase.from("profiles").update(Update(onboarding_done: true, app_lang: lang.rawValue)).eq("id", value: id).execute()
     }
 
+    /// The app language saved in the account (nil when offline).
+    static func fetchLang() async -> Lang? {
+        guard let id = supabase.auth.currentUser?.id else { return nil }
+        struct Row: Decodable { let app_lang: String }
+        let rows: [Row]? = try? await supabase.from("profiles").select("app_lang").eq("id", value: id).limit(1).execute().value
+        return rows?.first.flatMap { Lang(rawValue: $0.app_lang) }
+    }
+
     /// The app language in the account (notifications and emails use it).
     static func saveLang(_ lang: Lang) async {
         guard let id = supabase.auth.currentUser?.id else { return }
@@ -84,6 +92,26 @@ enum AccountAPI {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("kavis-study-\(day).json")
         guard (try? data.write(to: url)) != nil else { return nil }
         return url
+    }
+
+    /// The day the account will be deleted (a deletion was asked for), or nil.
+    static func deletionDate() async -> Date? {
+        guard let id = supabase.auth.currentUser?.id else { return nil }
+        struct Row: Decodable { let scheduled_for: String }
+        let rows: [Row] = (try? await supabase.from("account_requests").select("scheduled_for")
+            .eq("user_id", value: id).eq("kind", value: "delete").eq("status", value: "confirmed").limit(1).execute().value) ?? []
+        guard let iso = rows.first?.scheduled_for else { return nil }
+        let f = ISO8601DateFormatter()
+        f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return f.date(from: iso) ?? ISO8601DateFormatter().date(from: iso)
+    }
+
+    /// "Vazgeç" within the 30 days: the account stays.
+    static func cancelDeletion() async -> Bool {
+        struct Body: Encodable { let action = "cancel" }
+        struct Done: Decodable { let cancelled: Bool }
+        let r: Done? = try? await supabase.functions.invoke("delete-account", options: FunctionInvokeOptions(body: Body()))
+        return r?.cancelled == true
     }
 
     enum DeleteError: Error { case password, other }

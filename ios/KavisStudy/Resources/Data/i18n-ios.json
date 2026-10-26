@@ -1,0 +1,18 @@
+{
+ "tr": {
+  "remindTitle": "Çalışma vakti",
+  "remindBody": "Bugünün planın hazır. Birkaç dakika bile yeter."
+ },
+ "en": {
+  "remindTitle": "Study time",
+  "remindBody": "Today's plan is ready. Even a few minutes help."
+ },
+ "fa": {
+  "remindTitle": "وقت مطالعه",
+  "remindBody": "برنامهٔ امروزت آماده است. چند دقیقه هم کافی است."
+ },
+ "ar": {
+  "remindTitle": "وقت الدراسة",
+  "remindBody": "خطة اليوم جاهزة. حتى بضع دقائق تكفي."
+ }
+}

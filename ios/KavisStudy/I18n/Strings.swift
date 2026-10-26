@@ -4,7 +4,7 @@ import Foundation
 /// The JSON files are copied from the web app (`node ios/scripts/sync-from-web.mjs`), so both apps use the same words.
 /// Each file is `{ "tr": { key: text }, "en": …, "fa": …, "ar": … }`.
 enum Strings {
-    static let files = ["desk", "auth", "app", "reader", "study", "pages", "phone"]
+    static let files = ["desk", "auth", "app", "reader", "study", "pages", "phone", "ios"]
 
     private final class BundleToken {}
 

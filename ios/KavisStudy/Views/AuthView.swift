@@ -351,12 +351,13 @@ struct AuthView: View {
         }
     }
 
-    /// After a login: an account that is already on 2 devices must sign one out first (screen comes later).
+    /// After a login: an account that is already on 2 devices must sign one out first (the device-limit screen).
     /// An account that has not answered the first steps goes to the onboarding, the others go home.
     private func finish(_ user: User) async {
-        if await DevicesAPI.checkDeviceLimit() != nil {
+        if let others = await DevicesAPI.checkDeviceLimit() {
             busy = false
-            toast.show(t("devFullTitle"))
+            app.user = user
+            app.stopAtDeviceLimit(others)
             return
         }
         let isNew = await AuthAPI.needsOnboarding()

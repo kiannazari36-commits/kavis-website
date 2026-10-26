@@ -28,6 +28,8 @@ struct RootView: View {
                 ProfileView()
             case .settings:
                 SettingsView()
+            case .deviceLimit:
+                DeviceLimitView()
             case .courses:
                 CoursesListView()
             case .course(let id):
@@ -55,6 +57,16 @@ struct RootView: View {
             }
         }
         .animation(.easeInOut(duration: 0.25), value: app.route)
+        // The account's language and appearance apply on this phone too (set on another device or at sign-up),
+        // and the reminder follows the account's settings.
+        .task(id: app.user?.id) {
+            guard app.user != nil else { return }
+            if let l = await AccountAPI.fetchLang() { prefs.lang = l }
+            if let s = await SettingsAPI.fetch() {
+                prefs.theme = s.appTheme
+                await ReminderService.refresh(s, lang: prefs.lang)
+            }
+        }
         .toastOverlay(toast, lang: prefs.lang)
     }
 }

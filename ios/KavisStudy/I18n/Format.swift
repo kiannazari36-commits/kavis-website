@@ -2,6 +2,16 @@ import Foundation
 
 /// Number and count formats, same wording as web/src/i18n/format.ts.
 enum Format {
+    /// "1 hour ago" for a device's last use (an ISO date from the server).
+    static func lastSeen(_ iso: String, _ lang: Lang) -> String {
+        let f = ISO8601DateFormatter()
+        f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        guard let date = f.date(from: iso) ?? ISO8601DateFormatter().date(from: iso) else { return "" }
+        let r = RelativeDateTimeFormatter()
+        r.locale = lang.locale
+        return r.localizedString(for: date, relativeTo: Date())
+    }
+
     private static let faDigits = Array("۰۱۲۳۴۵۶۷۸۹")
 
     /// Persian uses Persian digits; the other languages use 0–9.

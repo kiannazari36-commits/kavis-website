@@ -22,6 +22,8 @@ enum Route: Equatable {
     case home
     case profile
     case settings
+    /// An account already on 2 devices: the student signs one out first (`AppModel.limitDevices`).
+    case deviceLimit
     case courses
     case course(String)
     /// Flash cards due now: all, or one course's.
@@ -50,6 +52,8 @@ final class AppModel {
     var uploadCourseId: String?
     /// The page the reader should open at (from the lesson summary; read once by the reader).
     var readerPage: Int?
+    /// The other devices of an account that is full (2 devices), shown on the device-limit screen.
+    var limitDevices: [Device] = []
 
     init() {
         user = AuthAPI.currentUser()
@@ -64,6 +68,7 @@ final class AppModel {
         case "home": route = .home
         case "profile", "profileEdit": route = .profile
         case "settings": route = .settings
+        case "devices": route = .deviceLimit
         case "courses": route = .courses
         case "cards": route = .cards(nil)
         case "plan": route = .weekPlan
@@ -111,9 +116,20 @@ final class AppModel {
                 user = nil
                 return reset(to: .welcome)
             }
-            _ = await DevicesAPI.checkDeviceLimit()
+            if let others = await DevicesAPI.checkDeviceLimit() { return stopAtDeviceLimit(others) }
             reset(to: await AuthAPI.needsOnboarding() ? .onboarding : .home)
         }
+    }
+
+    /// The account is on 2 other devices: nothing else opens until one of them is signed out.
+    func stopAtDeviceLimit(_ others: [Device]) {
+        limitDevices = others
+        reset(to: .deviceLimit)
+    }
+
+    /// A slot is free now: carry on as after a login (the first steps or home).
+    func continueAfterDeviceLimit() async {
+        reset(to: await AuthAPI.needsOnboarding() ? .onboarding : .home)
     }
 
     /// A new account goes through the onboarding first; an existing one goes home.
@@ -125,6 +141,7 @@ final class AppModel {
     func signOut() async {
         await DevicesAPI.signOutThisDevice()
         await AuthAPI.logOut()
+        ReminderService.clear()
         user = nil
         reset(to: .welcome)
     }
