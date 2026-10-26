@@ -1,9 +1,11 @@
+import PDFKit
 import SwiftUI
 import UniformTypeIdentifiers
 
 /// Design: design/ScrUpload.dc.html. Choose a PDF (or photos / a lecture recording), see the lesson being prepared,
 /// or an error when the PDF has no text. A PDF over 100 pages opens the "too long" sheet (CLAUDE.md: max 100 pages).
-/// Preparing the lesson is a mock until the server exists; picking the file and reading its pages is real.
+/// A PDF is uploaded to the server and prepared there (UploadAPI, the same as the web); this screen follows it until
+/// the lesson is ready. Photos and lecture recordings are not sent to the server yet (see TODO.md).
 struct UploadView: View {
     @Environment(AppPrefs.self) private var prefs
     @Environment(AppModel.self) private var app
@@ -17,12 +19,17 @@ struct UploadView: View {
     @State private var showPDFImporter = false
     @State private var showAudioImporter = false
     @State private var picked: PickedPDF?
-    @State private var lessonName = "Hipertansiyon"
-    @State private var courseName = "Farmakoterapi"
+    @State private var pickedData: Data?
+    @State private var lessonName = ""
+    @State private var courseId: String?
+    @State private var courses: [Course] = CoursesAPI.lastCourses
+    /// The lesson on the server (the first part of a split PDF) and where the server is with it.
+    @State private var lessonId: String?
+    @State private var status: UploadAPI.LessonStatus?
+    @State private var partCount = 0
+    @State private var busy = false
     @State private var shots = 4
     @State private var audioName: String?
-    @State private var doneSteps = 0
-    @State private var runID = 0
     @State private var longSheet = false
     @State private var splitMode = true
     @State private var rangeFrom = "1"
@@ -38,7 +45,6 @@ struct UploadView: View {
         case "audio": _mode = State(initialValue: .audio)
         default: _mode = State(initialValue: kind == .photo ? .photo : kind == .audio ? .audio : .pick)
         }
-        if MockFlag.value("uploadMode") == "processing" { _doneSteps = State(initialValue: 2) }
         if MockFlag.value("uploadMode") == "long" { _longSheet = State(initialValue: true) }
     }
 
@@ -72,6 +78,11 @@ struct UploadView: View {
         }
         .animation(.easeOut(duration: 0.2), value: longSheet)
         .animation(.easeInOut(duration: 0.2), value: mode)
+        .task {
+            // "Bu derse PDF ekle" in a course folder chooses that course.
+            if let id = app.uploadCourseId { courseId = id; app.uploadCourseId = nil }
+            courses = await CoursesAPI.listCourses()
+        }
     }
 
     // MARK: Header and footer
@@ -208,19 +219,14 @@ struct UploadView: View {
         .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).strokeBorder(KOnb.text3, style: StrokeStyle(lineWidth: 1.5, dash: [5, 4])))
     }
 
-    private var recentFiles: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(d("SON DOSYALAR")).font(mono(11)).tracking(lang.isRTL ? 0 : 1.1).foregroundStyle(KOnb.text3)
-            VStack(spacing: 0) {
-                if let picked {
-                    recentRow(name: picked.name, meta: Format.fileMeta(pages: picked.pages, megabytes: picked.megabytes, lang), selected: true)
-                }
-                recentRow(name: "Farmakoterapi_Hipertansiyon.pdf", meta: d("48 sayfa · 6,2 MB"), selected: picked == nil) { select(mock: "Farmakoterapi_Hipertansiyon.pdf", pages: 48, mb: 6.2) }
-                    .overlay(alignment: .bottom) { Rectangle().fill(KPhone.line).frame(height: 1) }
-                recentRow(name: "Diyabet_Ders_Notu.pdf", meta: d("36 sayfa · 4,1 MB"), selected: false) { select(mock: "Diyabet_Ders_Notu.pdf", pages: 36, mb: 4.1) }
+    @ViewBuilder private var recentFiles: some View {
+        if let picked {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(d("SON DOSYALAR")).font(mono(11)).tracking(lang.isRTL ? 0 : 1.1).foregroundStyle(KOnb.text3)
+                recentRow(name: picked.name, meta: Format.fileMeta(pages: picked.pages, megabytes: picked.megabytes, lang), selected: true)
+                    .background(KPhone.card, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             }
-            .background(KPhone.card, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
     }
 
@@ -252,7 +258,7 @@ struct UploadView: View {
     private var fields: some View {
         VStack(spacing: 12) {
             field(d("Ders adı"), text: $lessonName)
-            field(d("Ders"), text: $courseName)
+            coursePicker
         }
     }
 
@@ -264,6 +270,27 @@ struct UploadView: View {
                 .padding(.horizontal, 14).frame(height: 48)
                 .background(KPhone.card, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                 .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(KPhone.line, lineWidth: 1))
+        }
+    }
+
+    /// The course the lesson goes into (the student's own courses; none is allowed).
+    private var coursePicker: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(d("Ders")).font(KFont.ui(13, .medium, lang: lang)).foregroundStyle(KPhone.text2)
+            Menu {
+                Button(prefs.t("up_pickCourse")) { courseId = nil }
+                ForEach(courses) { c in Button(c.name[lang]) { courseId = c.id } }
+            } label: {
+                HStack {
+                    Text(courses.first { $0.id == courseId }?.name[lang] ?? prefs.t("up_pickCourse"))
+                        .font(KFont.ui(15, lang: lang)).foregroundStyle(courseId == nil ? KOnb.text3 : KPhone.text)
+                    Spacer()
+                    KIcon(name: .chevronDown, size: 14, width: 2).foregroundStyle(KPhone.text2)
+                }
+                .padding(.horizontal, 14).frame(height: 48)
+                .background(KPhone.card, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(KPhone.line, lineWidth: 1))
+            }
         }
     }
 
@@ -313,7 +340,8 @@ struct UploadView: View {
                 }
                 .padding(.horizontal, 20).padding(.top, 4).padding(.bottom, 16)
             }
-            footer("\(d("Dersi hazırla · "))\(shots)\(d(" sayfa"))") { prepare() }
+            // Photos are not sent to the server yet (see TODO.md).
+            footer("\(d("Dersi hazırla · "))\(shots)\(d(" sayfa"))") { soon() }
         }
     }
 
@@ -469,26 +497,48 @@ struct UploadView: View {
     // MARK: Processing
 
     private let stepTitles = ["Tam metin", "Terim açıklamaları", "Çeviri", "Sınav soruları", "Kartlar"]
-    private let stepDetails = ["48 sayfa · metin aynen korunur", "126 terim", "English · فارسی · العربية", "64 soru", "40 kart"]
+
+    private var serverStatus: UploadAPI.Status { status?.status ?? .uploaded }
+    private var ready: Bool { serverStatus == .ready }
+
+    /// Steps follow the server like on the web: uploaded = waiting, processing = working through, ready = all done.
+    private var doneSteps: Int { MockFlag.value("uploadMode") == "processing" ? 2 : ready ? 5 : serverStatus == .processing ? 1 : 0 }
+
+    private func stepDetail(_ i: Int) -> String {
+        let x = status?.stats ?? [:]
+        var parts: [String] = []
+        if i == 0, let picked { parts.append(Format.fileMeta(pages: picked.pages, megabytes: picked.megabytes, lang)) }
+        if i == 1, let n = x["terms"], n > 0 { parts.append(Format.num(n, lang)) }
+        if i == 3, let n = x["questions"], n > 0 { parts.append(Format.num(n, lang)) }
+        if i == 4, let n = x["cards"], n > 0 { parts.append(Format.num(n, lang)) }
+        parts.append(prefs.t(i < doneSteps ? "up_done" : i == doneSteps && !ready ? "up_working" : "up_wait"))
+        return parts.joined(separator: " · ")
+    }
 
     private var processingContent: some View {
         VStack(alignment: .leading, spacing: 18) {
             HStack(spacing: 12) {
                 fileBadge(KOnb.priText, KOnb.priSoft)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(picked.map { _ in lessonName } ?? d("Hipertansiyon")).font(KFont.ui(15, .semibold, lang: lang)).foregroundStyle(KPhone.text)
-                    Text("\(d("Farmakoterapi ·")) \(picked.map { Format.fileMeta(pages: $0.pages, megabytes: $0.megabytes, lang) } ?? d("48 sayfa · 6,2 MB"))")
-                        .font(mono(11)).foregroundStyle(KOnb.text3)
+                    Text(lessonName).font(KFont.ui(15, .semibold, lang: lang)).foregroundStyle(KPhone.text)
+                    Text(courses.first { $0.id == courseId }?.name[lang] ?? "").font(mono(11)).foregroundStyle(KOnb.text3)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(.horizontal, 14).padding(.vertical, 12)
             .background(KPhone.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
             VStack(alignment: .leading, spacing: 6) {
-                Text(d("Ders hazırlanıyor…")).font(KFont.ui(28, .bold, lang: lang)).kTracking(-0.02, size: 28, lang: lang).foregroundStyle(KPhone.text)
+                Text(ready ? prefs.t("up_ready") : d("Ders hazırlanıyor…")).font(KFont.ui(28, .bold, lang: lang)).kTracking(-0.02, size: 28, lang: lang).foregroundStyle(KPhone.text)
                     .accessibilityAddTraits(.isHeader)
-                Text(d("Yaklaşık 2 dakika sürer. Uygulamayı kapatabilirsin; hazır olunca bildirim göndeririz."))
-                    .font(KFont.ui(14, lang: lang)).kLineHeight(1.5, size: 14, lang: lang).foregroundStyle(KPhone.text2)
+                if serverStatus == .failed {
+                    Text(prefs.t("up_processFailed")).font(KFont.ui(14, lang: lang)).foregroundStyle(KOnb.bad)
+                } else if !ready {
+                    Text(d("Yaklaşık 2 dakika sürer. Uygulamayı kapatabilirsin; hazır olunca bildirim göndeririz."))
+                        .font(KFont.ui(14, lang: lang)).kLineHeight(1.5, size: 14, lang: lang).foregroundStyle(KPhone.text2)
+                }
+                if partCount > 1 {
+                    Text(prefs.t("up_partsNote", ["k": Format.num(partCount, lang)])).font(KFont.ui(13, lang: lang)).foregroundStyle(KPhone.text2)
+                }
             }
             .padding(.top, 6)
             VStack(spacing: 0) {
@@ -497,7 +547,7 @@ struct UploadView: View {
                         stepIcon(i)
                         VStack(alignment: .leading, spacing: 2) {
                             Text(d(stepTitles[i])).font(KFont.ui(15, .semibold, lang: lang)).foregroundStyle(i <= doneSteps ? KPhone.text : KOnb.text3)
-                            Text(i == 2 ? stepDetails[i] : d(stepDetails[i])).font(mono(11)).foregroundStyle(KOnb.text3)
+                            Text(stepDetail(i)).font(mono(11)).foregroundStyle(KOnb.text3)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
@@ -516,12 +566,19 @@ struct UploadView: View {
                 Text(Format.percent(progress, lang)).font(KFont.mono(12, .regular)).foregroundStyle(KPhone.text2)
             }
             Spacer(minLength: 0)
+            if ready, let lessonId {
+                Button { app.reset(to: .home); app.go(.reader(lessonId)) } label: {
+                    Text(prefs.t("up_open")).font(KFont.ui(16, .semibold, lang: lang)).foregroundStyle(KPhone.ctaText)
+                        .frame(maxWidth: .infinity, minHeight: 52)
+                        .background(KOnb.pri, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                }
+            }
         }
         .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 20)
-        .task(id: runID) { await runProcessing() }
+        .task(id: lessonId) { await follow() }
     }
 
-    private var progress: Int { min(100, Int((Double(doneSteps) / 5 * 100).rounded()) + (doneSteps < 5 ? 8 : 0)) }
+    private var progress: Int { ready ? 100 : serverStatus == .processing ? 45 : 8 }
 
     @ViewBuilder private func stepIcon(_ i: Int) -> some View {
         if i < doneSteps {
@@ -553,7 +610,7 @@ struct UploadView: View {
             HStack(spacing: 12) {
                 fileBadge(KOnb.bad, KOnb.badSoft)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(picked?.name ?? "Biyofarmasotik_tarama.pdf").font(KFont.ui(14, .semibold, lang: lang)).foregroundStyle(KPhone.text)
+                    Text(picked?.name ?? "").font(KFont.ui(14, .semibold, lang: lang)).foregroundStyle(KPhone.text)
                         .lineLimit(1).truncationMode(.middle).environment(\.layoutDirection, .leftToRight)
                     Text(d("HATA · METİN BULUNAMADI")).font(mono(11)).foregroundStyle(KOnb.bad)
                 }
@@ -563,13 +620,13 @@ struct UploadView: View {
             .background(KPhone.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
             .padding(.top, 8)
             Spacer()
-            Button { picked = nil; mode = .pick; showPDFImporter = true } label: {
+            Button { picked = nil; pickedData = nil; lessonId = nil; mode = .pick; showPDFImporter = true } label: {
                 Text(d("Başka dosya seç")).font(KFont.ui(16, .semibold, lang: lang)).foregroundStyle(KPhone.ctaText)
                     .frame(maxWidth: .infinity, minHeight: 52)
                     .background(KOnb.pri, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
             }
-            Button { startProcessing() } label: {
-                Text(d("Metin tanıma ile dene")).font(KFont.ui(16, .semibold, lang: lang)).foregroundStyle(KPhone.text)
+            Button { Task { await tryOcr() } } label: {
+                Text(busy ? prefs.t("up_uploading") : d("Metin tanıma ile dene")).font(KFont.ui(16, .semibold, lang: lang)).foregroundStyle(KPhone.text)
                     .frame(maxWidth: .infinity, minHeight: 52)
                     .background(KPhone.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                     .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(KPhone.line, lineWidth: 1))
@@ -581,51 +638,97 @@ struct UploadView: View {
 
     // MARK: Actions
 
-    private func select(mock name: String, pages: Int, mb: Double) {
-        picked = PickedPDF(name: name, pages: pages, megabytes: mb, hasText: true)
-        lessonName = d(name.hasPrefix("Diyabet") ? "Diyabet" : "Hipertansiyon")
-    }
-
-    /// A real file: read its pages with PDFKit.
+    /// A file from the picker: read it and its pages (PDFKit). Scanned PDFs go to the error screen at once.
     private func handlePicked(_ url: URL) {
-        guard let info = PDFInspector.inspect(url) else {
-            toast.show(d("Bu PDF'ten metin okunamadı"))
+        let scoped = url.startAccessingSecurityScopedResource()
+        defer { if scoped { url.stopAccessingSecurityScopedResource() } }
+        guard let data = try? Data(contentsOf: url), let info = PDFInspector.inspect(url) else {
+            toast.show(prefs.t("up_notPdf"))
+            return
+        }
+        if info.megabytes > UploadAPI.maxMB {
+            toast.show(prefs.t("up_tooBig", ["mb": Format.num(Int(info.megabytes.rounded()), lang)]))
             return
         }
         picked = info
-        lessonName = url.deletingPathExtension().lastPathComponent
+        pickedData = data
+        lessonId = nil
+        if lessonName.isEmpty {
+            lessonName = url.deletingPathExtension().lastPathComponent.replacingOccurrences(of: "[_-]+", with: " ", options: .regularExpression).trimmingCharacters(in: .whitespaces)
+        }
+        if !info.hasText { mode = .error; return }
         if info.pages > TrialLimits.pagesPerPdf { rangeTo = String(TrialLimits.pagesPerPdf); longSheet = true }
     }
 
-    /// "Dersi hazırla": needs the trial / Premium to allow a new PDF; scanned PDFs show the error first.
+    /// "Dersi hazırla": needs a file and a name, and the trial / Premium to allow a new PDF.
     private func prepare() {
+        guard let picked, pickedData != nil else { return toast.show(prefs.t("up_needFile")) }
+        guard !lessonName.trimmingCharacters(in: .whitespaces).isEmpty else { return toast.show(prefs.t("up_needName")) }
         trial.perform(.pdf) {
-            if let picked, !picked.hasText { mode = .error; return }
-            if let picked, picked.pages > TrialLimits.pagesPerPdf { longSheet = true; return }
-            startProcessing()
+            if !picked.hasText { mode = .error; return }
+            if picked.pages > TrialLimits.pagesPerPdf { longSheet = true; return }
+            Task { await upload([pickedData!]) }
         }
     }
 
-    private func startProcessing() {
-        doneSteps = 0
-        runID += 1
+    /// Uploads one lesson, or the parts of a long PDF ("Name (1/3)"); the first one is followed on this screen.
+    private func upload(_ files: [Data], ocr: Bool = false) async {
+        guard !busy, !files.isEmpty else { return }
+        busy = true
+        defer { busy = false }
+        let title = lessonName.trimmingCharacters(in: .whitespaces)
+        var first: String?
+        for (i, file) in files.enumerated() {
+            do {
+                let name = files.count > 1 ? "\(title) (\(i + 1)/\(files.count))" : title
+                let id = try await UploadAPI.uploadLesson(file, title: name, courseId: courseId, ocr: ocr)
+                if first == nil { first = id }
+            } catch {
+                let reason = error as? UploadAPI.Failure ?? .network
+                if first == nil {
+                    toast.show(reason == .trial ? prefs.t("trialPdfFull") : reason == .tooBig
+                        ? prefs.t("up_tooBig", ["mb": Format.num(Int((Double(file.count) / 1_048_576).rounded()), lang)]) : prefs.t("up_failed"))
+                    return
+                }
+                toast.show(prefs.t(reason == .trial ? "up_partsTrial" : "up_failed", ["n": Format.num(i, lang)]))
+                break
+            }
+        }
+        partCount = files.count
+        status = nil
+        lessonId = first
         mode = .processing
+        await trial.refresh()
     }
 
-    /// Mock server: one step every 0.85 s, then the lesson counts against the trial and the student goes home.
-    private func runProcessing() async {
-        while doneSteps < 5 {
-            if MockFlag.value("uploadMode") == "processing" { return } // test switch keeps the screen still
-            try? await Task.sleep(for: .milliseconds(850))
-            if Task.isCancelled { return }
-            doneSteps += 1
+    /// "Metin tanıma ile dene": a lesson the server found scanned is read again with text recognition; a PDF that is
+    /// not uploaded yet is uploaded with text recognition on.
+    private func tryOcr() async {
+        if let lessonId {
+            busy = true
+            let r = await UploadAPI.retryWithOcr(lessonId)
+            busy = false
+            switch r {
+            case .success: status = nil; mode = .processing
+            case .failure(let f): toast.show(prefs.t(f == .trial ? "trialPdfFull" : "up_failed"))
+            }
+        } else if let pickedData {
+            trial.perform(.pdf) { Task { await upload([pickedData], ocr: true) } }
         }
-        try? await Task.sleep(for: .milliseconds(700))
-        if Task.isCancelled { return }
-        if !trial.status.premium { trial.status.pdfsUsed += 1 }
-        // Mock server: every lesson opens the sample lesson until the PDF processing exists (see TODO.md).
-        app.reset(to: .home)
-        app.go(.reader("hypertension"))
+    }
+
+    /// While preparing: ask the server every 4 seconds; a lesson stopped on the server is asked to go on.
+    private func follow() async {
+        guard let lessonId, MockFlag.value("uploadMode") != "processing" else { return }
+        while !Task.isCancelled {
+            if let st = await UploadAPI.lessonStatus(lessonId) {
+                status = st
+                if st.status == .needs_ocr { mode = .error; return }
+                if st.status == .ready || st.status == .failed || st.status == .too_long { return }
+                if st.status == .processing, let at = st.updatedAt, Date().timeIntervalSince(at) > 5 * 60 { await UploadAPI.resumeStuckLessons() }
+            }
+            try? await Task.sleep(for: .seconds(4))
+        }
     }
 
     // MARK: "This PDF is too long" sheet
@@ -637,15 +740,25 @@ struct UploadView: View {
 
     private func longTexts() -> LongTexts {
         switch lang {
-        case .tr: LongTexts(title: "Bu PDF çok uzun", body: "Bir derste en fazla 100 sayfa hazırlayabiliyoruz. Hangi kısmı çalışmak istediğini seç.", meta: "", split: "Bölümlere ayır", splitSub: "İçindekiler'e göre 4 ayrı ders: 38 · 44 · 41 · 41 sayfa", range: "Sayfa aralığı seç", rangeSub: "En fazla 100 sayfa", tooMany: "En fazla 100 sayfa seçebilirsin", cont: "Devam et", other: "Başka dosya seç", pages: { "\($0) sayfa" })
-        case .en: LongTexts(title: "This PDF is too long", body: "We can prepare up to 100 pages per lesson. Choose the part you want to study.", meta: "", split: "Split into chapters", splitSub: "By table of contents, 4 lessons: 38 · 44 · 41 · 41 pages", range: "Choose a page range", rangeSub: "Up to 100 pages", tooMany: "You can choose up to 100 pages", cont: "Continue", other: "Choose another file", pages: { "\($0) pages" })
-        case .fa: LongTexts(title: "این PDF خیلی طولانی است", body: "در هر درس حداکثر ۱۰۰ صفحه آماده می‌کنیم. بخشی را که می‌خواهی بخوانی انتخاب کن.", meta: "", split: "تقسیم به فصل‌ها", splitSub: "بر اساس فهرست، ۴ درس جدا: ۳۸ · ۴۴ · ۴۱ · ۴۱ صفحه", range: "انتخاب بازهٔ صفحه", rangeSub: "حداکثر ۱۰۰ صفحه", tooMany: "حداکثر ۱۰۰ صفحه می‌توانی انتخاب کنی", cont: "ادامه", other: "انتخاب فایل دیگر", pages: { "\(Format.num($0, .fa)) صفحه" })
-        case .ar: LongTexts(title: "ملف PDF هذا طويل جدًا", body: "يمكننا تجهيز 100 صفحة كحد أقصى لكل درس. اختر الجزء الذي تريد دراسته.", meta: "", split: "قسّمه إلى فصول", splitSub: "حسب الفهرس، 4 دروس منفصلة: 38 · 44 · 41 · 41 صفحة", range: "اختر نطاق الصفحات", rangeSub: "100 صفحة كحد أقصى", tooMany: "يمكنك اختيار 100 صفحة كحد أقصى", cont: "متابعة", other: "اختيار ملف آخر", pages: { "\($0) صفحة" })
+        case .tr: LongTexts(title: "Bu PDF çok uzun", body: "Bir derste en fazla 100 sayfa hazırlayabiliyoruz. Hangi kısmı çalışmak istediğini seç.", meta: "", split: "Bölümlere ayır", splitSub: "{k} ayrı ders: {p} sayfa", range: "Sayfa aralığı seç", rangeSub: "En fazla 100 sayfa", tooMany: "En fazla 100 sayfa seçebilirsin", cont: "Devam et", other: "Başka dosya seç", pages: { "\($0) sayfa" })
+        case .en: LongTexts(title: "This PDF is too long", body: "We can prepare up to 100 pages per lesson. Choose the part you want to study.", meta: "", split: "Split into chapters", splitSub: "{k} lessons: {p} pages", range: "Choose a page range", rangeSub: "Up to 100 pages", tooMany: "You can choose up to 100 pages", cont: "Continue", other: "Choose another file", pages: { "\($0) pages" })
+        case .fa: LongTexts(title: "این PDF خیلی طولانی است", body: "در هر درس حداکثر ۱۰۰ صفحه آماده می‌کنیم. بخشی را که می‌خواهی بخوانی انتخاب کن.", meta: "", split: "تقسیم به فصل‌ها", splitSub: "{k} درس جدا: {p} صفحه", range: "انتخاب بازهٔ صفحه", rangeSub: "حداکثر ۱۰۰ صفحه", tooMany: "حداکثر ۱۰۰ صفحه می‌توانی انتخاب کنی", cont: "ادامه", other: "انتخاب فایل دیگر", pages: { "\(Format.num($0, .fa)) صفحه" })
+        case .ar: LongTexts(title: "ملف PDF هذا طويل جدًا", body: "يمكننا تجهيز 100 صفحة كحد أقصى لكل درس. اختر الجزء الذي تريد دراسته.", meta: "", split: "قسّمه إلى فصول", splitSub: "{k} دروس منفصلة: {p} صفحة", range: "اختر نطاق الصفحات", rangeSub: "100 صفحة كحد أقصى", tooMany: "يمكنك اختيار 100 صفحة كحد أقصى", cont: "متابعة", other: "اختيار ملف آخر", pages: { "\($0) صفحة" })
         }
     }
 
+    /// "3 ayrı ders: 55 · 55 · 54 sayfa": equal parts of at most 100 pages (UploadAPI.splitPdf).
+    private func splitLine(_ template: String) -> String {
+        let total = picked?.pages ?? 0
+        let k = max(1, UploadAPI.partsFor(total))
+        let size = Int((Double(total) / Double(k)).rounded(.up))
+        let sizes = (0..<k).map { min(size, total - $0 * size) }
+        return template.replacingOccurrences(of: "{k}", with: Format.num(k, lang))
+            .replacingOccurrences(of: "{p}", with: sizes.map { Format.num($0, lang) }.joined(separator: " · "))
+    }
+
     private var rangeCount: Int? {
-        guard let from = Int(rangeFrom), let to = Int(rangeTo), let total = picked?.pages ?? Optional(164) else { return nil }
+        guard let from = Int(rangeFrom), let to = Int(rangeTo), let total = picked?.pages else { return nil }
         guard from >= 1, to <= total, from <= to else { return nil }
         return to - from + 1
     }
@@ -668,7 +781,7 @@ struct UploadView: View {
                 .padding(.bottom, 12)
                 Text(t.title).font(KFont.ui(21, .bold, lang: lang)).foregroundStyle(KPhone.text).padding(.bottom, 6)
                 Text(t.body).font(KFont.ui(14.5, lang: lang)).kLineHeight(1.5, size: 14.5, lang: lang).foregroundStyle(KPhone.text2).padding(.bottom, 14)
-                choice(on: splitMode, title: t.split, sub: t.splitSub) { splitMode = true }.padding(.bottom, 10)
+                choice(on: splitMode, title: t.split, sub: splitLine(t.splitSub)) { splitMode = true }.padding(.bottom, 10)
                 VStack(alignment: .leading, spacing: 10) {
                     Button { splitMode = false } label: {
                         HStack(spacing: 12) {
@@ -698,9 +811,14 @@ struct UploadView: View {
                 .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(!splitMode ? KOnb.pri : KPhone.line, lineWidth: !splitMode ? 1.5 : 1))
                 .padding(.bottom, 8)
                 Button {
-                    guard !bad else { return }
+                    guard !bad, let pickedData else { return }
                     longSheet = false
-                    startProcessing()
+                    if splitMode {
+                        Task { await upload(UploadAPI.splitPdf(pickedData)) }
+                    } else if let from = Int(rangeFrom), let to = Int(rangeTo), let src = PDFDocument(data: pickedData),
+                              let part = UploadAPI.pages(src, from: from - 1, to: to - 1) {
+                        Task { await upload([part]) }
+                    }
                 } label: {
                     Text(t.cont).font(KFont.ui(16, .semibold, lang: lang)).foregroundStyle(Color(hex: 0xFFF6E6))
                         .frame(maxWidth: .infinity, minHeight: 52)

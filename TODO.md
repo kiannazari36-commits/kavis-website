@@ -139,14 +139,23 @@ Step 2 of the app plan (26 Oct 2026): profile, first steps and courses on the se
 - [x] Onboarding: school field and class-year chips on the department step (as on the web); term course setup suggests the courses of the chosen department and creates the course folders on the server
 - [x] "Derslerim" list and "Ders klasörü" (design `NewCourses.dc.html`): real courses, PDFs, reading % and study minutes; "Ders ekle" creates a course; home tab bar "Derslerim" and the home folder card (real numbers + first three courses) open it
 - [ ] Course folder: tapping a PDF opens the reader (step 3, the reader is still the sample lesson); the "Cihazımdakiler" filter and "CİHAZDA" tags wait for offline downloads; renaming / deleting a course, exam dates
-- [ ] Not checked in the simulator yet: school + class year typed in the onboarding (department was saved; my test taps missed the field)
+
+Step 3 of the app plan (26 Oct 2026): upload and reader on the server
+- [x] PDF upload like the web (`API/Upload.swift`): file to the "materials" bucket, lesson row (the database checks the trial), `process-material`; the screen asks the server every 4 s, shows the steps with the server's numbers and "Derse git"; scanned PDFs → "Metin tanıma ile dene" (OCR); over 100 pages → equal parts or a page range (PDFKit); course chosen from the student's courses ("Bu derse PDF ekle" chooses it)
+- [x] Trial status from the server (`access_status`) on home, profile and upload (the old mock numbers are gone)
+- [x] Reader on real lessons (`material_content.reader_doc`, same format as the web): sections, page labels, block tags, hard words with the server's explanation, "Kartlara ekle" (Edge `add-card`), word taps counted (`tap_term`), pages seen saved as read, opens where the student stopped ("Kaldığın yerden devam: sayfa N"), reading time saved (`study_sessions`, 1 minute or more), "Çevir" uses saved translations or Edge `translate`; too many small sections are grouped once (Edge `group-sections`)
+- [x] Checked in the simulator with test1 (local): onboarding saves school + class year; course folder → lesson opens at page 2 with the right section; "NAPQI" explanation, card added, progress saved
+- [ ] Not tried yet (costs a few cents of AI, needs Kian's OK): a real PDF upload from the iPhone and a new translation
+- [ ] Photos and lecture recordings are still not sent to the server from the phone ("Dersi hazırla" shows a toast)
+- [ ] Profile screen numbers (42 sa, 6 gün, 5 ders, 13 PDF, 35 soru …) and the home "Bugün tekrar günü" card are still the design's sample data
+- [ ] The UI tests (`KavisStudyUITests/FlowTests.swift`) were written for the mock data (demo code 481920, sample lesson) and need rewriting for the server
 
 Still to build (screens):
 - [ ] **Settings** (language, appearance, study plan, notifications, offline, privacy, devices). Language and theme can only be changed in the onboarding (language) and by the phone's own dark mode until this exists
 - [ ] Quiz, cards, study plan, progress, paywall (Apple in-app purchase, prices from the App Store), notifications, "Bugünün tekrarı" review flow, exam center, share sheet, placement test after upload
-- [ ] Reader extras: molecule viewer, audio per page, notes with Apple Pencil, section check quiz ("Başla"), translations of sentences other than the sample one (needs the server)
+- [ ] Reader extras: molecule viewer, audio per page, notes with Apple Pencil, section check quiz ("Başla")
 - [ ] Assistant extras: "Ben anlatayım" (teach-back), voice mode, easy explanation, "Soruyu çözdür", conversation history, real "Sürekli dinle" (speech recognition), real AI answers (now a mock that knows a few lesson answers and says "bulamadım" otherwise)
-- [ ] Upload extras: real camera and microphone capture (permission texts), the trial-limit sheet and fair-use sheet of the design (the lock dialog is used now); processing is a mock and always opens the sample lesson
+- [ ] Upload extras: real camera and microphone capture (permission texts), the trial-limit sheet and fair-use sheet of the design (the lock dialog is used now)
 - [ ] Step 4: StoreKit, trial limits on the server, 3rd-device screen (after login with `-kavis.devices full` only a toast is shown), share links, delete account
 - [ ] Real "Sign in with Apple" and Google sign-in; real email code (every account uses the demo code 481920 and "Kodu e-postadan yapıştır" fills it)
 - [ ] Profile photo picker (now a toast)

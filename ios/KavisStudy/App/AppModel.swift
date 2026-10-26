@@ -36,6 +36,8 @@ final class AppModel {
     /// Screens the student came from; `back()` returns to the last one.
     private var history: [Route] = []
     var user: User?
+    /// The course "Bu derse PDF ekle" chose for the upload screen (read once by it).
+    var uploadCourseId: String?
 
     init() {
         user = AuthAPI.currentUser()

@@ -16,6 +16,11 @@ final class TrialModel {
         self.status = status
     }
 
+    /// Reads the status from the server again (after login, on home, after an upload).
+    @MainActor func refresh() async {
+        if let s = await TrialAPI.getTrial() { status = s }
+    }
+
     /// The text key explaining why the action is locked, or nil when it is allowed.
     func lockReason(for action: TrialAction) -> String? {
         if status.premium { return nil }

@@ -1,9 +1,10 @@
 import AVFoundation
 import SwiftUI
 
-/// Design: design/NewReader.dc.html (phone reading page), with the lesson data and behaviour of the web reader.
-/// The teacher's text is shown exactly as it is. Hard words open an explanation; the text is read aloud with the
-/// phone's own voice; a sentence can be translated. Lesson data is a mock until the server exists.
+/// Design: design/NewReader.dc.html (phone reading page), with the lesson data and behaviour of the web reader
+/// (`web/src/pages/Reader.tsx`). The teacher's text is shown exactly as it is. Hard words open an explanation; the
+/// text is read aloud with the phone's own voice; a paragraph can be translated. Pages seen on screen are saved as
+/// read, and the lesson opens at the page where the student stopped.
 struct ReaderView: View {
     @Environment(AppPrefs.self) private var prefs
     @Environment(AppModel.self) private var app
@@ -12,8 +13,9 @@ struct ReaderView: View {
 
     let docID: String
 
-    @State private var doc: ReaderDoc?
-    @State private var sectionIndex = 1
+    @State private var lesson: Lesson?
+    @State private var loaded = false
+    @State private var sectionIndex = 0
     @State private var settings = SettingsAPI.loadNow()
     @State private var openTerm: String?
     @State private var translateText: String?
@@ -21,15 +23,15 @@ struct ReaderView: View {
     @State private var paused = false
     @State private var speaker = Speaker()
     @State private var noteMode = false
+    /// The top block on screen (its index in the section) and every page seen since the last save.
+    @State private var topBlock: Int?
+    @State private var seen: Set<Int> = []
+    @State private var atPage: Int?
 
     private static let fontSizes = [18, 20, 22, 24]
 
     init(docID: String) {
         self.docID = docID
-        // Test switches: `-kavis.readerTerm t2` opens a term, `-kavis.readerSheet 1` opens the translation sheet.
-        _openTerm = State(initialValue: MockFlag.value("readerTerm"))
-        _translateText = State(initialValue: MockFlag.value("readerSheet") == "1"
-            ? "İlk basamak tedavide Diüretikler, ACE inhibitörleri, anjiyotensin reseptör blokerleri (ARB) ve kalsiyum kanal blokerleri kullanılır." : nil)
     }
 
     /// The reading theme: the student's choice, or light / dark mode until they choose.
@@ -38,7 +40,13 @@ struct ReaderView: View {
     }
 
     private var lang: Lang { prefs.lang }
-    private func t(_ key: String) -> String { prefs.t(key) }
+    private func t(_ key: String, _ vars: [String: String] = [:]) -> String { prefs.t(key, vars) }
+
+    private var doc: ReaderDoc? { lesson?.doc }
+    private var section: ReaderSection? {
+        guard let doc, !doc.sections.isEmpty else { return nil }
+        return doc.sections[min(sectionIndex, doc.sections.count - 1)]
+    }
 
     var body: some View {
         ZStack {
@@ -46,29 +54,41 @@ struct ReaderView: View {
             VStack(spacing: 0) {
                 topBar
                 themePicker
-                if let doc {
+                if let doc, let section {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 16) {
                             sectionHeader(doc)
-                            ForEach(doc.sections[sectionIndex].blocks) { block in
-                                card(block, doc: doc)
+                            LazyVStack(alignment: .leading, spacing: 16) {
+                                ForEach(Array(section.blocks.enumerated()), id: \.offset) { i, block in
+                                    card(block, doc: doc)
+                                        .id(i)
+                                        .onAppear { for p in block.pageFrom...max(block.pageFrom, block.pageTo) { seen.insert(p) } }
+                                }
                             }
+                            .scrollTargetLayout()
                             sectionEnd(doc)
                         }
                         .padding(.horizontal, 16).padding(.top, 12).padding(.bottom, 120)
                     }
+                    .scrollPosition(id: $topBlock, anchor: .top)
                     .scrollIndicators(.hidden)
+                } else if loaded {
+                    notReady
                 } else {
                     Spacer()
                 }
             }
-            toolbar.frame(maxHeight: .infinity, alignment: .bottom).padding(.bottom, 8)
-            if let doc, let id = openTerm { termPopover(id, doc: doc) }
-            if let text = translateText, let doc { translationSheet(text, doc: doc) }
+            if section != nil {
+                toolbar.frame(maxHeight: .infinity, alignment: .bottom).padding(.bottom, 8)
+            }
+            if let lesson, let id = openTerm, let term = lesson.terms[id] { termPopover(term) }
+            if let text = translateText, let lesson, let doc { translationSheet(text, lesson: lesson, doc: doc) }
         }
         .task {
-            doc = await ReaderAPI.getDoc(id: docID)
-            sectionIndex = min(sectionIndex, (doc?.sections.count ?? 1) - 1)
+            guard !loaded else { return }
+            lesson = await ReaderAPI.getLesson(id: docID)
+            loaded = true
+            restorePlace()
         }
         .task(id: paused) {
             // The study timer: counts every second while the student is reading.
@@ -77,21 +97,72 @@ struct ReaderView: View {
                 if !paused { seconds += 1 }
             }
         }
-        .onDisappear { speaker.stop() }
+        .task(id: "\(sectionIndex)-\(topBlock ?? -1)") { await savePlace() }
+        .onDisappear {
+            speaker.stop()
+            if let lesson, let course = lesson.courseId {
+                let s = seconds
+                Task { await ReaderAPI.saveStudyTime(courseId: course, materialId: lesson.id, seconds: s) }
+            }
+        }
         .animation(.easeOut(duration: 0.2), value: openTerm)
         .animation(.easeOut(duration: 0.2), value: translateText)
+    }
+
+    // MARK: Progress
+
+    /// Coming back to a lesson: open the section and page where the student stopped.
+    private func restorePlace() {
+        guard let lesson, let doc = lesson.doc, lesson.lastPage > 1 else { return }
+        let last = lesson.lastPage
+        guard let s = doc.sections.firstIndex(where: { $0.blocks.contains { last >= $0.pageFrom && last <= $0.pageTo } }) else { return }
+        sectionIndex = s
+        let b = doc.sections[s].blocks.firstIndex { last >= $0.pageFrom && last <= $0.pageTo } ?? 0
+        Task {
+            try? await Task.sleep(for: .milliseconds(150))
+            topBlock = b
+        }
+        toast.show(t("resumeAt", ["p": Format.num(last, lang)]))
+    }
+
+    /// A moment after scrolling stops: the pages seen are saved as read, and the page on screen as the place to
+    /// open next time.
+    private func savePlace() async {
+        try? await Task.sleep(for: .milliseconds(1500))
+        guard !Task.isCancelled, let lesson, let section, !seen.isEmpty else { return }
+        let at = section.blocks[min(topBlock ?? 0, section.blocks.count - 1)].pageFrom
+        atPage = at
+        if let r = await ReaderAPI.markRead(lesson, pages: seen, at: at) {
+            self.lesson?.pagesRead = r.pagesRead
+            self.lesson?.percent = r.percent
+            self.lesson?.lastPage = at
+        }
+    }
+
+    private var notReady: some View {
+        VStack(spacing: 14) {
+            Spacer()
+            Text(lesson?.title ?? "").font(KFont.ui(18, .semibold, lang: lang)).foregroundStyle(KRead.text)
+            Text(t("noReaderDoc")).font(KFont.ui(14, lang: lang)).foregroundStyle(KRead.text2).multilineTextAlignment(.center)
+            Button { app.back() } label: {
+                Text(prefs.t("signup.k1052")).font(KFont.ui(14, .semibold, lang: lang)).foregroundStyle(KPhone.ctaText)
+                    .padding(.horizontal, 22).frame(height: 44).background(KPhone.cta, in: Capsule())
+            }
+            Spacer()
+        }
+        .padding(.horizontal, 32)
     }
 
     // MARK: Top bar and theme
 
     private var fontSize: Int { Self.fontSizes.contains(settings.readerFontSize) ? settings.readerFontSize : 20 }
 
+    /// "FARMAKOLOJİ · SAYFA 12/48 · %25" like the web.
     private var pageLabel: String {
-        guard let doc, let block = doc.sections[sectionIndex].blocks.first else { return "" }
-        let label = t(block.page)
-        let number = label.split(whereSeparator: { !$0.isNumber }).first.flatMap { Int($0) } ?? doc.page
-        let percent = Int((Double(number) / Double(max(doc.pages, 1)) * 100).rounded())
-        return "\(label) / \(Format.num(doc.pages, lang)) · \(Format.percent(percent, lang))"
+        guard let lesson, lesson.doc != nil else { return "" }
+        let page = atPage ?? lesson.lastPage
+        let info = "\(t("pageOf", ["p": Format.num(page, lang), "n": Format.num(lesson.pageCount, lang)])) · \(Format.percent(lesson.percent, lang))"
+        return lesson.courseName.isEmpty ? info : "\(lesson.courseName.uppercased(with: lang.locale)) · \(info)"
     }
 
     private var topBar: some View {
@@ -100,9 +171,10 @@ struct ReaderView: View {
                 KIcon(name: .back, size: 19, width: 1.8, flipsInRTL: true)
             }
             VStack(spacing: 2) {
-                Text(doc?.title ?? "").font(KFont.reading(14, .semibold, lang: doc?.docLang ?? .tr)).foregroundStyle(KRead.text)
-                Text(pageLabel).font(KFont.mono(10, .regular)).tracking(lang.isRTL ? 0 : 0.5).foregroundStyle(KRead.text2)
+                Text(lesson?.title ?? "").font(KFont.reading(14, .semibold, lang: doc?.docLang ?? .tr)).foregroundStyle(KRead.text).lineLimit(1)
+                Text(pageLabel).font(KFont.mono(10, .regular)).tracking(lang.isRTL ? 0 : 0.5).foregroundStyle(KRead.text2).lineLimit(1)
             }
+            .padding(.horizontal, 12)
             .frame(maxWidth: .infinity, minHeight: 44)
             .background(KRead.chrome, in: Capsule())
             .overlay(Capsule().stroke(KRead.line, lineWidth: 1))
@@ -163,10 +235,17 @@ struct ReaderView: View {
 
     // MARK: Sections and page cards
 
+    private func goSection(_ i: Int) {
+        sectionIndex = i
+        openTerm = nil
+        speaker.stop()
+        topBlock = 0
+    }
+
     private func sectionHeader(_ doc: ReaderDoc) -> some View {
         Menu {
-            ForEach(Array(doc.sections.enumerated()), id: \.offset) { i, section in
-                Button(section.tab) { sectionIndex = i; openTerm = nil; speaker.stop() }
+            ForEach(Array(doc.sections.enumerated()), id: \.offset) { i, s in
+                Button("\(Format.num(i + 1, lang)) · \(s.title)") { goSection(i) }
             }
         } label: {
             HStack(spacing: 10) {
@@ -174,11 +253,11 @@ struct ReaderView: View {
                     .foregroundStyle(KRead.chipFg)
                     .frame(width: 36, height: 36)
                     .background(KRead.chip, in: Circle())
-                let parts = doc.sections[sectionIndex].tab.components(separatedBy: " · ")
                 HStack(spacing: 6) {
-                    Text("\(t("sectionWord").trimmingCharacters(in: .whitespaces)) \(parts.first ?? "")").font(KFont.ui(18, lang: lang)).foregroundStyle(KRead.text2)
+                    Text("\(t("sectionWord").trimmingCharacters(in: .whitespaces)) \(Format.num(sectionIndex + 1, lang))").font(KFont.ui(18, lang: lang)).foregroundStyle(KRead.text2)
                     Text("·").foregroundStyle(KRead.text2)
-                    Text(parts.dropFirst().joined(separator: " · ")).font(KFont.reading(20, .semibold, lang: doc.docLang)).foregroundStyle(KRead.text)
+                    Text(section?.title ?? "").font(KFont.reading(20, .semibold, lang: doc.docLang)).foregroundStyle(KRead.text)
+                        .lineLimit(2).multilineTextAlignment(.leading)
                         .environment(\.layoutDirection, doc.docLang.layoutDirection)
                 }
                 KIcon(name: .chevronDown, size: 14, width: 2).foregroundStyle(KRead.text2)
@@ -187,25 +266,32 @@ struct ReaderView: View {
         .accessibilityLabel(t("sections"))
     }
 
+    private func pageText(_ block: ReaderBlock) -> String {
+        block.pageTo > block.pageFrom
+            ? t("pagesLabel", ["a": Format.num(block.pageFrom, lang), "b": Format.num(block.pageTo, lang)])
+            : t("pageLabel", ["n": Format.num(block.pageFrom, lang)])
+    }
+
     private func card(_ block: ReaderBlock, doc: ReaderDoc) -> some View {
         let paper = KPaper.colors(paperChoice)
         let docLang = doc.docLang
+        let tag = block.tagLabel
         return VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 8) {
-                Text(t(block.page)).font(KFont.mono(11, .regular)).tracking(lang.isRTL ? 0 : 0.6).foregroundStyle(paper.muted)
-                Text(t(block.tag))
+                Text(pageText(block)).font(KFont.mono(11, .regular)).tracking(lang.isRTL ? 0 : 0.6).foregroundStyle(paper.muted)
+                Text(t(tag.key))
                     .font(KFont.ui(11, .semibold, lang: lang))
-                    .foregroundStyle(block.tagStyle == "red" ? KRead.tagRedFg : KRead.tagVioFg)
+                    .foregroundStyle(tag.red ? KRead.tagRedFg : KRead.tagVioFg)
                     .padding(.horizontal, 10).padding(.vertical, 4)
-                    .background(block.tagStyle == "red" ? KRead.tagRed : KRead.tagVio, in: Capsule())
+                    .background(tag.red ? KRead.tagRed : KRead.tagVio, in: Capsule())
                 Spacer()
-                Button { translateText = sentenceToTranslate(block, doc: doc) } label: {
+                Button { translateText = block.paragraphs.first?.plain } label: {
                     Text(t("translate")).font(KFont.ui(12, lang: lang)).foregroundStyle(paper.ink)
                         .padding(.horizontal, 14).frame(height: 30)
                         .overlay(Capsule().stroke(paper.line, lineWidth: 1))
                 }
             }
-            if let heading = block.heading {
+            if let heading = block.heading, !heading.isEmpty {
                 Text(heading).font(KFont.reading(CGFloat(fontSize) - 2, .semibold, lang: docLang)).foregroundStyle(paper.ink)
                     .environment(\.layoutDirection, docLang.layoutDirection)
             }
@@ -228,7 +314,11 @@ struct ReaderView: View {
             .environment(\.layoutDirection, docLang.layoutDirection)
             .frame(maxWidth: .infinity, alignment: .leading)
             .environment(\.openURL, OpenURLAction { url in
-                if url.scheme == "kavis-term", let id = url.host { openTerm = id; return .handled }
+                if url.scheme == "kavis-term", let key = url.host(percentEncoded: false) {
+                    openTerm = key
+                    if let id = lesson?.terms[key]?.id { ReaderAPI.tapTerm(id) }
+                    return .handled
+                }
                 return .systemAction
             })
     }
@@ -244,11 +334,14 @@ struct ReaderView: View {
                 switch segment {
                 case .text(let s):
                     out += AttributedString(s)
-                case .term(let id, let word):
+                case .term(let key, let word):
                     var a = AttributedString(word)
-                    a.link = URL(string: "kavis-term://\(id)")
-                    a.underlineStyle = Text.LineStyle(pattern: .dot, color: KRead.term)
-                    if openTerm == id { a.backgroundColor = KRead.termBg }
+                    // Only words the server explained open a card.
+                    if lesson?.terms[key] != nil, let url = termURL(key) {
+                        a.link = url
+                        a.underlineStyle = Text.LineStyle(pattern: .dot, color: KRead.term)
+                        if openTerm == key { a.backgroundColor = KRead.termBg }
+                    }
                     out += a
                 }
             }
@@ -256,23 +349,25 @@ struct ReaderView: View {
         }
     }
 
-    /// The card's sentence to translate: the lesson's sample sentence when this card has it, else the first paragraph.
-    private func sentenceToTranslate(_ block: ReaderBlock, doc: ReaderDoc) -> String {
-        if let sample = block.paragraphs.first(where: { $0.plain == doc.sampleSentence }) { return sample.plain }
-        return block.paragraphs.first?.plain ?? ""
+    private func termURL(_ key: String) -> URL? {
+        var c = URLComponents()
+        c.scheme = "kavis-term"
+        c.host = key
+        return c.url
     }
 
     private func sectionEnd(_ doc: ReaderDoc) -> some View {
-        let last = sectionIndex == doc.sections.count - 1
+        let last = sectionIndex >= doc.sections.count - 1
         return VStack(alignment: .leading, spacing: 10) {
-            Text(t(doc.sections[sectionIndex].end)).font(KFont.ui(14, .medium, lang: lang)).foregroundStyle(KRead.text)
+            Text(last ? t("s4end") : t("secEnd", ["n": Format.num(sectionIndex + 1, lang)])).font(KFont.ui(14, .medium, lang: lang)).foregroundStyle(KRead.text)
             HStack(spacing: 8) {
+                // The section check quiz comes with the quiz screens (step 4 of the app plan).
                 Button { toast.show(prefs.t("k165")) } label: {
                     Text(t("start")).font(KFont.ui(13, .semibold, lang: lang)).foregroundStyle(KPhone.ctaText)
                         .padding(.horizontal, 18).frame(height: 40).background(KPhone.cta, in: Capsule())
                 }
                 if !last {
-                    Button { sectionIndex += 1; speaker.stop() } label: {
+                    Button { goSection(sectionIndex + 1) } label: {
                         Text(t("nextSection")).font(KFont.ui(13, .medium, lang: lang)).foregroundStyle(KRead.text)
                             .padding(.horizontal, 18).frame(height: 40)
                             .overlay(Capsule().stroke(KRead.line, lineWidth: 1))
@@ -334,9 +429,9 @@ struct ReaderView: View {
 
     /// Reads the open section aloud with the phone's voice, in the language of the PDF.
     private func readAloud() {
-        guard let doc else { return }
+        guard let doc, let section else { return }
         if speaker.speaking { speaker.stop(); return }
-        let text = doc.sections[sectionIndex].blocks.flatMap { block in
+        let text = section.blocks.flatMap { block in
             [block.heading].compactMap { $0 } + block.paragraphs.map(\.plain)
         }.joined(separator: " ")
         speaker.speak(text, language: doc.language)
@@ -345,26 +440,29 @@ struct ReaderView: View {
 
     // MARK: Term explanation
 
-    private func termPopover(_ id: String, doc: ReaderDoc) -> some View {
-        let name = t("\(id)name")
-        let en = doc.terms[id]?.en ?? ""
+    private func termPopover(_ term: ReaderTerm) -> some View {
+        let ex = term.explanation[lang.rawValue] ?? term.explanation["en"] ?? term.explanation.values.first
+        let name = ex?.name ?? term.surface
+        let english = term.explanation["en"]?.name
         return ZStack {
             Color.black.opacity(0.001).ignoresSafeArea().onTapGesture { openTerm = nil }
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
                     Text(name).font(KFont.ui(18, .semibold, lang: lang))
                     Spacer()
-                    Text(t("\(id)kind").uppercased()).font(KFont.mono(10, .regular)).tracking(lang.isRTL ? 0 : 0.8)
-                        .padding(.horizontal, 8).padding(.vertical, 3)
-                        .background(KRead.popChip, in: RoundedRectangle(cornerRadius: 6))
+                    if let kind = ex?.kind, !kind.isEmpty {
+                        Text(kind.uppercased(with: lang.locale)).font(KFont.mono(10, .regular)).tracking(lang.isRTL ? 0 : 0.8)
+                            .padding(.horizontal, 8).padding(.vertical, 3)
+                            .background(KRead.popChip, in: RoundedRectangle(cornerRadius: 6))
+                    }
                 }
-                Text(t("\(id)def")).font(KFont.ui(14, lang: lang)).kLineHeight(1.5, size: 14, lang: lang)
+                Text(ex?.text ?? "").font(KFont.ui(14, lang: lang)).kLineHeight(1.5, size: 14, lang: lang)
                 FlowLayout(spacing: 8, rowSpacing: 8) {
-                    popButton(t("listen"), icon: .play) { speaker.speak(t("\(id)def"), language: lang.rawValue) }
-                    popButton(t("addToCards")) { toast.show("\(name)\(t("addedToCards"))") }
+                    popButton(t("listen"), icon: .play) { speaker.speak("\(name). \(ex?.text ?? "")", language: lang.rawValue) }
+                    popButton(t("addToCards")) { Task { await addCard(term, name: name) } }
                     popButton(t("translate"), primary: true) {
                         openTerm = nil
-                        toast.show("\(name) → \(en)")
+                        if let english, lang != .en { toast.show("\(name) → \(english)") } else { translateText = term.surface }
                     }
                 }
             }
@@ -382,6 +480,14 @@ struct ReaderView: View {
         .transition(.opacity)
     }
 
+    private func addCard(_ term: ReaderTerm, name: String) async {
+        switch await ReaderAPI.addTermCard(term.id) {
+        case .added: toast.show("\(name)\(t("addedToCards"))")
+        case .already: toast.show("\(name)\(t("cardAlready"))")
+        case .failed: toast.show(t("cardFailed"))
+        }
+    }
+
     private func popButton(_ title: String, icon: KIconName? = nil, primary: Bool = false, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack(spacing: 6) {
@@ -396,41 +502,46 @@ struct ReaderView: View {
 
     // MARK: Translation
 
-    private func translationSheet(_ text: String, doc: ReaderDoc) -> some View {
-        TranslationSheet(sentence: text, doc: doc, style: settings.translationStyle, onClose: { translateText = nil })
+    private func translationSheet(_ text: String, lesson: Lesson, doc: ReaderDoc) -> some View {
+        TranslationSheet(sentence: text, materialId: lesson.id, docLang: doc.docLang, style: settings.translationStyle, onClose: { translateText = nil })
             .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 }
 
 // MARK: - Translation sheet
 
-/// Source sentence of the lecturer and its translation (language chips, literal / natural wording).
+/// Source text of the lecturer and its translation (language chips, literal / natural wording). A saved translation
+/// comes at once; a new one is made by the server's AI (Edge Function translate) and kept.
 private struct TranslationSheet: View {
     @Environment(AppPrefs.self) private var prefs
 
     let sentence: String
-    let doc: ReaderDoc
-    let style: TranslationStyle
+    let materialId: String
+    let docLang: Lang
     var onClose: () -> Void
 
-    @State private var target = "en"
+    @State private var target: Lang
     @State private var natural: Bool
+    /// The translation of the chosen language and style (key "lang|style"), never the previous one's text.
+    @State private var done: (key: String, text: Result<String, ReaderAPI.TranslateFailure>)?
 
-    init(sentence: String, doc: ReaderDoc, style: TranslationStyle, onClose: @escaping () -> Void) {
+    /// Every app language except the PDF's own.
+    private var targets: [Lang] { Lang.allCases.filter { $0 != docLang } }
+
+    init(sentence: String, materialId: String, docLang: Lang, style: TranslationStyle, onClose: @escaping () -> Void) {
         self.sentence = sentence
-        self.doc = doc
-        self.style = style
+        self.materialId = materialId
+        self.docLang = docLang
         self.onClose = onClose
+        _target = State(initialValue: docLang == .en ? .tr : .en)
         _natural = State(initialValue: style == .natural)
     }
 
     private var lang: Lang { prefs.lang }
     private func t(_ key: String) -> String { prefs.t(key) }
+    private var key: String { "\(target.rawValue)|\(natural)" }
 
     var body: some View {
-        let sample = doc.sampleTranslations[target]
-        // The mock server translates only the sample sentence of the lesson.
-        let translated = sentence == doc.sampleSentence ? (natural ? sample?.nat : sample?.lit) : nil
         ZStack(alignment: .bottom) {
             Color(hex: 0x140E0A, opacity: 0.45).ignoresSafeArea().onTapGesture(perform: onClose)
             VStack(alignment: .leading, spacing: 12) {
@@ -445,25 +556,32 @@ private struct TranslationSheet: View {
                     .accessibilityLabel(t("close"))
                 }
                 Text(t("sourceLabel")).font(KFont.mono(10, .regular)).tracking(lang.isRTL ? 0 : 0.8).foregroundStyle(KRead.text2)
-                Text(sentence).font(KFont.reading(17, lang: doc.docLang)).kLineHeight(1.5, size: 17, lang: doc.docLang)
-                    .foregroundStyle(KRead.text).environment(\.layoutDirection, doc.docLang.layoutDirection)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                ScrollView {
+                    Text(sentence).font(KFont.reading(17, lang: docLang)).kLineHeight(1.5, size: 17, lang: docLang)
+                        .foregroundStyle(KRead.text).environment(\.layoutDirection, docLang.layoutDirection)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .frame(maxHeight: 160)
                 HStack(spacing: 8) {
-                    ForEach(["en", "fa", "ar"], id: \.self) { code in
-                        chip(doc.sampleTranslations[code]?.l ?? code, on: target == code) { target = code }
-                    }
+                    ForEach(targets) { code in chip(code.name, on: target == code) { target = code } }
                 }
                 HStack(spacing: 8) {
                     chip(t("literal"), on: !natural) { natural = false }
                     chip(t("natural"), on: natural) { natural = true }
                 }
                 Group {
-                    if let translated, let sample {
-                        Text(translated).font(KFont.reading(17, lang: Lang(rawValue: target) ?? .en))
-                            .kLineHeight(1.5, size: 17, lang: Lang(rawValue: target) ?? .en)
-                            .environment(\.layoutDirection, sample.dir == "rtl" ? .rightToLeft : .leftToRight)
-                    } else {
-                        Text(prefs.t("k165")).font(KFont.ui(14, lang: lang)).foregroundStyle(KRead.text2)
+                    switch done?.key == key ? done?.text : nil {
+                    case .success(let text):
+                        ScrollView {
+                            Text(text).font(KFont.reading(17, lang: target)).kLineHeight(1.5, size: 17, lang: target)
+                                .environment(\.layoutDirection, target.layoutDirection)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        .frame(maxHeight: 200)
+                    case .failure(let f):
+                        Text(t(f == .locked ? "trLocked" : "trFailed")).font(KFont.ui(14, lang: lang)).foregroundStyle(KRead.text2)
+                    case nil:
+                        Text(t("translating")).font(KFont.ui(14, lang: lang)).foregroundStyle(KRead.text2)
                     }
                 }
                 .foregroundStyle(KRead.text)
@@ -478,13 +596,18 @@ private struct TranslationSheet: View {
             .accessibilityElement(children: .contain)
             .accessibilityAddTraits(.isModal)
         }
+        .task(id: key) {
+            let k = key
+            let r = await ReaderAPI.translate(materialId: materialId, text: sentence, to: target, style: natural ? .natural : .literal)
+            if k == key { done = (k, r) }
+        }
     }
 
     private func chip(_ title: String, on: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title).font(KFont.ui(13, on ? .semibold : .regular, lang: lang))
                 .foregroundStyle(on ? KPhone.ctaText : KRead.text)
-                .padding(.horizontal, 16).frame(height: 36)
+                .padding(.horizontal, 14).frame(height: 36)
                 .background(on ? KPhone.cta : .clear, in: Capsule())
                 .overlay(Capsule().stroke(on ? .clear : KRead.line, lineWidth: 1))
         }

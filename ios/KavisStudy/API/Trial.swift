@@ -23,20 +23,28 @@ struct TrialStatus: Equatable {
 }
 
 enum TrialAPI {
-    // Mock states to try the screens: launch with `-kavis.trial active | full | ended`.
+    // Mock states to try the screens: launch with `-kavis.trial active | full | ended` (Debug test switch).
     private static let mocks: [String: TrialStatus] = [
         "active": TrialStatus(premium: false, ended: false, daysLeft: 2, pdfsUsed: 1, questionsUsed: 23),
         "full": TrialStatus(premium: false, ended: false, daysLeft: 1, pdfsUsed: 2, questionsUsed: 60),
         "ended": TrialStatus(premium: false, ended: true, daysLeft: 0, pdfsUsed: 2, questionsUsed: 41),
     ]
 
+    /// Shown until the server answers: the last known status, or a fresh trial.
+    private(set) static var last = TrialStatus(premium: false, ended: false, daysLeft: TrialLimits.days, pdfsUsed: 0, questionsUsed: 0)
+
     static func statusNow() -> TrialStatus {
-        var s = mocks[MockFlag.value("trial") ?? "active"] ?? mocks["active"]!
-        s.premium = PremiumAPI.isPremium()
-        return s
+        if let flag = MockFlag.value("trial"), let mock = mocks[flag] { return mock }
+        return last
     }
 
-    static func getTrial() async -> TrialStatus {
-        await fakeRequest(statusNow(), ms: 0)
+    /// Premium and trial status from the server (RPC `access_status`, the same as the web); nil when offline.
+    static func getTrial() async -> TrialStatus? {
+        if let flag = MockFlag.value("trial"), let mock = mocks[flag] { return mock }
+        struct Row: Decodable { let premium: Bool; let trial_ended: Bool; let days_left: Int; let lessons_used: Int; let questions_used: Int }
+        guard supabase.auth.currentUser != nil,
+              let a: Row = try? await supabase.rpc("access_status").execute().value else { return nil }
+        last = TrialStatus(premium: a.premium, ended: a.trial_ended, daysLeft: a.days_left, pdfsUsed: a.lessons_used, questionsUsed: a.questions_used)
+        return last
     }
 }

@@ -273,13 +273,13 @@ struct CourseFolderView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            CourseHeader(title: d("Ders klasörü"), actionLabel: d("PDF ekle"), onBack: { app.back(fallback: .courses) }, onAction: { app.go(.upload(.pdf)) })
+            CourseHeader(title: d("Ders klasörü"), actionLabel: d("PDF ekle"), onBack: { app.back(fallback: .courses) }, onAction: addPdf)
             ScrollView {
                 if let course {
                     VStack(alignment: .leading, spacing: 14) {
                         summary(course)
                         if course.pdfs.isEmpty { empty } else { lessons(course) }
-                        Button { app.go(.upload(.pdf)) } label: {
+                        Button(action: addPdf) {
                             HStack(spacing: 8) {
                                 KIcon(name: .plus, size: 18, width: 2)
                                 Text(d("Bu derse PDF ekle")).font(KFont.ui(15, .medium, lang: lang))
@@ -303,6 +303,11 @@ struct CourseFolderView: View {
             course = CoursesAPI.lastCourses.first { $0.id == courseId }
             course = await CoursesAPI.getCourse(id: courseId)
         }
+    }
+
+    private func addPdf() {
+        app.uploadCourseId = courseId
+        app.go(.upload(.pdf))
     }
 
     private func summary(_ c: Course) -> some View {
@@ -343,8 +348,7 @@ struct CourseFolderView: View {
                 Text(d("Halka = okunan · çubuk = ayrılan süre")).font(KFont.ui(12, lang: lang)).foregroundStyle(KPhone.text2)
             }
             ForEach(c.pdfs) { pdf in
-                // Opening a lesson in the reader comes with the next step of the app plan (real reading pages).
-                Button { toast.show(prefs.t("k165")) } label: {
+                Button { app.go(.reader(pdf.id)) } label: {
                     HStack(spacing: 12) {
                         ZStack {
                             Circle().stroke(FolderPalette.track, lineWidth: 5)

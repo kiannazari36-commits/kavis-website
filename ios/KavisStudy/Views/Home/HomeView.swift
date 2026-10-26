@@ -65,7 +65,11 @@ struct HomeView: View {
         .animation(.easeOut(duration: 0.2), value: trial.lockedKey)
         .animation(.easeOut(duration: 0.2), value: later)
         .animation(.easeOut(duration: 0.2), value: reviewMenuOpen)
-        .task { courses = await CoursesAPI.listCourses() }
+        .task {
+            async let list = CoursesAPI.listCourses()
+            await trial.refresh()
+            courses = await list
+        }
     }
 
     // MARK: Top bar
