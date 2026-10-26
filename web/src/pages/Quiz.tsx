@@ -5,7 +5,7 @@ import { examLabel, num, pagesShort, percent } from '../i18n/format';
 import { useToast } from '../components/Toast';
 import Icon from '../components/Icon';
 import MolViewer from '../components/MolViewer';
-import { addWrongsToPlan, coursesWithPack, getExamPack, getSectionCheck, saveAttempt, setStudyReminder } from '../api/quiz';
+import { addWrongsToPlan, coursesWithPack, getExamPack, getSectionCheck, moreSectionQuestions, saveAttempt, setStudyReminder } from '../api/quiz';
 import { generateExamPack, type QuestionType } from '../api/samples';
 
 const QTYPES: QuestionType[] = ['case', 'side_effects', 'dose', 'knowledge', 'structure'];
@@ -88,7 +88,12 @@ export default function Quiz() {
   // From the reader: the questions of the section just read (its pages ?pf=…&pt=…).
   const pf = params.get('pf') ? Number(params.get('pf')) : undefined;
   const pt = params.get('pt') ? Number(params.get('pt')) : undefined;
-  const check = useAsync(() => (fromReader && pdfId ? getSectionCheck(pdfId, pf, pt) : Promise.resolve(null)), [fromReader, pdfId, pf, pt]);
+  const firstCheck = useAsync(() => (fromReader && pdfId ? getSectionCheck(pdfId, pf, pt) : Promise.resolve(null)), [fromReader, pdfId, pf, pt]);
+  // "Yeni 3 soru" in a section check: other questions of the same pages (new ones made by the server when needed).
+  const [nextCheck, setNextCheck] = useState<typeof firstCheck>(undefined);
+  const [seen, setSeen] = useState<string[]>([]);
+  const [gettingNew, setGettingNew] = useState(false);
+  const check = nextCheck ?? firstCheck;
   const cl: Lang = pack?.lang ?? 'tr';
   const cdir = dirOf(cl);
 
@@ -152,6 +157,36 @@ export default function Quiz() {
     setHints({});
     setFinds({});
     setList(lst);
+    setQi(0);
+    setRun(run + 1);
+    setTab('quiz');
+  };
+  /**
+   * "Yeni 3 soru" after a section check: unseen questions of the same pages first (free); when there are none left,
+   * the server writes new ones (AI, needs the trial or Premium), then they are played.
+   */
+  const newSectionQuestions = async () => {
+    if (!pdfId || gettingNew) return;
+    const had = [...seen, ...qs.map((q) => q.id)];
+    setGettingNew(true);
+    let next = await getSectionCheck(pdfId, pf, pt, had);
+    if (!next) {
+      const r = await moreSectionQuestions(pdfId, pf ?? 1, pt ?? pf ?? 1);
+      if (r !== 'ok') {
+        setGettingNew(false);
+        return toast(t(r === 'locked' ? 'trialLocked' : r === 'budget' ? 'askBudget' : 'askFailed'));
+      }
+      next = await getSectionCheck(pdfId, pf, pt, had);
+    }
+    setGettingNew(false);
+    if (!next) return toast(t('askFailed'));
+    setSeen(had);
+    setNextCheck(next);
+    setAnswers({});
+    setConf({});
+    setHints({});
+    setFinds({});
+    setList(null);
     setQi(0);
     setRun(run + 1);
     setTab('quiz');
@@ -450,10 +485,16 @@ export default function Quiz() {
               {t(fromReader ? 'continueNext' : 'continueLesson')}
               <Icon name="send" size={16} className="flip-rtl" />
             </button>
-            <button className={s.heroGhost} onClick={() => (wrongs.length ? startQuiz(wrongs) : guard('generate', () => startQuiz()))}>
-              {wrongs.length
-                ? t('retryA') + num(wrongs.length, lang) + t(wrongs.length === 1 ? 'retryB1' : 'retryB')
-                : t('newA') + num(qs.length, lang) + t('retryB')}
+            <button
+              className={s.heroGhost}
+              aria-busy={gettingNew}
+              onClick={() => (wrongs.length ? startQuiz(wrongs) : guard('generate', () => (fromReader ? newSectionQuestions() : startQuiz())))}
+            >
+              {gettingNew
+                ? t('packMaking')
+                : wrongs.length
+                  ? t('retryA') + num(wrongs.length, lang) + t(wrongs.length === 1 ? 'retryB1' : 'retryB')
+                  : t('newA') + num(fromReader ? 3 : qs.length, lang) + t('retryB')}
             </button>
             <button className={s.heroGhost} onClick={() => addWrongsToPlan(courseId, wrongs.length).then((ok) => toast(t(ok ? 'addedPlan' : 'planFailed')))}>
               {t('addPlan')}

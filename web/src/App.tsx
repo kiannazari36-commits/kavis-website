@@ -14,6 +14,7 @@ import CourseFolder from './pages/CourseFolder';
 import Reader from './pages/Reader';
 import Assistant from './pages/Assistant';
 import Quiz from './pages/Quiz';
+import Summary from './pages/Summary';
 import Cards from './pages/Cards';
 import Plan from './pages/Plan';
 import Progress from './pages/Progress';
@@ -51,6 +52,7 @@ export default function App() {
                     <Route path="/reader" element={<Reader />} />
                     <Route path="/assistant" element={<Assistant />} />
                     <Route path="/quiz" element={<Quiz />} />
+                    <Route path="/summary" element={<Summary />} />
                     <Route path="/cards" element={<Cards />} />
                     <Route path="/plan" element={<Plan />} />
                     <Route path="/progress" element={<Progress />} />

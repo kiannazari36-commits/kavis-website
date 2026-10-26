@@ -214,7 +214,18 @@
   "thinking": "Düşünüyor…",
   "aiNote": "Kavis bir yapay zekâdır ve hata yapabilir. Önemli bilgileri ders notundan kontrol et.",
   "pickStyle": "Hangi tarzda soru istersin?",
-  "styleMix": "Karışık"
+  "styleMix": "Karışık",
+  "lsWeak": "Zayıf olduğun konular",
+  "lsWords": "Dokunduğun kelimeler",
+  "lsRecap": "TEKRAR İÇİN KISA ÖZET · PDF'TEN",
+  "lsRead": "Sayfaları oku",
+  "lsSure": "Emin olduğun hata",
+  "lsWrongTag": "Yanlış cevap",
+  "lsNoWeak": "Henüz zayıf konun yok. Bölüm kontrollerini çözdükçe burada görünür.",
+  "lsNoWords": "Henüz kelimeye dokunmadın.",
+  "lsMaking": "Özet hazırlanıyor…",
+  "lsQuiz": "Bu dersin soruları",
+  "lsExam": "SINAV"
  },
  "en": {
   "heroA": "How can I",
@@ -431,7 +442,18 @@
   "thinking": "Thinking…",
   "aiNote": "Kavis is an AI and can make mistakes. Check important facts in your lecture notes.",
   "pickStyle": "Which kind of questions?",
-  "styleMix": "Mixed"
+  "styleMix": "Mixed",
+  "lsWeak": "Your weak topics",
+  "lsWords": "Words you tapped",
+  "lsRecap": "SHORT REVIEW SUMMARY · FROM PDF",
+  "lsRead": "Read the pages",
+  "lsSure": "Confident mistake",
+  "lsWrongTag": "Wrong answer",
+  "lsNoWeak": "No weak topics yet. They show up here as you solve section checks.",
+  "lsNoWords": "You haven't tapped any words yet.",
+  "lsMaking": "Preparing the summary…",
+  "lsQuiz": "This lesson's questions",
+  "lsExam": "EXAM"
  },
  "fa": {
   "heroA": "امروز چطور",
@@ -648,7 +670,18 @@
   "thinking": "در حال فکر کردن…",
   "aiNote": "Kavis یک هوش مصنوعی است و ممکن است اشتباه کند. اطلاعات مهم را در جزوه‌ات بررسی کن.",
   "pickStyle": "چه نوع سؤالی می‌خواهی؟",
-  "styleMix": "ترکیبی"
+  "styleMix": "ترکیبی",
+  "lsWeak": "مبحث‌هایی که ضعیفی",
+  "lsWords": "واژه‌هایی که لمس کردی",
+  "lsRecap": "خلاصهٔ کوتاه برای مرور · از PDF",
+  "lsRead": "خواندن صفحه‌ها",
+  "lsSure": "اشتباه با اطمینان",
+  "lsWrongTag": "پاسخ نادرست",
+  "lsNoWeak": "هنوز مبحث ضعیفی نداری. با حل آزمونک‌های بخش اینجا دیده می‌شود.",
+  "lsNoWords": "هنوز روی واژه‌ای نزده‌ای.",
+  "lsMaking": "خلاصه در حال آماده شدن…",
+  "lsQuiz": "سؤال‌های این درس",
+  "lsExam": "آزمون"
  },
  "ar": {
   "heroA": "كيف يمكنني اليوم",
@@ -865,6 +898,17 @@
   "thinking": "يفكّر…",
   "aiNote": "Kavis ذكاء اصطناعي وقد يخطئ. تحقّق من المعلومات المهمة في ملاحظات درسك.",
   "pickStyle": "أي نوع من الأسئلة تريد؟",
-  "styleMix": "متنوعة"
+  "styleMix": "متنوعة",
+  "lsWeak": "المواضيع التي تضعف فيها",
+  "lsWords": "الكلمات التي لمستها",
+  "lsRecap": "ملخص قصير للمراجعة · من الملف",
+  "lsRead": "اقرأ الصفحات",
+  "lsSure": "خطأ واثق",
+  "lsWrongTag": "إجابة خاطئة",
+  "lsNoWeak": "لا توجد مواضيع ضعيفة بعد. تظهر هنا كلما حللت اختبارات الأقسام.",
+  "lsNoWords": "لم تلمس أي كلمة بعد.",
+  "lsMaking": "جارٍ تجهيز الملخص…",
+  "lsQuiz": "أسئلة هذا الدرس",
+  "lsExam": "الاختبار"
  }
 }

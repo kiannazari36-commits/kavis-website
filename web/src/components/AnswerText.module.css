@@ -1,0 +1,38 @@
+/* A table in an assistant answer: scrolls sideways in narrow panels. */
+.scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  white-space: normal;
+}
+
+.table {
+  border-collapse: collapse;
+  min-width: 100%;
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+
+.table th,
+.table td {
+  padding: 8px 10px;
+  text-align: start;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line);
+  min-width: 110px;
+}
+
+.table th {
+  background: var(--sub);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.table tr:last-child td {
+  border-bottom: 0;
+}
+
+.table td:first-child {
+  font-weight: 600;
+}

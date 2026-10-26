@@ -79,15 +79,28 @@ export async function coursesWithPack(): Promise<string[]> {
  * The short check after a section in the reader: up to 3 of the lesson's questions from that section's pages.
  * (Example lessons without lesson questions have a ready-made section_check quiz.) null = no questions there.
  */
-export async function getSectionCheck(materialId: string, pageFrom?: number, pageTo?: number) {
+export async function getSectionCheck(materialId: string, pageFrom?: number, pageTo?: number, seen: string[] = []) {
   const lesson = await latestQuiz('lesson_end', { material: materialId });
   if (lesson) {
+    // "Yeni 3 soru": questions the student already had in this check are skipped.
     const questions = lesson.questions
       .filter((q) => pageFrom === undefined || (q.page !== null && q.page >= pageFrom && q.page <= (pageTo ?? pageFrom)))
+      .filter((q) => !seen.includes(q.id))
       .slice(0, 3);
     return questions.length ? { ...lesson, questions } : null;
   }
   return latestQuiz('section_check', { material: materialId });
+}
+
+/**
+ * "Yeni 3 soru" when the section has no unseen questions left: the server (Edge Function more-questions) writes new
+ * ones about the same pages, different from the ones already there, and keeps them with the lesson.
+ */
+export async function moreSectionQuestions(materialId: string, pageFrom: number, pageTo: number): Promise<'ok' | 'locked' | 'budget' | 'failed'> {
+  const { error } = await supabase.functions.invoke('more-questions', { body: { material_id: materialId, page_from: pageFrom, page_to: pageTo, count: 3 } });
+  if (!error) return 'ok';
+  const status = (error as { context?: { status?: number } }).context?.status;
+  return status === 403 ? 'locked' : status === 429 ? 'budget' : 'failed';
 }
 
 /**

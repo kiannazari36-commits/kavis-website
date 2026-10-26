@@ -10,6 +10,7 @@ import { addHighlight, getLesson, markRead, saveStudyTime, tapTerm, translate, t
 import { askAssistant, latestThread, type ChatMessage, type SourceMode } from '../api/assistant';
 import WebLinks from '../components/WebLinks';
 import ActNotes from '../components/ActNotes';
+import AnswerText from '../components/AnswerText';
 import Thinking from '../components/Thinking';
 import { useVoice, VOICE_FAIL, voicePlaceholder } from '../speech/useVoice';
 import MicButton from '../components/MicButton';
@@ -256,7 +257,14 @@ export default function Reader() {
   useEffect(() => {
     if (!lesson?.doc || restored.current) return;
     restored.current = true;
-    const last = lesson.lastPage;
+    // Back from the check of the last section ("Sonraki bölüme geç" with ?sec past the end): the lesson summary.
+    if (Number(params.get('sec')) >= lesson.doc.sections.length) {
+      navigate(`/summary?course=${courseId}&pdf=${pdfId}`, { replace: true });
+      return;
+    }
+    // ?page=N (from the lesson summary) opens that page; otherwise the page where the student stopped.
+    const asked = Number(params.get('page')) || 0;
+    const last = asked || lesson.lastPage;
     if (params.get('sec') || last <= 1) return;
     const i = lesson.doc.sections.findIndex((x) => x.blocks.some((b) => last >= b.pageFrom && last <= b.pageTo));
     if (i < 0) return;
@@ -265,7 +273,7 @@ export default function Reader() {
       const el = [...(scroller.current?.querySelectorAll<HTMLElement>('[data-from]') ?? [])].find((x) => last >= Number(x.dataset.from) && last <= Number(x.dataset.to));
       el?.scrollIntoView({ block: 'start' });
     }, 150);
-    toast(t('resumeAt').replace('{p}', num(last, lang)));
+    if (!asked) toast(t('resumeAt').replace('{p}', num(last, lang)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lesson]);
 
@@ -353,9 +361,9 @@ export default function Reader() {
     }, 80);
   };
   const nextSection = () => {
-    // After the last section: the course's exam summary ("Sınava özel özet").
+    // After the last section: this lesson's summary ("Ders özeti").
     if (sec >= doc.sections.length - 1) {
-      navigate(courseId ? `/quiz?course=${courseId}&tab=sum` : '/quiz?tab=sum');
+      navigate(`/summary?course=${courseId}&pdf=${pdfId}`);
       return;
     }
     goSection(sec + 1);
@@ -1072,7 +1080,7 @@ function AssistantPanel({ materialId, title, pages, asked, onClose }: PanelProps
             </div>
           ) : (
             <div key={m.id} className={s.ai}>
-              <span>{m.text}</span>
+              <AnswerText text={m.text} />
               {m.sources.some((x) => x.page !== null) && (
                 <span className={`mono ${s.src}`}>
                   {t('sourcePrefix')}{' '}
@@ -1090,7 +1098,7 @@ function AssistantPanel({ materialId, title, pages, asked, onClose }: PanelProps
         {waiting &&
           (live ? (
             <div className={s.ai} aria-live="polite">
-              {live}
+              <AnswerText text={live} />
             </div>
           ) : (
             <Thinking />

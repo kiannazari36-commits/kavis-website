@@ -20,6 +20,7 @@ import { useVoice, VOICE_FAIL, voicePlaceholder } from '../speech/useVoice';
 import MicButton from '../components/MicButton';
 import WebLinks from '../components/WebLinks';
 import ActNotes from '../components/ActNotes';
+import AnswerText from '../components/AnswerText';
 import Thinking from '../components/Thinking';
 import { useTrial } from '../trial/TrialProvider';
 import s from './Assistant.module.css';
@@ -395,7 +396,7 @@ function Chat({ topic, start, mode, onBack }: { topic: AssistantTopic; start: St
             ) : (
               <div key={m.id} className={s.answer}>
                 <span className={`mono ${s.answerTag}`}>{m.outsidePdf ? t('outsidePdf') : tag}</span>
-                <span>{m.text}</span>
+                <AnswerText text={m.text} />
                 {sourceLine(m) && (
                   <span className={`mono ${s.answerSrc}`}>
                     {t('sourcePrefix')} {sourceLine(m)}
@@ -409,7 +410,7 @@ function Chat({ topic, start, mode, onBack }: { topic: AssistantTopic; start: St
           {waiting && live && (
             <div className={s.answer} aria-live="polite">
               <span className={`mono ${s.answerTag}`}>{tag}</span>
-              <span>{live}</span>
+              <AnswerText text={live} />
             </div>
           )}
           {((waiting && !live) || thread === undefined) && <Thinking />}

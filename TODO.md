@@ -123,6 +123,15 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Turn on the App Store button when the iPhone app is live: put the link in `APP_STORE_URL` (`web/src/config.ts`). Until then every store button shows "Yakında" and cannot be clicked (landing, Premium page, share link page)
 - [ ] Same for Google Play (`PLAY_STORE_URL`) and the Mac App Store (`MAC_STORE_URL`) when those apps exist; then update the line under the store buttons (`storesSoon`)
 
+## Web fixes (26 Oct 2026, from Kian's checks)
+- [x] Assistant writes a real table when asked for a "cetvel" / table; the web shows it as a table (sideways scroll in the reader panel)
+- [x] "Yeni 3 soru" after a section check: unseen questions of the same pages first, else new ones from the server (Edge `more-questions`, AI, kept with the lesson)
+- [x] "Ders özeti" after the last section opens the lesson summary (`/summary`, design ScrReview "Bu ders"): weak topics (confident mistakes marked), tapped words, a short review summary from the PDF (Edge `lesson-summary`, made once and kept), cards / questions / pages
+- [x] Tried locally (test3): all three work; AI cost $0.0237
+- [ ] Live: deploy `assistant`, `more-questions`, `lesson-summary`, then push the web (needs Kian's OK)
+- [ ] iOS: show tables in the assistant, the new questions and the lesson summary too
+- Kian's own live account is Premium by hand (subscriptions row "manual.owner", no end date), 26 Oct 2026
+
 ## iOS app (`ios/`, SwiftUI + XcodeGen)
 Done and checked in the simulator (each screen follows its design file and has UI tests):
 - [x] Splash, welcome, sign up / log in / email code, home, profile (+ "Hesap bilgilerim" edit), onboarding (language, weekly plan, department, 3 intro cards), term course setup, upload (PDF / photos / audio / processing / OCR error / 100-page sheet), reader, assistant start + chat
