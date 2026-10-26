@@ -3,12 +3,12 @@ import { Navigate, NavLink, Outlet, useLocation, useNavigate } from 'react-route
 import { useI18n } from '../i18n/I18nProvider';
 import { useTheme } from '../theme/ThemeProvider';
 import { listCourses } from '../api/courses';
-import { currentUser, logOut } from '../api/auth';
+import { currentUser } from '../api/auth';
 import { cancelDeletion, clearProfile, DELETION_EVENT, deletionDate, getProfile } from '../api/account';
 import { needsOnboarding } from '../api/onboarding';
 import { resumeStuckLessons } from '../api/upload';
 import { useToast } from './Toast';
-import { checkThisDevice, signOutThisDevice } from '../api/devices';
+import { checkThisDevice } from '../api/devices';
 import { studyLine } from '../i18n/format';
 import { useAsync } from '../hooks/useAsync';
 import { usePanelPref } from '../hooks/usePanelPref';
@@ -147,16 +147,8 @@ export default function AppShell() {
           <TrialCard />
         </div>
         <div className={s.profile}>
-          <button
-            className={s.profileMain}
-            title={t('logout')}
-            onClick={async () => {
-              await signOutThisDevice();
-              await logOut();
-              clearProfile();
-              navigate('/');
-            }}
-          >
+          {/* The student's name opens Settings (account, devices, "Çıkış yap"); it never logs out by itself. */}
+          <button className={s.profileMain} title={t('k51')} onClick={() => navigate('/settings')}>
             <span className={s.avatar}>{initials}</span>
             <span className={`${s.profileText} ${s.label}`}>
               <b>{profile?.name || user.name || user.email}</b>

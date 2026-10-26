@@ -9,11 +9,11 @@ import Switch from '../components/Switch';
 import Icon from '../components/Icon';
 import ContentLangPicker from '../components/ContentLangPicker';
 import { useContentLang, useSettings } from '../settings/SettingsProvider';
-import { currentUser } from '../api/auth';
-import { deleteAccount, getProfile, requestMyData, saveProfile, type Profile } from '../api/account';
+import { currentUser, logOut } from '../api/auth';
+import { clearProfile, deleteAccount, getProfile, requestMyData, saveProfile, type Profile } from '../api/account';
 import { useTrial } from '../trial/TrialProvider';
 import DeviceList from '../components/DeviceList';
-import { listDevices, type Device } from '../api/devices';
+import { listDevices, signOutThisDevice, type Device } from '../api/devices';
 import { useAsync } from '../hooks/useAsync';
 import KeysDialog from '../components/KeysDialog';
 import s from './Settings.module.css';
@@ -380,6 +380,17 @@ export default function Settings() {
               }}
             >
               {t('k160')}
+            </button>
+            <button
+              className={s.ghost}
+              onClick={async () => {
+                await signOutThisDevice();
+                await logOut();
+                clearProfile();
+                navigate('/');
+              }}
+            >
+              {t('logout')}
             </button>
             <button className={s.danger} onClick={() => setDelOpen(true)}>
               {t('k161')}
