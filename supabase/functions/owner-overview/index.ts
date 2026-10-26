@@ -1,4 +1,4 @@
-// Edge Function admin-stats: the owner's page (/admin) — how many people signed up, who they are, trial / Premium,
+// Edge Function owner-overview (was admin-stats; renamed because ad blockers block "…-stats" addresses): the owner's page (/admin) — how many people signed up, who they are, trial / Premium,
 // lessons and AI cost. Only the app owner may call it: their user id is below (ADMIN_USER_IDS overrides it, e.g.
 // for the local test copy). Read only. E-mails are personal data (KVKK): only for running the app.
 // POST {} → { totals, users: [{ email, joined, lastLogin, confirmed, status, lessons, questions, cost }] }

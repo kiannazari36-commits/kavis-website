@@ -1,6 +1,6 @@
 import { supabase } from './supabase';
 
-// The owner's page (/admin): sign-ups, trial / Premium, lessons and AI cost (Edge Function admin-stats, which only
+// The owner's page (/admin): sign-ups, trial / Premium, lessons and AI cost (Edge Function owner-overview, which only
 // answers the owner's account). E-mails are personal data (KVKK): only for running the app.
 
 export type AdminUser = {
@@ -19,9 +19,17 @@ export type AdminStats = {
   users: AdminUser[];
 };
 
-/** null: this account is not the owner (or the server could not answer). */
-export async function getAdminStats(): Promise<AdminStats | null> {
-  const { data, error } = await supabase.functions.invoke('admin-stats', { body: {} });
-  if (error) return null;
+/**
+ * 'notAdmin': this account is not the owner. 'failed': the server could not be reached (e.g. a browser add-on
+ * blocked it) or answered with an error; the page says so instead of leaving.
+ */
+export async function getAdminStats(): Promise<AdminStats | 'notAdmin' | 'failed'> {
+  const { data, error } = await supabase.functions.invoke('owner-overview', { body: {} });
+  if (error) {
+    const status = (error as { context?: { status?: number } }).context?.status;
+    if (status === 403) return 'notAdmin';
+    console.error('owner-overview', error);
+    return 'failed';
+  }
   return data as AdminStats;
 }

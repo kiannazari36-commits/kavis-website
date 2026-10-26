@@ -17,7 +17,19 @@ export default function Admin() {
   const stats = useAsync(getAdminStats, [reload]);
 
   if (stats === undefined) return <main className={s.main} />;
-  if (stats === null) return <Navigate to="/home" replace />;
+  if (stats === 'notAdmin') return <Navigate to="/home" replace />;
+  if (stats === 'failed')
+    return (
+      <main className={s.main}>
+        <h1>{t('adm_title')}</h1>
+        <p className={s.lead}>{t('adm_failed')}</p>
+        <div>
+          <button className={s.ghost} onClick={() => setReload((n) => n + 1)}>
+            {t('adm_refresh')}
+          </button>
+        </div>
+      </main>
+    );
 
   const { totals, users } = stats;
   const q = query.trim().toLocaleLowerCase(lang);
