@@ -55,10 +55,11 @@ final class APITests: XCTestCase {
 
     func testEmailCodeMustHaveSixDigits() async throws {
         do {
-            _ = try await AuthAPI.verifyEmail(email: "a@b.c", name: "A", code: "123")
+            _ = try await AuthAPI.verifyEmail(email: "a@b.c", code: "123")
             XCTFail("a short code must fail")
         } catch {
-            XCTAssertTrue(error is AuthError)
+            // Checked before any network call.
+            XCTAssertEqual(error as? AuthFailure, .code)
         }
     }
 

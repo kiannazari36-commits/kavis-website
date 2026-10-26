@@ -111,7 +111,10 @@
   "home.plan2": "09:40 · Tekrar kartları",
   "home.plan2s": "12 kart · 15 dk",
   "home.plan3": "Ses kaydı · Farmakoterapi",
-  "home.plan3s": "Hocanın vurguladığı 3 konu"
+  "home.plan3s": "Hocanın vurguladığı 3 konu",
+  "signup.linkDone": "E-postadaki bağlantıya tıkladım",
+  "signup.linkHint": "E-postada kod yerine bir bağlantı varsa ona tıkla, sonra buraya dön.",
+  "signup.noClip": "Panoda 6 haneli bir kod yok."
  },
  "en": {
   "splash.k388": "Now you have Kavis by your side.",
@@ -225,7 +228,10 @@
   "home.plan2": "09:40 · Review cards",
   "home.plan2s": "12 cards · 15 min",
   "home.plan3": "Audio recording · Pharmacotherapy",
-  "home.plan3s": "3 topics the lecturer stressed"
+  "home.plan3s": "3 topics the lecturer stressed",
+  "signup.linkDone": "I clicked the link in the email",
+  "signup.linkHint": "If the email has a link instead of a code, tap it, then come back here.",
+  "signup.noClip": "There is no 6-digit code on the clipboard."
  },
  "fa": {
   "splash.k388": "حالا Kavis کنارت است.",
@@ -339,7 +345,10 @@
   "home.plan2": "09:40 · کارت‌های مرور",
   "home.plan2s": "12 کارت · 15 دقیقه",
   "home.plan3": "ضبط صدا · دارودرمانی",
-  "home.plan3s": "3 مبحثی که استاد تأکید کرد"
+  "home.plan3s": "3 مبحثی که استاد تأکید کرد",
+  "signup.linkDone": "روی لینک ایمیل زدم",
+  "signup.linkHint": "اگر در ایمیل به‌جای کد یک لینک هست، رویش بزن و بعد به اینجا برگرد.",
+  "signup.noClip": "کد ۶ رقمی در کلیپ‌بورد نیست."
  },
  "ar": {
   "splash.k388": "الآن Kavis بجانبك.",
@@ -453,6 +462,9 @@
   "home.plan2": "09:40 · بطاقات المراجعة",
   "home.plan2s": "12 بطاقة · 15 د",
   "home.plan3": "تسجيل صوتي · العلاج الدوائي",
-  "home.plan3s": "3 مواضيع ركّز عليها الأستاذ"
+  "home.plan3s": "3 مواضيع ركّز عليها الأستاذ",
+  "signup.linkDone": "ضغطت على الرابط في البريد",
+  "signup.linkHint": "إذا كان في البريد رابط بدل الرمز، اضغط عليه ثم عد إلى هنا.",
+  "signup.noClip": "لا يوجد رمز من 6 أرقام في الحافظة."
  }
 }

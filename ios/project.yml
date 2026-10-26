@@ -6,6 +6,14 @@ options:
   deploymentTarget:
     iOS: "17.0"
   createIntermediateGroups: true
+packages:
+  # The Supabase client (auth, database, storage, edge functions), the same backend as the web.
+  Supabase:
+    url: https://github.com/supabase/supabase-swift
+    from: 2.0.0
+configs:
+  Debug: debug
+  Release: release
 settings:
   base:
     SWIFT_VERSION: "5.0"
@@ -15,6 +23,13 @@ targets:
   KavisStudy:
     type: application
     platform: iOS
+    # Supabase address and publishable key (not in git, see Config/Secrets.example.xcconfig).
+    configFiles:
+      Debug: Config/Secrets.xcconfig
+      Release: Config/Secrets.xcconfig
+    dependencies:
+      - package: Supabase
+        product: Supabase
     sources:
       - path: KavisStudy
         excludes:
@@ -26,6 +41,13 @@ targets:
         CFBundleDevelopmentRegion: tr
         CFBundleLocalizations: [tr, en, fa, ar]
         UILaunchScreen: {}
+        SupabaseURL: $(SUPABASE_URL)
+        SupabaseKey: $(SUPABASE_PUBLISHABLE_KEY)
+        SupabaseLocalURL: $(SUPABASE_LOCAL_URL)
+        SupabaseLocalKey: $(SUPABASE_LOCAL_KEY)
+        # The local test copy (http://127.0.0.1) in the simulator; real servers stay https only.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         UIAppFonts:
           - Poppins-Regular.ttf

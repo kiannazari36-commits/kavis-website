@@ -27,7 +27,7 @@ enum Route: Equatable {
     case assistantChat(AssistantChatTarget)
 }
 
-/// Where the app is (screen) and who is signed in. Mock session until the server exists.
+/// Where the app is (screen) and who is signed in (the Supabase session, kept in the Keychain).
 @Observable
 final class AppModel {
     private(set) var route: Route
@@ -74,8 +74,20 @@ final class AppModel {
         route = next
     }
 
-    /// After the splash: signed-in students go straight home.
-    func finishSplash() { reset(to: user == nil ? .welcome : .home) }
+    /// After the splash: signed-in students go home (or to the first steps if not answered yet). A phone that
+    /// another device signed out logs out here too; the device list is refreshed ("last seen").
+    func finishSplash() {
+        guard user != nil else { return reset(to: .welcome) }
+        Task { @MainActor in
+            if await DevicesAPI.signedOutElsewhere() {
+                await AuthAPI.logOut()
+                user = nil
+                return reset(to: .welcome)
+            }
+            _ = await DevicesAPI.checkDeviceLimit()
+            reset(to: await AuthAPI.needsOnboarding() ? .onboarding : .home)
+        }
+    }
 
     /// A new account goes through the onboarding first; an existing one goes home.
     func signedIn(_ user: User, isNew: Bool) {
@@ -84,6 +96,7 @@ final class AppModel {
     }
 
     func signOut() async {
+        await DevicesAPI.signOutThisDevice()
         await AuthAPI.logOut()
         user = nil
         reset(to: .welcome)

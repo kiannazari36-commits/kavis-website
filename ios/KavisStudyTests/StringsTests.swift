@@ -2,8 +2,9 @@ import XCTest
 @testable import KavisStudy
 
 final class StringsTests: XCTestCase {
-    /// Sentence endings that only Turkish and Persian need; empty in English and Arabic on purpose (as in the web).
-    private let mayBeEmpty: Set<String> = ["attBelongs"]
+    /// Sentence parts that some languages do not need, empty there on purpose (as in the web): endings only Turkish
+    /// and Persian need, and the start of "<email> adresine … gönderdik" (Turkish puts the email first).
+    private let mayBeEmpty: Set<String> = ["attBelongs", "linkA", "resetA"]
 
     func testEveryLanguageHasTheSameKeysAndNoEmptyTexts() {
         for file in Strings.files {

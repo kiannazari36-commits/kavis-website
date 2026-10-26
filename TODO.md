@@ -128,6 +128,12 @@ Done and checked in the simulator (each screen follows its design file and has U
 - [x] Splash, welcome, sign up / log in / email code, home, profile (+ "Hesap bilgilerim" edit), onboarding (language, weekly plan, department, 3 intro cards), term course setup, upload (PDF / photos / audio / processing / OCR error / 100-page sheet), reader, assistant start + chat
 - [x] Texts of the phone designs come from `node ios/scripts/extract-design-texts.mjs` (corrected web translations win); web data from `node ios/scripts/sync-from-web.mjs`. Screens read design texts with `prefs.d("Turkish design text")`; a unit test checks that every such text exists in 4 languages
 
+Connected to Supabase (26 Oct 2026, step 1 of the app plan):
+- [x] `supabase-swift` (Swift Package via `project.yml`); URL + publishable key in `ios/Config/Secrets.xcconfig` (not in git; template `Secrets.example.xcconfig`). Launch argument / default `-kavis.server local` (Debug only) uses the local copy (`supabase start`) with fake accounts
+- [x] Real sign up / log in / log out with the same accounts as the web; session kept in the Keychain; the code screen accepts the 6-digit code or "I clicked the link" (signs in with the typed password); "Şifremi unuttum" emails a reset link to the web page; errors as on the web (`err*` texts)
+- [x] Device limit on the server: `register_device` after login and at start (install id per install), a phone signed out from another device logs out, log out frees the slot. The 3rd-device screen is still a toast
+- [x] After login: accounts that have not finished the first steps (`profiles.onboarding_done`) go to the onboarding
+
 Still to build (screens):
 - [ ] **Settings** (language, appearance, study plan, notifications, offline, privacy, devices). Language and theme can only be changed in the onboarding (language) and by the phone's own dark mode until this exists
 - [ ] Course folder ("Derslerim") + course page, quiz, cards, study plan, progress, paywall (Apple in-app purchase, prices from the App Store), notifications, "Bugünün tekrarı" review flow, exam center, share sheet, placement test after upload

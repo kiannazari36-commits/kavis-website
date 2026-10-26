@@ -17,7 +17,8 @@ struct AuthView: View {
     @State private var showPassword = false
     @State private var consent = false
     @State private var busy = false
-    @State private var pending = (email: "", name: "")
+    /// The account waiting for its email confirmation (the password signs in after a confirmation link).
+    @State private var pending = (email: "", name: "", password: "")
     @FocusState private var focus: Field?
 
     var onBack: () -> Void
@@ -28,7 +29,7 @@ struct AuthView: View {
         // Test switch: `-kavis.route verify` opens the code screen directly.
         if MockFlag.value("route") == "verify" {
             _mode = State(initialValue: .verify)
-            _pending = State(initialValue: ("elif@ogrenci.edu.tr", "Elif Yıldız"))
+            _pending = State(initialValue: ("elif@ogrenci.edu.tr", "Elif Yıldız", ""))
         }
     }
 
@@ -40,7 +41,7 @@ struct AuthView: View {
         VStack(spacing: 0) {
             header
             if mode == .verify {
-                VerifyView(email: pending.email, name: pending.name, busy: $busy, onSignedIn: { await finish($0, isNew: true) })
+                VerifyView(email: pending.email, password: pending.password, busy: $busy, onSignedIn: { await finish($0) })
             } else {
                 form
                 footer
@@ -141,7 +142,7 @@ struct AuthView: View {
                     }
                     if signup, !password.isEmpty { strength }
                     if !signup {
-                        Button { toast.show(t("k165")) } label: {
+                        Button { Task { await forgot() } } label: {
                             Text(t("signup.k2625")).font(KFont.ui(13, .medium, lang: lang)).foregroundStyle(KPhone.brand)
                         }
                         .frame(maxWidth: .infinity, alignment: .trailing)
@@ -311,30 +312,54 @@ struct AuthView: View {
             return
         }
         busy = true
-        if signup {
-            let r = await AuthAPI.signUp(name: name, email: email, password: password)
-            pending = (r.pendingEmail, r.name)
+        do {
+            if signup {
+                // Signed in at once when the server needs no email confirmation; otherwise the code screen.
+                if let user = try await AuthAPI.signUp(name: name, email: email, password: password, lang: lang) {
+                    await finish(user)
+                } else {
+                    pending = (email.trimmingCharacters(in: .whitespaces), name, password)
+                    busy = false
+                    mode = .verify
+                }
+            } else {
+                await finish(try await AuthAPI.logIn(email: email, password: password))
+            }
+        } catch {
             busy = false
-            mode = .verify
-        } else {
-            await finish(await AuthAPI.logIn(email: email, password: password), isNew: false)
+            toast.show(t((error as? AuthFailure ?? .other).textKey))
         }
     }
 
     private func social(_ provider: AuthProvider) async {
         guard !busy else { return }
-        busy = true
-        await finish(await AuthAPI.socialLogIn(provider), isNew: signup)
+        do {
+            await finish(try await AuthAPI.socialLogIn(provider))
+        } catch {
+            toast.show(t((error as? AuthFailure ?? .other).textKey))
+        }
     }
 
-    /// After a login: an account that is already on 2 devices must sign one out first (screen comes in step 4).
-    /// A new account goes on to the onboarding, an existing one goes home.
-    private func finish(_ user: User, isNew: Bool) async {
+    /// "Şifremi unuttum": a reset link by email; the new password is set on the web page it opens.
+    private func forgot() async {
+        let address = email.trimmingCharacters(in: .whitespaces)
+        guard !address.isEmpty else { return toast.show(t("forgotText")) }
+        if await AuthAPI.sendPasswordReset(email: address) {
+            toast.show("\(address) \(t("resetB"))")
+        } else {
+            toast.show(t("errOther"))
+        }
+    }
+
+    /// After a login: an account that is already on 2 devices must sign one out first (screen comes later).
+    /// An account that has not answered the first steps goes to the onboarding, the others go home.
+    private func finish(_ user: User) async {
         if await DevicesAPI.checkDeviceLimit() != nil {
             busy = false
             toast.show(t("devFullTitle"))
             return
         }
+        let isNew = await AuthAPI.needsOnboarding()
         busy = false
         app.signedIn(user, isNew: isNew)
     }
@@ -347,16 +372,13 @@ private struct VerifyView: View {
     @Environment(ToastCenter.self) private var toast
 
     let email: String
-    let name: String
+    let password: String
     @Binding var busy: Bool
     var onSignedIn: (User) async -> Void
 
     @State private var code = ""
     @State private var left = 42
     @FocusState private var focused: Bool
-
-    /// Mock server: this is the code of every account (the web does the same).
-    private let demoCode = "481920"
 
     private var lang: Lang { prefs.lang }
     private func t(_ key: String) -> String { prefs.t(key) }
@@ -384,8 +406,22 @@ private struct VerifyView: View {
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                 codeBoxes.padding(.top, 10)
-                Button { code = demoCode } label: {
+                // "Kodu e-postadan yapıştır": the 6 digits from the clipboard.
+                Button {
+                    let digits = String((UIPasteboard.general.string ?? "").filter(\.isNumber).prefix(6))
+                    if digits.count == 6 { code = digits } else { toast.show(t("signup.noClip")) }
+                } label: {
                     Text(t("signup.k1356")).font(KFont.ui(13, .medium, lang: lang)).foregroundStyle(KPhone.brand)
+                }
+                // The email may hold a confirmation link instead of a code: after tapping it, sign in here.
+                if !password.isEmpty {
+                    Button { Task { await linkDone() } } label: {
+                        Text(t("signup.linkDone")).font(KFont.ui(13, .medium, lang: lang)).foregroundStyle(KPhone.brand)
+                    }
+                    Text(t("signup.linkHint"))
+                        .font(KFont.ui(12, lang: lang))
+                        .foregroundStyle(KPhone.text3)
+                        .multilineTextAlignment(.center)
                 }
                 Button {
                     guard left == 0 else { return }
@@ -468,10 +504,21 @@ private struct VerifyView: View {
         }
         busy = true
         do {
-            await onSignedIn(try await AuthAPI.verifyEmail(email: email, name: name, code: code))
+            await onSignedIn(try await AuthAPI.verifyEmail(email: email, code: code))
         } catch {
             busy = false
-            toast.show(t("signup.needCode"))
+            toast.show(t((error as? AuthFailure ?? .code).textKey))
+        }
+    }
+
+    /// The address was confirmed with the link in the email: sign in with the password typed before.
+    private func linkDone() async {
+        busy = true
+        do {
+            await onSignedIn(try await AuthAPI.logIn(email: email, password: password))
+        } catch {
+            busy = false
+            toast.show(t((error as? AuthFailure ?? .other).textKey))
         }
     }
 }
