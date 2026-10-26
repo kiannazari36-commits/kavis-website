@@ -44,7 +44,7 @@ struct HomeView: View {
                 }
                 .scrollIndicators(.hidden)
             }
-            FloatingTabBar(onCourses: { app.go(.courses) }, onProgress: soon, onSettings: soon)
+            FloatingTabBar(onCourses: { app.go(.courses) }, onProgress: { app.go(.progress) }, onSettings: soon)
                 .frame(maxHeight: .infinity, alignment: .bottom)
                 .padding(.bottom, 8)
             if !planOpen {
@@ -53,7 +53,7 @@ struct HomeView: View {
                     .padding(.top, KLayout.top(296, minimum: 120))
             }
             if planOpen {
-                PlanPanel(tasks: todayTasks, onClose: { withAnimation(.easeOut(duration: 0.25)) { planOpen = false } }, onItem: openTask, onWeek: soon)
+                PlanPanel(tasks: todayTasks, onClose: { withAnimation(.easeOut(duration: 0.25)) { planOpen = false } }, onItem: openTask, onWeek: { planOpen = false; app.go(.weekPlan) })
             }
             if let key = trial.lockedKey {
                 TrialLockedDialog(
@@ -208,15 +208,10 @@ struct HomeView: View {
         if reviewMenuOpen && later == nil && todayReview != nil { reviewMenu }
     }
 
-    /// A plan task opens where it is done: the lesson, its quiz, or the cards.
+    /// A plan task opens where it is done (the lesson, its exam or the cards) and counts as done.
     private func openTask(_ task: PlanTask) {
         planOpen = false
-        switch task.target {
-        case "reader" where task.materialId != nil: app.go(.reader(task.materialId!))
-        case "cards", "review": app.go(.cards(task.courseId))
-        case "quiz", "exam_prep" where task.materialId != nil: app.go(.quiz(QuizTarget(materialId: task.materialId!, kind: .final)))
-        default: if let c = task.courseId { app.go(.course(c)) } else { app.go(.courses) }
-        }
+        app.go(task.route)
         if task.status != "done" { Task { await PlanAPI.setDone(task.id, true) } }
     }
 

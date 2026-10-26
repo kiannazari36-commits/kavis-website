@@ -25,27 +25,21 @@ struct VerticalText: View {
 /// The floating bar at the bottom: My Courses (current), Progress, Settings.
 struct FloatingTabBar: View {
     @Environment(AppPrefs.self) private var prefs
+    enum Tab { case courses, progress }
+    /// The tab shown as the wide pill with its name (the screen the student is on).
+    var active: Tab = .courses
     var onCourses: () -> Void
     var onProgress: () -> Void
     var onSettings: () -> Void
 
     var body: some View {
-        let lang = prefs.lang
         HStack(spacing: 6) {
-            Button(action: onCourses) {
-                HStack(spacing: 8) {
-                    KIcon(name: .book, size: 22, width: 1.6)
-                        .frame(width: 40, height: 40)
-                        .background(KPhone.navActiveIcon, in: Circle())
-                    Text(prefs.t("home.k785")).font(KFont.ui(14, .medium, lang: lang))
-                }
-                .foregroundStyle(KPhone.ctaText)
-                .padding(.leading, 6).padding(.trailing, 18)
-                .frame(height: 52)
-                .background(KPhone.navActive, in: Capsule())
+            if active == .courses { pill(.book, prefs.t("home.k785"), action: onCourses) } else {
+                navButton(.book, label: prefs.t("home.k785"), action: onCourses)
             }
-            .accessibilityAddTraits(.isSelected)
-            navButton(.chart, label: prefs.t("home.navProgress"), action: onProgress)
+            if active == .progress { pill(.chart, prefs.d("İlerleme"), action: onProgress) } else {
+                navButton(.chart, label: prefs.t("home.navProgress"), action: onProgress)
+            }
             navButton(.sliders, label: prefs.t("home.navSettings"), action: onSettings)
         }
         .padding(6)
@@ -53,6 +47,22 @@ struct FloatingTabBar: View {
         .shadow(color: Color(hex: 0x2A2420, opacity: 0.18), radius: 15, y: 10)
         .accessibilityElement(children: .contain)
         .accessibilityLabel(prefs.t("home.k361"))
+    }
+
+    private func pill(_ icon: KIconName, _ title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                KIcon(name: icon, size: 22, width: 1.6)
+                    .frame(width: 40, height: 40)
+                    .background(KPhone.navActiveIcon, in: Circle())
+                Text(title).font(KFont.ui(14, .medium, lang: prefs.lang))
+            }
+            .foregroundStyle(KPhone.ctaText)
+            .padding(.leading, 6).padding(.trailing, 18)
+            .frame(height: 52)
+            .background(KPhone.navActive, in: Capsule())
+        }
+        .accessibilityAddTraits(.isSelected)
     }
 
     private func navButton(_ icon: KIconName, label: String, action: @escaping () -> Void) -> some View {
