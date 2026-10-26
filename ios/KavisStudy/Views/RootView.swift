@@ -26,6 +26,8 @@ struct RootView: View {
                 HomeView()
             case .profile:
                 ProfileView()
+            case .settings:
+                SettingsView()
             case .courses:
                 CoursesListView()
             case .course(let id):

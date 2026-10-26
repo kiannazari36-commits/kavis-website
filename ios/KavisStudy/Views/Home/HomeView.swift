@@ -44,7 +44,7 @@ struct HomeView: View {
                 }
                 .scrollIndicators(.hidden)
             }
-            FloatingTabBar(onCourses: { app.go(.courses) }, onProgress: { app.go(.progress) }, onSettings: soon)
+            FloatingTabBar(onCourses: { app.go(.courses) }, onProgress: { app.go(.progress) }, onSettings: { app.go(.settings) })
                 .frame(maxHeight: .infinity, alignment: .bottom)
                 .padding(.bottom, 8)
             if !planOpen {

@@ -31,7 +31,7 @@ struct ProgressView: View {
                 .scrollIndicators(.hidden)
                 .refreshable { data = await ProgressAPI.load() }
             }
-            FloatingTabBar(active: .progress, onCourses: { app.go(.courses) }, onProgress: {}, onSettings: { toast.show(prefs.t("k165")) })
+            FloatingTabBar(active: .progress, onCourses: { app.go(.courses) }, onProgress: {}, onSettings: { app.go(.settings) })
                 .frame(maxHeight: .infinity, alignment: .bottom)
                 .padding(.bottom, 8)
         }

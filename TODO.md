@@ -171,7 +171,9 @@ Step 4 of the app plan (26 Oct 2026): assistant, cards, quiz, plan (progress scr
 - [x] Weekly plan (design `ScrPlan.dc.html`, week): the server's plan per day (done / today / planned / rest), course names, tasks open where they are done, "Bugünün planını başlat", "Planı yeniden oluştur" (build-plan, free); opened from "Haftalık plan ›" in today's plan
 - [x] Progress (design `ScrProgress.dc.html`, tab bar "İlerleme"): study time this week vs the weekly goal with the day chart, level (grade-quiz), 6 numbers (last / best score, pages read, days studied, cards due, streak), this month's calendar (studied days, exams, today), most tapped words, mistakes made while "sure", best hours (when there are 2+ exams in a window); empty state. Checked locally with test3
 - [ ] Progress parts of the design not built: course switch, previous / next month, "4 weeks average", time per PDF, "next review" and "exam week" on the calendar, exam countdown card ("Genel özet" / "Sınav merkezi"), "Planı değiştir" (needs Settings)
-- [ ] Still to build: exam center ("Sınav merkezi"), "Genel özet" tab of the review screen, written questions of the quiz design, Settings screen
+- [ ] Still to build: exam center ("Sınav merkezi"), "Genel özet" tab of the review screen, written questions of the quiz design
+- [x] Settings (design `ScrSettings.dc.html`; tab bar "Ayarlar", profile "Ayarlar" row, `-kavis.route settings`): study plan (days, hours, this week vs goal), app language (saved to `profiles.app_lang`), translation style, content language (PDF / app / a language), department, reading voice and speed, review reminder, cheer notifications, notification time, appearance light / dark / system (`user_settings.app_theme`), offline mode and auto-download, My devices (sign out a device with `sign_out_device`), "Hesap bilgilerimi iste" (Edge export-data, share sheet), "Hesabı sil" (password again, Edge delete-account, deleted after 30 days), log out. All saved to `user_settings`. Checked locally with test3
+- [ ] Settings parts still a toast: account card → paywall, school timetable, FAQ, "Cihazdaki dersleri yönet"; "Cihazdaki dersler" shows the account's PDF count (no offline copy on the phone yet); reading voice / speed are saved but nothing reads aloud yet; no local notifications are scheduled yet for the reminder time; the account's theme / language are saved but not applied when signing in on a new phone
 - [x] Design texts of the study screens (cards, quiz, plan, progress, exam prep) added to `i18n-design.json` (`extract-design-texts.mjs` reads them now; older texts kept as they were)
 - Note: after the Mac restarts, `supabase start` may leave the Edge Functions container stopped (quiz grading then fails with 503); `supabase stop` + `supabase start` fixes it
 - [ ] Photos and lecture recordings are still not sent to the server from the phone ("Dersi hazırla" shows a toast)
@@ -179,12 +181,11 @@ Step 4 of the app plan (26 Oct 2026): assistant, cards, quiz, plan (progress scr
 - [ ] The UI tests (`KavisStudyUITests/FlowTests.swift`) were written for the mock data (demo code 481920, sample lesson) and need rewriting for the server
 
 Still to build (screens):
-- [ ] **Settings** (language, appearance, study plan, notifications, offline, privacy, devices). Language and theme can only be changed in the onboarding (language) and by the phone's own dark mode until this exists
 - [ ] Quiz, cards, study plan, progress, paywall (Apple in-app purchase, prices from the App Store), notifications, "Bugünün tekrarı" review flow, exam center, share sheet, placement test after upload
 - [ ] Reader extras: molecule viewer, audio per page, notes with Apple Pencil, section check quiz ("Başla")
 - [ ] Assistant extras: "Ben anlatayım" (teach-back), voice mode, easy explanation, "Soruyu çözdür", conversation history, real "Sürekli dinle" (speech recognition), real AI answers (now a mock that knows a few lesson answers and says "bulamadım" otherwise)
 - [ ] Upload extras: real camera and microphone capture (permission texts), the trial-limit sheet and fair-use sheet of the design (the lock dialog is used now)
-- [ ] Step 4: StoreKit, trial limits on the server, 3rd-device screen (after login with `-kavis.devices full` only a toast is shown), share links, delete account
+- [ ] Step 4: StoreKit, trial limits on the server, 3rd-device screen (after login with `-kavis.devices full` only a toast is shown), share links, cancelling a requested account deletion (the web has it)
 - [ ] Real "Sign in with Apple" and Google sign-in; real email code (every account uses the demo code 481920 and "Kodu e-postadan yapıştır" fills it)
 - [ ] Profile photo picker (now a toast)
 

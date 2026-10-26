@@ -11,7 +11,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const SCREENS = { splash: 'NewSplash', welcome: 'NewWelcome', signup: 'NewSignup', home: 'NewHome' };
 // Screens whose texts are looked up by their Turkish design text: `prefs.d("Hesap bilgilerim")` (see Strings.design).
 // The design script writes every text as _x('Turkish text'), so this table needs no hand-made keys.
-const DESIGN_FILES = ['NewProfile', 'ScrOnboarding', 'NewCourses', 'NewPlacement', 'ScrUpload', 'NewReader', 'NewAssistant', 'ScrAssistant', 'ScrCards', 'ScrQuiz', 'NewStudyPlan', 'NewProgress', 'ScrPlan', 'ScrProgress', 'NewExamPrep', 'ScrReview'];
+const DESIGN_FILES = ['NewProfile', 'ScrOnboarding', 'NewCourses', 'NewPlacement', 'ScrUpload', 'NewReader', 'NewAssistant', 'ScrAssistant', 'ScrCards', 'ScrQuiz', 'NewStudyPlan', 'NewProgress', 'ScrPlan', 'ScrProgress', 'NewExamPrep', 'ScrReview', 'ScrSettings'];
 
 // "<screen>.<name>": Turkish text exactly as written in the design script (_x('...')).
 const EXTRA = {

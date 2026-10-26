@@ -6754,5 +6754,389 @@
   "en": "• Dry cough → ACE inhibitor; alpha-1 blocker first dose → orthostatic hypotension",
   "fa": "• سرفه خشک ← مهارکننده ACE؛ دوز اول آلفا-1 بلاکر ← افت فشار وضعیتی",
   "ar": "• السعال الجاف ← مثبط ACE؛ الجرعة الأولى من حاصر ألفا-1 ← هبوط الضغط الانتصابي"
+ },
+ " sa hedef": {
+  "tr": " sa hedef",
+  "en": " h goal",
+  "fa": " ساعت هدف",
+  "ar": " س الهدف"
+ },
+ "4 PDF · 186 MB": {
+  "tr": "4 PDF · 186 MB",
+  "en": "4 PDFs · 186 MB",
+  "fa": "4 PDF · 186 MB",
+  "ar": "4 PDF · 186 MB"
+ },
+ "4 sa 10 dk / ": {
+  "tr": "4 sa 10 dk / ",
+  "en": "4 h 10 min / ",
+  "fa": "4 ساعت 10 دقیقه / ",
+  "ar": "4 س 10 د / "
+ },
+ "Aynı anlam o dilde doğal konuşulduğu gibi anlatılır; daha kolay anlaşılır.": {
+  "tr": "Aynı anlam o dilde doğal konuşulduğu gibi anlatılır; daha kolay anlaşılır.",
+  "en": "The same meaning, told the way it's naturally said in that language; easier to understand.",
+  "fa": "همان معنا، همان‌طور که در آن زبان طبیعی گفته می‌شود، بیان می‌شود؛ راحت‌تر فهمیده می‌شود.",
+  "ar": "يُقدَّم المعنى نفسه كما يُقال طبيعيًا في تلك اللغة؛ فيكون أسهل فهمًا."
+ },
+ "Açtığın PDF'ler cihazına kaydedilecek": {
+  "tr": "Açtığın PDF'ler cihazına kaydedilecek",
+  "en": "PDFs you open will be saved to your device",
+  "fa": "PDFهایی که باز می‌کنی روی دستگاهت ذخیره می‌شوند",
+  "ar": "ستُحفظ ملفات PDF التي تفتحها على جهازك"
+ },
+ "Açtığın her PDF cihazına kaydedilir": {
+  "tr": "Açtığın her PDF cihazına kaydedilir",
+  "en": "Every PDF you open is saved to your device",
+  "fa": "هر PDF که باز کنی روی دستگاهت ذخیره می‌شود",
+  "ar": "يُحفظ كل ملف PDF تفتحه على جهازك"
+ },
+ "Bildirim saati": {
+  "tr": "Bildirim saati",
+  "en": "Notification time",
+  "fa": "ساعت اعلان",
+  "ar": "وقت الإشعار"
+ },
+ "Bir dersinde ortalaman %10'dan fazla artınca": {
+  "tr": "Bir dersinde ortalaman %10'dan fazla artınca",
+  "en": "When your average in a course rises by more than 10%",
+  "fa": "وقتی میانگینت در یک درس بیش از 10% بالا برود",
+  "ar": "عندما يرتفع معدلك في مادة بأكثر من 10%"
+ },
+ "Bir sorun mu gördün? Bize yaz, çözelim": {
+  "tr": "Bir sorun mu gördün? Bize yaz, çözelim",
+  "en": "Spotted a problem? Write to us, we'll fix it",
+  "fa": "مشکلی دیدی؟ برایمان بنویس، حلش می‌کنیم",
+  "ar": "لاحظت مشكلة؟ راسلنا وسنحلها"
+ },
+ "Cihazdaki dersler": {
+  "tr": "Cihazdaki dersler",
+  "en": "Courses on device",
+  "fa": "درس‌های روی دستگاه",
+  "ar": "المواد على الجهاز"
+ },
+ "Cihazdaki dersleri yönet": {
+  "tr": "Cihazdaki dersleri yönet",
+  "en": "Manage courses on device",
+  "fa": "مدیریت درس‌های روی دستگاه",
+  "ar": "إدارة المواد على الجهاز"
+ },
+ "Ders programı açılır": {
+  "tr": "Ders programı açılır",
+  "en": "Opens class schedule",
+  "fa": "برنامه کلاس‌ها باز می‌شود",
+  "ar": "يفتح جدول المحاضرات"
+ },
+ "Ders programım": {
+  "tr": "Ders programım",
+  "en": "My class schedule",
+  "fa": "برنامه کلاس‌های من",
+  "ar": "جدول محاضراتي"
+ },
+ "Destek sohbeti açılır": {
+  "tr": "Destek sohbeti açılır",
+  "en": "Opens support chat",
+  "fa": "گفتگوی پشتیبانی باز می‌شود",
+  "ar": "يفتح محادثة الدعم"
+ },
+ "Destekle konuş": {
+  "tr": "Destekle konuş",
+  "en": "Talk to support",
+  "fa": "با پشتیبانی صحبت کن",
+  "ar": "تحدّث مع الدعم"
+ },
+ "Dil ve bölüm": {
+  "tr": "Dil ve bölüm",
+  "en": "Language and department",
+  "fa": "زبان و رشته",
+  "ar": "اللغة والقسم"
+ },
+ "Doğal anlatım": {
+  "tr": "Doğal anlatım",
+  "en": "Natural wording",
+  "fa": "بیان طبیعی",
+  "ar": "صياغة طبيعية"
+ },
+ "Düz çeviri": {
+  "tr": "Düz çeviri",
+  "en": "Literal translation",
+  "fa": "ترجمه تحت‌اللفظی",
+  "ar": "ترجمة حرفية"
+ },
+ "Erkek": {
+  "tr": "Erkek",
+  "en": "Male",
+  "fa": "مرد",
+  "ar": "ذكر"
+ },
+ "Görünüm": {
+  "tr": "Görünüm",
+  "en": "Appearance",
+  "fa": "ظاهر",
+  "ar": "المظهر"
+ },
+ "Günde ortalama": {
+  "tr": "Günde ortalama",
+  "en": "Daily average",
+  "fa": "میانگین روزانه",
+  "ar": "المتوسط اليومي"
+ },
+ "Haftada kaç gün": {
+  "tr": "Haftada kaç gün",
+  "en": "Days per week",
+  "fa": "چند روز در هفته",
+  "ar": "كم يومًا في الأسبوع"
+ },
+ "Haftalık çalışma raporu": {
+  "tr": "Haftalık çalışma raporu",
+  "en": "Weekly study report",
+  "fa": "گزارش مطالعه هفتگی",
+  "ar": "تقرير الدراسة الأسبوعي"
+ },
+ "Hesabı sil": {
+  "tr": "Hesabı sil",
+  "en": "Delete account",
+  "fa": "حذف حساب",
+  "ar": "حذف الحساب"
+ },
+ "Hesabı silmek için e-postana onay bağlantısı gönderdik": {
+  "tr": "Hesabı silmek için e-postana onay bağlantısı gönderdik",
+  "en": "We sent a confirmation link to your email",
+  "fa": "لینک تأیید حذف حساب به ایمیلت فرستاده شد",
+  "ar": "أرسلنا رابط تأكيد الحذف إلى بريدك"
+ },
+ "Hesabım": {
+  "tr": "Hesabım",
+  "en": "My account",
+  "fa": "حساب من",
+  "ar": "حسابي"
+ },
+ "Hesap ve gizlilik": {
+  "tr": "Hesap ve gizlilik",
+  "en": "Account and privacy",
+  "fa": "حساب و حریم خصوصی",
+  "ar": "الحساب والخصوصية"
+ },
+ "Hipertansiyon, Tablet Formülasyonu ve 2 PDF daha cihazında · istediğini silebilirsin": {
+  "tr": "Hipertansiyon, Tablet Formülasyonu ve 2 PDF daha cihazında · istediğini silebilirsin",
+  "en": "Hypertension, Tablet Formulation and 2 more PDFs on your device · delete any you want",
+  "fa": "فشار خون بالا، فرمولاسیون قرص و 2 PDF دیگر روی دستگاهت · هرکدام را خواستی پاک کن",
+  "ar": "ارتفاع ضغط الدم، تركيب الأقراص و2 PDF أخرى على جهازك · احذف ما تشاء"
+ },
+ "Hocanın cümlesi kelimesi kelimesine çevrilir; terimleri aynen öğrenmek için.": {
+  "tr": "Hocanın cümlesi kelimesi kelimesine çevrilir; terimleri aynen öğrenmek için.",
+  "en": "The lecturer's sentence is translated word for word, to learn the terms exactly.",
+  "fa": "جمله استاد کلمه به کلمه ترجمه می‌شود؛ برای یادگیری دقیق اصطلاحات.",
+  "ar": "تُترجم جملة الأستاذ كلمة بكلمة؛ لتتعلم المصطلحات كما هي."
+ },
+ "Kadın": {
+  "tr": "Kadın",
+  "en": "Female",
+  "fa": "زن",
+  "ar": "أنثى"
+ },
+ "Hesap bilgilerin hazırlanıyor · e-postana gönderilecek": {
+  "tr": "Hesap bilgilerin hazırlanıyor · e-postana gönderilecek",
+  "en": "Preparing your data · it will be emailed to you",
+  "fa": "اطلاعات حسابت آماده می‌شود · به ایمیلت فرستاده می‌شود",
+  "ar": "جارٍ تجهيز بياناتك · ستُرسل إلى بريدك"
+ },
+ "Okul ders programı": {
+  "tr": "Okul ders programı",
+  "en": "School timetable",
+  "fa": "برنامهٔ کلاس‌ها",
+  "ar": "الجدول الدراسي"
+ },
+ "Okuma hızı": {
+  "tr": "Okuma hızı",
+  "en": "Reading speed",
+  "fa": "سرعت خواندن",
+  "ar": "سرعة القراءة"
+ },
+ "Okuyan ses": {
+  "tr": "Okuyan ses",
+  "en": "Reading voice",
+  "fa": "صدای خواننده",
+  "ar": "صوت القراءة"
+ },
+ "Otomatik indirme kapatıldı": {
+  "tr": "Otomatik indirme kapatıldı",
+  "en": "Auto-download turned off",
+  "fa": "دانلود خودکار خاموش شد",
+  "ar": "تم إيقاف التنزيل التلقائي"
+ },
+ "PDF'lerin yalnızca senin hesabında saklanır ve başka kimseyle paylaşılmaz. Asistan istersen sadece senin PDF'lerini, istersen yapay zekâ araştırmasını da kullanır.": {
+  "tr": "PDF'lerin yalnızca senin hesabında saklanır ve başka kimseyle paylaşılmaz. Asistan istersen sadece senin PDF'lerini, istersen yapay zekâ araştırmasını da kullanır.",
+  "en": "Your PDFs are stored only in your account and aren't shared with anyone. The assistant uses only your PDFs — or, if you choose, AI research too.",
+  "fa": "PDFهایت فقط در حساب خودت ذخیره می‌شوند و با کسی به اشتراک گذاشته نمی‌شوند. دستیار اگر بخواهی فقط از PDFهای خودت استفاده می‌کند و اگر بخواهی از جستجوی هوش مصنوعی هم.",
+  "ar": "ملفاتك تُحفظ في حسابك فقط ولا تُشارك مع أحد. يستخدم المساعد إن شئت ملفات PDF الخاصة بك فقط، وإن شئت يستعين أيضًا ببحث الذكاء الاصطناعي."
+ },
+ "PDF'lerin yalnızca uygulamanın içinde, şifreli saklanır. Telefonunun dosyalarında görünmez, başka uygulamalarla paylaşılamaz.": {
+  "tr": "PDF'lerin yalnızca uygulamanın içinde, şifreli saklanır. Telefonunun dosyalarında görünmez, başka uygulamalarla paylaşılamaz.",
+  "en": "Your PDFs are stored encrypted, only inside the app. They don't appear in your phone's files and can't be shared with other apps.",
+  "fa": "PDFهایت فقط داخل برنامه و به‌صورت رمزگذاری‌شده ذخیره می‌شوند. در فایل‌های گوشی‌ات دیده نمی‌شوند و با برنامه‌های دیگر قابل اشتراک نیستند.",
+  "ar": "ملفاتك تُحفظ مشفّرة داخل التطبيق فقط. لا تظهر في ملفات هاتفك ولا يمكن مشاركتها مع تطبيقات أخرى."
+ },
+ "Programını ekle · dersten bir gün önce hatırlatayım": {
+  "tr": "Programını ekle · dersten bir gün önce hatırlatayım",
+  "en": "Add your schedule · I'll remind you a day before class",
+  "fa": "برنامه‌ات را اضافه کن · یک روز قبل از کلاس یادآوری می‌کنم",
+  "ar": "أضف جدولك · سأذكّرك قبل المحاضرة بيوم"
+ },
+ "Ses": {
+  "tr": "Ses",
+  "en": "Voice",
+  "fa": "صدا",
+  "ar": "الصوت"
+ },
+ "Sık sorulanlar": {
+  "tr": "Sık sorulanlar",
+  "en": "FAQ",
+  "fa": "سؤالات متداول",
+  "ar": "الأسئلة الشائعة"
+ },
+ "Sık sorulanlar açılır": {
+  "tr": "Sık sorulanlar açılır",
+  "en": "FAQ opens",
+  "fa": "سؤالات متداول باز می‌شود",
+  "ar": "تُفتح الأسئلة الشائعة"
+ },
+ "Tebrik bildirimleri": {
+  "tr": "Tebrik bildirimleri",
+  "en": "Congratulation notifications",
+  "fa": "اعلان‌های تبریک",
+  "ar": "إشعارات التهنئة"
+ },
+ "Tebrik bildirimleri açık": {
+  "tr": "Tebrik bildirimleri açık",
+  "en": "Congratulation notifications on",
+  "fa": "اعلان‌های تبریک روشن است",
+  "ar": "إشعارات التهنئة مفعّلة"
+ },
+ "Tebrik bildirimleri kapatıldı": {
+  "tr": "Tebrik bildirimleri kapatıldı",
+  "en": "Congratulation notifications turned off",
+  "fa": "اعلان‌های تبریک خاموش شد",
+  "ar": "تم إيقاف إشعارات التهنئة"
+ },
+ "Tekrar günlerinde bildirim gönder": {
+  "tr": "Tekrar günlerinde bildirim gönder",
+  "en": "Send notifications on review days",
+  "fa": "در روزهای مرور اعلان بفرست",
+  "ar": "أرسل إشعارًا في أيام المراجعة"
+ },
+ "Tekrar hatırlatıcısı": {
+  "tr": "Tekrar hatırlatıcısı",
+  "en": "Review reminder",
+  "fa": "یادآور مرور",
+  "ar": "تذكير المراجعة"
+ },
+ "Uygulama dili": {
+  "tr": "Uygulama dili",
+  "en": "App language",
+  "fa": "زبان برنامه",
+  "ar": "لغة التطبيق"
+ },
+ "Hesap bilgilerimi iste": {
+  "tr": "Hesap bilgilerimi iste",
+  "en": "Request my data",
+  "fa": "درخواست اطلاعات حسابم",
+  "ar": "طلب بيانات حسابي"
+ },
+ "Yardım ve destek": {
+  "tr": "Yardım ve destek",
+  "en": "Help & support",
+  "fa": "راهنما و پشتیبانی",
+  "ar": "المساعدة والدعم"
+ },
+ "Çalışma planı": {
+  "tr": "Çalışma planı",
+  "en": "Study plan",
+  "fa": "برنامه مطالعه",
+  "ar": "خطة الدراسة"
+ },
+ "Çalıştığım PDF'leri indir": {
+  "tr": "Çalıştığım PDF'leri indir",
+  "en": "Download my studied PDFs",
+  "fa": "دانلود PDFهایی که خواندم",
+  "ar": "تنزيل ملفات PDF التي درستها"
+ },
+ "Çalıştığın PDF'ler cihazına kaydedilir, internet yokken de açılır.": {
+  "tr": "Çalıştığın PDF'ler cihazına kaydedilir, internet yokken de açılır.",
+  "en": "The PDFs you study are saved to your device and open without internet.",
+  "fa": "PDFهایی که می‌خوانی روی دستگاهت ذخیره می‌شوند و بدون اینترنت هم باز می‌شوند.",
+  "ar": "تُحفظ ملفات PDF التي تدرسها على جهازك وتفتح حتى دون إنترنت."
+ },
+ "Çeviri dilleri": {
+  "tr": "Çeviri dilleri",
+  "en": "Translation languages",
+  "fa": "زبان‌های ترجمه",
+  "ar": "لغات الترجمة"
+ },
+ "Çeviri tarzı": {
+  "tr": "Çeviri tarzı",
+  "en": "Translation style",
+  "fa": "سبک ترجمه",
+  "ar": "أسلوب الترجمة"
+ },
+ "Çevrimdışı kullanım": {
+  "tr": "Çevrimdışı kullanım",
+  "en": "Offline use",
+  "fa": "استفاده آفلاین",
+  "ar": "الاستخدام دون اتصال"
+ },
+ "Çevrimdışı mod": {
+  "tr": "Çevrimdışı mod",
+  "en": "Offline mode",
+  "fa": "حالت آفلاین",
+  "ar": "وضع عدم الاتصال"
+ },
+ "Çevrimdışı mod açık · kayıtlı derslerinle çalışabilirsin": {
+  "tr": "Çevrimdışı mod açık · kayıtlı derslerinle çalışabilirsin",
+  "en": "Offline mode on · you can study your saved courses",
+  "fa": "حالت آفلاین روشن است · می‌توانی با درس‌های ذخیره‌شده‌ات بخوانی",
+  "ar": "وضع عدم الاتصال مفعّل · يمكنك الدراسة بدروسك المحفوظة"
+ },
+ "Çevrimiçi moda dönüldü": {
+  "tr": "Çevrimiçi moda dönüldü",
+  "en": "Back to online mode",
+  "fa": "به حالت آنلاین برگشتی",
+  "ar": "تمت العودة إلى وضع الاتصال"
+ },
+ "ÜCRETSİZ": {
+  "tr": "ÜCRETSİZ",
+  "en": "FREE",
+  "fa": "رایگان",
+  "ar": "مجاني"
+ },
+ "İnternet olmadan kayıtlı derslerinle çalış": {
+  "tr": "İnternet olmadan kayıtlı derslerinle çalış",
+  "en": "Study your saved courses without internet",
+  "fa": "بدون اینترنت با درس‌های ذخیره‌شده‌ات بخوان",
+  "ar": "ادرس بدروسك المحفوظة دون إنترنت"
+ },
+ "İnternetsiz çalış": {
+  "tr": "İnternetsiz çalış",
+  "en": "Study offline",
+  "fa": "بدون اینترنت درس بخوان",
+  "ar": "ادرس دون إنترنت"
+ },
+ "Düğmelerin yerini sıfırla": {
+  "tr": "Düğmelerin yerini sıfırla",
+  "en": "Reset button positions",
+  "fa": "بازنشانی جای دکمه‌ها",
+  "ar": "إعادة مواضع الأزرار"
+ },
+ "Tam ekran PDF'teki kalem ve asistan düğmeleri eski yerine döner.": {
+  "tr": "Tam ekran PDF'teki kalem ve asistan düğmeleri eski yerine döner.",
+  "en": "The pen and assistant buttons in full-screen PDF go back to their original places.",
+  "fa": "دکمه‌های قلم و دستیار در PDF تمام‌صفحه به جای اولشان برمی‌گردند.",
+  "ar": "تعود أزرار القلم والمساعد في ملف PDF بملء الشاشة إلى أماكنها الأصلية."
+ },
+ "Düğmeler eski yerine döndü": {
+  "tr": "Düğmeler eski yerine döndü",
+  "en": "Buttons are back in their original places",
+  "fa": "دکمه‌ها به جای اولشان برگشتند",
+  "ar": "عادت الأزرار إلى أماكنها الأصلية"
  }
 }

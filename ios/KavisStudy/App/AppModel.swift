@@ -21,6 +21,7 @@ enum Route: Equatable {
     case courseSetup
     case home
     case profile
+    case settings
     case courses
     case course(String)
     /// Flash cards due now: all, or one course's.
@@ -52,7 +53,7 @@ final class AppModel {
 
     init() {
         user = AuthAPI.currentUser()
-        // Test switch: `-kavis.route welcome | login | signup | verify | onboarding | setup | home | profile | courses | upload | uploadPhoto | uploadAudio | reader | assistant | chat`
+        // Test switch: `-kavis.route welcome | login | signup | verify | onboarding | setup | home | profile | settings | courses | upload | uploadPhoto | uploadAudio | reader | assistant | chat`
         // jumps to a screen (removed before launch, see TODO.md).
         switch MockFlag.value("route") {
         case "welcome": route = .welcome
@@ -62,6 +63,7 @@ final class AppModel {
         case "setup": route = .courseSetup
         case "home": route = .home
         case "profile", "profileEdit": route = .profile
+        case "settings": route = .settings
         case "courses": route = .courses
         case "cards": route = .cards(nil)
         case "plan": route = .weekPlan

@@ -25,7 +25,7 @@ struct VerticalText: View {
 /// The floating bar at the bottom: My Courses (current), Progress, Settings.
 struct FloatingTabBar: View {
     @Environment(AppPrefs.self) private var prefs
-    enum Tab { case courses, progress }
+    enum Tab { case courses, progress, settings }
     /// The tab shown as the wide pill with its name (the screen the student is on).
     var active: Tab = .courses
     var onCourses: () -> Void
@@ -40,7 +40,9 @@ struct FloatingTabBar: View {
             if active == .progress { pill(.chart, prefs.d("İlerleme"), action: onProgress) } else {
                 navButton(.chart, label: prefs.t("home.navProgress"), action: onProgress)
             }
-            navButton(.sliders, label: prefs.t("home.navSettings"), action: onSettings)
+            if active == .settings { pill(.sliders, prefs.d("Ayarlar"), action: onSettings) } else {
+                navButton(.sliders, label: prefs.t("home.navSettings"), action: onSettings)
+            }
         }
         .padding(6)
         .background(KPhone.nav, in: Capsule())

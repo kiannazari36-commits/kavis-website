@@ -1,7 +1,7 @@
 import SwiftUI
 import Observation
 
-enum ThemeChoice: String, CaseIterable, Identifiable {
+enum ThemeChoice: String, Codable, CaseIterable, Identifiable {
     case system, light, dark
 
     var id: String { rawValue }

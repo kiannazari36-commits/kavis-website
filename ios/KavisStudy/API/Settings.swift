@@ -10,6 +10,7 @@ enum ContentLangChoice: String, Codable, CaseIterable {
 enum PlanMode: String, Codable { case aim, own, none }
 enum ReaderPaper: String, Codable { case light, sepia, dark }
 enum TranslationStyle: String, Codable { case literal, natural }
+enum TTSVoice: String, Codable { case female, male }
 
 struct Settings: Codable, Equatable {
     var contentLang: ContentLangChoice = .pdf
@@ -30,6 +31,13 @@ struct Settings: Codable, Equatable {
     var cheerNotifications = true
     var offlineMode = false
     var autoDownload = true
+    /// Light / dark / system (the phone's own choice is AppPrefs.theme; this is the account's copy).
+    var appTheme: ThemeChoice = .system
+    var reviewReminder = true
+    /// Study / review reminder time, "HH:mm".
+    var notifyTime = "09:00"
+    var ttsVoice: TTSVoice = .female
+    var ttsRate = 1.0
 
     init() {}
 
@@ -51,6 +59,11 @@ struct Settings: Codable, Equatable {
         cheerNotifications = try c.decodeIfPresent(Bool.self, forKey: .cheerNotifications) ?? cheerNotifications
         offlineMode = try c.decodeIfPresent(Bool.self, forKey: .offlineMode) ?? offlineMode
         autoDownload = try c.decodeIfPresent(Bool.self, forKey: .autoDownload) ?? autoDownload
+        appTheme = try c.decodeIfPresent(ThemeChoice.self, forKey: .appTheme) ?? appTheme
+        reviewReminder = try c.decodeIfPresent(Bool.self, forKey: .reviewReminder) ?? reviewReminder
+        notifyTime = try c.decodeIfPresent(String.self, forKey: .notifyTime) ?? notifyTime
+        ttsVoice = try c.decodeIfPresent(TTSVoice.self, forKey: .ttsVoice) ?? ttsVoice
+        ttsRate = try c.decodeIfPresent(Double.self, forKey: .ttsRate) ?? ttsRate
     }
 
     /// The language quiz questions, cards and summaries are written in for a course.
@@ -86,9 +99,14 @@ enum SettingsAPI {
         var cheer_notifications: Bool
         var offline_mode: Bool
         var auto_download: Bool
+        var app_theme: ThemeChoice
+        var review_reminder: Bool
+        var notify_time: String
+        var tts_voice: TTSVoice
+        var tts_rate: Double
     }
     private static let columns =
-        "content_lang, plan_mode, study_days, study_hours, reader_paper, reader_font_size, translation_style, push_notifications, sync, cheer_notifications, offline_mode, auto_download"
+        "content_lang, plan_mode, study_days, study_hours, reader_paper, reader_font_size, translation_style, push_notifications, sync, cheer_notifications, offline_mode, auto_download, app_theme, review_reminder, notify_time, tts_voice, tts_rate"
 
     /// The phone's copy (instant, may be old).
     static func loadNow() -> Settings {
@@ -121,6 +139,11 @@ enum SettingsAPI {
         s.cheerNotifications = r.cheer_notifications
         s.offlineMode = r.offline_mode
         s.autoDownload = r.auto_download
+        s.appTheme = r.app_theme
+        s.reviewReminder = r.review_reminder
+        s.notifyTime = String(r.notify_time.prefix(5)) // the server sends "09:00:00"
+        s.ttsVoice = r.tts_voice
+        s.ttsRate = r.tts_rate
         cache(s)
         return s
     }
@@ -132,7 +155,8 @@ enum SettingsAPI {
         let row = Row(content_lang: s.contentLang, plan_mode: s.planMode, study_days: s.studyDays, study_hours: s.studyHours,
                       reader_paper: s.readerPaper, reader_font_size: s.readerFontSize, translation_style: s.translationStyle,
                       push_notifications: s.pushNotifications, sync: s.sync, cheer_notifications: s.cheerNotifications,
-                      offline_mode: s.offlineMode, auto_download: s.autoDownload)
+                      offline_mode: s.offlineMode, auto_download: s.autoDownload, app_theme: s.appTheme,
+                      review_reminder: s.reviewReminder, notify_time: s.notifyTime, tts_voice: s.ttsVoice, tts_rate: s.ttsRate)
         _ = try? await supabase.from("user_settings").update(row).eq("user_id", value: id).execute()
         return s
     }

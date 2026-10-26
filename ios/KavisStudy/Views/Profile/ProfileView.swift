@@ -248,7 +248,7 @@ struct ProfileView: View {
             MenuRow(title: "İlerleme ve takvim", sub: "Haftalık süre, seviye, sınav haftası", icon: .chart, chip: grn.0, fg: grn.1, action: soon),
             MenuRow(title: "Soru örneklerim", sub: "35 soru · hocanın tarzı çıkarıldı", icon: .help, chip: vio.0, fg: vio.1, action: soon),
             MenuRow(title: "Bildirimler", sub: "Hatırlatma 09:00 · 1 saat önce", icon: .bellSmall, chip: gray.0, fg: gray.1, action: soon),
-            MenuRow(title: "Ayarlar", sub: "Çalışma planı, dil, tema", icon: .sliders, chip: gray.0, fg: gray.1, action: soon),
+            MenuRow(title: "Ayarlar", sub: "Çalışma planı, dil, tema", icon: .sliders, chip: gray.0, fg: gray.1, action: { app.go(.settings) }),
             MenuRow(title: "Yardım ve geri bildirim", sub: "Sık sorulanlar, bize yaz", icon: .chat, chip: gray.0, fg: gray.1, action: { toast.show(d("Yardım merkezi açılıyor")) }),
         ]
         return VStack(spacing: 0) {
