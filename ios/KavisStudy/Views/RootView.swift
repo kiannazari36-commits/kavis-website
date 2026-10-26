@@ -32,6 +32,8 @@ struct RootView: View {
                 CourseFolderView(courseId: id)
             case .cards(let course):
                 CardsView(courseId: course)
+            case .lessonCards(let id):
+                CardsView(materialId: id)
             case .quiz(let target):
                 QuizView(target: target)
             case .weekPlan:
@@ -42,6 +44,8 @@ struct RootView: View {
                 UploadView(kind: kind)
             case .reader(let id):
                 ReaderView(docID: id)
+            case .lessonSummary(let id):
+                LessonSummaryView(materialId: id)
             case .assistant:
                 AssistantHomeView()
             case .assistantChat(let target):

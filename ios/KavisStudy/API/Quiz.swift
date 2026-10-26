@@ -47,12 +47,45 @@ enum QuizAPI {
     }
 
     /// The short check after a section in the reader: up to 3 of the lesson's questions from that section's pages.
-    static func sectionCheck(materialId: String, pageFrom: Int, pageTo: Int) async -> Quiz? {
+    /// `seen`: questions the student already had in this check ("Yeni 3 soru" skips them). Questions on the
+    /// student's weak topics (what they asked to add, wrong answers) come first.
+    static func sectionCheck(materialId: String, pageFrom: Int, pageTo: Int, seen: [String] = []) async -> Quiz? {
         if let lesson = await latest(kind: "lesson_end", materialId: materialId) {
-            let qs = Array(lesson.questions.filter { q in q.page.map { $0 >= pageFrom && $0 <= pageTo } ?? false }.prefix(3))
+            let here = lesson.questions.filter { q in q.page.map { $0 >= pageFrom && $0 <= pageTo } ?? false }.filter { !seen.contains($0.id) }
+            let weak = await weakQuestionIds(materialId: materialId, ids: here.map(\.id))
+            let qs = Array((here.filter { weak.contains($0.id) } + here.filter { !weak.contains($0.id) }).prefix(3))
             return qs.isEmpty ? nil : Quiz(id: lesson.id, lang: lesson.lang, questions: qs)
         }
-        return await latest(kind: "section_check", materialId: materialId)
+        return seen.isEmpty ? await latest(kind: "section_check", materialId: materialId) : nil
+    }
+
+    /// Which of these questions are about one of the student's weak topics in this lesson.
+    static func weakQuestionIds(materialId: String, ids: [String]) async -> Set<String> {
+        guard !ids.isEmpty else { return [] }
+        struct Weak: Decodable { let topic_id: String }
+        struct Q: Decodable { let id: String; let topic_id: String? }
+        async let weakQ: [Weak] = supabase.from("topic_progress").select("topic_id, material_topics!inner(material_id)")
+            .eq("state", value: "weak").eq("material_topics.material_id", value: materialId).execute().value
+        async let qsQ: [Q] = supabase.from("quiz_questions").select("id, topic_id").in("id", values: ids).execute().value
+        let topics = Set(((try? await weakQ) ?? []).map(\.topic_id))
+        return Set(((try? await qsQ) ?? []).filter { $0.topic_id.map(topics.contains) ?? false }.map(\.id))
+    }
+
+    enum MoreResult { case ok, locked, budget, failed }
+
+    /// "Yeni 3 soru" when the section has no unseen questions left: the server (Edge Function more-questions) writes
+    /// new ones about the same pages (favouring the weak topics) and keeps them with the lesson. Costs a little AI.
+    static func moreSectionQuestions(materialId: String, pageFrom: Int, pageTo: Int) async -> MoreResult {
+        struct Body: Encodable { let material_id: String; let page_from, page_to, count: Int }
+        do {
+            try await supabase.functions.invoke("more-questions", options: FunctionInvokeOptions(
+                body: Body(material_id: materialId, page_from: pageFrom, page_to: pageTo, count: 3)))
+            return .ok
+        } catch FunctionsError.httpError(let code, _) {
+            return code == 403 ? .locked : code == 429 ? .budget : .failed
+        } catch {
+            return .failed
+        }
     }
 
     /// The end-of-lesson exam: all the lesson's questions.

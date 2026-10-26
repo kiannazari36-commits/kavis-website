@@ -14,4 +14,18 @@ final class AssistantTests: XCTestCase {
             for lang in Lang.allCases { XCTAssertNotEqual(Strings.text(key, lang), key, "\(key) has no text in \(lang)") }
         }
     }
+
+    /// A "cetvel" the assistant writes as a markdown table becomes a real table; the |---| line is dropped.
+    func testTablesInAnswers() {
+        let parts = AnswerPart.split("Cetvel:\n\n| Özellik | Birinci kuşak |\n|---|---|\n| Sedasyon | Yapar |\n\nOrtak nokta.")
+        XCTAssertEqual(parts, [.text("Cetvel:"), .table(head: ["Özellik", "Birinci kuşak"], rows: [["Sedasyon", "Yapar"]]), .text("Ortak nokta.")])
+        XCTAssertEqual(AnswerPart.split("| tek satır |"), [.text("| tek satır |")])
+        XCTAssertEqual(AnswerPart.split("Düz cevap."), [.text("Düz cevap.")])
+    }
+
+    func testLessonSummaryTextsExist() {
+        for key in ["lessonSummary", "lsNoWeak", "lsNoWords", "lsMaking", "lsQuiz", "lsExam", "lsWeakMark", "trialLocked", "packMaking", "newA", "retryB"] {
+            for lang in Lang.allCases { XCTAssertNotEqual(Strings.text(key, lang), key, "\(key) has no text in \(lang)") }
+        }
+    }
 }

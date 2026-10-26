@@ -131,7 +131,8 @@ Everything that is not finished yet. Updated after every step.
 - [x] Live (26 Oct 2026): `assistant` v7, `more-questions` v1, `lesson-summary` v1 deployed; web pushed
 - [x] Weak topics everywhere (27 Oct 2026): the assistant reads the student's weak topics (saved by 'bu konuda zayıfım' or wrong quiz answers) and can list them; new section questions favour them (and link their topic); section checks show weak-topic questions first; the lesson summary gives them more detail (marked) and is remade when the weak list changes. Tried locally (test3, $0.0269); live: `assistant` v8, `more-questions` v2, `lesson-summary` v2
 - [x] Exam prep: after "Yeni sorular üret" the new questions open unanswered (old answers no longer stick to them) and their answers are saved (27 Oct 2026)
-- [ ] iOS: show tables in the assistant, the new questions, the lesson summary and the weak-topic marks too
+- [x] iOS too (27 Oct 2026): assistant tables (sideways scroll), "Yeni 3 soru" after a section check (unseen questions first, else Edge `more-questions`), section checks show weak-topic questions first, lesson summary screen (design ScrReview "Bu ders": weak topics with "Emin olduğun hata" / "Yanlış cevap", tapped words, review summary with "Zayıf konun" marks, page links open the reader at that page, the lesson's questions, cards, pages) opened from the last section and after the end-of-lesson exam. Checked in the simulator with test3 (local, no AI cost: the saved summary and unseen questions were used)
+- [ ] iOS, not tried yet (costs a little AI, needs Kian's OK): new questions written by the server from the phone (after all questions of a section were seen), and a new lesson summary made from the phone
 - Kian's own live account is Premium by hand (subscriptions row "manual.owner", no end date), 26 Oct 2026
 
 ## iOS app (`ios/`, SwiftUI + XcodeGen)
@@ -170,7 +171,7 @@ Step 4 of the app plan (26 Oct 2026): assistant, cards, quiz, plan (progress scr
 - [x] Weekly plan (design `ScrPlan.dc.html`, week): the server's plan per day (done / today / planned / rest), course names, tasks open where they are done, "Bugünün planını başlat", "Planı yeniden oluştur" (build-plan, free); opened from "Haftalık plan ›" in today's plan
 - [x] Progress (design `ScrProgress.dc.html`, tab bar "İlerleme"): study time this week vs the weekly goal with the day chart, level (grade-quiz), 6 numbers (last / best score, pages read, days studied, cards due, streak), this month's calendar (studied days, exams, today), most tapped words, mistakes made while "sure", best hours (when there are 2+ exams in a window); empty state. Checked locally with test3
 - [ ] Progress parts of the design not built: course switch, previous / next month, "4 weeks average", time per PDF, "next review" and "exam week" on the calendar, exam countdown card ("Genel özet" / "Sınav merkezi"), "Planı değiştir" (needs Settings)
-- [ ] Still to build: exam center ("Sınav merkezi"), lesson summary ("Ders özeti"), written questions of the quiz design, Settings screen
+- [ ] Still to build: exam center ("Sınav merkezi"), "Genel özet" tab of the review screen, written questions of the quiz design, Settings screen
 - [x] Design texts of the study screens (cards, quiz, plan, progress, exam prep) added to `i18n-design.json` (`extract-design-texts.mjs` reads them now; older texts kept as they were)
 - Note: after the Mac restarts, `supabase start` may leave the Edge Functions container stopped (quiz grading then fails with 503); `supabase stop` + `supabase start` fixes it
 - [ ] Photos and lecture recordings are still not sent to the server from the phone ("Dersi hazırla" shows a toast)
@@ -195,7 +196,7 @@ Known differences from the designs (decided on purpose):
 Technical notes and decisions:
 - [ ] Texts I wrote myself (not from the design) need a native-speaker check: the Persian / Arabic "not found in your PDF" message, "Erkek sesi" labels, the 100-page sheet texts of the design were copied as they are
 - [ ] Minimum iOS version is 17. The exact line height of the design (`.lineHeight`) needs iOS 26; on iOS 17–25 lines are a little looser
-- [ ] Remove the mock test switches before the public launch: `-kavis.trial`, `-kavis.devices`, `-kavis.premium`, `-kavis.lang`, `-kavis.theme`, `-kavis.offline`, `-kavis.route` (welcome, login, signup, verify, onboarding, setup, home, profile, profileEdit, upload, uploadPhoto, uploadAudio, reader, assistant, chat), `-kavis.onboardingStep`, `-kavis.uploadMode`, `-kavis.readerTerm`, `-kavis.readerSheet`, `-kavis.assistantPanel`
+- [ ] Remove the mock test switches before the public launch: `-kavis.trial`, `-kavis.devices`, `-kavis.premium`, `-kavis.lang`, `-kavis.theme`, `-kavis.offline`, `-kavis.route` (welcome, login, signup, verify, onboarding, setup, home, profile, profileEdit, upload, uploadPhoto, uploadAudio, reader, assistant, chat, summary + `-kavis.material <lesson id>`), `-kavis.onboardingStep`, `-kavis.uploadMode`, `-kavis.readerTerm`, `-kavis.readerSheet`, `-kavis.assistantPanel`
 - [ ] Fonts do not scale with the system text size yet (fixed sizes like the design); decide on Dynamic Type later
 - [ ] Never read `UIApplication` / `safeAreaInsets` inside a SwiftUI body (it froze the home screen); use `KLayout.top`. Shapes are mirrored by SwiftUI in right-to-left layouts by default; `SVGShape` turns that off, only arrows opt in (`flipsInRTL`)
 - [ ] Set the Apple developer team and the final bundle id (now `study.kavis.app`) before TestFlight / App Store

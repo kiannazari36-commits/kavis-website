@@ -70,6 +70,7 @@ enum KIconName: String {
     case star = "M12 0 L14.6 9.4 L24 12 L14.6 14.6 L12 24 L9.4 14.6 L0 12 L9.4 9.4Z"
     case bulb = "M9 18h6 M10 21h4 M12 3a6 6 0 0 0-4 10.5c.8.8 1 1.5 1 2.5h6c0-1 .2-1.7 1-2.5A6 6 0 0 0 12 3z"
     case warning = "M12 4l9 16H3z M12 10v4 M12 17h.01"
+    case hand = "M9 11V5a1.5 1.5 0 0 1 3 0v5 M12 10V4a1.5 1.5 0 0 1 3 0v6 M15 10V6a1.5 1.5 0 0 1 3 0v7a7 7 0 0 1-7 7h-1a6 6 0 0 1-5-2.7L3 14a1.5 1.5 0 0 1 2.5-1.7L7 14V8a1.5 1.5 0 0 1 2 0"
 
     /// Drawn as a filled shape instead of a line.
     var isFilled: Bool { self == .play || self == .apple || self == .star }

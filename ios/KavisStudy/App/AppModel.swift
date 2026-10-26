@@ -25,11 +25,15 @@ enum Route: Equatable {
     case course(String)
     /// Flash cards due now: all, or one course's.
     case cards(String?)
+    /// Flash cards due now of one lesson (from the lesson summary).
+    case lessonCards(String)
     case quiz(QuizTarget)
     case weekPlan
     case progress
     case upload(UploadKind)
     case reader(String)
+    /// "Ders özeti" of one lesson (design ScrReview, tab "Bu ders").
+    case lessonSummary(String)
     case assistant
     case assistantChat(AssistantChatTarget)
 }
@@ -43,6 +47,8 @@ final class AppModel {
     var user: User?
     /// The course "Bu derse PDF ekle" chose for the upload screen (read once by it).
     var uploadCourseId: String?
+    /// The page the reader should open at (from the lesson summary; read once by the reader).
+    var readerPage: Int?
 
     init() {
         user = AuthAPI.currentUser()
@@ -64,6 +70,7 @@ final class AppModel {
         case "uploadPhoto": route = .upload(.photo)
         case "uploadAudio": route = .upload(.audio)
         case "reader": route = .reader("hypertension")
+        case "summary": route = .lessonSummary(MockFlag.value("material") ?? "")
         case "assistant": route = .assistant
         case "chat": route = .assistantChat(AssistantChatTarget(topicId: "hypertension"))
         default: route = .splash
@@ -73,6 +80,11 @@ final class AppModel {
     /// Opens a screen on top of the current one.
     func go(_ next: Route) {
         history.append(route)
+        route = next
+    }
+
+    /// Shows another screen in place of the current one (back still goes to the screen before).
+    func replace(_ next: Route) {
         route = next
     }
 

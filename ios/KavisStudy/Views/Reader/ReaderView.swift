@@ -112,9 +112,12 @@ struct ReaderView: View {
     // MARK: Progress
 
     /// Coming back to a lesson: open the section and page where the student stopped.
+    /// A page asked by the lesson summary ("Sayfaları oku", a weak topic's page) wins over the saved place.
     private func restorePlace() {
-        guard let lesson, let doc = lesson.doc, lesson.lastPage > 1 else { return }
-        let last = lesson.lastPage
+        let asked = app.readerPage
+        app.readerPage = nil
+        guard let lesson, let doc = lesson.doc, (asked ?? lesson.lastPage) > 1 else { return }
+        let last = asked ?? lesson.lastPage
         guard let s = doc.sections.firstIndex(where: { $0.blocks.contains { last >= $0.pageFrom && last <= $0.pageTo } }) else { return }
         sectionIndex = s
         let b = doc.sections[s].blocks.firstIndex { last >= $0.pageFrom && last <= $0.pageTo } ?? 0
@@ -122,7 +125,7 @@ struct ReaderView: View {
             try? await Task.sleep(for: .milliseconds(150))
             topBlock = b
         }
-        toast.show(t("resumeAt", ["p": Format.num(last, lang)]))
+        if asked == nil { toast.show(t("resumeAt", ["p": Format.num(last, lang)])) }
     }
 
     /// A moment after scrolling stops: the pages seen are saved as read, and the page on screen as the place to
@@ -369,12 +372,13 @@ struct ReaderView: View {
                     Text(t("start")).font(KFont.ui(13, .semibold, lang: lang)).foregroundStyle(KPhone.ctaText)
                         .padding(.horizontal, 18).frame(height: 40).background(KPhone.cta, in: Capsule())
                 }
-                if !last {
-                    Button { goSection(sectionIndex + 1) } label: {
-                        Text(t("nextSection")).font(KFont.ui(13, .medium, lang: lang)).foregroundStyle(KRead.text)
-                            .padding(.horizontal, 18).frame(height: 40)
-                            .overlay(Capsule().stroke(KRead.line, lineWidth: 1))
-                    }
+                // After the last section: this lesson's summary ("Ders özeti"), as on the web.
+                Button {
+                    if last, let lesson { app.go(.lessonSummary(lesson.id)) } else { goSection(sectionIndex + 1) }
+                } label: {
+                    Text(t(last ? "lessonSummary" : "nextSection")).font(KFont.ui(13, .medium, lang: lang)).foregroundStyle(KRead.text)
+                        .padding(.horizontal, 18).frame(height: 40)
+                        .overlay(Capsule().stroke(KRead.line, lineWidth: 1))
                 }
             }
         }

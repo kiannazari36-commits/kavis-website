@@ -30,6 +30,9 @@ struct QuizView: View {
     @State private var hintsShown = 0
     @State private var answers: [QuizAPI.Answer] = []
     @State private var score: Int?
+    /// "Yeni 3 soru": questions already played in this section check, and whether new ones are being fetched.
+    @State private var seen: [String] = []
+    @State private var gettingNew = false
 
     private var lang: Lang { prefs.lang }
     private func d(_ turkish: String) -> String { prefs.d(turkish) }
@@ -238,7 +241,7 @@ struct QuizView: View {
                     .environment(\.layoutDirection, qLang.layoutDirection)
             }
             if let page = q.page {
-                Button { app.go(.reader(target.materialId)) } label: {
+                Button { app.readerPage = page; app.go(.reader(target.materialId)) } label: {
                     HStack(spacing: 6) {
                         Text(Self.lookAt(page, lang))
                         KIcon(name: .arrowRight, size: 16, width: 2, flipsInRTL: true)
@@ -368,12 +371,60 @@ struct QuizView: View {
                 .padding(.horizontal, 32)
             Spacer()
             VStack(spacing: 10) {
-                Button { app.back() } label: {
-                    Text(t(target.kind == .check ? "resume" : "k47")).font(KFont.ui(16, .semibold, lang: lang)).foregroundStyle(KPhone.ctaText)
-                        .frame(maxWidth: .infinity, minHeight: 52).background(C.pri, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                if target.kind == .check {
+                    Button { app.back() } label: { primaryLabel(t("resume")) }
+                    Button { newQuestions() } label: {
+                        secondaryLabel(gettingNew ? t("packMaking") : t("newA") + Format.num(3, lang) + t("retryB"))
+                    }
+                    .disabled(gettingNew)
+                } else {
+                    // After the end-of-lesson exam: this lesson's summary ("Ders özeti"), as on the web.
+                    Button { app.replace(.lessonSummary(target.materialId)) } label: { primaryLabel(t("lessonSummary")) }
+                    Button { app.back() } label: { secondaryLabel(t("k47")) }
                 }
             }
             .padding(.horizontal, 16).padding(.bottom, 12)
+        }
+    }
+
+    private func primaryLabel(_ text: String) -> some View {
+        Text(text).font(KFont.ui(16, .semibold, lang: lang)).foregroundStyle(KPhone.ctaText)
+            .frame(maxWidth: .infinity, minHeight: 52).background(C.pri, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+
+    private func secondaryLabel(_ text: String) -> some View {
+        Text(text).font(KFont.ui(15, .semibold, lang: lang)).foregroundStyle(KPhone.text)
+            .frame(maxWidth: .infinity, minHeight: 50).background(C.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(C.line, lineWidth: 1))
+    }
+
+    /// "Yeni 3 soru" after a section check: unseen questions of the same pages first (free); when none are left, the
+    /// server writes new ones (AI, needs the trial or Premium), then they are played.
+    private func newQuestions() {
+        guard !gettingNew, let quiz else { return }
+        let had = seen + quiz.questions.map(\.id)
+        gettingNew = true
+        Task {
+            var next = await QuizAPI.sectionCheck(materialId: target.materialId, pageFrom: target.pageFrom, pageTo: target.pageTo, seen: had)
+            if next == nil {
+                let r = await QuizAPI.moreSectionQuestions(materialId: target.materialId, pageFrom: target.pageFrom, pageTo: target.pageTo)
+                if r != .ok {
+                    gettingNew = false
+                    return toast.show(t(r == .locked ? "trialLocked" : r == .budget ? "askBudget" : "askFailed"))
+                }
+                next = await QuizAPI.sectionCheck(materialId: target.materialId, pageFrom: target.pageFrom, pageTo: target.pageTo, seen: had)
+            }
+            gettingNew = false
+            guard let next else { return toast.show(t("askFailed")) }
+            seen = had
+            self.quiz = next
+            index = 0
+            answers = []
+            selected = nil
+            confidence = nil
+            hintsShown = 0
+            score = nil
+            phase = .ask
         }
     }
 }

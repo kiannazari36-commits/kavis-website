@@ -6232,5 +6232,527 @@
   "en": "One option's name ends in \"-pril\".",
   "fa": "نام یکی از گزینه‌ها با «-pril» تمام می‌شود.",
   "ar": "اسم أحد الخيارات ينتهي بـ \"-pril\"."
+ },
+ " sınavını başlat": {
+  "tr": " sınavını başlat",
+  "en": " — start exam",
+  "fa": " — شروع امتحان",
+  "ar": " — ابدأ الامتحان"
+ },
+ "14 dk · s. 14": {
+  "tr": "14 dk · s. 14",
+  "en": "14 min · p. 14",
+  "fa": "14 دقیقه · ص. 14",
+  "ar": "14 د · ص 14"
+ },
+ "19 Eki": {
+  "tr": "19 Eki",
+  "en": "19 Oct",
+  "fa": "19 اکتبر",
+  "ar": "19 أكتوبر"
+ },
+ "2 PDF · 1 zayıf konu": {
+  "tr": "2 PDF · 1 zayıf konu",
+  "en": "2 PDFs · 1 weak topic",
+  "fa": "2 PDF · 1 موضوع ضعیف",
+  "ar": "2 PDF · 1 موضوع ضعيف"
+ },
+ "2 PDF · 4 zayıf konu": {
+  "tr": "2 PDF · 4 zayıf konu",
+  "en": "2 PDFs · 4 weak topics",
+  "fa": "2 PDF · 4 موضوع ضعیف",
+  "ar": "2 PDF · 4 مواضيع ضعيفة"
+ },
+ "20 Eki": {
+  "tr": "20 Eki",
+  "en": "20 Oct",
+  "fa": "20 اکتبر",
+  "ar": "20 أكتوبر"
+ },
+ "21 Eki": {
+  "tr": "21 Eki",
+  "en": "21 Oct",
+  "fa": "21 اکتبر",
+  "ar": "21 أكتوبر"
+ },
+ "23 Eki": {
+  "tr": "23 Eki",
+  "en": "23 Oct",
+  "fa": "23 اکتبر",
+  "ar": "23 أكتوبر"
+ },
+ "3 PDF · 6 zayıf konu": {
+  "tr": "3 PDF · 6 zayıf konu",
+  "en": "3 PDFs · 6 weak topics",
+  "fa": "3 PDF · 6 موضوع ضعیف",
+  "ar": "3 PDF · 6 مواضيع ضعيفة"
+ },
+ "9 dk · s. 13": {
+  "tr": "9 dk · s. 13",
+  "en": "9 min · p. 13",
+  "fa": "9 دقیقه · ص. 13",
+  "ar": "9 د · ص. 13"
+ },
+ "ACE ile yıkılan, öksürüğe yol açan peptit": {
+  "tr": "ACE ile yıkılan, öksürüğe yol açan peptit",
+  "en": "Peptide broken down by ACE that causes cough",
+  "fa": "پپتیدی که ACE تجزیه‌اش می‌کند و سرفه می‌دهد",
+  "ar": "ببتيد يكسّره ACE ويسبب السعال"
+ },
+ "ACE inhibitörü yan etkileri": {
+  "tr": "ACE inhibitörü yan etkileri",
+  "en": "ACE inhibitor side effects",
+  "fa": "عوارض مهارکنندهٔ ACE",
+  "ar": "الآثار الجانبية لمثبطات ACE"
+ },
+ "ACE inhibitörü yan etkileri · anjiyoödem": {
+  "tr": "ACE inhibitörü yan etkileri · anjiyoödem",
+  "en": "ACE inhibitor side effects · angioedema",
+  "fa": "عوارض مهارکنندهٔ ACE · آنژیوادم",
+  "ar": "الآثار الجانبية لمثبطات ACE · الوذمة الوعائية"
+ },
+ "Alfa-1 bloker ilk doz etkisi": {
+  "tr": "Alfa-1 bloker ilk doz etkisi",
+  "en": "Alpha-1 blocker first-dose effect",
+  "fa": "اثر دوز اول مسدودکنندهٔ آلفا-1",
+  "ar": "تأثير الجرعة الأولى لحاصرات ألفا-1"
+ },
+ "Alfa-1 blokerler · ilk doz etkisi": {
+  "tr": "Alfa-1 blokerler · ilk doz etkisi",
+  "en": "Alpha-1 blockers · first-dose effect",
+  "fa": "مسدودکننده‌های آلفا-1 · اثر دوز اول",
+  "ar": "حاصرات ألفا-1 · تأثير الجرعة الأولى"
+ },
+ "Anjiyotensin II oluşumunu azaltan ilaç grubu": {
+  "tr": "Anjiyotensin II oluşumunu azaltan ilaç grubu",
+  "en": "Drug group that reduces angiotensin II formation",
+  "fa": "گروه دارویی کاهنده تولید آنژیوتانسین II",
+  "ar": "مجموعة دوائية تقلل تكوين الأنجيوتنسين II"
+ },
+ "Antidot": {
+  "tr": "Antidot",
+  "en": "Antidote",
+  "fa": "پادزهر",
+  "ar": "ترياق"
+ },
+ "Ayağa kalkınca kan basıncının ani düşmesi": {
+  "tr": "Ayağa kalkınca kan basıncının ani düşmesi",
+  "en": "Sudden drop in blood pressure on standing",
+  "fa": "افت ناگهانی فشار خون هنگام ایستادن",
+  "ar": "انخفاض مفاجئ في ضغط الدم عند الوقوف"
+ },
+ "Ağır metal antidotları": {
+  "tr": "Ağır metal antidotları",
+  "en": "Heavy metal antidotes",
+  "fa": "پادزهرهای فلزات سنگین",
+  "ar": "ترياقات المعادن الثقيلة"
+ },
+ "BU DÖNEM · 4 DERS · 9 PDF": {
+  "tr": "BU DÖNEM · 4 DERS · 9 PDF",
+  "en": "THIS TERM · 4 COURSES · 9 PDF",
+  "fa": "این ترم · 4 درس · 9 PDF",
+  "ar": "هذا الفصل · 4 مواد · 9 PDF"
+ },
+ "Beta-laktamaz inhibitörleri": {
+  "tr": "Beta-laktamaz inhibitörleri",
+  "en": "Beta-lactamase inhibitors",
+  "fa": "مهارکننده‌های بتالاکتاماز",
+  "ar": "مثبطات بيتا لاكتاماز"
+ },
+ "Biyoyararlanım": {
+  "tr": "Biyoyararlanım",
+  "en": "Bioavailability",
+  "fa": "فراهمی زیستی",
+  "ar": "التوافر الحيوي"
+ },
+ "Bu ders": {
+  "tr": "Bu ders",
+  "en": "This course",
+  "fa": "این درس",
+  "ar": "هذه المادة"
+ },
+ "Bu dönemin tüm derslerinden tek sınav": {
+  "tr": "Bu dönemin tüm derslerinden tek sınav",
+  "en": "One exam from all your courses this term",
+  "fa": "یک امتحان از همه‌ی درس‌های این ترم",
+  "ar": "امتحان واحد من جميع مواد هذا الفصل"
+ },
+ "Bütünleme": {
+  "tr": "Bütünleme",
+  "en": "Make-up exam",
+  "fa": "امتحان جبرانی",
+  "ar": "امتحان الإعادة"
+ },
+ "BİR DERS SEÇ": {
+  "tr": "BİR DERS SEÇ",
+  "en": "CHOOSE A COURSE",
+  "fa": "یک درس انتخاب کن",
+  "ar": "اختر مادة"
+ },
+ "Cevaplanmadı": {
+  "tr": "Cevaplanmadı",
+  "en": "Not answered",
+  "fa": "پاسخ داده نشد",
+  "ar": "لم تتم الإجابة"
+ },
+ "DERS BAZINDA SINAV GÜNLERİ": {
+  "tr": "DERS BAZINDA SINAV GÜNLERİ",
+  "en": "EXAM DAYS BY COURSE",
+  "fa": "روزهای امتحان به تفکیک درس",
+  "ar": "أيام الامتحانات حسب المادة"
+ },
+ "Deri ve mukozada ani, derin şişlik": {
+  "tr": "Deri ve mukozada ani, derin şişlik",
+  "en": "Sudden, deep swelling of the skin and mucosa",
+  "fa": "تورم ناگهانی و عمیق پوست و مخاط",
+  "ar": "تورّم مفاجئ وعميق في الجلد والأغشية المخاطية"
+ },
+ "Ders özeti": {
+  "tr": "Ders özeti",
+  "en": "Lesson summary",
+  "fa": "خلاصه درس",
+  "ar": "ملخص الدرس"
+ },
+ "Derse özel sınav": {
+  "tr": "Derse özel sınav",
+  "en": "Course-specific exam",
+  "fa": "آزمون مخصوص درس",
+  "ar": "امتحان خاص بالمادة"
+ },
+ "Derslere göre durum": {
+  "tr": "Derslere göre durum",
+  "en": "Status by course",
+  "fa": "وضعیت به تفکیک درس",
+  "ar": "الحالة حسب المادة"
+ },
+ "Dokunduğun kelimeler": {
+  "tr": "Dokunduğun kelimeler",
+  "en": "Words you tapped",
+  "fa": "واژه‌هایی که لمس کردی",
+  "ar": "الكلمات التي لمستها"
+ },
+ "Emin olduğun hata": {
+  "tr": "Emin olduğun hata",
+  "en": "Confident mistake",
+  "fa": "اشتباه با اطمینان",
+  "ar": "خطأ واثق"
+ },
+ "En zayıf 5 konu · tüm dersler": {
+  "tr": "En zayıf 5 konu · tüm dersler",
+  "en": "5 weakest topics · all courses",
+  "fa": "5 مبحث ضعیف‌تر · همه درس‌ها",
+  "ar": "أضعف 5 مواضيع · كل المواد"
+ },
+ "En çok dokunduğun kelimeler": {
+  "tr": "En çok dokunduğun kelimeler",
+  "en": "Words you tapped most",
+  "fa": "کلماتی که بیشتر لمس کردی",
+  "ar": "الكلمات التي لمستها أكثر"
+ },
+ "Farm. Mikrobiyoloji ·": {
+  "tr": "Farm. Mikrobiyoloji ·",
+  "en": "Pharm. Microbiology ·",
+  "fa": "میکروب‌شناسی دارویی ·",
+  "ar": "الأحياء الدقيقة الصيدلانية ·"
+ },
+ "Farm. Mikrobiyoloji · s. 17": {
+  "tr": "Farm. Mikrobiyoloji · s. 17",
+  "en": "Pharm. Microbiology · p. 17",
+  "fa": "میکروب‌شناسی دارویی · ص. 17",
+  "ar": "الأحياء الدقيقة الصيدلانية · ص. 17"
+ },
+ "Farm. Teknoloji III ·": {
+  "tr": "Farm. Teknoloji III ·",
+  "en": "Pharm. Technology III ·",
+  "fa": "فناوری دارویی III ·",
+  "ar": "التقنية الصيدلانية III ·"
+ },
+ "Farmakoterapi · Diyabet · s. 9": {
+  "tr": "Farmakoterapi · Diyabet · s. 9",
+  "en": "Pharmacotherapy · Diabetes · p. 9",
+  "fa": "دارودرمانی · دیابت · ص. 9",
+  "ar": "العلاج الدوائي · السكري · ص. 9"
+ },
+ "Farmakoterapi · Hipertansiyon · s. 13": {
+  "tr": "Farmakoterapi · Hipertansiyon · s. 13",
+  "en": "Pharmacotherapy · Hypertension · p. 13",
+  "fa": "دارودرمانی · فشار خون بالا · ص. 13",
+  "ar": "العلاج الدوائي · ارتفاع ضغط الدم · ص. 13"
+ },
+ "Farmasötik Mikrobiyoloji": {
+  "tr": "Farmasötik Mikrobiyoloji",
+  "en": "Pharmaceutical Microbiology",
+  "fa": "میکروب‌شناسی دارویی",
+  "ar": "الأحياء الدقيقة الصيدلانية"
+ },
+ "Final": {
+  "tr": "Final",
+  "en": "Final",
+  "fa": "پایان‌ترم",
+  "ar": "النهائي"
+ },
+ "Genel sınav": {
+  "tr": "Genel sınav",
+  "en": "General exam",
+  "fa": "امتحان جامع",
+  "ar": "امتحان شامل"
+ },
+ "Genel sınavı başlat": {
+  "tr": "Genel sınavı başlat",
+  "en": "Start general exam",
+  "fa": "شروع امتحان جامع",
+  "ar": "ابدأ الامتحان الشامل"
+ },
+ "Genel tekrarı başlat": {
+  "tr": "Genel tekrarı başlat",
+  "en": "Start general review",
+  "fa": "شروع مرور کلی",
+  "ar": "ابدأ المراجعة العامة"
+ },
+ "GÜN KALDI": {
+  "tr": "GÜN KALDI",
+  "en": "DAYS LEFT",
+  "fa": "روز مانده",
+  "ar": "يوم متبقٍ"
+ },
+ "Hipertansif kriz · acil tedavi": {
+  "tr": "Hipertansif kriz · acil tedavi",
+  "en": "Hypertensive crisis · emergency treatment",
+  "fa": "بحران فشار خون بالا · درمان اورژانسی",
+  "ar": "أزمة ارتفاع ضغط الدم · العلاج الإسعافي"
+ },
+ "Hipertansiyon, Diyabet · 3 zayıf konu": {
+  "tr": "Hipertansiyon, Diyabet · 3 zayıf konu",
+  "en": "Hypertension, Diabetes · 3 weak topics",
+  "fa": "فشار خون بالا، دیابت · 3 مبحث ضعیف",
+  "ar": "ارتفاع ضغط الدم، السكري · 3 مواضيع ضعيفة"
+ },
+ "Hoca kontrendikasyonlar için “sınavda soruyorum” dedi. Bu konular özetinde ve sınavlarında daha ağırlıklı.": {
+  "tr": "Hoca kontrendikasyonlar için “sınavda soruyorum” dedi. Bu konular özetinde ve sınavlarında daha ağırlıklı.",
+  "en": "The lecturer said “I'll ask this in the exam” about contraindications. These topics weigh more in your summary and exams.",
+  "fa": "استاد درباره موارد منع مصرف گفت «در امتحان می‌پرسم». این مباحث در خلاصه و امتحان‌هایت وزن بیشتری دارند.",
+  "ar": "قال الأستاذ عن موانع الاستعمال “سأسأل عنها في الامتحان”. لهذه المواضيع وزن أكبر في ملخصك وامتحاناتك."
+ },
+ "Hocanın derste vurguladıkları": {
+  "tr": "Hocanın derste vurguladıkları",
+  "en": "What the lecturer stressed in class",
+  "fa": "تأکیدهای استاد سر کلاس",
+  "ar": "ما ركّز عليه الأستاذ في الدرس"
+ },
+ "HİPERTANSİYON · SINAV 84/100 · 8 EKİM": {
+  "tr": "HİPERTANSİYON · SINAV 84/100 · 8 EKİM",
+  "en": "HYPERTENSION · EXAM 84/100 · OCT 8",
+  "fa": "فشار خون بالا · امتحان 84/100 · 8 اکتبر",
+  "ar": "ارتفاع ضغط الدم · امتحان 84/100 · 8 أكتوبر"
+ },
+ "Kartlara ekle": {
+  "tr": "Kartlara ekle",
+  "en": "Add to cards",
+  "fa": "به کارت‌ها اضافه کن",
+  "ar": "أضف إلى البطاقات"
+ },
+ "Kontrendikasyonlar · ARB ve gebelik": {
+  "tr": "Kontrendikasyonlar · ARB ve gebelik",
+  "en": "Contraindications · ARBs and pregnancy",
+  "fa": "موارد منع مصرف · ARB و بارداری",
+  "ar": "مضادات الاستطباب · ARB والحمل"
+ },
+ "Parasetamol toksisitesi · N-asetilsistein": {
+  "tr": "Parasetamol toksisitesi · N-asetilsistein",
+  "en": "Paracetamol toxicity · N-acetylcysteine",
+  "fa": "سمیت پاراستامول · N-استیل‌سیستئین",
+  "ar": "سمية الباراسيتامول · N-أسيتيل سيستئين"
+ },
+ "SES KAYDINDAN · 52 DK": {
+  "tr": "SES KAYDINDAN · 52 DK",
+  "en": "FROM AUDIO RECORDING · 52 MIN",
+  "fa": "از ضبط صدا · 52 دقیقه",
+  "ar": "من التسجيل الصوتي · 52 د"
+ },
+ "SINAV HAFTASI": {
+  "tr": "SINAV HAFTASI",
+  "en": "EXAM WEEK",
+  "fa": "هفته امتحان",
+  "ar": "أسبوع الامتحانات"
+ },
+ "SINAVA GİRECEK DERSLER": {
+  "tr": "SINAVA GİRECEK DERSLER",
+  "en": "COURSES WITH EXAMS",
+  "fa": "درس‌های امتحانی",
+  "ar": "المواد التي ستُمتحن فيها"
+ },
+ "Sayfaları oku": {
+  "tr": "Sayfaları oku",
+  "en": "Read the pages",
+  "fa": "خواندن صفحه‌ها",
+  "ar": "اقرأ الصفحات"
+ },
+ "Soru sayısı": {
+  "tr": "Soru sayısı",
+  "en": "Number of questions",
+  "fa": "تعداد سؤال‌ها",
+  "ar": "عدد الأسئلة"
+ },
+ "Soruların yarısı zayıf konulardan gelir": {
+  "tr": "Soruların yarısı zayıf konulardan gelir",
+  "en": "Half the questions come from weak topics",
+  "fa": "نیمی از سؤال‌ها از موضوعات ضعیف است",
+  "ar": "نصف الأسئلة من المواضيع الضعيفة"
+ },
+ "Sınav haftanı gir": {
+  "tr": "Sınav haftanı gir",
+  "en": "Enter your exam week",
+  "fa": "هفته امتحانت را وارد کن",
+  "ar": "أدخل أسبوع امتحاناتك"
+ },
+ "Sınav haftası yaklaşıyor": {
+  "tr": "Sınav haftası yaklaşıyor",
+  "en": "Exam week is coming",
+  "fa": "هفته امتحان نزدیک است",
+  "ar": "أسبوع الامتحانات يقترب"
+ },
+ "Sınav türü": {
+  "tr": "Sınav türü",
+  "en": "Exam type",
+  "fa": "نوع امتحان",
+  "ar": "نوع الامتحان"
+ },
+ "TEKRAR İÇİN KISA ÖZET · PDF'TEN": {
+  "tr": "TEKRAR İÇİN KISA ÖZET · PDF'TEN",
+  "en": "SHORT REVIEW SUMMARY · FROM PDF",
+  "fa": "خلاصهٔ کوتاه برای مرور · از PDF",
+  "ar": "ملخص قصير للمراجعة · من الملف"
+ },
+ "Takviminden alındı": {
+  "tr": "Takviminden alındı",
+  "en": "Taken from your calendar",
+  "fa": "از تقویمت گرفته شد",
+  "ar": "مأخوذ من تقويمك"
+ },
+ "Tek bir ders, ör. yalnızca Toksikoloji": {
+  "tr": "Tek bir ders, ör. yalnızca Toksikoloji",
+  "en": "A single course, e.g. only Toxicology",
+  "fa": "یک درس، مثلاً فقط سم‌شناسی",
+  "ar": "مادة واحدة، مثل علم السموم فقط"
+ },
+ "Tiyazidlerin kontrendikasyonları": {
+  "tr": "Tiyazidlerin kontrendikasyonları",
+  "en": "Contraindications of thiazides",
+  "fa": "منع مصرف‌های تیازیدها",
+  "ar": "مضادات استطباب الثيازيدات"
+ },
+ "Toksikoloji ·": {
+  "tr": "Toksikoloji ·",
+  "en": "Toxicology ·",
+  "fa": "سم‌شناسی ·",
+  "ar": "علم السموم ·"
+ },
+ "Toksikoloji · s. 15": {
+  "tr": "Toksikoloji · s. 15",
+  "en": "Toxicology · p. 15",
+  "fa": "سم‌شناسی · ص. 15",
+  "ar": "علم السموم · ص. 15"
+ },
+ "Toksikoloji · s. 8": {
+  "tr": "Toksikoloji · s. 8",
+  "en": "Toxicology · p. 8",
+  "fa": "سم‌شناسی · ص. 8",
+  "ar": "علم السموم · ص. 8"
+ },
+ "Uygulama hatırlatmaları ve sınavları buna göre hazırlar.": {
+  "tr": "Uygulama hatırlatmaları ve sınavları buna göre hazırlar.",
+  "en": "The app prepares reminders and exams based on this.",
+  "fa": "برنامه یادآورها و آزمون‌ها را بر این اساس آماده می‌کند.",
+  "ar": "يجهّز التطبيق التذكيرات والاختبارات بناءً على ذلك."
+ },
+ "Vize": {
+  "tr": "Vize",
+  "en": "Midterm",
+  "fa": "میان‌ترم",
+  "ar": "النصفي"
+ },
+ "VİZE HAFTASINA HAZIRLIK": {
+  "tr": "VİZE HAFTASINA HAZIRLIK",
+  "en": "MIDTERM WEEK PREP",
+  "fa": "آمادگی برای هفته میان‌ترم",
+  "ar": "التحضير لأسبوع النصفي"
+ },
+ "Yanlış cevap": {
+  "tr": "Yanlış cevap",
+  "en": "Wrong answer",
+  "fa": "پاسخ نادرست",
+  "ar": "إجابة خاطئة"
+ },
+ "Yazılıda eksik": {
+  "tr": "Yazılıda eksik",
+  "en": "Missing in written exam",
+  "fa": "کمبود در امتحان تشریحی",
+  "ar": "نقص في الامتحان المقالي"
+ },
+ "Zayıf konulara ağırlık ver": {
+  "tr": "Zayıf konulara ağırlık ver",
+  "en": "Focus on weak topics",
+  "fa": "روی مباحث ضعیف تمرکز کن",
+  "ar": "ركّز على المواضيع الضعيفة"
+ },
+ "Zayıf konulardan 10 soru": {
+  "tr": "Zayıf konulardan 10 soru",
+  "en": "10 questions from weak topics",
+  "fa": "10 سؤال از مباحث ضعیف",
+  "ar": "10 أسئلة من المواضيع الضعيفة"
+ },
+ "Zayıf olduğun konular": {
+  "tr": "Zayıf olduğun konular",
+  "en": "Your weak topics",
+  "fa": "مبحث‌هایی که ضعیفی",
+  "ar": "المواضيع التي تضعف فيها"
+ },
+ "kontrendikasyonu; gebelik değil": {
+  "tr": "kontrendikasyonu; gebelik değil",
+  "en": "contraindication; not pregnancy",
+  "fa": "منع مصرف تیازیدهاست؛ نه بارداری",
+  "ar": "مضاد استطباب؛ وليس الحمل"
+ },
+ "soru hazır": {
+  "tr": "soru hazır",
+  "en": "questions ready",
+  "fa": "سؤال آماده",
+  "ar": "سؤال جاهز"
+ },
+ "zorunlu": {
+  "tr": "zorunlu",
+  "en": "absolute",
+  "fa": "مطلق",
+  "ar": "المطلق"
+ },
+ "İnsülin türleri ve etki süreleri": {
+  "tr": "İnsülin türleri ve etki süreleri",
+  "en": "Insulin types and durations of action",
+  "fa": "انواع انسولین و مدت اثر آن‌ها",
+  "ar": "أنواع الإنسولين ومدة تأثيرها"
+ },
+ "Şelasyon": {
+  "tr": "Şelasyon",
+  "en": "Chelation",
+  "fa": "شلاته کردن",
+  "ar": "الاستخلاب"
+ },
+ "• ACE inhibitörleri ve ARB'ler gebelikte kontrendike": {
+  "tr": "• ACE inhibitörleri ve ARB'ler gebelikte kontrendike",
+  "en": "• ACE inhibitors and ARBs are contraindicated in pregnancy",
+  "fa": "• مهارکننده‌های ACE و ARBها در بارداری منع مصرف دارند",
+  "ar": "• مثبطات ACE وARB مضاد استطبابها في الحمل"
+ },
+ "• Gut → tiyazidlerin": {
+  "tr": "• Gut → tiyazidlerin",
+  "en": "• Gout → thiazides'",
+  "fa": "• نقرس → منع مصرف",
+  "ar": "• النقرس → مضاد استطباب"
+ },
+ "• Kuru öksürük ACE inhibitörü; alfa-1 bloker ilk dozu → ortostatik hipotansiyon": {
+  "tr": "• Kuru öksürük ACE inhibitörü; alfa-1 bloker ilk dozu → ortostatik hipotansiyon",
+  "en": "• Dry cough → ACE inhibitor; alpha-1 blocker first dose → orthostatic hypotension",
+  "fa": "• سرفه خشک ← مهارکننده ACE؛ دوز اول آلفا-1 بلاکر ← افت فشار وضعیتی",
+  "ar": "• السعال الجاف ← مثبط ACE؛ الجرعة الأولى من حاصر ألفا-1 ← هبوط الضغط الانتصابي"
  }
 }

@@ -195,8 +195,13 @@ struct AssistantChatView: View {
     private func bubble(_ message: ChatMessage) -> some View {
         let mine = message.role == .user
         return VStack(alignment: mine ? .trailing : .leading, spacing: 6) {
-            Text(message.text)
-                .font(KFont.ui(14, lang: lang)).kLineHeight(1.55, size: 14, lang: lang)
+            Group {
+                if mine {
+                    Text(message.text).font(KFont.ui(14, lang: lang)).kLineHeight(1.55, size: 14, lang: lang)
+                } else {
+                    AnswerText(text: message.text, lang: lang)
+                }
+            }
                 .foregroundStyle(mine ? KPhone.ctaText : KPhone.text)
                 .padding(.horizontal, 14).padding(.vertical, mine ? 10 : 12)
                 .background(mine ? KOnb.pri : KPhone.sub,
