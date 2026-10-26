@@ -128,7 +128,7 @@ Everything that is not finished yet. Updated after every step.
 - [x] "Yeni 3 soru" after a section check: unseen questions of the same pages first, else new ones from the server (Edge `more-questions`, AI, kept with the lesson)
 - [x] "Ders özeti" after the last section opens the lesson summary (`/summary`, design ScrReview "Bu ders"): weak topics (confident mistakes marked), tapped words, a short review summary from the PDF (Edge `lesson-summary`, made once and kept), cards / questions / pages
 - [x] Tried locally (test3): all three work; AI cost $0.0237
-- [ ] Live: deploy `assistant`, `more-questions`, `lesson-summary`, then push the web (needs Kian's OK)
+- [x] Live (26 Oct 2026): `assistant` v7, `more-questions` v1, `lesson-summary` v1 deployed; web pushed
 - [ ] iOS: show tables in the assistant, the new questions and the lesson summary too
 - Kian's own live account is Premium by hand (subscriptions row "manual.owner", no end date), 26 Oct 2026
 
