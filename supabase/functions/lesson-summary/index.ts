@@ -1,6 +1,8 @@
 // Edge Function lesson-summary: the short review summary of one lesson ("Ders özeti · tekrar için kısa özet").
 // POST { material_id } → { points: [{ text, page_from, page_to }], lang }. Made once by the AI from the lecturer's
 // own text (only facts from the PDF, with the pages) and kept in summaries (kind 'lesson'); later calls read it.
+// The student's weak topics (what they asked to add, wrong answers) get more detail and are marked (weak = true);
+// when the weak list changes, the summary is made again (once per change).
 // Making a new one needs the trial or Premium ("generate"); reading a saved one is always allowed.
 // Writes (service role): summaries, usage_monthly.
 import { createClient } from 'npm:@supabase/supabase-js@2';
@@ -28,12 +30,12 @@ function secretKey() {
 const LANG_NAMES: Record<string, string> = { tr: 'Turkish', en: 'English', fa: 'Persian', ar: 'Arabic' };
 const obj = (properties: Record<string, unknown>) => ({ type: 'object', properties, required: Object.keys(properties), additionalProperties: false });
 const SCHEMA = obj({
-  points: { type: 'array', items: obj({ text: { type: 'string' }, page_from: { type: 'integer' }, page_to: { type: 'integer' } }) },
+  points: { type: 'array', items: obj({ text: { type: 'string' }, page_from: { type: 'integer' }, page_to: { type: 'integer' }, weak: { type: 'boolean' } }) },
 });
-type Point = { text: string; page_from: number; page_to: number };
+type Point = { text: string; page_from: number; page_to: number; weak: boolean };
 
 const SYSTEM = `You write the short review summary of one university lesson for a study app, from the lecturer's own text.
-Write 5-8 points that cover the whole lesson in order: each point one or two short sentences with the key facts to remember (names, numbers, mechanisms, contraindications), page_from and page_to = the pages it comes from. Only facts from the given pages, nothing added. Plain text, no markdown.
+Write 5-8 points that cover the whole lesson in order (up to 10 when the student has weak topics: give each weak topic 1-2 extra points with the details to remember, and set weak = true on those points, false on the others): each point one or two short sentences with the key facts to remember (names, numbers, mechanisms, contraindications), page_from and page_to = the pages it comes from. Only facts from the given pages, nothing added. Plain text, no markdown.
 Write everything in the CONTENT LANGUAGE given.`;
 
 Deno.serve(async (req) => {
@@ -52,13 +54,26 @@ Deno.serve(async (req) => {
   const { data: m } = await db.from('materials').select('user_id, course_id, title').eq('id', materialId).maybeSingle();
   if (!m || m.user_id !== uid) return json({ error: 'not found' }, 404);
 
-  // A saved summary: free, also after the trial (the student keeps their summaries).
+  // The student's weak topics in this lesson; the summary is kept per weak list.
+  type Topic = { id: string; title: string; page_from: number | null; page_to: number | null };
+  const { data: weakRows } = await db
+    .from('material_topics')
+    .select('id, title, page_from, page_to, topic_progress!inner(state)')
+    .eq('material_id', materialId)
+    .eq('topic_progress.user_id', uid)
+    .eq('topic_progress.state', 'weak');
+  const weak = ((weakRows ?? []) as Topic[]).sort((a, b) => (a.page_from ?? 0) - (b.page_from ?? 0));
+  const weakKey = weak.map((t) => t.id).sort().join(',');
+
+  // A saved summary for the same weak list: free, also after the trial (the student keeps their summaries).
   const { data: saved } = await db.from('summaries').select('content, lang').eq('material_id', materialId).eq('kind', 'lesson')
     .order('created_at', { ascending: false }).limit(1).maybeSingle();
-  if (saved) return json({ points: (saved.content as { points: Point[] }).points ?? [], lang: saved.lang });
+  const savedContent = saved?.content as { points?: Point[]; weakKey?: string } | undefined;
+  if (saved && (savedContent?.weakKey ?? '') === weakKey) return json({ points: savedContent?.points ?? [], lang: saved.lang });
 
   const { data: allowed } = await db.rpc('can_use', { feature: 'generate', uid });
-  if (!allowed) return json({ error: 'locked' }, 403);
+  // After the trial a new one cannot be made: the saved one stays.
+  if (!allowed) return saved ? json({ points: savedContent?.points ?? [], lang: saved.lang }) : json({ error: 'locked' }, 403);
   const month = new Date().toISOString().slice(0, 7) + '-01';
   const { data: use } = await db.from('usage_monthly').select('input_tokens, output_tokens, cost_usd, generations').eq('user_id', uid).eq('month', month).maybeSingle();
   if (use && Number(use.cost_usd) >= MONTHLY_BUDGET_USD) return json({ error: 'budget' }, 429);
@@ -82,15 +97,15 @@ Deno.serve(async (req) => {
       fallbacks: 'default',
       output_config: { effort: 'low', format: { type: 'json_schema', schema: SCHEMA } },
       system: SYSTEM,
-      messages: [{ role: 'user', content: `Lesson: ${m.title}\nCONTENT LANGUAGE: ${LANG_NAMES[lang] ?? 'Turkish'}\n\nPages:\n${text}` }],
+      messages: [{ role: 'user', content: `Lesson: ${m.title}\nCONTENT LANGUAGE: ${LANG_NAMES[lang] ?? 'Turkish'}\n\nThe student's weak topics: ${weak.length ? '\n' + weak.map((t) => `- ${t.title} (p.${t.page_from ?? '?'}-${t.page_to ?? t.page_from ?? '?'})`).join('\n') : 'none'}\n\nPages:\n${text}` }],
     };
     // deno-lint-ignore no-explicit-any
     const res = await client.beta.messages.create(params as any);
     if (res.stop_reason === 'refusal') return json({ error: 'declined' }, 422);
     const block = res.content.find((b) => b.type === 'text');
     if (res.stop_reason === 'max_tokens' || !block || block.type !== 'text') return json({ error: 'ai' }, 502);
-    const points = (JSON.parse(block.text) as { points: Point[] }).points.slice(0, 8);
-    await db.from('summaries').insert({ user_id: uid, course_id: m.course_id, material_id: materialId, lang, kind: 'lesson', content: { points } });
+    const points = (JSON.parse(block.text) as { points: Point[] }).points.slice(0, 10);
+    await db.from('summaries').insert({ user_id: uid, course_id: m.course_id, material_id: materialId, lang, kind: 'lesson', content: { points, weakKey } });
     await db.from('usage_monthly').upsert({
       user_id: uid,
       month,

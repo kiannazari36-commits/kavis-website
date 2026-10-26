@@ -247,3 +247,21 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* A point about one of the student's weak topics. */
+.weakPoint::marker {
+  color: var(--pri);
+}
+
+.weakMark {
+  display: inline-block;
+  margin-inline-end: 8px;
+  padding: 1px 8px;
+  border-radius: 8px;
+  background: var(--pri-soft);
+  color: var(--pri-t);
+  font-family: Poppins, Vazirmatn, system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  vertical-align: 2px;
+}

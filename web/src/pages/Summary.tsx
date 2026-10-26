@@ -93,7 +93,8 @@ export default function Summary() {
           {recap && 'points' in recap && (
             <ul lang={recap.lang} dir={dirOf(recap.lang as never)}>
               {recap.points.map((p, i) => (
-                <li key={i}>
+                <li key={i} className={p.weak ? s.weakPoint : undefined}>
+                  {p.weak && <span className={s.weakMark}>{t('lsWeakMark')}</span>}
                   {p.text}{' '}
                   <button className={`mono ${s.pageLink}`} onClick={() => reader(p.page_from)}>
                     {pg(p.page_from, p.page_to)}

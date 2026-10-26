@@ -1,7 +1,9 @@
 // Edge Function more-questions: "Yeni 3 soru" after a section check — new questions about the same pages.
 // POST { material_id, page_from, page_to, count? } → { quiz_id, ids }. The AI writes multiple-choice questions with
 // hints from the lecturer's own text of those pages, different from the lesson's questions already there; they are
-// added to the lesson's quiz (kind lesson_end) so they stay for later.
+// added to the lesson's quiz (kind lesson_end) so they stay for later. The student's weak topics on those pages
+// (what they asked to add, wrong answers) get most of the questions; each question is linked to its topic, so a
+// wrong answer updates the weak list again (grade-quiz).
 // Writes (service role): quiz_questions, usage_monthly. Needs the trial or Premium ("generate").
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
@@ -72,10 +74,15 @@ Deno.serve(async (req) => {
   const { data: use } = await db.from('usage_monthly').select('input_tokens, output_tokens, cost_usd, generations').eq('user_id', uid).eq('month', month).maybeSingle();
   if (use && Number(use.cost_usd) >= MONTHLY_BUDGET_USD) return json({ error: 'budget' }, 429);
 
-  const [{ data: chunks }, { data: quiz }] = await Promise.all([
+  type Topic = { id: string; title: string; page_from: number | null; page_to: number | null; topic_progress: { state: string; mastery: number | null }[] };
+  const [{ data: chunks }, { data: quiz }, { data: topicRows }] = await Promise.all([
     db.from('material_chunks').select('page, text').eq('material_id', materialId).gte('page', from).lte('page', to).order('page'),
     db.from('quizzes').select('id, lang').eq('material_id', materialId).eq('kind', 'lesson_end').maybeSingle(),
+    db.from('material_topics').select('id, title, page_from, page_to, topic_progress(state, mastery, user_id)').eq('material_id', materialId).order('sort_order'),
   ]);
+  const topics = ((topicRows ?? []) as Topic[]).map((t) => ({ ...t, weak: (t.topic_progress ?? []).some((p) => p.state === 'weak') }));
+  const topicFor = (page: number) => topics.find((t) => t.page_from !== null && page >= t.page_from && page <= (t.page_to ?? t.page_from))?.id ?? null;
+  const weakHere = topics.filter((t) => t.weak && t.page_from !== null && t.page_from <= to && (t.page_to ?? t.page_from) >= from);
   if (!chunks?.length || !quiz) return json({ error: 'no text' }, 400);
   const { data: old } = await db.from('quiz_questions').select('text, sort_order').eq('quiz_id', quiz.id).order('sort_order');
   let text = '';
@@ -85,7 +92,7 @@ Deno.serve(async (req) => {
     text += line;
   }
   const lang = quiz.lang ?? 'tr';
-  const user = `Lesson: ${m.title}\nCONTENT LANGUAGE: ${LANG_NAMES[lang] ?? 'Turkish'}\nWrite ${count} new questions about pages ${from}-${to}.\n\nQuestions the student already had (do not repeat):\n${(old ?? []).map((q) => '- ' + String(q.text).split('\n\n')[0]).join('\n') || '-'}\n\nPages:\n${text}`;
+  const user = `Lesson: ${m.title}\nCONTENT LANGUAGE: ${LANG_NAMES[lang] ?? 'Turkish'}\nWrite ${count} new questions about pages ${from}-${to}.\n${weakHere.length ? `The student is weak at these topics: put most of the questions (at least ${Math.min(count, 2)}) on them:\n${weakHere.map((t) => `- ${t.title} (p.${t.page_from}-${t.page_to ?? t.page_from})`).join('\n')}\n` : ''}\nQuestions the student already had (do not repeat):\n${(old ?? []).map((q) => '- ' + String(q.text).split('\n\n')[0]).join('\n') || '-'}\n\nPages:\n${text}`;
 
   try {
     const client = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')!.trim() });
@@ -120,6 +127,7 @@ Deno.serve(async (req) => {
         explanation: q.explanation,
         // A page outside the section is moved into it, so the question belongs to this section's check.
         source_page: Math.min(to, Math.max(from, q.page || from)),
+        topic_id: topicFor(Math.min(to, Math.max(from, q.page || from))),
         hints: cleanHints(q.hints, q.options, q.answer_index).slice(0, 3),
       }));
     const { data: saved, error } = await db.from('quiz_questions').insert(questions).select('id');

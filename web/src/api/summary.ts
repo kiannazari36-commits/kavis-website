@@ -6,7 +6,7 @@ import type { Lang } from '../i18n/I18nProvider';
 
 export type WeakTopic = { id: string; title: string; page: number | null; mastery: number; sure: boolean };
 export type TappedWord = { word: string; text: string; taps: number };
-export type RecapPoint = { text: string; page_from: number; page_to: number };
+export type RecapPoint = { text: string; page_from: number; page_to: number; weak?: boolean };
 
 export async function lessonSummaryData(materialId: string, lang: Lang) {
   type TopicRow = { id: string; title: string; page_from: number | null; topic_progress: { state: string; mastery: number | null }[] | { state: string; mastery: number | null } | null };

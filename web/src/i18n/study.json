@@ -225,7 +225,8 @@
   "lsNoWords": "Henüz kelimeye dokunmadın.",
   "lsMaking": "Özet hazırlanıyor…",
   "lsQuiz": "Bu dersin soruları",
-  "lsExam": "SINAV"
+  "lsExam": "SINAV",
+  "lsWeakMark": "Zayıf konun"
  },
  "en": {
   "heroA": "How can I",
@@ -453,7 +454,8 @@
   "lsNoWords": "You haven't tapped any words yet.",
   "lsMaking": "Preparing the summary…",
   "lsQuiz": "This lesson's questions",
-  "lsExam": "EXAM"
+  "lsExam": "EXAM",
+  "lsWeakMark": "Weak topic"
  },
  "fa": {
   "heroA": "امروز چطور",
@@ -681,7 +683,8 @@
   "lsNoWords": "هنوز روی واژه‌ای نزده‌ای.",
   "lsMaking": "خلاصه در حال آماده شدن…",
   "lsQuiz": "سؤال‌های این درس",
-  "lsExam": "آزمون"
+  "lsExam": "آزمون",
+  "lsWeakMark": "مبحث ضعیف"
  },
  "ar": {
   "heroA": "كيف يمكنني اليوم",
@@ -909,6 +912,7 @@
   "lsNoWords": "لم تلمس أي كلمة بعد.",
   "lsMaking": "جارٍ تجهيز الملخص…",
   "lsQuiz": "أسئلة هذا الدرس",
-  "lsExam": "الاختبار"
+  "lsExam": "الاختبار",
+  "lsWeakMark": "موضوع ضعيف"
  }
 }

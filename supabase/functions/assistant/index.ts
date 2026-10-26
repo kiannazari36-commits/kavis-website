@@ -29,7 +29,7 @@ const TOOLS = [
   {
     name: 'mark_weak_topic',
     description:
-      "Adds a topic of the student's lesson to their weak topics, so it comes into their study plan and review lists. Use it only when the student asks for that (e.g. 'zayıf konularıma ekle', 'bunu çalışmam gerekenlere ekle', 'plana ekle').",
+      "Adds a topic of the student's lesson to their weak topics, so it comes into their study plan, review lists, quizzes and summaries. Use it when the student asks for that or says they are weak at / do not understand a topic (e.g. 'zayıf konularıma ekle', 'bu konuda zayıfım', 'bunu anlamadım', 'bunu çalışmam gerekenlere ekle', 'plana ekle'). Do not add a topic that is already in their weak topics list.",
     strict: true,
     input_schema: {
       type: 'object',
@@ -95,6 +95,7 @@ ${
     ? 'The student sends a photo of an exam question. Solve it step by step (numbered steps, short), say which option is right and why the others are not, and point to where it is in their lessons.'
     : 'Be short and clear: 2-6 sentences or a few bullet points. Explain simply, like a good classmate.'
 }
+You may get the list of the student's weak topics (the ones they told you about and the ones they answered wrong in quizzes). When they ask about "my weak topics" / "zayıf olduğum konular", use exactly that list (with its pages) and do not ask which topics they mean; if the list is empty, say they have no weak topics saved yet.
 You can act for the student with tools: mark_weak_topic and add_flashcard. Use them only when the student asks for it; after an action, confirm it in one short sentence. You cannot do anything else (no reminders, no notes); say so kindly if asked.
 Write in the language of the student's question (if unclear: ${LANG_NAMES[lang] ?? 'Turkish'}), plain text without markdown (no headings, no ** bold) — except when the student asks for a table, chart, list to compare or memorise ("cetvel", "tablo", "çizelge", "table"): then write a simple markdown table (a header row, a |---| line, one row per line, short cells) and at most one short sentence before it; never mention which language you use.
 End with one last line exactly like: SOURCES: [2, 5] OUTSIDE: no
@@ -198,12 +199,14 @@ Deno.serve(async (req) => {
     history.push(...((prev ?? []).reverse() as typeof history));
   }
 
+  const weakText = await weakTopics(db, uid, ids, titles);
+
   const excerpts = pieces.length
     ? pieces.map((p, i) => `[E${i + 1}] (${titles.get(p.material_id) ?? ''}, page ${p.page ?? '?'})\n${p.text.slice(0, 2500)}`).join('\n\n')
     : '(no matching excerpts were found in the student\'s lessons)';
   const lessonTitle = materialId ? (titles.get(materialId) ?? '') : '';
   const reading = materialId && pageFrom !== null ? `I am reading "${lessonTitle}", page ${pageFrom}${pageTo && pageTo !== pageFrom ? `-${pageTo}` : ''}.\n\n` : '';
-  const userText = `${reading}${whole ? '' : `Excerpts from my lessons:\n\n${excerpts}\n\n`}${image ? 'Solve the question in this photo. Its text: ' : 'My question: '}${question}`;
+  const userText = `${reading}${weakText}${whole ? '' : `Excerpts from my lessons:\n\n${excerpts}\n\n`}${image ? 'Solve the question in this photo. Its text: ' : 'My question: '}${question}`;
 
   const params = {
     model: MODEL,
@@ -296,6 +299,35 @@ Deno.serve(async (req) => {
   });
   return new Response(stream, { headers: { ...cors, 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache' } });
 });
+
+/**
+ * The student's weak topics in the lessons of this question (from topic_progress: what they asked to add, and
+ * topics they answered wrong in quizzes), with pages, mastery and the number of wrong answers. "" when none.
+ */
+async function weakTopics(db: SupabaseClient, uid: string, ids: string[], titles: Map<string, string>) {
+  if (!ids.length) return '';
+  type Row = { id: string; material_id: string; title: string; page_from: number | null; page_to: number | null; topic_progress: { state: string; mastery: number | null }[] };
+  const { data } = await db
+    .from('material_topics')
+    .select('id, material_id, title, page_from, page_to, topic_progress!inner(state, mastery)')
+    .in('material_id', ids)
+    .eq('topic_progress.user_id', uid)
+    .eq('topic_progress.state', 'weak')
+    .limit(40);
+  const rows = (data ?? []) as Row[];
+  if (!rows.length) return "My weak topics: none saved yet.\n\n";
+  const { data: wrong } = await db.from('quiz_answers').select('quiz_questions!inner(topic_id)').eq('user_id', uid).eq('correct', false).in('quiz_questions.topic_id', rows.map((r) => r.id));
+  const misses = new Map<string, number>();
+  for (const w of (wrong ?? []) as unknown as { quiz_questions: { topic_id: string } }[]) misses.set(w.quiz_questions.topic_id, (misses.get(w.quiz_questions.topic_id) ?? 0) + 1);
+  const lines = rows
+    .sort((a, b) => (a.topic_progress[0]?.mastery ?? 0) - (b.topic_progress[0]?.mastery ?? 0))
+    .map((r) => {
+      const pages = r.page_from ? ` p.${r.page_from}${r.page_to && r.page_to !== r.page_from ? `-${r.page_to}` : ''}` : '';
+      const n = misses.get(r.id) ?? 0;
+      return `- ${r.title} (${titles.get(r.material_id) ?? ''}${pages}): mastery ${r.topic_progress[0]?.mastery ?? 0}%${n ? `, ${n} wrong answer${n > 1 ? 's' : ''}` : ''}`;
+    });
+  return `My weak topics (saved; use them when I ask about my weak topics):\n${lines.join('\n')}\n\n`;
+}
 
 /** The thread (new or continued) and both messages; returns the thread id. */
 async function save(

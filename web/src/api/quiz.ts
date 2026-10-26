@@ -83,13 +83,26 @@ export async function getSectionCheck(materialId: string, pageFrom?: number, pag
   const lesson = await latestQuiz('lesson_end', { material: materialId });
   if (lesson) {
     // "Yeni 3 soru": questions the student already had in this check are skipped.
-    const questions = lesson.questions
+    const here = lesson.questions
       .filter((q) => pageFrom === undefined || (q.page !== null && q.page >= pageFrom && q.page <= (pageTo ?? pageFrom)))
-      .filter((q) => !seen.includes(q.id))
-      .slice(0, 3);
+      .filter((q) => !seen.includes(q.id));
+    // Questions on the student's weak topics (what they asked to add, wrong answers) come first.
+    const weak = await weakQuestionIds(materialId, here.map((q) => q.id));
+    const questions = [...here.filter((q) => weak.has(q.id)), ...here.filter((q) => !weak.has(q.id))].slice(0, 3);
     return questions.length ? { ...lesson, questions } : null;
   }
   return latestQuiz('section_check', { material: materialId });
+}
+
+/** Which of these questions are about one of the student's weak topics in this lesson. */
+async function weakQuestionIds(materialId: string, ids: string[]): Promise<Set<string>> {
+  if (!ids.length) return new Set();
+  const [{ data: weak }, { data: qs }] = await Promise.all([
+    supabase.from('topic_progress').select('topic_id, material_topics!inner(material_id)').eq('state', 'weak').eq('material_topics.material_id', materialId),
+    supabase.from('quiz_questions').select('id, topic_id').in('id', ids),
+  ]);
+  const topics = new Set((weak ?? []).map((w) => w.topic_id as string));
+  return new Set((qs ?? []).filter((q) => q.topic_id && topics.has(q.topic_id)).map((q) => q.id as string));
 }
 
 /**
