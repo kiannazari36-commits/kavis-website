@@ -89,6 +89,8 @@ struct ReaderView: View {
             lesson = await ReaderAPI.getLesson(id: docID)
             loaded = true
             restorePlace()
+            let recs = await RecordingAPI.recordingsOf(docID)
+            recordingId = (recs.first { $0.status == "ready" } ?? recs.first)?.id
         }
         .task(id: paused) {
             // The study timer: counts every second while the student is reading.
@@ -168,6 +170,8 @@ struct ReaderView: View {
         return lesson.courseName.isEmpty ? info : "\(lesson.courseName.uppercased(with: lang.locale)) · \(info)"
     }
 
+    @State private var recordingId: String?
+
     private var topBar: some View {
         HStack(spacing: 8) {
             circleButton(label: prefs.t("signup.k1052")) { app.back() } content: {
@@ -181,6 +185,12 @@ struct ReaderView: View {
             .frame(maxWidth: .infinity, minHeight: 44)
             .background(KRead.chrome, in: Capsule())
             .overlay(Capsule().stroke(KRead.line, lineWidth: 1))
+            // The lesson's lecture recording, when there is one (as the web's "Ses kaydı" button).
+            if let recordingId {
+                circleButton(label: t("recAudio")) { app.go(.recording(recordingId)) } content: {
+                    KIcon(name: .mic, size: 19, width: 1.8)
+                }
+            }
             circleButton(label: t("textSize")) { cycleFontSize() } content: {
                 Text("Aa").font(KFont.reading(16, .bold, lang: .en))
             }

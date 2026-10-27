@@ -47,6 +47,8 @@ enum Route: Equatable {
     case lessonSummary(String)
     /// A lecture recording (transcript and the lecturer's emphasis), optionally from a moment (seconds).
     case recording(String, at: Double = 0)
+    /// "Soru örneklerim" (the lecturer's sample questions of a course).
+    case samples(String?)
     /// "Bugünün tekrarı" of the daily planner (review_sessions id).
     case review(String)
     case assistant
@@ -92,6 +94,7 @@ final class AppModel {
         case "uploadAudio": route = .upload(.audio)
         case "reader": route = .reader("hypertension")
         case "summary": route = .lessonSummary(MockFlag.value("material") ?? "")
+        case "samples": route = .samples(nil)
         case "quiz": route = .quiz(QuizTarget(materialId: "", kind: .exam, quizId: MockFlag.value("material")))
         case "review": route = .review(MockFlag.value("material") ?? "")
         case "recording": route = .recording(MockFlag.value("material") ?? "")

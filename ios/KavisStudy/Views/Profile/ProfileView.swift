@@ -4,6 +4,7 @@ import SwiftUI
 struct ProfileView: View {
     @Environment(AppPrefs.self) private var prefs
     @Environment(AppModel.self) private var app
+    @Environment(\.openURL) private var openURL
     @Environment(ToastCenter.self) private var toast
     @Environment(TrialModel.self) private var trial
     @Environment(\.colorScheme) private var scheme
@@ -21,6 +22,11 @@ struct ProfileView: View {
     private var lang: Lang { prefs.lang }
     private func d(_ turkish: String) -> String { prefs.d(turkish) }
     private func soon() { toast.show(prefs.t("k165")) }
+
+    /// "Yardım ve geri bildirim": the web's help page (questions answered by the help chat, e-mail button).
+    private func openHelp() {
+        if let url = URL(string: "\(Config.webBaseURL)/help?lang=\(lang.rawValue)") { openURL(url) }
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -264,10 +270,10 @@ struct ProfileView: View {
             MenuRow(title: "Hesap bilgilerim", sub: d("Ad, e-posta, üniversite, sınıf"), icon: .person, chip: red.0, fg: red.1, action: { enterEdit() }),
             MenuRow(title: "Derslerim klasörü", sub: prefs.d("Bu dönem 5 ders · 13 PDF", numbers: [("13", st.pdfs), ("5", st.courses)]), icon: .folder, chip: amb.0, fg: amb.1, action: { app.go(.courses) }),
             MenuRow(title: "İlerleme ve takvim", sub: d("Haftalık süre, seviye, sınav haftası"), icon: .chart, chip: grn.0, fg: grn.1, action: { app.go(.progress) }),
-            MenuRow(title: "Soru örneklerim", sub: prefs.d("35 soru · hocanın tarzı çıkarıldı", numbers: [("35", st.sampleQuestions)]), icon: .help, chip: vio.0, fg: vio.1, action: soon),
+            MenuRow(title: "Soru örneklerim", sub: prefs.d("35 soru · hocanın tarzı çıkarıldı", numbers: [("35", st.sampleQuestions)]), icon: .help, chip: vio.0, fg: vio.1, action: { app.go(.samples(nil)) }),
             MenuRow(title: "Bildirimler", sub: prefs.d("Hatırlatma 09:00 · 1 saat önce").components(separatedBy: " · ")[0].replacingOccurrences(of: "09:00", with: Format.num(notifyTime, lang)), icon: .bellSmall, chip: gray.0, fg: gray.1, action: { app.go(.settings) }),
             MenuRow(title: "Ayarlar", sub: d("Çalışma planı, dil, tema"), icon: .sliders, chip: gray.0, fg: gray.1, action: { app.go(.settings) }),
-            MenuRow(title: "Yardım ve geri bildirim", sub: d("Sık sorulanlar, bize yaz"), icon: .chat, chip: gray.0, fg: gray.1, action: { toast.show(d("Yardım merkezi açılıyor")) }),
+            MenuRow(title: "Yardım ve geri bildirim", sub: d("Sık sorulanlar, bize yaz"), icon: .chat, chip: gray.0, fg: gray.1, action: { openHelp() }),
         ]
         return VStack(spacing: 0) {
             ForEach(Array(rows.enumerated()), id: \.offset) { i, row in
@@ -336,7 +342,13 @@ struct ProfileView: View {
                             }
                         }
                     }
-                    Button { toast.show(d("Şifre değiştirme bağlantısı e-postana gönderildi")) } label: {
+                    Button {
+                        // The same e-mail as "Şifremi unuttum": the new password is set on the web page.
+                        Task {
+                            let email = AuthAPI.currentUser()?.email ?? profile.email
+                            toast.show(await AuthAPI.sendPasswordReset(email: email) ? d("Şifre değiştirme bağlantısı e-postana gönderildi") : prefs.t("errOther"))
+                        }
+                    } label: {
                         Text(d("Şifreyi değiştir"))
                             .font(KFont.ui(14, lang: lang)).foregroundStyle(KPhone.text)
                             .frame(maxWidth: .infinity, minHeight: 50)

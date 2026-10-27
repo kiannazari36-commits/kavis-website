@@ -198,7 +198,7 @@ struct UploadView: View {
                     dropZone
                     optionRow(.camera, chip: KOnb.ambSoft, fg: KOnb.ambText, d("PDF yok mu? Fotoğraf çek"), d("Slayt, ders notu ya da el yazısı sayfaların fotoğrafı")) { mode = .photo }
                     optionRow(.mic, chip: KOnb.priSoft, fg: KOnb.priText, d("Derse ses kaydı ekle"), d("Hocanın anlattıklarını metne çevirir, vurgularını bulur")) { mode = .audio }
-                    optionRow(.help, chip: KPhone.sub, fg: KPhone.text, d("Elinde soru var mı?"), d("Eski sınav ya da örnek sorular: o tarzda soru hazırlarız")) { soon() }
+                    optionRow(.help, chip: KPhone.sub, fg: KPhone.text, d("Elinde soru var mı?"), d("Eski sınav ya da örnek sorular: o tarzda soru hazırlarız")) { app.go(.samples(courseId)) }
                     recentFiles
                     fields
                     infoBox(.shield, d("Hocanın metni hiç değiştirilmez. Asistan istersen sadece bu PDF'le, istersen yapay zekâ araştırmasıyla da cevap verir."), size: 13)

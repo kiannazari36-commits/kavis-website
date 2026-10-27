@@ -708,7 +708,7 @@ struct SettingsView: View {
                 if let url = c.url { openURL(url) }
             }
             divider
-            plainRow(d("Sık sorulanlar"), action: soon)
+            plainRow(d("Sık sorulanlar")) { if let url = URL(string: "\(Config.webBaseURL)/help?lang=\(lang.rawValue)") { openURL(url) } }
         }
     }
 

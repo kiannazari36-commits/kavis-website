@@ -54,6 +54,8 @@ struct RootView: View {
                 ReaderView(docID: id)
             case .lessonSummary(let id):
                 LessonSummaryView(materialId: id)
+            case .samples(let course):
+                SamplesView(courseId: course)
             case .review(let id):
                 ReviewView(reviewId: id)
             case .recording(let id, let at):

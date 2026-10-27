@@ -114,23 +114,7 @@ enum AssistantAPI {
     /// "Soru fotoğrafı": the photo of a lecturer's question becomes one of the course's question samples
     /// (`question_samples` + the private "question-samples" bucket, same as the web's "Soru örneklerim").
     static func addQuestionSample(_ jpeg: Data, courseId: String, title: String) async -> Bool {
-        guard let user = supabase.auth.currentUser else { return false }
-        let uid = user.id.uuidString.lowercased()
-        let path = "\(uid)/\(courseId)/\(UUID().uuidString.lowercased()).jpg"
-        let bucket = supabase.storage.from("question-samples")
-        do {
-            try await bucket.upload(path, data: jpeg, options: FileOptions(contentType: "image/jpeg"))
-        } catch {
-            return false
-        }
-        struct Row: Encodable { let user_id, course_id, kind, title, storage_path: String }
-        do {
-            try await supabase.from("question_samples").insert(Row(user_id: uid, course_id: courseId, kind: "photo", title: title, storage_path: path)).execute()
-            return true
-        } catch {
-            _ = try? await bucket.remove(paths: [path])
-            return false
-        }
+        await SamplesAPI.addFile(jpeg, pdf: false, title: title, courseId: courseId)
     }
 
     enum AskError: Error { case locked, budget, declined, other }

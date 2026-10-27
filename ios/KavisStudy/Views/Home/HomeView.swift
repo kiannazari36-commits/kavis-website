@@ -182,7 +182,7 @@ struct HomeView: View {
             uploadButton(.upload, "PDF", label: t("home.k1586"), primary: true, action: open(.pdf))
             uploadButton(.camera, t("home.k1013"), label: t("home.k1016"), action: open(.photo))
             uploadButton(.mic, t("home.k1832"), label: t("home.k1832"), action: open(.audio))
-            uploadButton(.help, t("home.k1905"), label: t("home.k1903"), action: { offline ? toast.show(t("home.uploadOffline")) : soon() })
+            uploadButton(.help, t("home.k1905"), label: t("home.k1903"), action: { offline ? toast.show(t("home.uploadOffline")) : app.go(.samples(nil)) })
         }
     }
 
@@ -307,7 +307,10 @@ struct HomeView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             if canStart {
-                Button { later = nil; soon() } label: {
+                Button {
+                    later = nil
+                    if let id = todayReview?.id { app.go(.review(id)) }
+                } label: {
                     Text(t("home.k2629")).font(KFont.ui(13, lang: lang)).foregroundStyle(KPhone.ctaText)
                         .padding(.horizontal, 14).frame(height: 38)
                         .background(KPhone.navActive, in: Capsule())
@@ -329,6 +332,10 @@ struct HomeView: View {
         switch key {
         case "home.tileCards": app.go(.cards(nil))
         case "home.tileExam": app.go(.examCenter)
+        case "home.tileSummary":
+            // The summary of the lesson the student is working on (else the newest one).
+            let pdfs = CoursesAPI.lastCourses.flatMap(\.pdfs)
+            if let pdf = pdfs.first(where: { $0.read > 0 && $0.read < 100 }) ?? pdfs.first { app.go(.lessonSummary(pdf.id)) } else { toast.show(t("quiz.none")) }
         default: soon()
         }
     }
