@@ -30,7 +30,9 @@
   "padExamSoon": "Sınav merkezinde özet ve sorular",
   "padNoExam": "Sınav tarihi ekle",
   "padClassesTmr": "OKUL PROGRAMI · YARIN {n} DERS",
-  "padNoClassesTmr": "OKUL PROGRAMI · YARIN DERS YOK"
+  "padNoClassesTmr": "OKUL PROGRAMI · YARIN DERS YOK",
+  "pdfMeaning": "ANLAMI",
+  "pdfStarMove": "Taşımak için basılı tut ve sürükle"
  },
  "en": {
   "remindTitle": "Study time",
@@ -63,7 +65,9 @@
   "padExamSoon": "Summary and questions in the exam center",
   "padNoExam": "Add an exam date",
   "padClassesTmr": "SCHOOL TIMETABLE · {n} CLASSES TOMORROW",
-  "padNoClassesTmr": "SCHOOL TIMETABLE · NO CLASSES TOMORROW"
+  "padNoClassesTmr": "SCHOOL TIMETABLE · NO CLASSES TOMORROW",
+  "pdfMeaning": "MEANING",
+  "pdfStarMove": "Press and drag to move"
  },
  "fa": {
   "remindTitle": "وقت مطالعه",
@@ -96,7 +100,9 @@
   "padExamSoon": "خلاصه و سؤال‌ها در مرکز آزمون",
   "padNoExam": "تاریخ امتحان را اضافه کن",
   "padClassesTmr": "برنامهٔ کلاس · فردا {n} کلاس",
-  "padNoClassesTmr": "برنامهٔ کلاس · فردا کلاس نداری"
+  "padNoClassesTmr": "برنامهٔ کلاس · فردا کلاس نداری",
+  "pdfMeaning": "معنی",
+  "pdfStarMove": "برای جابه‌جایی نگه دار و بکش"
  },
  "ar": {
   "remindTitle": "وقت الدراسة",
@@ -129,6 +135,8 @@
   "padExamSoon": "الملخص والأسئلة في مركز الامتحانات",
   "padNoExam": "أضف موعد الامتحان",
   "padClassesTmr": "الجدول الدراسي · غدًا {n} محاضرات",
-  "padNoClassesTmr": "الجدول الدراسي · لا محاضرات غدًا"
+  "padNoClassesTmr": "الجدول الدراسي · لا محاضرات غدًا",
+  "pdfMeaning": "المعنى",
+  "pdfStarMove": "اضغط واسحب للتحريك"
  }
 }
