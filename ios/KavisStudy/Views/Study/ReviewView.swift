@@ -73,6 +73,7 @@ struct ReviewView: View {
                     .padding(.horizontal, 20).padding(.top, 4).padding(.bottom, 34)
                 }
             }
+            .padColumn()
         }
         .task(id: reviewId) {
             guard let r = await PlanAPI.review(reviewId) else { loaded = true; return }

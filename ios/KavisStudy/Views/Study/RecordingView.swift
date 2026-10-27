@@ -112,6 +112,7 @@ struct RecordingView: View {
                     Spacer()
                 }
             }
+            .padColumn()
         }
         .task(id: recordingId) {
             // Again every 4 seconds while the server is still matching.

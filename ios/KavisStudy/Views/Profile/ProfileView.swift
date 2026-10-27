@@ -36,6 +36,7 @@ struct ProfileView: View {
             header
             if mode == .view { viewContent } else { editContent }
         }
+        .padColumn()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(background.ignoresSafeArea())
         .onChange(of: pickedPhoto) { _, item in

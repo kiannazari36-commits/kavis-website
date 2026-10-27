@@ -72,6 +72,7 @@ struct SamplesView: View {
                 }
                 .scrollDismissesKeyboard(.interactively)
             }
+            .padColumn()
         }
         .task {
             if courses.isEmpty { courses = await CoursesAPI.listCourses() }

@@ -67,6 +67,7 @@ struct LessonSummaryView: View {
                     .padding(.horizontal, 16).padding(.top, 4).padding(.bottom, 24)
                 }
             }
+            .padColumn()
         }
         .onAppear { if app.openGeneralSummary { app.openGeneralSummary = false; tab = .general } }
         .task {

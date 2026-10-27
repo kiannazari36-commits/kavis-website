@@ -105,6 +105,7 @@ struct CoursesListView: View {
             .scrollIndicators(.hidden)
             .refreshable { courses = await CoursesAPI.listCourses() }
         }
+        .padColumn()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(KPhone.authBg.ignoresSafeArea())
         .task {
@@ -302,6 +303,7 @@ struct CourseFolderView: View {
                 recordings = await RecordingAPI.recordingsOfCourse(courseId)
             }
         }
+        .padColumn()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(KPhone.authBg.ignoresSafeArea())
         .task {

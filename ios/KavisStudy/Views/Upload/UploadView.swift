@@ -83,6 +83,7 @@ struct UploadView: View {
                 case .recording: recordingWork
                 }
             }
+            .padColumn()
             if longSheet { longPdfSheet }
         }
         // One picker for both kinds: SwiftUI shows only one `.fileImporter` per view.

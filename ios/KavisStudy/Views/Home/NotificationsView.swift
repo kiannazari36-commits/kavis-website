@@ -113,6 +113,7 @@ struct NotificationsView: View {
             }
             .scrollIndicators(.hidden)
         }
+        .padColumn()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(KStudy.bg.ignoresSafeArea())
         .task {
