@@ -391,7 +391,7 @@ async function finish(db: SupabaseClient, materialId: string, uid: string, title
     title: note.title,
     body: note.body,
     data: { to: '/courses' },
-    sent_at: new Date().toISOString(),
+    // sent_at stays empty: the push job (send-notifications) sends it to the phone once APNs is on.
   });
 }
 

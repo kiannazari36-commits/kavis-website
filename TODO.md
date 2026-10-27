@@ -32,12 +32,14 @@ Everything that is not finished yet. Updated after every step.
   - [ ] Written answers: graded later by AI (now left empty)
   - [x] Study plan: this week from `study_plans` + `plan_items` (real dates, course colors, reasons from the plan), tick tasks (status/done_at), "Dünü kaçırdım" moves unfinished past tasks to the coming days with the least time. Home: today's plan (times from the reminder time), today's review box from `review_sessions` (start = done, later = tomorrow), days to the next exam. Example: a 6-day week around today with 2 missed tasks yesterday. `web/src/api/mock/plan.ts` removed
   - [x] Edge Function `build-plan` (25 Oct 2026, rules only, no AI, free): plans the rest of the week from study days/hours, timetable (fewest-class days), exams (review in the last 7 days, max 2 a day), unread pages (12-page parts), weak topics, "Hatalarım" and due cards; basic plan the first 2 weeks, then smart (forgetting, lecturer's emphasis). Built again when the Plan page opens on a new day; "Planı yenile", "Bugün az vaktim var" (keeps 2 tasks, moves the rest), "Yanlışları plana ekle" (15 min tomorrow). Rules in `planner.ts` (25 Node tests)
-  - [ ] Later: a nightly job (`daily-planner`) so the plan is ready before the app opens, and the "Bugünün tekrarı" box (`review_sessions`) made by it
+  - [x] Nightly job `daily-planner` (27 Oct 2026, LOCAL only, not live yet): every hour at :05, for students whose local time is 04:xx: the week's plan (same build as `build-plan`), today's "Bugünün tekrarı" (`review_sessions`: weakest lesson, summary + ≤ 10 cards + ≤ 3 questions, 5–15 min), and the day's notification. Checked locally with test4 (second run makes nothing twice). Rules in `daily-planner/jobs.ts` (19 Node tests)
   - [x] Own plan ("Kendi planım"): new table `own_plan_items` (migration `20261024140202_own_plan.sql`, tested on live in a rolled-back transaction: 5/5, then applied); add a course per day, tap = change length (30/45/60/90 min), × = remove
   - [x] Progress: week minutes (`daily_minutes`), streak (`study_streak()`), last score + level and course ranking from graded `quiz_attempts`, growth and congratulation (>10%), best-hours tip (average score by 2-hour window), weak topics (`topic_progress`), words learned (`term_lookups`). Example: 12 graded tries over 30 days in 3 courses, 4 weak topics. `web/src/api/mock/progress.ts` removed
-  - [ ] Congratulation as a push notification when the app is closed: scheduled job `send-notifications`
+  - [ ] Congratulation (`cheer`, `streak`) and `class_tomorrow` / `trial_ending` notifications are not written by the server yet (the push job would send them)
   - [x] Notifications: new web page `/notifications` (design ScrNotifications: Today / Yesterday / This week), from `notifications`; opening marks them read; the bell dot shows unread; the flame button shows the real streak. Example: 9 notifications matching the example data
-  - [ ] Scheduled job `send-notifications` (push, snooze) and the server writing notifications (planner, lesson ready, exam result, weekly report)
+  - [x] The server writes notifications (27 Oct 2026, LOCAL only): planner (`review_day` / `start_now` at the notification time), lesson ready (now left unsent so it can be pushed), exam result (`grade-quiz`, lesson end / exam prep / combined), weekly report (Monday, last week's minutes, days, quiz average). 4 languages
+  - [x] Push job `send-notifications` built (APNs with a token key, sandbox tested: Apple answered "InvalidProviderToken" to a fake key, so the sending works) — **switched OFF** (cron job inactive, and the function does nothing without the key)
+  - [ ] Turn push on: Apple Developer → Keys → new key with APNs → Supabase secrets `APNS_KEY_ID`, `APNS_TEAM_ID`, `APNS_PRIVATE_KEY` (+ `APNS_ENV=sandbox` while testing from Xcode), deploy `send-notifications`, then switch the cron job on (command in `docs/BACKEND.md`). The iPhone app must also save its push token in `push_tokens` (not done yet)
   - [x] Assistant: course choice = real courses + "all"; the chat and the reader's side panel show the saved conversation (`assistant_threads` + `assistant_messages`, sources = lesson + page). A new question is shown with "real answers come once the assistant is connected" (the app may not write answers). Example: 5 conversations, 14 messages
   - [ ] Test account kiannazari36@gmail.com: trial moved by 30 days for development (25 Oct 2026, ends 25 Nov 2026 15:41; `profiles.trial_started_at` set in the future; trial counters reset to 0 the same day). Before launch: set it back or delete the test data
   - [ ] Renew the Anthropic API key every 90 days (created 24 Oct 2026 → expires ~22 Jan 2027): new key in the Console, replace the Supabase secret `ANTHROPIC_API_KEY`
@@ -86,7 +88,7 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Translation of PDF sentences (literal / natural)
 - [ ] Study plan generation (starter → smart plan), progress data, weak topics
 - [ ] Settings saved in the account (now only in the browser)
-- [ ] Notifications (study reminders, congratulations)
+- [ ] Notifications (study reminders, congratulations) — server side done locally (see Study plan / notifications), push waits for the APNs key
 - [x] "Request my data": Edge `export-data` → one JSON file downloaded at once (all own rows + 7-day PDF links)
 - [x] "Delete account": password asked again (Edge `delete-account`), deleted after 30 days, banner "Hesabın … silinecek · Vazgeç" until then
 - [x] Nightly purge job (03:30 UTC): migration `20261024213309_account_purge.sql` applied 25 Oct 2026 with Kian's OK (pg_cron + pg_net, random key in `private.app_secrets`); a manual run answered `{deleted: 0}`
@@ -107,7 +109,8 @@ Everything that is not finished yet. Updated after every step.
 
 ## Devices
 - [x] Device limit on the server (max 2 devices, the web counts as one); real device list and sign-out on the web
-- [ ] Edge Function `sign-out-device`: also end the signed-out device's login at once (now the web notices on its next visit)
+- [x] Signing a device out ends its login at once (27 Oct 2026, LOCAL only): RPC `sign_out_device` deletes that device's auth session (saved by `register_device`) and every API request of an ended login gets 401 `session_ended` (pre-request check). No Edge Function needed. Checked locally: the other login got 401 at once, refresh refused, the own login kept working
+- [ ] Web / iOS: on a 401 `session_ended` answer, log out and show the login screen (now they only see failing requests until the login expires)
 - [ ] Real device names from the apps (the web name comes from the browser)
 
 ## Sharing
@@ -237,3 +240,10 @@ Technical notes and decisions:
 - [ ] Remove sample data: sample answers, the `?lang=` test switch, the sample lesson in the reader, and the example rows of `supabase/seed.sql`
 - [ ] Then remove noindex: `web/public/robots.txt`, the robots meta tag in `web/index.html` and the `X-Robots-Tag` header in `web/vercel.json`
 - [ ] Custom domain (e.g. kavis.study) in Vercel
+
+## Waiting for Kian's yes: go live (server jobs, 27 Oct 2026)
+Everything below is tested only on the local copy. To put it live:
+1. Apply migration `supabase/migrations/20261027120000_daily_jobs_and_sessions.sql` (new: job key, `daily-planner` cron job ON, `send-notifications` cron job OFF, `register_device` saves the login, `sign_out_device` ends it, the API's pre-request check). Then rename the file to the live version.
+2. Deploy Edge Functions: `daily-planner` (new, `verify_jwt = false`), `send-notifications` (new, `verify_jwt = false`), `build-plan` (code moved to `build.ts`, same behaviour), `grade-quiz` (exam result notification), `process-material` (lesson-ready notification left unsent for push).
+3. Free: no AI calls in any of these.
+4. Note: logins made before step 1 have no saved session on their device row; they are ended at once only after their next sign-in (or app start that calls `register_device`).

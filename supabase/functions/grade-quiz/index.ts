@@ -1,9 +1,10 @@
 // Edge Function grade-quiz: grades a finished quiz attempt of the signed-in student.
 // POST { attempt_id } → { score, level, results: [{ question_id, correct }] }
 // Writes (service role, never the apps): quiz_answers.correct, quiz_attempts.score/level,
-// topic_progress (mastery, weak/known, next review), and "Hatalarım" cards for wrong answers given with "sure".
+// topic_progress (mastery, weak/known, next review), "Hatalarım" cards for wrong answers given with "sure",
+// and an 'exam_result' notification for real exams (lesson end, exam prep, combined; not section checks).
 import { createClient } from 'npm:@supabase/supabase-js@2';
-import { grade, topicState, type AnswerRow, type QuestionRow } from './grade.ts';
+import { grade, resultNotice, topicState, type AnswerRow, type QuestionRow } from './grade.ts';
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -38,11 +39,11 @@ Deno.serve(async (req) => {
 
   const { data: attempt } = await admin
     .from('quiz_attempts')
-    .select('id, quiz_id, user_id, score, level, quizzes(course_id, lang)')
+    .select('id, quiz_id, user_id, score, level, quizzes(course_id, lang, kind)')
     .eq('id', attempt_id)
     .maybeSingle();
   if (!attempt || attempt.user_id !== uid) return json({ error: 'not found' }, 404);
-  const quiz = attempt.quizzes as unknown as { course_id: string | null; lang: string };
+  const quiz = attempt.quizzes as unknown as { course_id: string | null; lang: string; kind: string };
 
   const { data: answers } = await admin
     .from('quiz_answers')
@@ -65,6 +66,15 @@ Deno.serve(async (req) => {
     await admin.from('quiz_answers').update({ correct: r.correct }).eq('attempt_id', attempt_id).eq('question_id', r.question_id);
   }
   await admin.from('quiz_attempts').update({ score: g.score, level: g.level }).eq('id', attempt_id);
+
+  // The result also goes to the notifications list (marked sent: the student sees it on screen, no push).
+  if (g.score !== null && g.level && ['lesson_end', 'exam_prep', 'combined'].includes(quiz.kind)) {
+    const graded = g.results.filter((r) => r.correct !== null);
+    const { data: prof } = await admin.from('profiles').select('app_lang').eq('id', uid).single();
+    const n = resultNotice(prof?.app_lang ?? 'tr', g.score, g.level, graded.filter((r) => r.correct).length, graded.length);
+    const now = new Date().toISOString();
+    await admin.from('notifications').insert({ user_id: uid, kind: 'exam_result', ...n, data: { to: '/progress', attempt_id }, send_at: now, sent_at: now });
+  }
 
   // Topic mastery from all of the student's graded answers on these topics (view topic_mastery).
   const topics = [...new Set((questions ?? []).map((q) => q.topic_id).filter(Boolean))] as string[];

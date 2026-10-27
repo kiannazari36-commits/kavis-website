@@ -426,3 +426,9 @@ verify_jwt = false
 
 [functions.apple-purchase]
 verify_jwt = false
+
+[functions.daily-planner]
+verify_jwt = false
+
+[functions.send-notifications]
+verify_jwt = false

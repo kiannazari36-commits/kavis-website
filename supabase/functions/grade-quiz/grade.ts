@@ -66,3 +66,23 @@ export function grade(questions: QuestionRow[], answers: AnswerRow[]): Graded {
 export function topicState(mastery: number): 'weak' | 'known' {
   return mastery < 60 ? 'weak' : 'known';
 }
+
+const LEVEL_NAME: Record<string, Record<Level, string>> = {
+  tr: { beginner: 'Başlangıç', improving: 'Gelişiyor', very_good: 'Çok iyi', expert: 'Uzman' },
+  en: { beginner: 'Beginner', improving: 'Improving', very_good: 'Very good', expert: 'Expert' },
+  fa: { beginner: 'مبتدی', improving: 'در حال پیشرفت', very_good: 'خیلی خوب', expert: 'متخصص' },
+  ar: { beginner: 'مبتدئ', improving: 'يتحسن', very_good: 'جيد جدًا', expert: 'خبير' },
+};
+
+/** The "exam result" notification in the app language (only for real exams, not the reader's section checks). */
+export function resultNotice(lang: string, score: number, level: Level, right: number, total: number) {
+  const l = LEVEL_NAME[lang] ? lang : 'tr';
+  const s = Math.round(score);
+  const name = LEVEL_NAME[l][level];
+  switch (l) {
+    case 'en': return { title: `Exam result: ${s}% · ${name}`, body: `${right} of ${total} questions right. Your weak topics went into the plan.` };
+    case 'fa': return { title: `نتیجهٔ امتحان: ${s}٪ · ${name}`, body: `${right} از ${total} سؤال درست. موضوعات ضعیفت به برنامه اضافه شد.` };
+    case 'ar': return { title: `نتيجة الامتحان: ${s}% · ${name}`, body: `${right} من ${total} أسئلة صحيحة. أُضيفت موضوعاتك الضعيفة إلى الخطة.` };
+    default: return { title: `Sınav sonucun: %${s} · ${name}`, body: `${total} sorudan ${right} doğru. Zayıf konuların plana eklendi.` };
+  }
+}
