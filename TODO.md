@@ -206,7 +206,7 @@ Step 4 of the app plan (26 Oct 2026): assistant, cards, quiz, plan (progress scr
 
 Still to build (screens):
 - [ ] Notifications screen, share sheet, placement test after upload
-- [ ] Reader extras (iPad; web done: molecule viewer, section audio from the dock speaker, lecturer marks from recordings): audio per page, notes with Apple Pencil, section check quiz ("Başla")
+- [x] Reader extras done on the iPhone 27 Oct 2026: molecule viewer (SceneKit 3D, turns with a finger, groups light up; library copied from the web with `node ios/scripts/export-molecules.mjs`, run it again when the web adds molecules), "Dinle" reads the open section with the Settings voice and speed, handwritten notes on every page card (PencilKit; `annotations` kind `ink` + file in bucket `ink`, tried locally). Still open: section check quiz "Başla" from the reader; the web does not show the iPhone's ink notes; iPad layout
 - [ ] Assistant extras: "Ben anlatayım" (teach-back), voice mode, easy explanation, real "Sürekli dinle" (speech recognition)
 - [ ] Upload extras: real camera and microphone capture (permission texts), the trial-limit sheet and fair-use sheet of the design (the lock dialog is used now)
 - [ ] Step 4: StoreKit, trial limits on the server, share links
