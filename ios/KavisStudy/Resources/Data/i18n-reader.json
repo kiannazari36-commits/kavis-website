@@ -134,7 +134,11 @@
   "onlyFromAi": "Önce bu ders, gerekirse internet: {lesson}",
   "pageFind": "Sayfa no",
   "pageNotFound": "Bu derste böyle bir sayfa yok.",
-  "resumeAt": "Kaldığın yerden devam: sayfa {p}"
+  "resumeAt": "Kaldığın yerden devam: sayfa {p}",
+  "pdfFull": "Tam ekran PDF",
+  "pdfPage": "Sayfa {a} / {b}",
+  "pdfClose": "PDF'ten çık",
+  "pdfLoadFail": "PDF açılamadı. İnternet bağlantını kontrol et."
  },
  "en": {
   "molDrugPage": "MOLECULAR STRUCTURE · DRUG ON PAGE {n}",
@@ -271,7 +275,11 @@
   "onlyFromAi": "This lesson first, the web if needed: {lesson}",
   "pageFind": "Page no.",
   "pageNotFound": "This lesson has no such page.",
-  "resumeAt": "Back where you stopped: page {p}"
+  "resumeAt": "Back where you stopped: page {p}",
+  "pdfFull": "Full-screen PDF",
+  "pdfPage": "Page {a} / {b}",
+  "pdfClose": "Leave PDF",
+  "pdfLoadFail": "Could not open the PDF. Check your connection."
  },
  "fa": {
   "molDrugPage": "ساختار مولکولی · دارویی که در صفحهٔ {n} آمده",
@@ -408,7 +416,11 @@
   "onlyFromAi": "اول این درس، در صورت نیاز اینترنت: {lesson}",
   "pageFind": "شماره صفحه",
   "pageNotFound": "این درس چنین صفحه‌ای ندارد.",
-  "resumeAt": "ادامه از جایی که ماندی: صفحه {p}"
+  "resumeAt": "ادامه از جایی که ماندی: صفحه {p}",
+  "pdfFull": "PDF تمام‌صفحه",
+  "pdfPage": "صفحه {a} / {b}",
+  "pdfClose": "خروج از PDF",
+  "pdfLoadFail": "PDF باز نشد. اتصال اینترنت را بررسی کن."
  },
  "ar": {
   "molDrugPage": "البنية الجزيئية · الدواء المذكور في الصفحة {n}",
@@ -545,6 +557,10 @@
   "onlyFromAi": "هذا الدرس أولًا، ثم الإنترنت عند الحاجة: {lesson}",
   "pageFind": "رقم الصفحة",
   "pageNotFound": "لا توجد صفحة كهذه في هذا الدرس.",
-  "resumeAt": "نكمل من حيث توقفت: الصفحة {p}"
+  "resumeAt": "نكمل من حيث توقفت: الصفحة {p}",
+  "pdfFull": "ملف PDF بملء الشاشة",
+  "pdfPage": "صفحة {a} / {b}",
+  "pdfClose": "إغلاق PDF",
+  "pdfLoadFail": "تعذّر فتح الملف. تحقق من اتصالك."
  }
 }

@@ -150,6 +150,15 @@ enum ReaderAPI {
 
     /// Too many small sections (about one per page) for the pages: the server groups them once into a few general
     /// parts (Edge Function group-sections). The same rule as the web and the server.
+    /// The student's original PDF as a short-lived signed link (iPad "tam ekran PDF"); nil for photos or when offline.
+    static func pdfURL(materialId: String) async -> URL? {
+        struct File: Decodable { let storage_path: String }
+        let rows: [File] = (try? await supabase.from("material_files").select("storage_path")
+            .eq("material_id", value: materialId).order("sort_order").limit(1).execute().value) ?? []
+        guard let path = rows.first?.storage_path, path.lowercased().hasSuffix(".pdf") else { return nil }
+        return try? await supabase.storage.from("materials").createSignedURL(path: path, expiresIn: 3600)
+    }
+
     static func needsGrouping(_ doc: ReaderDoc) -> Bool {
         guard doc.grouped != true, !doc.sections.isEmpty else { return false }
         let pages = Set(doc.sections.flatMap { $0.blocks.map(\.pageFrom) }).count

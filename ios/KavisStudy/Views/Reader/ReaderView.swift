@@ -36,6 +36,7 @@ struct ReaderView: View {
     @State private var atPage: Int?
     /// iPad: the assistant panel on the right (open by default, as in the design).
     @State private var panelOpen = true
+    @State private var showPdf = false
 
     private static let fontSizes = [18, 20, 22, 24]
 
@@ -80,6 +81,9 @@ struct ReaderView: View {
             }
             if let lesson, let id = openTerm, let term = lesson.terms[id] { termPopover(term) }
             if let text = translateText, let lesson, let doc { translationSheet(text, lesson: lesson, doc: doc) }
+        }
+        .fullScreenCover(isPresented: $showPdf) {
+            PdfFullView(materialId: docID, onAsk: { showPdf = false; withAnimation { panelOpen = true } }, onClose: { showPdf = false })
         }
         .task {
             guard !loaded else { return }
@@ -582,6 +586,7 @@ struct ReaderView: View {
             barIcon(.speaker, label: t("listen"), on: speaker.speaking) { readAloud() }
             // iPad (design NewIPad): the bar also opens this lesson's flash cards.
             if wide, let lesson { barIcon(.cards, label: prefs.t("home.tileCards"), on: false) { app.go(.lessonCards(lesson.id)) } }
+            if wide, lesson != nil { barIcon(.file, label: t("pdfFull"), on: false) { showPdf = true } }
             if !wide { Spacer(minLength: 0) }
             // On the iPad the header's star opens the assistant panel (design NewIPad), so the bar has none.
             if !wide {
