@@ -23,6 +23,7 @@ struct AssistantChatView: View {
     @State private var speedIndex = 1
     @State private var speaker = Speaker()
     @State private var started = false
+    @State private var dictation = Dictation()
     @FocusState private var focused: Bool
 
     private static let speeds: [Double] = [0.8, 1.0, 1.25, 1.5]
@@ -49,8 +50,9 @@ struct AssistantChatView: View {
             threadId = thread.id
             messages = [ChatMessage(role: .assistant, text: welcome)] + thread.messages
             if !target.question.isEmpty || target.photo != nil { await ask(target.question, photo: target.photo) }
+            if target.listen { toggleVoice() }
         }
-        .onDisappear { speaker.stop() }
+        .onDisappear { speaker.stop(); dictation.stop() }
     }
 
     // MARK: Sheet
@@ -153,6 +155,7 @@ struct AssistantChatView: View {
 
     /// The design's greeting with the student's course ("Merhaba! Yalnızca “Farmakoloji” PDF'ine dayanarak cevap veriyorum.").
     private var welcome: String {
+        if target.teach { return prefs.t("teachHello") }
         if isAll { return d("Merhaba! Tüm derslerindeki PDF, ses kaydı ve sınav sonuçlarına bakarak cevap veriyorum.") }
         var text = d("Merhaba! Yalnızca “Hipertansiyon” PDF'ine dayanarak cevap veriyorum. Şu an sayfa 12'desin.")
         // The page remark belongs to the reader; here only the first sentence, with the course name.
@@ -297,7 +300,7 @@ struct AssistantChatView: View {
                     .frame(width: 48, height: 48).overlay(Circle().stroke(KPhone.line, lineWidth: 1))
             }
             .accessibilityLabel(prefs.t("quick"))
-            TextField("", text: $draft, prompt: Text(d("Bu ders hakkında sor…")).foregroundStyle(KPhone.text3))
+            TextField("", text: $draft, prompt: Text(dictation.listening ? prefs.t("voiceRec") : target.teach ? prefs.t("teachPh") : d("Bu ders hakkında sor…")).foregroundStyle(KPhone.text3))
                 .font(KFont.ui(15, lang: lang)).foregroundStyle(KPhone.text)
                 .focused($focused)
                 .submitLabel(.send)
@@ -306,14 +309,14 @@ struct AssistantChatView: View {
                 .background(KPhone.sub, in: Capsule())
                 .disabled(offline)
             let empty = draft.trimmingCharacters(in: .whitespaces).isEmpty
-            Button { if empty { toast.show(prefs.t("k165")) } else { send() } } label: {
-                KIcon(name: empty ? .mic : .paperPlane, size: 20, width: 1.8, flipsInRTL: !empty)
+            Button { if empty || dictation.listening { toggleVoice() } else { send() } } label: {
+                KIcon(name: empty || dictation.listening ? .mic : .paperPlane, size: 20, width: 1.8, flipsInRTL: !empty)
                     .foregroundStyle(KPhone.ctaText)
                     .frame(width: 48, height: 48)
-                    .background(KOnb.pri.opacity(offline ? 0.4 : 1), in: Circle())
+                    .background((dictation.listening ? KOnb.bad : KOnb.pri).opacity(offline ? 0.4 : 1), in: Circle())
             }
             .disabled(offline)
-            .accessibilityLabel(empty ? prefs.t("talk") : prefs.t("send"))
+            .accessibilityLabel(empty || dictation.listening ? prefs.t("talk") : prefs.t("send"))
         }
         // Like every AI app: the assistant can be wrong.
         Text(prefs.t("aiNote")).font(KFont.ui(10.5, lang: lang)).foregroundStyle(KOnb.text3).multilineTextAlignment(.center)
@@ -323,19 +326,38 @@ struct AssistantChatView: View {
 
     // MARK: Actions
 
+    /// The microphone: the words appear in the text box while the student speaks.
+    private func toggleVoice() {
+        if dictation.listening { return dictation.stop() }
+        let base = draft.isEmpty ? "" : draft + " "
+        Task {
+            await dictation.start(lang: lang, onText: { draft = base + $0 }, onEnd: { why in
+                switch why {
+                case .denied: toast.show(prefs.t("voiceNoMic"))
+                case .empty: toast.show(prefs.t("voiceEmpty"))
+                case .unsupported: toast.show(prefs.t("voiceFailed"))
+                case nil: break
+                }
+            })
+        }
+    }
+
     private func send() {
+        dictation.stop()
         let question = draft.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !question.isEmpty, !waiting, !offline else { return }
         trial.perform(.question) {
             draft = ""
-            Task { await ask(question) }
+            // "Ben anlatayım": the student's own words go with the request to check them against the lessons.
+            Task { await ask(target.teach ? prefs.t("teachPrefix") + question : question, shown: question) }
         }
     }
 
     /// Adds the question and the answer while the server writes it; the server saves both and counts the question.
     /// With a photo ("Soruyu çözdür") the server solves the question in it step by step.
-    private func ask(_ question: String, photo: Data? = nil) async {
-        messages.append(ChatMessage(role: .user, text: question.isEmpty ? prefs.t("solveLabel") : question, photo: photo))
+    private func ask(_ question: String, shown: String? = nil, photo: Data? = nil) async {
+        let shown = shown ?? question
+        messages.append(ChatMessage(role: .user, text: shown.isEmpty ? prefs.t("solveLabel") : shown, photo: photo))
         waiting = true
         streaming = ""
         let result = await AssistantAPI.ask(question, courseId: isAll ? nil : target.topicId, threadId: threadId,
@@ -346,6 +368,8 @@ struct AssistantChatView: View {
         case .success(let r):
             threadId = r.threadId
             messages.append(r.message)
+            // Voice mode ("Sürekli dinle"): every answer is also read aloud with the chosen voice and speed.
+            if listening { speak(r.message.text) }
         case .failure(let e):
             if e == .locked { trial.lockedKey = "trialQFull" } else {
                 toast.show(prefs.t(e == .budget ? "askBudget" : e == .declined ? "askDeclined" : "askFailed"))

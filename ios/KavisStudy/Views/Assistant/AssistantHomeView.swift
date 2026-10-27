@@ -254,7 +254,7 @@ struct AssistantHomeView: View {
                 tool(.sliders, label: d("Ders, kaynak ve hızlı işlemler"), on: panel == .menu, needsDot: topic == nil && panel != .menu) { toggle(.menu) }
                 if topic != nil { quickChip }
                 Spacer(minLength: 0)
-                tool(.mic, label: prefs.t("talk"), on: false) { soon() }
+                tool(.mic, label: prefs.t("talk"), on: false) { open(listen: true) }
                 Button(action: send) {
                     KIcon(name: .paperPlane, size: 18, width: 1.8, flipsInRTL: true)
                         .foregroundStyle(KPhone.ctaText)
@@ -313,6 +313,17 @@ struct AssistantHomeView: View {
         trial.perform(.question) {
             draft = ""
             app.go(.assistantChat(AssistantChatTarget(topicId: topic.id, question: question, ai: ai)))
+        }
+    }
+
+    /// "Ben anlatayım" and the microphone open the chat of the chosen course without a question.
+    private func open(teach: Bool = false, listen: Bool = false) {
+        guard let topic else {
+            panel = .menu
+            return toast.show(d("Önce sorunun hangi dersle ilgili olduğunu seç"))
+        }
+        trial.perform(.question) {
+            app.go(.assistantChat(AssistantChatTarget(topicId: topic.id, ai: ai, teach: teach, listen: listen)))
         }
     }
 
@@ -409,7 +420,7 @@ struct AssistantHomeView: View {
             (.lines, "Bu konuyu özetle", { panel = .none; ask(d("Bu konuyu özetle")) }),
             (.checklist, "Bana 5 soru sor", { panel = .none; ask(d("Bana 5 soru sor")) }),
             (.target, "Zayıf konularım", { panel = .none; ask(d("Zayıf konularım")) }),
-            (.mic, "Ben anlatayım", { panel = .none; soon() }),
+            (.mic, "Ben anlatayım", { panel = .none; open(teach: true) }),
         ]
         return VStack(spacing: 0) {
             ForEach(Array(items.enumerated()), id: \.offset) { i, item in

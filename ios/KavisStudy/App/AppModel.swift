@@ -12,6 +12,10 @@ struct AssistantChatTarget: Equatable {
     var photo: Data? = nil
     /// A conversation from "Geçmiş" to continue (else the course's latest one).
     var threadId: String? = nil
+    /// "Ben anlatayım": the student explains the topic, the assistant checks it against the lessons.
+    var teach = false
+    /// The microphone starts at once (home "Konuş").
+    var listen = false
 }
 
 /// What the student uploads (the three start buttons on home).
@@ -101,7 +105,7 @@ final class AppModel {
         case "review": route = .review(MockFlag.value("material") ?? "")
         case "recording": route = .recording(MockFlag.value("material") ?? "")
         case "assistant": route = .assistant
-        case "chat": route = .assistantChat(AssistantChatTarget(topicId: "hypertension"))
+        case "chat": route = .assistantChat(AssistantChatTarget(topicId: MockFlag.value("course") ?? "hypertension", teach: MockFlag.value("teach") == "1", listen: MockFlag.value("listen") == "1"))
         default: route = .splash
         }
     }
