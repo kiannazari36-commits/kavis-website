@@ -16,9 +16,15 @@ enum InkAPI {
     private struct File: Codable { let drawing: Data }
 
     /// Every saved drawing of a lesson, by page.
+    /// Without internet: the phone's copy (OfflineStore), kept up to date by every load and save.
     static func load(materialId: String, surface: Surface = .card) async -> [Int: PKDrawing] {
-        let rows: [Row] = ((try? await supabase.from("annotations").select("id, page, ink_path, anchor")
-            .eq("material_id", value: materialId).eq("kind", value: "ink").execute().value) ?? []).filter { $0.on(surface) }
+        let rows: [Row]
+        do {
+            rows = try await supabase.from("annotations").select("id, page, ink_path, anchor")
+                .eq("material_id", value: materialId).eq("kind", value: "ink").execute().value
+        } catch {
+            return kept(materialId, surface)
+        }
         var result: [Int: PKDrawing] = [:]
         for row in rows {
             guard let path = row.ink_path,
@@ -27,12 +33,32 @@ enum InkAPI {
                   let drawing = try? PKDrawing(data: file.drawing) else { continue }
             result[row.page] = drawing
         }
+        keep(result, materialId, surface)
         return result
+    }
+
+    private static func keptFile(_ materialId: String, _ surface: Surface) -> String {
+        "ink-\(materialId)\(surface == .pdf ? "-pdf" : "").json"
+    }
+
+    private static func kept(_ materialId: String, _ surface: Surface) -> [Int: PKDrawing] {
+        guard let data = OfflineStore.read(keptFile(materialId, surface)),
+              let pages = try? JSONDecoder().decode([Int: Data].self, from: data) else { return [:] }
+        return pages.compactMapValues { try? PKDrawing(data: $0) }
+    }
+
+    private static func keep(_ drawings: [Int: PKDrawing], _ materialId: String, _ surface: Surface) {
+        guard let data = try? JSONEncoder().encode(drawings.mapValues { $0.dataRepresentation() }) else { return }
+        OfflineStore.write(data, keptFile(materialId, surface))
     }
 
     /// Saves (or replaces) the drawing of one page; an empty drawing removes the row.
     static func save(materialId: String, page: Int, drawing: PKDrawing, surface: Surface = .card) async {
         guard let uid = supabase.auth.currentUser?.id.uuidString.lowercased() else { return }
+        // The phone's copy first, so a note written without internet is still there next time.
+        var copy = kept(materialId, surface)
+        copy[page] = drawing.strokes.isEmpty ? nil : drawing
+        keep(copy, materialId, surface)
         let existing: [Row] = ((try? await supabase.from("annotations").select("id, page, ink_path, anchor")
             .eq("material_id", value: materialId).eq("kind", value: "ink").eq("page", value: page).execute().value) ?? []).filter { $0.on(surface) }
         if drawing.strokes.isEmpty {

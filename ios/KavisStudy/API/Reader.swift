@@ -130,15 +130,28 @@ enum ReaderAPI {
         struct Term: Decodable { let id: String; let term_key: String; let surface: String; let page: Int?; let explanation: [String: ReaderTerm.Explanation]? }
         struct Progress: Decodable { let pages_read: [Int]?; let last_page: Int?; let percent_read: Int? }
 
-        async let materialQ: [Material] = supabase.from("materials").select("title, page_count, course_id, courses(name)").eq("id", value: id).limit(1).execute().value
-        async let contentQ: [Content] = supabase.from("material_content").select("reader_doc").eq("material_id", value: id).limit(1).execute().value
-        async let termsQ: [Term] = supabase.from("material_terms").select("id, term_key, surface, page, explanation").eq("material_id", value: id).execute().value
-        async let progressQ: [Progress] = supabase.from("reading_progress").select("pages_read, last_page, percent_read").eq("material_id", value: id).limit(1).execute().value
+        // The answers are kept as they came (OfflineStore), so the lesson opens again without internet.
+        struct Saved: Codable { let material: Data; let content: Data; let terms: Data; let progress: Data }
+        async let materialQ = supabase.from("materials").select("title, page_count, course_id, courses(name)").eq("id", value: id).limit(1).execute().data
+        async let contentQ = supabase.from("material_content").select("reader_doc").eq("material_id", value: id).limit(1).execute().data
+        async let termsQ = supabase.from("material_terms").select("id, term_key, surface, page, explanation").eq("material_id", value: id).execute().data
+        async let progressQ = supabase.from("reading_progress").select("pages_read, last_page, percent_read").eq("material_id", value: id).limit(1).execute().data
 
-        guard let material = (try? await materialQ)?.first else { return nil }
-        let doc = await grouped(id, (try? await contentQ)?.first?.reader_doc)
-        let terms = (try? await termsQ) ?? []
-        let progress = (try? await progressQ)?.first
+        let file = "lesson-\(id).json"
+        let saved: Saved
+        if let m = try? await materialQ, let c = try? await contentQ, let t = try? await termsQ, let p = try? await progressQ {
+            saved = Saved(material: m, content: c, terms: t, progress: p)
+            if let data = try? JSONEncoder().encode(saved) { OfflineStore.write(data, file) }
+        } else if let data = OfflineStore.read(file), let old = try? JSONDecoder().decode(Saved.self, from: data) {
+            saved = old
+        } else {
+            return nil
+        }
+        let decoder = JSONDecoder()
+        guard let material = (try? decoder.decode([Material].self, from: saved.material))?.first else { return nil }
+        let doc = await grouped(id, (try? decoder.decode([Content].self, from: saved.content))?.first?.reader_doc)
+        let terms = (try? decoder.decode([Term].self, from: saved.terms)) ?? []
+        let progress = (try? decoder.decode([Progress].self, from: saved.progress))?.first
         return Lesson(
             id: id, title: material.title, courseId: material.course_id, courseName: material.courses?.name ?? "",
             doc: doc,
@@ -151,6 +164,16 @@ enum ReaderAPI {
     /// Too many small sections (about one per page) for the pages: the server groups them once into a few general
     /// parts (Edge Function group-sections). The same rule as the web and the server.
     /// The student's original PDF as a short-lived signed link (iPad "tam ekran PDF"); nil for photos or when offline.
+    /// The original PDF's bytes: the phone's copy when there is one, else downloaded once and kept (OfflineStore).
+    static func pdfData(materialId: String) async -> Data? {
+        if let kept = OfflineStore.pdf(materialId) { return kept }
+        guard let url = await pdfURL(materialId: materialId),
+              let (data, response) = try? await URLSession.shared.data(from: url),
+              (response as? HTTPURLResponse)?.statusCode == 200 else { return nil }
+        OfflineStore.savePdf(data, materialId)
+        return data
+    }
+
     static func pdfURL(materialId: String) async -> URL? {
         struct File: Decodable { let storage_path: String }
         let rows: [File] = (try? await supabase.from("material_files").select("storage_path")

@@ -66,8 +66,7 @@ struct PdfFullView: View {
         .overlay(alignment: .bottom) { if let openTerm { termCard(openTerm) } }
         .toastOverlay(toast, lang: lang)
         .task {
-            guard let url = await ReaderAPI.pdfURL(materialId: materialId),
-                  let data = try? await URLSession.shared.data(from: url).0,
+            guard let data = await ReaderAPI.pdfData(materialId: materialId),
                   let doc = PDFDocument(data: data) else { failed = true; return }
             document = doc
             ink = await InkAPI.load(materialId: materialId, surface: .pdf)

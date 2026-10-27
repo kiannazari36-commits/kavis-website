@@ -179,6 +179,7 @@ final class AppModel {
     func sessionEnded() async {
         await AuthAPI.logOut(localOnly: true)
         ReminderService.clear()
+        OfflineStore.removeAll()
         user = nil
         reset(to: .welcome)
     }
@@ -188,6 +189,7 @@ final class AppModel {
         await DevicesAPI.signOutThisDevice()
         await AuthAPI.logOut()
         ReminderService.clear()
+        OfflineStore.removeAll()
         user = nil
         reset(to: .welcome)
     }
