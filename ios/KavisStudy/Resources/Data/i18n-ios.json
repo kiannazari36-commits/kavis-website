@@ -20,7 +20,9 @@
   "quizWrittenCount": "{n} yazılı soru",
   "molDrugPage": "MOLEKÜL YAPISI · SAYFA {n}'TE GEÇEN İLAÇ",
   "quickEasy": "Kolay dille anlat",
-  "quickEasyAsk": "Son konuyu çok kolay bir dille, günlük hayattan bir benzetmeyle anlat."
+  "quickEasyAsk": "Son konuyu çok kolay bir dille, günlük hayattan bir benzetmeyle anlat.",
+  "padLight": "Açık moda geç",
+  "padDark": "Koyu moda geç"
  },
  "en": {
   "remindTitle": "Study time",
@@ -43,7 +45,9 @@
   "quizWrittenCount": "{n} written questions",
   "molDrugPage": "MOLECULAR STRUCTURE · DRUG ON PAGE {n}",
   "quickEasy": "Explain in simple words",
-  "quickEasyAsk": "Explain the last topic in very simple words, with an everyday comparison."
+  "quickEasyAsk": "Explain the last topic in very simple words, with an everyday comparison.",
+  "padLight": "Switch to light mode",
+  "padDark": "Switch to dark mode"
  },
  "fa": {
   "remindTitle": "وقت مطالعه",
@@ -66,7 +70,9 @@
   "quizWrittenCount": "{n} سؤال تشریحی",
   "molDrugPage": "ساختار مولکولی · دارویی که در صفحهٔ {n} آمده",
   "quickEasy": "ساده توضیح بده",
-  "quickEasyAsk": "آخرین مبحث را با زبانی خیلی ساده و با یک مثال از زندگی روزمره توضیح بده."
+  "quickEasyAsk": "آخرین مبحث را با زبانی خیلی ساده و با یک مثال از زندگی روزمره توضیح بده.",
+  "padLight": "رفتن به حالت روشن",
+  "padDark": "رفتن به حالت تیره"
  },
  "ar": {
   "remindTitle": "وقت الدراسة",
@@ -89,6 +95,8 @@
   "quizWrittenCount": "{n} أسئلة مكتوبة",
   "molDrugPage": "البنية الجزيئية · الدواء المذكور في الصفحة {n}",
   "quickEasy": "اشرح بكلمات بسيطة",
-  "quickEasyAsk": "اشرح آخر موضوع بكلمات بسيطة جدًا مع تشبيه من الحياة اليومية."
+  "quickEasyAsk": "اشرح آخر موضوع بكلمات بسيطة جدًا مع تشبيه من الحياة اليومية.",
+  "padLight": "التبديل إلى الوضع الفاتح",
+  "padDark": "التبديل إلى الوضع الداكن"
  }
 }
