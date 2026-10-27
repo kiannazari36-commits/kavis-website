@@ -5,7 +5,7 @@ import { useToast } from '../components/Toast';
 import Wordmark from '../components/Wordmark';
 import LangThemeSwitch from '../components/LangThemeSwitch';
 import Icon, { AppleLogo, GoogleLogo } from '../components/Icon';
-import { AuthFail, currentUser, logIn, onSignedIn, resendCode, sendPasswordReset, setNewPassword, signUp, socialLogIn, verifyEmail, type Provider } from '../api/auth';
+import { AuthFail, currentUser, hasSession, logIn, onSignedIn, resendCode, sendPasswordReset, setNewPassword, signUp, socialLogIn, verifyEmail, type Provider } from '../api/auth';
 import { checkDeviceLimit } from '../api/devices';
 import s from './Login.module.css';
 
@@ -273,6 +273,20 @@ function Verify({ email, onBack }: { email: string; onBack: () => void }) {
 
   // Link mode: when the student opens the email link (often in a new tab), continue here too.
   useEffect(() => (EMAIL_CODE ? undefined : onSignedIn(() => afterLogin(navigate))), [navigate]);
+
+  // Back from Google (?oauth=1): the session is ready or about to be; continue once, like after a password login.
+  useEffect(() => {
+    if (new URLSearchParams(location.search).get('oauth') !== '1') return;
+    let done = false;
+    const go = () => {
+      if (done) return;
+      done = true;
+      afterLogin(navigate);
+    };
+    const off = onSignedIn(go);
+    hasSession().then((yes) => yes && go());
+    return off;
+  }, [navigate]);
 
   useEffect(() => {
     if (left <= 0) return;

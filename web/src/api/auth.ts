@@ -102,9 +102,22 @@ export function onSignedIn(cb: () => void) {
   return () => data.subscription.unsubscribe();
 }
 
-/** Sign in with Apple / Google: not set up yet (needs the Apple and Google developer settings). */
-export async function socialLogIn(_provider: Provider): Promise<User> {
-  throw new AuthFail('Soon');
+/**
+ * Sign in with Google (Supabase OAuth, works in any browser, so Android users can use the web too). The page leaves
+ * for Google and comes back to /login?oauth=1, where Login finishes the sign-in. Apple comes later (needs the Apple
+ * Developer account).
+ */
+export async function socialLogIn(provider: Provider): Promise<User> {
+  if (provider !== 'google') throw new AuthFail('Soon');
+  const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${location.origin}/login?oauth=1` } });
+  if (error) throw new AuthFail('Other');
+  // The browser is already on its way to Google.
+  return new Promise<User>(() => {});
+}
+
+/** True when the browser already holds a session (used when coming back from Google). */
+export async function hasSession() {
+  return !!(await supabase.auth.getSession()).data.session;
 }
 
 export async function logOut() {
