@@ -172,4 +172,49 @@ enum RecordingAPI {
             .eq("kind", value: "audio").eq("linked_material_id", value: pdfId)
             .order("created_at", ascending: false).execute().value) ?? []
     }
+
+    /// A note on a PDF page from the lecture recording: what the lecturer said there and where in the recording
+    /// (the web's `LectureMark`).
+    struct LectureMark: Identifiable {
+        let page: Int
+        let recordingId: String
+        let at: Double
+        /// exam | stress | time
+        let kind: String
+        let text: String
+        let minutes: Int
+        var id: String { "\(recordingId)-\(kind)-\(page)-\(Int(at))" }
+    }
+
+    /// Notes for the reading page from the lesson's recordings: "sınavda çıkar" / stressed moments on the page they were
+    /// said about (the part of the talk that matches the page, else the topic's first page), and pages the lecturer
+    /// spent 2 minutes or more on.
+    static func lectureMarks(_ pdfId: String) async -> [LectureMark] {
+        struct Topic: Decodable { let id: String; let page_from: Int? }
+        struct Lecture: Decodable { let parts: [Part]?; let quotes: [Quote]? }
+        struct Row: Decodable { let material_id: String; let lecture: Lecture? }
+        let recs = await recordingsOf(pdfId).filter { $0.status == "ready" }
+        guard !recs.isEmpty else { return [] }
+        async let topicsQ: [Topic] = supabase.from("material_topics").select("id, page_from").eq("material_id", value: pdfId).execute().value
+        async let rowsQ: [Row] = supabase.from("material_content").select("material_id, lecture").in("material_id", values: recs.map(\.id)).execute().value
+        let topicPage = Dictionary(uniqueKeysWithValues: ((try? await topicsQ) ?? []).map { ($0.id, $0.page_from ?? 0) })
+        var marks: [LectureMark] = []
+        for r in (try? await rowsQ) ?? [] {
+            let parts = r.lecture?.parts ?? []
+            for q in r.lecture?.quotes ?? [] {
+                let part = parts.first { q.at >= $0.start && q.at < $0.end && $0.page > 0 }
+                let page = part?.page ?? q.topic_id.flatMap { topicPage[$0] } ?? 0
+                if page > 0 { marks.append(LectureMark(page: page, recordingId: r.material_id, at: q.at, kind: q.kind, text: q.text, minutes: 0)) }
+            }
+            var perPage: [Int: (seconds: Double, at: Double)] = [:]
+            for p in parts where p.page > 0 {
+                let x = perPage[p.page] ?? (0, p.start)
+                perPage[p.page] = (x.seconds + (p.end - p.start), min(x.at, p.start))
+            }
+            for (page, x) in perPage where x.seconds >= 120 {
+                marks.append(LectureMark(page: page, recordingId: r.material_id, at: x.at, kind: "time", text: "", minutes: Int((x.seconds / 60).rounded())))
+            }
+        }
+        return marks
+    }
 }

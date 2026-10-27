@@ -17,6 +17,7 @@ struct AssistantChatView: View {
     @State private var streaming: String?
     @State private var threadId: String?
     @State private var draft = ""
+    @State private var quickOpen = false
     @State private var waiting = false
     @State private var listening = false
     @State private var femaleVoice = true
@@ -292,13 +293,45 @@ struct AssistantChatView: View {
 
     // MARK: Composer
 
+    /// Ready questions (the web reader's quick menu): the first one asks for a simple explanation of the last topic.
+    private var quickItems: [(label: String, ask: String)] {
+        [(prefs.t("quickEasy"), prefs.t("quickEasyAsk")), (prefs.t("teacherEmph"), prefs.t("teacherEmph")),
+         (prefs.t("k98"), prefs.t("k98")), (prefs.t("k99"), prefs.t("k99"))]
+    }
+
     private var composer: some View {
         VStack(spacing: 6) {
-        HStack(spacing: 10) {
-            Button { toast.show(prefs.t("k165")) } label: {
-                KIcon(name: .sparkle, size: 20, width: 1.7).foregroundStyle(KPhone.text)
-                    .frame(width: 48, height: 48).overlay(Circle().stroke(KPhone.line, lineWidth: 1))
+        if quickOpen {
+            VStack(spacing: 0) {
+                ForEach(Array(quickItems.enumerated()), id: \.offset) { i, item in
+                    Button {
+                        quickOpen = false
+                        draft = item.ask
+                        send()
+                    } label: {
+                        Text(item.label).font(KFont.ui(14, i == 0 ? .semibold : .regular, lang: lang)).foregroundStyle(KPhone.text)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 16).frame(height: 44)
+                            .background(i == 0 ? KOnb.priSoft : .clear)
+                    }
+                    .buttonStyle(.plain)
+                    if i < quickItems.count - 1 { Rectangle().fill(KPhone.line).frame(height: 1) }
+                }
             }
+            .background(KPhone.card, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(KPhone.line, lineWidth: 1))
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel(prefs.t("quick"))
+        }
+        HStack(spacing: 10) {
+            Button { withAnimation(.easeOut(duration: 0.15)) { quickOpen.toggle() } } label: {
+                KIcon(name: .sparkle, size: 20, width: 1.7).foregroundStyle(quickOpen ? KOnb.priText : KPhone.text)
+                    .frame(width: 48, height: 48)
+                    .background(quickOpen ? KOnb.priSoft : .clear, in: Circle())
+                    .overlay(Circle().stroke(quickOpen ? KOnb.priText : KPhone.line, lineWidth: 1))
+            }
+            .disabled(offline)
             .accessibilityLabel(prefs.t("quick"))
             TextField("", text: $draft, prompt: Text(dictation.listening ? prefs.t("voiceRec") : target.teach ? prefs.t("teachPh") : d("Bu ders hakkında sor…")).foregroundStyle(KPhone.text3))
                 .font(KFont.ui(15, lang: lang)).foregroundStyle(KPhone.text)

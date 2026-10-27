@@ -97,6 +97,7 @@ struct ReaderView: View {
             ink = await InkAPI.load(materialId: docID)
             let recs = await RecordingAPI.recordingsOf(docID)
             recordingId = (recs.first { $0.status == "ready" } ?? recs.first)?.id
+            marks = await RecordingAPI.lectureMarks(docID)
         }
         .task(id: paused) {
             // The study timer: counts every second while the student is reading.
@@ -182,6 +183,8 @@ struct ReaderView: View {
     }
 
     @State private var recordingId: String?
+    /// What the lecturer said about each page in the recording ("Hoca burada sınavda çıkar dedi").
+    @State private var marks: [RecordingAPI.LectureMark] = []
 
     private var topBar: some View {
         HStack(spacing: 8) {
@@ -296,6 +299,28 @@ struct ReaderView: View {
             : t("pageLabel", ["n": Format.num(block.pageFrom, lang)])
     }
 
+    /// A note from the lecture recording on this page; tapping it opens the recording at that moment.
+    private func lectureMark(_ m: RecordingAPI.LectureMark) -> some View {
+        let exam = m.kind == "exam"
+        let title = exam ? t("markExam") : m.kind == "stress" ? t("markStress") : t("markTime", ["n": Format.num(m.minutes, lang)])
+        return Button { app.go(.recording(m.recordingId, at: m.at)) } label: {
+            HStack(alignment: .top, spacing: 10) {
+                KIcon(name: .mic, size: 15, width: 1.8).foregroundStyle(exam ? KRead.tagRedFg : KRead.chipFg).padding(.top, 2)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title).font(KFont.ui(13, .semibold, lang: lang)).foregroundStyle(KRead.text)
+                    if !m.text.isEmpty {
+                        Text("\u{201C}\(m.text)\u{201D}").font(KFont.reading(13, .regular, lang: lang)).foregroundStyle(KRead.text2)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                Text(Format.clock(Int(m.at))).font(KFont.mono(12, .regular)).foregroundStyle(KRead.text2).padding(.top, 2)
+            }
+            .padding(.horizontal, 14).padding(.vertical, 10)
+            .background(exam ? KRead.tagRed : KRead.chip, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        }
+        .buttonStyle(.plain)
+    }
+
     private func card(_ block: ReaderBlock, doc: ReaderDoc) -> some View {
         let paper = KPaper.colors(paperChoice)
         let docLang = doc.docLang
@@ -315,6 +340,7 @@ struct ReaderView: View {
                         .overlay(Capsule().stroke(paper.line, lineWidth: 1))
                 }
             }
+            ForEach(marks.filter { $0.page >= block.pageFrom && $0.page <= max(block.pageFrom, block.pageTo) }) { m in lectureMark(m) }
             if let heading = block.heading, !heading.isEmpty {
                 Text(heading).font(KFont.reading(CGFloat(fontSize) - 2, .semibold, lang: docLang)).foregroundStyle(paper.ink)
                     .environment(\.layoutDirection, docLang.layoutDirection)

@@ -72,6 +72,7 @@ struct HomeView: View {
             async let list = CoursesAPI.listCourses()
             async let week = PlanAPI.weekTasks()
             async let review = PlanAPI.todayReview()
+            Task { unread = await NotificationsAPI.hasUnread() }
             await trial.refresh()
             courses = await list
             todayTasks = await week.filter { $0.day == CoursesAPI.todayISO() }
@@ -82,6 +83,7 @@ struct HomeView: View {
     // MARK: Top bar
 
     @State private var photo: UIImage? = AvatarAPI.cached()
+    @State private var unread = false
 
     private var fullName: String { app.user?.name ?? "Elif Yıldız" }
     private var firstName: String { fullName.split(separator: " ").first.map(String.init) ?? fullName }
@@ -105,14 +107,14 @@ struct HomeView: View {
                 .shadow(color: Color(hex: 0x9C2F3A, opacity: 0.28), radius: 9, y: 6)
             }
             .accessibilityLabel(t("home.k390"))
-            Button(action: soon) {
+            Button { app.go(.notifications) } label: {
                 KIcon(name: .bell, size: 20, width: 1.6)
                     .foregroundStyle(KPhone.text)
                     .frame(width: 46, height: 46)
                     .background(KPhone.card, in: Circle())
                     .overlay(Circle().stroke(KPhone.line, lineWidth: 1))
                     .overlay(alignment: .topTrailing) {
-                        Circle().fill(KPhone.dot).frame(width: 8, height: 8).padding(.top, 11).padding(.trailing, 12)
+                        if unread { Circle().fill(KPhone.dot).frame(width: 8, height: 8).padding(.top, 11).padding(.trailing, 12) }
                     }
             }
             .accessibilityLabel(t("home.k504"))

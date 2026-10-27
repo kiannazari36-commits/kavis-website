@@ -301,7 +301,19 @@
   "rvChipSure": "{n} sınav hatası",
   "rvChipWeak": "{n} zayıf konu",
   "rvChipForget": "unutma tekrarı",
-  "rvLoadFail": "Tekrar yüklenemedi."
+  "rvLoadFail": "Tekrar yüklenemedi.",
+  "pickKinds": "Soru türü",
+  "kind_multiple_choice": "Çoktan seçmeli",
+  "kind_fill_blank": "Boşluk doldurma",
+  "kind_written": "Yazmalı (düz soru)",
+  "typeFirst": "Önce cevabını yaz.",
+  "judgeFailed": "Cevap şu an kontrol edilemedi. Biraz sonra tekrar dene.",
+  "blankPlaceholder": "Boşluğa gelen kelimeyi yaz",
+  "writtenPlaceholder": "Cevabını kendi cümlelerinle yaz",
+  "judging": "Kontrol ediliyor…",
+  "sendAnswer": "Cevabı gönder",
+  "exWriting": "Sorular senin için yazılıyor… (yaklaşık 1 dakika)",
+  "exNoPdf": "Bu derslerde henüz PDF yok. Önce bir PDF yükle."
  },
  "en": {
   "heroA": "How can I",
@@ -605,7 +617,19 @@
   "rvChipSure": "{n} exam mistakes",
   "rvChipWeak": "{n} weak topics",
   "rvChipForget": "forgetting review",
-  "rvLoadFail": "The review could not be loaded."
+  "rvLoadFail": "The review could not be loaded.",
+  "pickKinds": "Question type",
+  "kind_multiple_choice": "Multiple choice",
+  "kind_fill_blank": "Fill in the blank",
+  "kind_written": "Written",
+  "typeFirst": "Write your answer first.",
+  "judgeFailed": "Could not check the answer now. Try again in a moment.",
+  "blankPlaceholder": "Type the missing word",
+  "writtenPlaceholder": "Write your answer in your own words",
+  "judging": "Checking…",
+  "sendAnswer": "Send answer",
+  "exWriting": "Writing questions for you… (about a minute)",
+  "exNoPdf": "These courses have no PDF yet. Upload a PDF first."
  },
  "fa": {
   "heroA": "امروز چطور",
@@ -909,7 +933,19 @@
   "rvChipSure": "{n} اشتباه امتحانی",
   "rvChipWeak": "{n} مبحث ضعیف",
   "rvChipForget": "مرور فراموشی",
-  "rvLoadFail": "مرور بارگذاری نشد."
+  "rvLoadFail": "مرور بارگذاری نشد.",
+  "pickKinds": "نوع سؤال",
+  "kind_multiple_choice": "چندگزینه‌ای",
+  "kind_fill_blank": "جای خالی",
+  "kind_written": "تشریحی",
+  "typeFirst": "اول پاسخت را بنویس.",
+  "judgeFailed": "اکنون نتوانستیم پاسخ را بررسی کنیم. کمی بعد دوباره امتحان کن.",
+  "blankPlaceholder": "کلمهٔ جا افتاده را بنویس",
+  "writtenPlaceholder": "پاسخت را با جمله‌های خودت بنویس",
+  "judging": "در حال بررسی…",
+  "sendAnswer": "ارسال پاسخ",
+  "exWriting": "در حال نوشتن سؤال‌ها برایت… (حدود یک دقیقه)",
+  "exNoPdf": "این درس‌ها هنوز PDF ندارند. اول یک PDF بارگذاری کن."
  },
  "ar": {
   "heroA": "كيف يمكنني اليوم",
@@ -1213,6 +1249,18 @@
   "rvChipSure": "{n} أخطاء امتحان",
   "rvChipWeak": "{n} مواضيع ضعيفة",
   "rvChipForget": "مراجعة النسيان",
-  "rvLoadFail": "تعذّر تحميل المراجعة."
+  "rvLoadFail": "تعذّر تحميل المراجعة.",
+  "pickKinds": "نوع الأسئلة",
+  "kind_multiple_choice": "اختيار من متعدد",
+  "kind_fill_blank": "ملء الفراغ",
+  "kind_written": "كتابي",
+  "typeFirst": "اكتب إجابتك أولاً.",
+  "judgeFailed": "تعذّر فحص الإجابة الآن. حاول مرة أخرى بعد قليل.",
+  "blankPlaceholder": "اكتب الكلمة الناقصة",
+  "writtenPlaceholder": "اكتب إجابتك بأسلوبك",
+  "judging": "جارٍ الفحص…",
+  "sendAnswer": "إرسال الإجابة",
+  "exWriting": "جارٍ كتابة الأسئلة لك… (نحو دقيقة)",
+  "exNoPdf": "لا توجد ملفات PDF في هذه المواد بعد. ارفع ملف PDF أولاً."
  }
 }

@@ -693,7 +693,7 @@ struct SettingsView: View {
 
     private var scheduleCard: some View {
         card {
-            linkRow(.calendar, chip: C.amb, fg: Color(hex: 0x2A2420), d("Ders programım"), d("Programını ekle · dersten bir gün önce hatırlatayım"), action: soon)
+            linkRow(.calendar, chip: C.amb, fg: Color(hex: 0x2A2420), d("Ders programım"), d("Programını ekle · dersten bir gün önce hatırlatayım"), action: { app.go(.timetable) })
         }
     }
 

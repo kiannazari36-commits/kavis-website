@@ -28,6 +28,10 @@ enum Route: Equatable {
     case onboarding
     case courseSetup
     case home
+    /// "Bildirimler" (the server's notifications).
+    case notifications
+    /// "Okul ders programım".
+    case timetable
     case profile
     case settings
     /// "Sınav merkezi" (home tile).
@@ -88,6 +92,8 @@ final class AppModel {
         case "onboarding": route = .onboarding
         case "setup": route = .courseSetup
         case "home": route = .home
+        case "notifications": route = .notifications
+        case "timetable": route = .timetable
         case "profile", "profileEdit": route = .profile
         case "settings": route = .settings
         case "exam": route = .examCenter

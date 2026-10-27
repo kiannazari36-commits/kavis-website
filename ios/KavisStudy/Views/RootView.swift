@@ -24,6 +24,10 @@ struct RootView: View {
                 CourseSetupView()
             case .home:
                 HomeView()
+            case .notifications:
+                NotificationsView()
+            case .timetable:
+                TimetableView()
             case .profile:
                 ProfileView()
             case .settings:
