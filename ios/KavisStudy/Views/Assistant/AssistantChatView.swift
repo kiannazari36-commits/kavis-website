@@ -9,6 +9,8 @@ struct AssistantChatView: View {
     @Environment(ToastCenter.self) private var toast
     @Environment(TrialModel.self) private var trial
     @Environment(NetworkMonitor.self) private var network
+    /// iPad: the chat sheet stays a readable width in the middle.
+    @Environment(\.padRail) private var wide
 
     let target: AssistantChatTarget
     /// Set when the chat is the iPad reader's side panel (design NewIPad, reader): no backdrop or sheet, and the
@@ -47,6 +49,7 @@ struct AssistantChatView: View {
                     KPhone.authBg.ignoresSafeArea()
                     Color.black.opacity(0.35).ignoresSafeArea()
                     sheet
+                        .frame(maxWidth: wide ? 760 : .infinity)
                         .padding(.top, KLayout.top(64, minimum: 10))
                 }
             }

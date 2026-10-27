@@ -25,6 +25,8 @@ extension Route {
         case .weekPlan: .plan
         case .progress: .progress
         case .settings, .profile, .timetable: .settings
+        // The assistant is not under a rail button (design NewIPad: none is lit there).
+        case .assistant, .assistantChat: .none
         default: .home
         }
     }
@@ -33,7 +35,7 @@ extension Route {
 /// Design: design/NewIPad.dc.html, the 88 pt left rail: the logotype, "Derslerim", "Ders planım", "İlerleme",
 /// "Ayarlar", and the light / dark button at the bottom.
 struct PadRail: View {
-    enum Tab { case home, plan, progress, settings }
+    enum Tab { case home, plan, progress, settings, none }
 
     @Environment(AppPrefs.self) private var prefs
     @Environment(AppModel.self) private var app

@@ -10,6 +10,8 @@ struct AssistantHomeView: View {
     @Environment(ToastCenter.self) private var toast
     @Environment(TrialModel.self) private var trial
     @Environment(\.colorScheme) private var scheme
+    /// iPad (design NewIPad, "ai"): the page is one rounded card next to the rail, the composer at most 720 pt wide.
+    @Environment(\.padRail) private var wide
 
     private enum Panel { case none, menu, add, quick }
 
@@ -47,10 +49,19 @@ struct AssistantHomeView: View {
                 }
                 composer
             }
-            .padding(.horizontal, 16).padding(.bottom, 8)
+            .frame(maxWidth: wide ? 720 : .infinity)
+            .padding(.horizontal, 16).padding(.bottom, wide ? 20 : 8)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(background.ignoresSafeArea())
+        .background {
+            if wide {
+                background.clipShape(RoundedRectangle(cornerRadius: 34, style: .continuous))
+            } else {
+                background.ignoresSafeArea()
+            }
+        }
+        .padding(wide ? EdgeInsets(top: 16, leading: 0, bottom: 16, trailing: 16) : EdgeInsets())
+        .background { if wide { KPhone.homeBg.ignoresSafeArea() } }
         .animation(.easeOut(duration: 0.2), value: panel)
         .task {
             topics = await AssistantAPI.listTopics()
@@ -190,7 +201,7 @@ struct AssistantHomeView: View {
             Spacer()
             roundButton(.menuLines, label: d("Geçmiş"), flips: false) { history = nil; historyOpen = true }
         }
-        .padding(.horizontal, 20).padding(.top, KLayout.top(54, minimum: 6) + 6)
+        .padding(.horizontal, 20).padding(.top, wide ? 20 : KLayout.top(54, minimum: 6) + 6)
     }
 
     private func roundButton(_ icon: KIconName, label: String, flips: Bool, action: @escaping () -> Void) -> some View {
@@ -215,10 +226,11 @@ struct AssistantHomeView: View {
                 .accessibilityHidden(true)
             if !compact {
                 VStack(spacing: 10) {
-                    (Text("\(d("Bugün sana nasıl"))\n").font(KFont.ui(32, .regular, lang: lang)).foregroundStyle(KPhone.text3)
-                        + Text(d("yardım edeyim?")).font(KFont.ui(32, .medium, lang: lang)).foregroundStyle(KPhone.text))
-                        .kTracking(-0.03, size: 32, lang: lang)
-                        .kLineHeight(1.15, size: 32, lang: lang)
+                    let size: CGFloat = wide ? 42 : 32
+                    (Text("\(d("Bugün sana nasıl"))\n").font(KFont.ui(size, .regular, lang: lang)).foregroundStyle(KPhone.text3)
+                        + Text(d("yardım edeyim?")).font(KFont.ui(size, .medium, lang: lang)).foregroundStyle(KPhone.text))
+                        .kTracking(-0.03, size: size, lang: lang)
+                        .kLineHeight(1.12, size: size, lang: lang)
                         .multilineTextAlignment(.center)
                         .accessibilityAddTraits(.isHeader)
                     Text(ai ? d("PDF'lerin + yapay zekâ ve araştırma · PDF dışı bilgi ayrıca işaretlenir") : d("Yalnızca senin PDF'lerin, fotoğrafların ve ses kayıtlarınla"))
