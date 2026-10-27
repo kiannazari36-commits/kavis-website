@@ -580,6 +580,8 @@ struct ReaderView: View {
             Spacer(minLength: 0)
             barIcon(.pen, label: t("pen"), on: noteMode) { noteMode.toggle() }
             barIcon(.speaker, label: t("listen"), on: speaker.speaking) { readAloud() }
+            // iPad (design NewIPad): the bar also opens this lesson's flash cards.
+            if wide, let lesson { barIcon(.cards, label: prefs.t("home.tileCards"), on: false) { app.go(.lessonCards(lesson.id)) } }
             if !wide { Spacer(minLength: 0) }
             // On the iPad the header's star opens the assistant panel (design NewIPad), so the bar has none.
             if !wide {
