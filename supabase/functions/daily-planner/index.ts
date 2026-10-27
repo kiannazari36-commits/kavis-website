@@ -1,4 +1,4 @@
-// Edge Function daily-planner: the nightly job (pg_cron every hour at :05, migration 20261027120000).
+// Edge Function daily-planner: the nightly job (pg_cron every hour at :05, migration 20261027105541).
 // For every student whose local time is 04:xx it
 //   1. makes this week's Kavis plan again (same rules as build-plan, plan_mode 'aim' only),
 //   2. makes today's short review ("Bugünün tekrarı", review_sessions) for the lesson that needs it most,

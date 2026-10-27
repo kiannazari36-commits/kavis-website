@@ -1,4 +1,4 @@
-// Edge Function send-notifications: the push job (pg_cron every minute, migration 20261027120000; the job is
+// Edge Function send-notifications: the push job (pg_cron every minute, migration 20261027105541; the job is
 // created SWITCHED OFF until the Apple APNs key is added).
 // Sends the due rows of `notifications` as push to the student's iPhone / iPad (push_tokens, platform 'apns'):
 //   - new: sent_at empty, send_at reached, not snoozed (or the snooze is over),
