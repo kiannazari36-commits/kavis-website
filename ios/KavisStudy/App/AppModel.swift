@@ -92,6 +92,7 @@ final class AppModel {
         case "uploadAudio": route = .upload(.audio)
         case "reader": route = .reader("hypertension")
         case "summary": route = .lessonSummary(MockFlag.value("material") ?? "")
+        case "quiz": route = .quiz(QuizTarget(materialId: "", kind: .exam, quizId: MockFlag.value("material")))
         case "review": route = .review(MockFlag.value("material") ?? "")
         case "recording": route = .recording(MockFlag.value("material") ?? "")
         case "assistant": route = .assistant

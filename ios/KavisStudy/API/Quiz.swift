@@ -13,6 +13,10 @@ struct QuizQuestion: Identifiable, Equatable {
     let hints: [String]
     /// The lesson the question is from, when the quiz mixes lessons (exam center).
     var materialId: String? = nil
+    /// A written question (design ScrQuiz "YAZILI SORU"): the student writes the answer; it is not graded (same as
+    /// the web and grade-quiz), the model answer from the PDF is shown to compare.
+    var written = false
+    var modelAnswer = ""
 }
 
 /// A quiz ready to play: its questions in the language of the lesson (the content language).
@@ -26,26 +30,39 @@ enum Confidence: String { case sure, unsure, guess }
 
 /// Quizzes, the same as the web (`web/src/api/quiz.ts`). Scores are written only by the server (grade-quiz).
 enum QuizAPI {
+    /// One row of `quiz_questions` as the phone reads it.
+    struct QRow: Decodable {
+        let id, text: String
+        let kind: String?
+        let options: [String]?
+        let answer_index: Int?
+        let model_answer: String?
+        let explanation: String?
+        let source_page: Int?
+        let hints: [String]?
+    }
+
+    private static let columns = "id, text, kind, options, answer_index, model_answer, explanation, source_page, hints"
+
+    /// Multiple choice needs at least 2 options; written questions need nothing else.
+    static func question(_ r: QRow, materialId: String? = nil) -> QuizQuestion? {
+        if r.kind == "written" {
+            return QuizQuestion(id: r.id, text: r.text, options: [], answer: -1, why: r.explanation ?? "", page: r.source_page,
+                                hints: r.hints ?? [], materialId: materialId, written: true, modelAnswer: r.model_answer ?? "")
+        }
+        guard let options = r.options, options.count > 1 else { return nil }
+        return QuizQuestion(id: r.id, text: r.text, options: options, answer: r.answer_index ?? 0, why: r.explanation ?? "",
+                            page: r.source_page, hints: r.hints ?? [], materialId: materialId)
+    }
+
     /// The newest quiz of a kind for one lesson, with its questions in order.
     static func latest(kind: String, materialId: String) async -> Quiz? {
         struct Row: Decodable { let id: String; let lang: String? }
         guard let quiz = (try? await supabase.from("quizzes").select("id, lang").eq("kind", value: kind).eq("material_id", value: materialId)
             .order("created_at", ascending: false).limit(1).execute().value as [Row])?.first else { return nil }
-        struct Q: Decodable {
-            let id, text: String
-            let options: [String]?
-            let answer_index: Int?
-            let explanation: String?
-            let source_page: Int?
-            let hints: [String]?
-        }
-        let rows: [Q] = (try? await supabase.from("quiz_questions").select("id, text, options, answer_index, explanation, source_page, hints")
+        let rows: [QRow] = (try? await supabase.from("quiz_questions").select(columns)
             .eq("quiz_id", value: quiz.id).order("sort_order").execute().value) ?? []
-        return Quiz(id: quiz.id, lang: Lang(rawValue: quiz.lang ?? "") ?? .tr, questions: rows.compactMap {
-            guard let options = $0.options, options.count > 1 else { return nil } // the phone plays multiple choice
-            return QuizQuestion(id: $0.id, text: $0.text, options: options, answer: $0.answer_index ?? 0, why: $0.explanation ?? "",
-                                page: $0.source_page, hints: $0.hints ?? [])
-        })
+        return Quiz(id: quiz.id, lang: Lang(rawValue: quiz.lang ?? "") ?? .tr, questions: rows.compactMap { question($0) })
     }
 
     /// A quiz by its id (an exam from the exam center): its questions, each with the lesson it came from.
@@ -54,22 +71,10 @@ enum QuizAPI {
         struct Row: Decodable { let id: String; let lang: String?; let options: Options? }
         guard let quiz = (try? await supabase.from("quizzes").select("id, lang, options").eq("id", value: quizId).limit(1).execute().value as [Row])?.first
         else { return nil }
-        struct Q: Decodable {
-            let id, text: String
-            let options: [String]?
-            let answer_index: Int?
-            let explanation: String?
-            let source_page: Int?
-            let hints: [String]?
-        }
-        let rows: [Q] = (try? await supabase.from("quiz_questions").select("id, text, options, answer_index, explanation, source_page, hints")
+        let rows: [QRow] = (try? await supabase.from("quiz_questions").select(columns)
             .eq("quiz_id", value: quizId).order("sort_order").execute().value) ?? []
         let sources = quiz.options?.sources ?? [:]
-        return Quiz(id: quiz.id, lang: Lang(rawValue: quiz.lang ?? "") ?? .tr, questions: rows.compactMap {
-            guard let options = $0.options, options.count > 1 else { return nil }
-            return QuizQuestion(id: $0.id, text: $0.text, options: options, answer: $0.answer_index ?? 0, why: $0.explanation ?? "",
-                                page: $0.source_page, hints: $0.hints ?? [], materialId: sources[$0.id] ?? nil)
-        })
+        return Quiz(id: quiz.id, lang: Lang(rawValue: quiz.lang ?? "") ?? .tr, questions: rows.compactMap { question($0, materialId: sources[$0.id] ?? nil) })
     }
 
     /// The short check after a section in the reader: up to 3 of the lesson's questions from that section's pages.
@@ -120,7 +125,11 @@ enum QuizAPI {
         await latest(kind: "lesson_end", materialId: materialId)
     }
 
-    struct Answer { let questionId: String; let chosen: Int?; let hints: Int; let confidence: Confidence? }
+    struct Answer {
+        let questionId: String; let chosen: Int?; let hints: Int; let confidence: Confidence?
+        /// The text of a written answer (saved, not graded).
+        var written: String? = nil
+    }
 
     /// Saves a finished try, then the server grades it (right/wrong, score, topic mastery, wrong "sure" answers to
     /// the "Hatalarım" cards). Returns the score (0–100) when the server answered.
@@ -129,14 +138,14 @@ enum QuizAPI {
         let uid = user.id.uuidString.lowercased()
         let id = UUID().uuidString.lowercased()
         struct Attempt: Encodable { let id, quiz_id, user_id: String }
-        struct Row: Encodable { let attempt_id, question_id, user_id: String; let chosen_index: Int?; let hints_used: Int; let confidence: String? }
+        struct Row: Encodable { let attempt_id, question_id, user_id: String; let chosen_index: Int?; let written_answer: String?; let hints_used: Int; let confidence: String? }
         struct Finish: Encodable { let finished_at: String }
         struct Body: Encodable { let attempt_id: String }
         struct Graded: Decodable { let score: Double? }
         do {
             try await supabase.from("quiz_attempts").insert(Attempt(id: id, quiz_id: quizId, user_id: uid)).execute()
             try await supabase.from("quiz_answers").insert(answers.map {
-                Row(attempt_id: id, question_id: $0.questionId, user_id: uid, chosen_index: $0.chosen, hints_used: $0.hints, confidence: $0.confidence?.rawValue)
+                Row(attempt_id: id, question_id: $0.questionId, user_id: uid, chosen_index: $0.chosen, written_answer: $0.written, hints_used: $0.hints, confidence: $0.confidence?.rawValue)
             }).execute()
             try await supabase.from("quiz_attempts").update(Finish(finished_at: ISO8601DateFormatter().string(from: Date()))).eq("id", value: id).execute()
             let graded: Graded = try await supabase.functions.invoke("grade-quiz", options: FunctionInvokeOptions(body: Body(attempt_id: id)))

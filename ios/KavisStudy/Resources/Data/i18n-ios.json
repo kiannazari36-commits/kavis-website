@@ -15,7 +15,9 @@
   "pwActive": "Premium açık",
   "pwUntil": "{date} tarihine kadar",
   "pwManage": "Aboneliği yönet",
-  "pwLoading": "Fiyatlar App Store'dan geliyor…"
+  "pwLoading": "Fiyatlar App Store'dan geliyor…",
+  "quizWrittenNote": "Yazılı cevaplar puanlanmaz. Cevabını PDF'teki model cevapla karşılaştır.",
+  "quizWrittenCount": "{n} yazılı soru"
  },
  "en": {
   "remindTitle": "Study time",
@@ -33,7 +35,9 @@
   "pwActive": "Premium is on",
   "pwUntil": "until {date}",
   "pwManage": "Manage subscription",
-  "pwLoading": "Getting prices from the App Store…"
+  "pwLoading": "Getting prices from the App Store…",
+  "quizWrittenNote": "Written answers are not scored. Compare your answer with the model answer from the PDF.",
+  "quizWrittenCount": "{n} written questions"
  },
  "fa": {
   "remindTitle": "وقت مطالعه",
@@ -51,7 +55,9 @@
   "pwActive": "پریمیوم فعال است",
   "pwUntil": "تا {date}",
   "pwManage": "مدیریت اشتراک",
-  "pwLoading": "قیمت‌ها از App Store می‌آیند…"
+  "pwLoading": "قیمت‌ها از App Store می‌آیند…",
+  "quizWrittenNote": "پاسخ‌های تشریحی نمره نمی‌گیرند. پاسخت را با پاسخ نمونهٔ PDF مقایسه کن.",
+  "quizWrittenCount": "{n} سؤال تشریحی"
  },
  "ar": {
   "remindTitle": "وقت الدراسة",
@@ -69,6 +75,8 @@
   "pwActive": "بريميوم مفعّل",
   "pwUntil": "حتى {date}",
   "pwManage": "إدارة الاشتراك",
-  "pwLoading": "جارٍ جلب الأسعار من App Store…"
+  "pwLoading": "جارٍ جلب الأسعار من App Store…",
+  "quizWrittenNote": "الإجابات المكتوبة لا تُصحَّح. قارن إجابتك بالإجابة النموذجية من الملف.",
+  "quizWrittenCount": "{n} أسئلة مكتوبة"
  }
 }

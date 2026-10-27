@@ -121,7 +121,8 @@ enum PlanAPI {
     /// Up to 3 questions of the lesson (weak topics first).
     static func reviewQuestions(_ r: Review) async -> Quiz? {
         guard let m = r.materialId, let q = await QuizAPI.sectionCheck(materialId: m, pageFrom: 0, pageTo: .max) else { return nil }
-        return q.questions.isEmpty ? nil : Quiz(id: q.id, lang: q.lang, questions: Array(q.questions.prefix(3)))
+        let choice = q.questions.filter { !$0.written }
+        return choice.isEmpty ? nil : Quiz(id: q.id, lang: q.lang, questions: Array(choice.prefix(3)))
     }
 
     /// "Sonra" moves the review to tomorrow; "done" closes it.

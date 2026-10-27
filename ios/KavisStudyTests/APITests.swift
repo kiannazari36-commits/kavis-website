@@ -130,4 +130,20 @@ final class OnboardingRulesTests: XCTestCase {
         XCTAssertEqual(Format.yearLabel(3, .en), "Year 3")
         XCTAssertEqual(Format.yearLabel(3, .fa), "سال ۳")
     }
+
+    /// Written questions are kept (with their model answer); multiple choice needs 2+ options.
+    func testQuizQuestionKinds() throws {
+        let json = """
+        [{"id":"w","text":"Neden?","kind":"written","options":null,"answer_index":null,"model_answer":"Çünkü.","explanation":null,"source_page":1,"hints":[]},
+         {"id":"m","text":"Hangisi?","kind":"multiple_choice","options":["a","b"],"answer_index":1,"model_answer":null,"explanation":"x","source_page":2,"hints":[]},
+         {"id":"bad","text":"?","kind":"multiple_choice","options":["a"],"answer_index":0,"model_answer":null,"explanation":null,"source_page":null,"hints":null}]
+        """
+        let rows = try JSONDecoder().decode([QuizAPI.QRow].self, from: Data(json.utf8))
+        let qs = rows.compactMap { QuizAPI.question($0) }
+        XCTAssertEqual(qs.map(\.id), ["w", "m"])
+        XCTAssertTrue(qs[0].written)
+        XCTAssertEqual(qs[0].modelAnswer, "Çünkü.")
+        XCTAssertFalse(qs[1].written)
+        XCTAssertEqual(qs[1].answer, 1)
+    }
 }
