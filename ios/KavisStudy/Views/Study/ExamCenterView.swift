@@ -62,6 +62,7 @@ struct ExamCenterView: View {
                 }
                 .scrollIndicators(.hidden)
             }
+            .padColumn()
             if weekOpen {
                 ExamWeekSheet(courses: courses, exams: exams, current: week?.kind ?? .midterm, onClose: { weekOpen = false }) { saved in
                     weekOpen = false

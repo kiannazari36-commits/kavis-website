@@ -101,3 +101,18 @@ struct PadRail: View {
         }
     }
 }
+
+/// iPad: a phone-style screen keeps its content in a readable column in the middle (design NewIPad: quiz, cards and
+/// exam pages are at most 760 pt wide); the background stays full width. On the phone it changes nothing.
+private struct PadColumn: ViewModifier {
+    @Environment(\.padRail) private var wide
+    let width: CGFloat
+
+    func body(content: Content) -> some View {
+        content.frame(maxWidth: wide ? width : .infinity).frame(maxWidth: .infinity)
+    }
+}
+
+extension View {
+    func padColumn(_ width: CGFloat = 760) -> some View { modifier(PadColumn(width: width)) }
+}

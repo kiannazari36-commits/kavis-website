@@ -45,6 +45,7 @@ struct CardsView: View {
                 Spacer()
             }
         }
+        .padColumn()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(C.bg.ignoresSafeArea())
         .task {
