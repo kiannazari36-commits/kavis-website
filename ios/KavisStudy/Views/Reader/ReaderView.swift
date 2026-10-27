@@ -11,6 +11,8 @@ struct ReaderView: View {
     @Environment(AppModel.self) private var app
     @Environment(ToastCenter.self) private var toast
     @Environment(\.colorScheme) private var scheme
+    /// iPad (design NewIPad, reader): one wide header, section tabs, a 620 pt reading column and the assistant panel.
+    @Environment(\.padRail) private var wide
 
     let docID: String
 
@@ -32,6 +34,8 @@ struct ReaderView: View {
     @State private var topBlock: Int?
     @State private var seen: Set<Int> = []
     @State private var atPage: Int?
+    /// iPad: the assistant panel on the right (open by default, as in the design).
+    @State private var panelOpen = true
 
     private static let fontSizes = [18, 20, 22, 24]
 
@@ -56,35 +60,23 @@ struct ReaderView: View {
     var body: some View {
         ZStack {
             KRead.bg.ignoresSafeArea()
-            VStack(spacing: 0) {
-                topBar
-                themePicker
-                if let doc, let section {
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 16) {
-                            sectionHeader(doc)
-                            LazyVStack(alignment: .leading, spacing: 16) {
-                                ForEach(Array(section.blocks.enumerated()), id: \.offset) { i, block in
-                                    card(block, doc: doc)
-                                        .id(i)
-                                        .onAppear { for p in block.pageFrom...max(block.pageFrom, block.pageTo) { seen.insert(p) } }
-                                }
-                            }
-                            .scrollTargetLayout()
-                            sectionEnd(doc)
-                        }
-                        .padding(.horizontal, 16).padding(.top, 12).padding(.bottom, 120)
+            HStack(spacing: 0) {
+                ZStack {
+                    readingColumn
+                    if section != nil {
+                        toolbar.fixedSize(horizontal: wide, vertical: false)
+                            .frame(maxHeight: .infinity, alignment: .bottom).padding(.bottom, wide ? 24 : 8)
                     }
-                    .scrollPosition(id: $topBlock, anchor: .top)
-                    .scrollIndicators(.hidden)
-                } else if loaded {
-                    notReady
-                } else {
-                    Spacer()
                 }
-            }
-            if section != nil {
-                toolbar.frame(maxHeight: .infinity, alignment: .bottom).padding(.bottom, 8)
+                if wide, panelOpen, let lesson {
+                    AssistantChatView(
+                        target: AssistantChatTarget(topicId: lesson.courseId ?? "all", materialId: docID, lessonTitle: lesson.title),
+                        onClose: { withAnimation(.easeOut(duration: 0.2)) { panelOpen = false } }
+                    )
+                    .frame(width: 380)
+                    .padding(.vertical, 16).padding(.trailing, 16)
+                    .transition(.move(edge: .trailing).combined(with: .opacity))
+                }
             }
             if let lesson, let id = openTerm, let term = lesson.terms[id] { termPopover(term) }
             if let text = translateText, let lesson, let doc { translationSheet(text, lesson: lesson, doc: doc) }
@@ -182,6 +174,102 @@ struct ReaderView: View {
         return lesson.courseName.isEmpty ? info : "\(lesson.courseName.uppercased(with: lang.locale)) · \(info)"
     }
 
+    /// Header, the theme row (phone) or section tabs (iPad), and the section's page cards.
+    private var readingColumn: some View {
+        VStack(spacing: 0) {
+            if wide { wideTopBar } else { topBar }
+            if wide { if let doc { sectionTabs(doc) } } else { themePicker }
+            if let doc, let section {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        if !wide { sectionHeader(doc) }
+                        LazyVStack(alignment: .leading, spacing: 16) {
+                            ForEach(Array(section.blocks.enumerated()), id: \.offset) { i, block in
+                                card(block, doc: doc)
+                                    .id(i)
+                                    .onAppear { for p in block.pageFrom...max(block.pageFrom, block.pageTo) { seen.insert(p) } }
+                            }
+                        }
+                        .scrollTargetLayout()
+                        sectionEnd(doc)
+                    }
+                    .frame(maxWidth: wide ? 620 : .infinity)
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, wide ? 28 : 16).padding(.top, wide ? 14 : 12).padding(.bottom, 120)
+                }
+                .scrollPosition(id: $topBlock, anchor: .top)
+                .scrollIndicators(.hidden)
+            } else if loaded {
+                notReady
+            } else {
+                Spacer()
+            }
+        }
+    }
+
+    // MARK: iPad header
+
+    /// Back, the lesson title, the reading theme, recording, text size and the assistant panel button in one row.
+    private var wideTopBar: some View {
+        HStack(spacing: 10) {
+            circleButton(label: prefs.t("signup.k1052")) { app.back() } content: {
+                KIcon(name: .back, size: 19, width: 1.8, flipsInRTL: true)
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                Text(lesson?.title ?? "").font(KFont.reading(24, .medium, lang: doc?.docLang ?? .tr)).foregroundStyle(KRead.text).lineLimit(1)
+                Text(pageLabel).font(KFont.mono(10, .regular)).tracking(lang.isRTL ? 0 : 0.6).foregroundStyle(KRead.text2).lineLimit(1)
+            }
+            .padding(.leading, 6)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            themeSegment(compact: true)
+            if let recordingId {
+                circleButton(label: t("recAudio")) { app.go(.recording(recordingId)) } content: {
+                    KIcon(name: .mic, size: 19, width: 1.8)
+                }
+            }
+            circleButton(label: t("textSize")) { cycleFontSize() } content: {
+                Text("Aa").font(KFont.reading(17, .semibold, lang: .en))
+            }
+            Button { withAnimation(.easeOut(duration: 0.2)) { panelOpen.toggle() } } label: {
+                Image("StarButton").resizable().scaledToFit().frame(width: 34, height: 34)
+                    .frame(width: 46, height: 46)
+                    .background(Circle().fill(panelOpen ? Color(hex: 0x9C2F3A) : KRead.chrome))
+                    .overlay(Circle().stroke(panelOpen ? .clear : KRead.line, lineWidth: 1))
+            }
+            .accessibilityLabel(t("panelToggle"))
+            .accessibilityAddTraits(panelOpen ? .isSelected : [])
+        }
+        .padding(.horizontal, 28).padding(.top, KLayout.top(54, minimum: 6) + 10)
+    }
+
+    /// The lesson's sections as tabs ("1 · Tanım"), scrolling sideways when there are many.
+    private func sectionTabs(_ doc: ReaderDoc) -> some View {
+        ScrollViewReader { proxy in
+            ScrollView(.horizontal) {
+                HStack(spacing: 8) {
+                    ForEach(Array(doc.sections.enumerated()), id: \.offset) { i, s in
+                        let on = i == sectionIndex
+                        Button { goSection(i) } label: {
+                            Text("\(Format.num(i + 1, lang)) · \(s.title)").font(KFont.ui(13, on ? .semibold : .regular, lang: lang))
+                                .foregroundStyle(on ? KPhone.ctaText : KRead.text)
+                                .lineLimit(1)
+                                .padding(.horizontal, 16).frame(height: 36)
+                                .background(on ? Color(hex: 0x9C2F3A) : KRead.chrome, in: Capsule())
+                                .overlay(Capsule().stroke(on ? .clear : KRead.line, lineWidth: 1))
+                        }
+                        .id(i)
+                        .accessibilityAddTraits(on ? .isSelected : [])
+                    }
+                }
+                .padding(.horizontal, 28).padding(.vertical, 2)
+            }
+            .scrollIndicators(.hidden)
+            .padding(.top, 14).padding(.bottom, 4)
+            .onChange(of: sectionIndex) { _, i in withAnimation { proxy.scrollTo(i, anchor: .center) } }
+            .accessibilityLabel(t("sections"))
+        }
+    }
+
     @State private var recordingId: String?
     /// What the lecturer said about each page in the recording ("Hoca burada sınavda çıkar dedi").
     @State private var marks: [RecordingAPI.LectureMark] = []
@@ -232,7 +320,12 @@ struct ReaderView: View {
     }
 
     private var themePicker: some View {
-        HStack(spacing: 0) {
+        themeSegment(compact: false).padding(.horizontal, 16).padding(.top, 10)
+    }
+
+    /// Light / sepia / dark paper. Compact (iPad header): each choice as wide as its words.
+    private func themeSegment(compact: Bool) -> some View {
+        HStack(spacing: compact ? 4 : 0) {
             ForEach([(ReaderPaper.light, "paperLight", 0xFFFCF6), (.sepia, "paperSepia", 0xF4E6CC), (.dark, "paperDark", 0x1D1915)], id: \.1) { paper, key, swatch in
                 let on = paperChoice == paper
                 Button {
@@ -246,7 +339,8 @@ struct ReaderView: View {
                         Text(t(key)).font(KFont.ui(13, on ? .semibold : .regular, lang: lang))
                     }
                     .foregroundStyle(on ? KRead.text : KRead.text2)
-                    .frame(maxWidth: .infinity, minHeight: 36)
+                    .padding(.horizontal, compact ? 14 : 0)
+                    .frame(maxWidth: compact ? nil : .infinity, minHeight: compact ? 38 : 36)
                     .background(on ? KRead.chrome : .clear, in: Capsule())
                     .shadow(color: on ? Color.black.opacity(0.12) : .clear, radius: 2, y: 1)
                 }
@@ -255,7 +349,6 @@ struct ReaderView: View {
         }
         .padding(4)
         .background(KRead.seg, in: Capsule())
-        .padding(.horizontal, 16).padding(.top, 10)
         .accessibilityElement(children: .contain)
         .accessibilityLabel(t("readingTheme"))
     }
@@ -487,13 +580,16 @@ struct ReaderView: View {
             Spacer(minLength: 0)
             barIcon(.pen, label: t("pen"), on: noteMode) { noteMode.toggle() }
             barIcon(.speaker, label: t("listen"), on: speaker.speaking) { readAloud() }
-            Spacer(minLength: 0)
-            Button { app.go(.assistant) } label: {
-                Image("StarButton").resizable().scaledToFit().frame(width: 46, height: 46)
-                    .frame(width: 52, height: 52)
-                    .background(Circle().fill(Color(hex: 0x9C2F3A)))
+            if !wide { Spacer(minLength: 0) }
+            // On the iPad the header's star opens the assistant panel (design NewIPad), so the bar has none.
+            if !wide {
+                Button { app.go(.assistant) } label: {
+                    Image("StarButton").resizable().scaledToFit().frame(width: 46, height: 46)
+                        .frame(width: 52, height: 52)
+                        .background(Circle().fill(Color(hex: 0x9C2F3A)))
+                }
+                .accessibilityLabel(t("assistant"))
             }
-            .accessibilityLabel(t("assistant"))
         }
         .padding(.horizontal, 6).padding(.vertical, 6)
         .background(KRead.bar, in: Capsule())

@@ -22,7 +22,9 @@
   "quickEasy": "Kolay dille anlat",
   "quickEasyAsk": "Son konuyu çok kolay bir dille, günlük hayattan bir benzetmeyle anlat.",
   "padLight": "Açık moda geç",
-  "padDark": "Koyu moda geç"
+  "padDark": "Koyu moda geç",
+  "panelSource": "Yalnızca bu dersin PDF'inden",
+  "panelToggle": "Asistan paneli"
  },
  "en": {
   "remindTitle": "Study time",
@@ -47,7 +49,9 @@
   "quickEasy": "Explain in simple words",
   "quickEasyAsk": "Explain the last topic in very simple words, with an everyday comparison.",
   "padLight": "Switch to light mode",
-  "padDark": "Switch to dark mode"
+  "padDark": "Switch to dark mode",
+  "panelSource": "Only from this lesson's PDF",
+  "panelToggle": "Assistant panel"
  },
  "fa": {
   "remindTitle": "وقت مطالعه",
@@ -72,7 +76,9 @@
   "quickEasy": "ساده توضیح بده",
   "quickEasyAsk": "آخرین مبحث را با زبانی خیلی ساده و با یک مثال از زندگی روزمره توضیح بده.",
   "padLight": "رفتن به حالت روشن",
-  "padDark": "رفتن به حالت تیره"
+  "padDark": "رفتن به حالت تیره",
+  "panelSource": "فقط از PDF همین درس",
+  "panelToggle": "پنل دستیار"
  },
  "ar": {
   "remindTitle": "وقت الدراسة",
@@ -97,6 +103,8 @@
   "quickEasy": "اشرح بكلمات بسيطة",
   "quickEasyAsk": "اشرح آخر موضوع بكلمات بسيطة جدًا مع تشبيه من الحياة اليومية.",
   "padLight": "التبديل إلى الوضع الفاتح",
-  "padDark": "التبديل إلى الوضع الداكن"
+  "padDark": "التبديل إلى الوضع الداكن",
+  "panelSource": "فقط من ملف PDF لهذا الدرس",
+  "panelToggle": "لوحة المساعد"
  }
 }

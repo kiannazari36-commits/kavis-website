@@ -16,6 +16,9 @@ struct AssistantChatTarget: Equatable {
     var teach = false
     /// The microphone starts at once (home "Konuş").
     var listen = false
+    /// Asked from the reader: the server reads this lesson's whole text and talks only about it.
+    var materialId: String? = nil
+    var lessonTitle: String? = nil
 }
 
 /// What the student uploads (the three start buttons on home).
