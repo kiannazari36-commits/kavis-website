@@ -209,7 +209,7 @@ struct ProfileView: View {
                           "\(Format.num(s.questionsUsed, lang))/\(Format.num(TrialLimits.questions, lang)) \(prefs.t("trialQuestions"))"]
             sub = prefs.t("trialDaysLeft", ["n": Format.num(s.daysLeft, lang)]) + "\n" + limits.joined(separator: " · ")
         }
-        return Button(action: soon) {
+        return Button { app.go(.paywall(nil)) } label: {
             HStack(spacing: 12) {
                 KIcon(name: .spark, size: 20, width: 1.7)
                     .frame(width: 42, height: 42)

@@ -264,7 +264,7 @@ struct SettingsView: View {
     // MARK: Account
 
     private var accountCard: some View {
-        Button(action: soon) {
+        Button { app.go(.paywall(nil)) } label: {
             HStack(spacing: 12) {
                 KIcon(name: .person, size: 24, width: 1.6)
                     .foregroundStyle(C.priText)

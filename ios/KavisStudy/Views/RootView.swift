@@ -28,6 +28,8 @@ struct RootView: View {
                 ProfileView()
             case .settings:
                 SettingsView()
+            case .paywall(let reason):
+                PaywallView(reason: reason)
             case .examCenter:
                 ExamCenterView()
             case .deviceLimit:

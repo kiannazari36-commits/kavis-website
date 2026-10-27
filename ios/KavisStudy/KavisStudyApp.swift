@@ -19,6 +19,11 @@ struct KavisStudyApp: App {
                 .environment(\.layoutDirection, prefs.lang.layoutDirection)
                 .environment(\.locale, prefs.lang.locale)
                 .preferredColorScheme(prefs.theme.colorScheme)
+                // Renewals and purchases approved later go to the server while the app runs (StoreKit 2).
+                .task {
+                    let model = trial
+                    _ = StoreAPI.listen { await model.refresh() }
+                }
         }
     }
 }

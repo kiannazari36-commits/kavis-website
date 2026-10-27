@@ -69,6 +69,9 @@ targets:
     platform: iOS
     sources:
       - KavisStudyTests
+      # The local App Store for StoreTests (SKTestSession).
+      - path: KavisStudy.storekit
+        buildPhase: resources
     dependencies:
       - target: KavisStudy
     settings:
@@ -89,6 +92,9 @@ schemes:
     build:
       targets:
         KavisStudy: all
+    run:
+      # Local App Store simulation for in-app purchase testing (Xcode only; test prices, not the real ones).
+      storeKitConfiguration: KavisStudy.storekit
     test:
       targets:
         - KavisStudyTests

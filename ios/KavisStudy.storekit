@@ -1,0 +1,84 @@
+{
+  "identifier": "4B6F7A21",
+  "nonRenewingSubscriptions": [
+    {
+      "displayPrice": "1200",
+      "familyShareable": false,
+      "internalID": "6740000003",
+      "localizations": [
+        {
+          "description": "Premium for 5 months (one term)",
+          "displayName": "Premium \u00b7 term",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "study.kavis.premium.term",
+      "referenceName": "Premium term (5 months)",
+      "type": "NonRenewingSubscription"
+    }
+  ],
+  "products": [],
+  "settings": {
+    "_applicationInternalID": "6740000000",
+    "_developerTeamID": "TEST",
+    "_failTransactionsEnabled": false,
+    "_locale": "en_US",
+    "_storefront": "USA",
+    "_storeKitErrors": []
+  },
+  "subscriptionGroups": [
+    {
+      "id": "21500001",
+      "localizations": [],
+      "name": "Premium",
+      "subscriptions": [
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "2000",
+          "familyShareable": false,
+          "groupNumber": 1,
+          "internalID": "6740000001",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "Premium for one year",
+              "displayName": "Premium \u00b7 yearly",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "study.kavis.premium.year",
+          "recurringSubscriptionPeriod": "P1Y",
+          "referenceName": "Premium yearly",
+          "subscriptionGroupID": "21500001",
+          "type": "RecurringSubscription"
+        },
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "300",
+          "familyShareable": false,
+          "groupNumber": 2,
+          "internalID": "6740000002",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "Premium for one month",
+              "displayName": "Premium \u00b7 monthly",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "study.kavis.premium.month",
+          "recurringSubscriptionPeriod": "P1M",
+          "referenceName": "Premium monthly",
+          "subscriptionGroupID": "21500001",
+          "type": "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version": {
+    "major": 3,
+    "minor": 0
+  }
+}

@@ -7138,5 +7138,191 @@
   "en": "Buttons are back in their original places",
   "fa": "دکمه‌ها به جای اولشان برگشتند",
   "ar": "عادت الأزرار إلى أماكنها الأصلية"
+ },
+ "Asistan soruları": {
+  "tr": "Asistan soruları",
+  "en": "Assistant questions",
+  "fa": "سؤال‌های دستیار",
+  "ar": "أسئلة المساعد"
+ },
+ "Ayda 2": {
+  "tr": "Ayda 2",
+  "en": "2 a month",
+  "fa": "ماهی 2",
+  "ar": "2 شهريًا"
+ },
+ "Ayda 20": {
+  "tr": "Ayda 20",
+  "en": "20 a month",
+  "fa": "ماهی 20",
+  "ar": "20 شهريًا"
+ },
+ "Aylık": {
+  "tr": "Aylık",
+  "en": "Monthly",
+  "fa": "ماهانه",
+  "ar": "شهري"
+ },
+ "Bu hesapta önceki satın alım bulunamadı": {
+  "tr": "Bu hesapta önceki satın alım bulunamadı",
+  "en": "No previous purchase found on this account",
+  "fa": "خرید قبلی در این حساب پیدا نشد",
+  "ar": "لم يُعثر على مشتريات سابقة في هذا الحساب"
+ },
+ "Ders paylaşma": {
+  "tr": "Ders paylaşma",
+  "en": "Lesson sharing",
+  "fa": "اشتراک‌گذاری درس",
+  "ar": "مشاركة الدرس"
+ },
+ "Ders sonu sınavı ve yazılı değerlendirme": {
+  "tr": "Ders sonu sınavı ve yazılı değerlendirme",
+  "en": "End-of-lesson exam and written assessment",
+  "fa": "آزمون پایان درس و ارزیابی تشریحی",
+  "ar": "امتحان نهاية الدرس والتقييم الكتابي"
+ },
+ "Ders yükleme": {
+  "tr": "Ders yükleme",
+  "en": "Lesson upload",
+  "fa": "بارگذاری درس",
+  "ar": "رفع الدرس"
+ },
+ "En avantajlı": {
+  "tr": "En avantajlı",
+  "en": "Best value",
+  "fa": "به‌صرفه‌ترین",
+  "ar": "الأوفر"
+ },
+ "Gizlilik": {
+  "tr": "Gizlilik",
+  "en": "Privacy",
+  "fa": "حریم خصوصی",
+  "ar": "الخصوصية"
+ },
+ "Gizlilik politikası açılıyor": {
+  "tr": "Gizlilik politikası açılıyor",
+  "en": "Opening privacy policy",
+  "fa": "در حال باز کردن سیاست حریم خصوصی",
+  "ar": "جارٍ فتح سياسة الخصوصية"
+ },
+ "Her dersi sınırsız yükle, asistana istediğin kadar sor, sınavlara hazır gir.": {
+  "tr": "Her dersi sınırsız yükle, asistana istediğin kadar sor, sınavlara hazır gir.",
+  "en": "Upload every course without limits, ask the assistant all you want, go into exams ready.",
+  "fa": "هر درسی را بی‌محدودیت آپلود کن، هرچه خواستی از دستیار بپرس، آماده سر امتحان برو.",
+  "ar": "ارفع كل المواد بلا حدود، واسأل المساعد كما تشاء، وادخل الامتحانات جاهزًا."
+ },
+ "Koşullar": {
+  "tr": "Koşullar",
+  "en": "Terms",
+  "fa": "شرایط",
+  "ar": "الشروط"
+ },
+ "Kullanım koşulları açılıyor": {
+  "tr": "Kullanım koşulları açılıyor",
+  "en": "Opening terms of use",
+  "fa": "شرایط استفاده باز می‌شود",
+  "ar": "جارٍ فتح شروط الاستخدام"
+ },
+ "Paylaşmak Premium'a özel": {
+  "tr": "Paylaşmak Premium'a özel",
+  "en": "Sharing is Premium-only",
+  "fa": "اشتراک‌گذاری مخصوص Premium است",
+  "ar": "المشاركة حصرية لـ Premium"
+ },
+ "Plan seç": {
+  "tr": "Plan seç",
+  "en": "Choose plan",
+  "fa": "انتخاب برنامه",
+  "ar": "اختر خطة"
+ },
+ "Premium · 3 günlük ücretsiz deneme başladı": {
+  "tr": "Premium · 3 günlük ücretsiz deneme başladı",
+  "en": "Premium · 3-day free trial started",
+  "fa": "Premium · آزمایش رایگان 3 روزه شروع شد",
+  "ar": "Premium · بدأت التجربة المجانية 3 أيام"
+ },
+ "Satın alımları geri yükle": {
+  "tr": "Satın alımları geri yükle",
+  "en": "Restore purchases",
+  "fa": "بازیابی خریدها",
+  "ar": "استعادة المشتريات"
+ },
+ "Sesli okuma ve “Ben anlatayım”": {
+  "tr": "Sesli okuma ve “Ben anlatayım”",
+  "en": "Read aloud and “Let me explain”",
+  "fa": "بلندخوانی و «بگذار توضیح بدهم»",
+  "ar": "القراءة بصوت عالٍ و«دعني أشرح»"
+ },
+ "Sınırlı": {
+  "tr": "Sınırlı",
+  "en": "Limited",
+  "fa": "محدود",
+  "ar": "محدود"
+ },
+ "Tekrar takvimi ve kartlar": {
+  "tr": "Tekrar takvimi ve kartlar",
+  "en": "Review schedule and cards",
+  "fa": "برنامه مرور و کارت‌ها",
+  "ar": "جدول المراجعة والبطاقات"
+ },
+ "Terim açıklaması ve çeviri": {
+  "tr": "Terim açıklaması ve çeviri",
+  "en": "Term explanation and translation",
+  "fa": "توضیح اصطلاح و ترجمه",
+  "ar": "شرح المصطلح والترجمة"
+ },
+ "Yıllık": {
+  "tr": "Yıllık",
+  "en": "Yearly",
+  "fa": "سالانه",
+  "ar": "سنوي"
+ },
+ "Çevrimdışı okuma Premium'a özel": {
+  "tr": "Çevrimdışı okuma Premium'a özel",
+  "en": "Offline reading is Premium-only",
+  "fa": "خواندن آفلاین مخصوص Premium است",
+  "ar": "القراءة دون اتصال خاصة بـ Premium"
+ },
+ "Ücretsiz planla devam et": {
+  "tr": "Ücretsiz planla devam et",
+  "en": "Continue with free plan",
+  "fa": "ادامه با طرح رایگان",
+  "ar": "تابع بالخطة المجانية"
+ },
+ "Çevrimdışı okuma ve tekrar (internetsiz)": {
+  "tr": "Çevrimdışı okuma ve tekrar (internetsiz)",
+  "en": "Offline reading and review",
+  "fa": "مطالعه و مرور آفلاین",
+  "ar": "القراءة والمراجعة دون اتصال"
+ },
+ "Sınırsız*": {
+  "tr": "Sınırsız*",
+  "en": "Unlimited*",
+  "fa": "نامحدود*",
+  "ar": "بلا حدود*"
+ },
+ "Dönemlik · 5 ay": {
+  "tr": "Dönemlik · 5 ay",
+  "en": "5-month term",
+  "fa": "ترمی · ۵ ماه",
+  "ar": "فصلي · 5 أشهر"
+ },
+ "Lansmana özel": {
+  "tr": "Lansmana özel",
+  "en": "Launch offer",
+  "fa": "ویژهٔ عرضه",
+  "ar": "عرض الإطلاق"
+ },
+ "3 gün ücretsiz dene": {
+  "tr": "3 gün ücretsiz dene",
+  "en": "Try free for 3 days",
+  "fa": "۳ روز رایگان امتحان کن",
+  "ar": "جرّب 3 أيام مجانًا"
+ },
+ "* Adil kullanım: en hızlı hizmet aylıkta ayda 40 ders ve 1.000 soru, dönemlikte toplam 200 ders ve 5.000 soru, yıllıkta toplam 480 ders ve 12.000 soru. Sonrasında da devam edersin, biraz daha yavaş olur.": {
+  "tr": "* Adil kullanım: en hızlı hizmet aylıkta ayda 40 ders ve 1.000 soru, dönemlikte toplam 200 ders ve 5.000 soru, yıllıkta toplam 480 ders ve 12.000 soru. Sonrasında da devam edersin, biraz daha yavaş olur.",
+  "en": "* Fair use: fastest service for 40 lessons and 1,000 questions a month on Monthly, 200 lessons and 5,000 questions in total on Term, and 480 lessons and 12,000 questions in total on Yearly. After that you can keep going, a little slower.",
+  "fa": "* استفادهٔ منصفانه: سریع‌ترین سرویس در ماهانه ۴۰ درس و ۱۰۰۰ سؤال در ماه، در ترمی در مجموع ۲۰۰ درس و ۵۰۰۰ سؤال و در سالانه در مجموع ۴۸۰ درس و ۱۲۰۰۰ سؤال. بعد از آن هم ادامه می‌دهی، کمی کندتر.",
+  "ar": "* استخدام عادل: أسرع خدمة لـ40 درسًا و1000 سؤال شهريًا في الباقة الشهرية، و200 درس و5000 سؤال إجمالًا في باقة الفصل، و480 درسًا و12000 سؤال إجمالًا في الباقة السنوية. بعدها تستمر لكن أبطأ قليلًا."
  }
 }

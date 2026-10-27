@@ -1,18 +1,74 @@
 {
  "tr": {
   "remindTitle": "Çalışma vakti",
-  "remindBody": "Bugünün planın hazır. Birkaç dakika bile yeter."
+  "remindBody": "Bugünün planın hazır. Birkaç dakika bile yeter.",
+  "pwStoreNote": "Ödeme Apple hesabından alınır. Abonelik, dönem bitmeden en az 24 saat önce iptal edilmezse kendiliğinden yenilenir. Ayarlar > Apple hesabı > Abonelikler'den istediğin zaman iptal edebilirsin. Dönemlik plan 5 ay sürer ve yenilenmez.",
+  "pwPerMonth": "Ayda yaklaşık {p}",
+  "pwSave": "aylığa göre %{n} tasarruf",
+  "pwMonthNote": "İstediğin ay iptal et",
+  "pwTermNote": "5 ay · yenilenmez",
+  "pwDone": "Premium açıldı · aynı hesapla tüm cihazlarında geçerli",
+  "pwPending": "Ödeme onay bekliyor; onaylanınca Premium açılır",
+  "pwFailed": "Satın alma tamamlanamadı, tekrar dene",
+  "pwNoStore": "App Store'a şu an ulaşılamıyor",
+  "pwRestored": "Satın alımın geri yüklendi · Premium açık",
+  "pwActive": "Premium açık",
+  "pwUntil": "{date} tarihine kadar",
+  "pwManage": "Aboneliği yönet",
+  "pwLoading": "Fiyatlar App Store'dan geliyor…"
  },
  "en": {
   "remindTitle": "Study time",
-  "remindBody": "Today's plan is ready. Even a few minutes help."
+  "remindBody": "Today's plan is ready. Even a few minutes help.",
+  "pwStoreNote": "Payment is charged to your Apple Account. The subscription renews automatically unless cancelled at least 24 hours before the end of the period. Cancel anytime in Settings > Apple Account > Subscriptions. The term plan lasts 5 months and does not renew.",
+  "pwPerMonth": "About {p} a month",
+  "pwSave": "save {n}% vs monthly",
+  "pwMonthNote": "Cancel any month",
+  "pwTermNote": "5 months · does not renew",
+  "pwDone": "Premium is on · on all your devices with this account",
+  "pwPending": "Payment is waiting for approval; Premium turns on when it's approved",
+  "pwFailed": "The purchase didn't go through, try again",
+  "pwNoStore": "Can't reach the App Store right now",
+  "pwRestored": "Purchase restored · Premium is on",
+  "pwActive": "Premium is on",
+  "pwUntil": "until {date}",
+  "pwManage": "Manage subscription",
+  "pwLoading": "Getting prices from the App Store…"
  },
  "fa": {
   "remindTitle": "وقت مطالعه",
-  "remindBody": "برنامهٔ امروزت آماده است. چند دقیقه هم کافی است."
+  "remindBody": "برنامهٔ امروزت آماده است. چند دقیقه هم کافی است.",
+  "pwStoreNote": "پرداخت از حساب Apple تو انجام می‌شود. اشتراک اگر دست‌کم ۲۴ ساعت پیش از پایان دوره لغو نشود، خودکار تمدید می‌شود. هر زمان خواستی از تنظیمات > حساب Apple > اشتراک‌ها لغوش کن. طرح ترمی ۵ ماه است و تمدید نمی‌شود.",
+  "pwPerMonth": "حدود {p} در ماه",
+  "pwSave": "{n}٪ صرفه‌جویی نسبت به ماهانه",
+  "pwMonthNote": "هر ماه می‌توانی لغو کنی",
+  "pwTermNote": "۵ ماه · تمدید نمی‌شود",
+  "pwDone": "پریمیوم فعال شد · با همین حساب روی همهٔ دستگاه‌هایت",
+  "pwPending": "پرداخت در انتظار تأیید است؛ پس از تأیید پریمیوم فعال می‌شود",
+  "pwFailed": "خرید انجام نشد، دوباره امتحان کن",
+  "pwNoStore": "اکنون به App Store دسترسی نیست",
+  "pwRestored": "خریدت بازیابی شد · پریمیوم فعال است",
+  "pwActive": "پریمیوم فعال است",
+  "pwUntil": "تا {date}",
+  "pwManage": "مدیریت اشتراک",
+  "pwLoading": "قیمت‌ها از App Store می‌آیند…"
  },
  "ar": {
   "remindTitle": "وقت الدراسة",
-  "remindBody": "خطة اليوم جاهزة. حتى بضع دقائق تكفي."
+  "remindBody": "خطة اليوم جاهزة. حتى بضع دقائق تكفي.",
+  "pwStoreNote": "يُدفع المبلغ من حساب Apple الخاص بك. يتجدد الاشتراك تلقائيًا ما لم يُلغَ قبل 24 ساعة على الأقل من نهاية الفترة. ألغِه متى شئت من الإعدادات > حساب Apple > الاشتراكات. الخطة الفصلية مدتها 5 أشهر ولا تتجدد.",
+  "pwPerMonth": "حوالي {p} شهريًا",
+  "pwSave": "توفير {n}% مقارنة بالشهري",
+  "pwMonthNote": "ألغِ في أي شهر",
+  "pwTermNote": "5 أشهر · لا يتجدد",
+  "pwDone": "تم تفعيل بريميوم · على كل أجهزتك بهذا الحساب",
+  "pwPending": "الدفع بانتظار الموافقة؛ يُفعَّل بريميوم بعد الموافقة",
+  "pwFailed": "لم تكتمل عملية الشراء، حاول مجددًا",
+  "pwNoStore": "تعذّر الوصول إلى App Store الآن",
+  "pwRestored": "تمت استعادة الشراء · بريميوم مفعّل",
+  "pwActive": "بريميوم مفعّل",
+  "pwUntil": "حتى {date}",
+  "pwManage": "إدارة الاشتراك",
+  "pwLoading": "جارٍ جلب الأسعار من App Store…"
  }
 }

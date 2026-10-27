@@ -36,7 +36,7 @@ struct HomeView: View {
                         review
                         tiles
                         coursesCard
-                        TrialCardView(status: trial.status, onPremium: soon)
+                        TrialCardView(status: trial.status, onPremium: { app.go(.paywall(nil)) })
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, 18)
@@ -60,7 +60,7 @@ struct HomeView: View {
                     messageKey: key,
                     ended: trial.status.ended,
                     onCancel: { trial.lockedKey = nil },
-                    onPremium: { trial.lockedKey = nil; soon() }
+                    onPremium: { let key = trial.lockedKey; trial.lockedKey = nil; app.go(.paywall(key == "pwWhyShare" ? key : nil)) }
                 )
             }
         }

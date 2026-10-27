@@ -24,6 +24,8 @@ enum Route: Equatable {
     case settings
     /// "Sınav merkezi" (home tile).
     case examCenter
+    /// Premium (Apple in-app purchase); the text key says why it opened (e.g. "pwWhyShare").
+    case paywall(String?)
     /// An account already on 2 devices: the student signs one out first (`AppModel.limitDevices`).
     case deviceLimit
     case courses
@@ -71,6 +73,7 @@ final class AppModel {
         case "profile", "profileEdit": route = .profile
         case "settings": route = .settings
         case "exam": route = .examCenter
+        case "paywall": route = .paywall(nil)
         case "devices": route = .deviceLimit
         case "courses": route = .courses
         case "cards": route = .cards(nil)
