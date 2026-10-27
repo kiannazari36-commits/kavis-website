@@ -65,6 +65,10 @@ targets:
           - Lora-Italic.ttf
           - JetBrainsMono.ttf
           - Vazirmatn.ttf
+    entitlements:
+      path: KavisStudy/KavisStudy.entitlements
+      properties:
+        aps-environment: development
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: study.kavis.app

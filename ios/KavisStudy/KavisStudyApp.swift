@@ -2,6 +2,7 @@ import SwiftUI
 
 @main
 struct KavisStudyApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var delegate
     @State private var prefs = AppPrefs()
     @State private var app = AppModel()
     @State private var toast = ToastCenter()

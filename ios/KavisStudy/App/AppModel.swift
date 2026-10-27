@@ -158,7 +158,16 @@ final class AppModel {
         reset(to: isNew ? .onboarding : .home)
     }
 
+    /// The server ended this phone's login (signed out from another device): log out here without calling it.
+    func sessionEnded() async {
+        await AuthAPI.logOut(localOnly: true)
+        ReminderService.clear()
+        user = nil
+        reset(to: .welcome)
+    }
+
     func signOut() async {
+        await PushService.unregister()
         await DevicesAPI.signOutThisDevice()
         await AuthAPI.logOut()
         ReminderService.clear()

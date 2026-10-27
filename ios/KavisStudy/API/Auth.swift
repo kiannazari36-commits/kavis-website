@@ -113,7 +113,7 @@ enum AuthAPI {
         return rows.first.map { !$0.onboarding_done } ?? false
     }
 
-    static func logOut() async {
-        try? await supabase.auth.signOut()
+    static func logOut(localOnly: Bool = false) async {
+        try? await supabase.auth.signOut(scope: localOnly ? .local : .global)
     }
 }

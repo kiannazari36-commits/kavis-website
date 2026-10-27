@@ -88,7 +88,7 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Translation of PDF sentences (literal / natural)
 - [ ] Study plan generation (starter → smart plan), progress data, weak topics
 - [ ] Settings saved in the account (now only in the browser)
-- [ ] Notifications (study reminders, congratulations) — server side done locally (see Study plan / notifications), push waits for the APNs key
+- [ ] Notifications (study reminders, congratulations) — server side done locally (see Study plan / notifications), push waits for the APNs key. iPhone saves its APNs token in `push_tokens` after login and removes it on log out (27 Oct 2026, tried in the simulator; `aps-environment` is `development` in `KavisStudy.entitlements`, must be `production` for the App Store build)
 - [x] "Request my data": Edge `export-data` → one JSON file downloaded at once (all own rows + 7-day PDF links)
 - [x] "Delete account": password asked again (Edge `delete-account`), deleted after 30 days, banner "Hesabın … silinecek · Vazgeç" until then
 - [x] Nightly purge job (03:30 UTC): migration `20261024213309_account_purge.sql` applied 25 Oct 2026 with Kian's OK (pg_cron + pg_net, random key in `private.app_secrets`); a manual run answered `{deleted: 0}`
@@ -110,7 +110,7 @@ Everything that is not finished yet. Updated after every step.
 ## Devices
 - [x] Device limit on the server (max 2 devices, the web counts as one); real device list and sign-out on the web
 - [x] Signing a device out ends its login at once (27 Oct 2026, live): RPC `sign_out_device` deletes that device's auth session (saved by `register_device`) and every API request of an ended login gets 401 `session_ended` (pre-request check). No Edge Function needed. Checked locally: the other login got 401 at once, refresh refused, the own login kept working
-- [ ] Web / iOS: on a 401 `session_ended` answer, log out and show the login screen (now they only see failing requests until the login expires)
+- [ ] Web: on a 401 `session_ended` answer, log out and show the login screen. iOS done 27 Oct 2026 (a URLProtocol in `API/Supabase.swift` sees the answer; tried locally: session deleted → next tap goes to the welcome screen)
 - [ ] Real device names from the apps (the web name comes from the browser)
 
 ## Sharing

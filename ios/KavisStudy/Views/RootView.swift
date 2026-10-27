@@ -71,11 +71,17 @@ struct RootView: View {
         // and the reminder follows the account's settings.
         .task(id: app.user?.id) {
             guard app.user != nil else { return }
+            PushService.start()
             if let l = await AccountAPI.fetchLang() { prefs.lang = l }
             if let s = await SettingsAPI.fetch() {
                 prefs.theme = s.appTheme
                 await ReminderService.refresh(s, lang: prefs.lang)
             }
+        }
+        // Another device signed this phone out: the server answers 401 `session_ended`, so back to the start.
+        .onReceive(NotificationCenter.default.publisher(for: .sessionEnded)) { _ in
+            guard app.user != nil else { return }
+            Task { await app.sessionEnded() }
         }
         .toastOverlay(toast, lang: prefs.lang)
     }
