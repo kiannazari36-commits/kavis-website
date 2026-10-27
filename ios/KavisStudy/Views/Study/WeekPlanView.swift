@@ -43,6 +43,8 @@ struct WeekPlanView: View {
     @Environment(AppPrefs.self) private var prefs
     @Environment(AppModel.self) private var app
     @Environment(ToastCenter.self) private var toast
+    /// iPad (design NewIPad, "plan"): the week on the left, today's checklist on the right.
+    @Environment(\.padRail) private var wide
 
     @State private var tasks: [PlanTask]?
     @State private var busy = false
@@ -66,6 +68,191 @@ struct WeekPlanView: View {
     }
 
     var body: some View {
+        if wide { wideBody } else { phoneBody }
+    }
+
+    // MARK: iPad
+
+    private var wideBody: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(spacing: 10) {
+                    Text(d("Ders planım")).font(KFont.ui(40, .medium, lang: lang)).kTracking(-0.03, size: 40, lang: lang)
+                        .foregroundStyle(KPhone.text).frame(maxWidth: .infinity, alignment: .leading)
+                        .accessibilityAddTraits(.isHeader)
+                    Button { Task { await regenerate() } } label: {
+                        HStack(spacing: 8) {
+                            KIcon(name: .refresh, size: 16, width: 1.8)
+                            Text(busy ? "…" : d("Planı yeniden oluştur")).font(KFont.ui(14, .semibold, lang: lang))
+                        }
+                        .foregroundStyle(KPhone.text).padding(.horizontal, 16).frame(height: 46)
+                        .background(KStudy.card, in: Capsule()).overlay(Capsule().stroke(KStudy.line, lineWidth: 1))
+                    }
+                    .disabled(busy)
+                    Button { app.go(.timetable) } label: {
+                        HStack(spacing: 8) {
+                            KIcon(name: .calendar, size: 16, width: 1.8)
+                            Text(prefs.t("schTitle")).font(KFont.ui(14, .semibold, lang: lang))
+                        }
+                        .foregroundStyle(Color.pair(0x7A5208, 0xF2C66D)).padding(.horizontal, 16).frame(height: 46)
+                        .background(Color.pair(0xFBEBC8, 0x3A2E18), in: Capsule())
+                        .overlay(Capsule().stroke(Color.pair(0xE8C77E, 0x6B5426), lineWidth: 1.5))
+                    }
+                }
+                HStack(alignment: .top, spacing: 18) {
+                    weekCard.frame(maxWidth: .infinity)
+                    VStack(spacing: 14) {
+                        todayCard
+                        Text(d("Bu plan her pazar akşamı otomatik hazırlanır: çalışma planın, sınav haftası, zayıf konuların ve tekrar günleri birlikte hesaba katılır. Uygulamayı açınca ne çalışacağını düşünmene gerek kalmaz."))
+                            .font(KFont.ui(12, lang: lang)).kLineHeight(1.5, size: 12, lang: lang).foregroundStyle(KPhone.text)
+                            .padding(.horizontal, 16).padding(.vertical, 14)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(KStudy.ambSoft, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+                    }
+                    .frame(width: 340)
+                }
+            }
+            .padding(.leading, 8).padding(.trailing, 32)
+            .padding(.top, KLayout.top(54, minimum: 10) + 8).padding(.bottom, 32)
+        }
+        .scrollIndicators(.hidden)
+        .background(KStudy.bg.ignoresSafeArea())
+        .task { if tasks == nil { await load() } }
+    }
+
+    private func load() async {
+        async let courses = CoursesAPI.listCourses()
+        let week = await PlanAPI.weekTasks()
+        _ = await courses
+        tasks = week
+    }
+
+    /// The week: one row per day, its tasks as small cards with the colour of their kind.
+    private var weekCard: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(d("Bu haftanın planı")).font(KFont.ui(18, .medium, lang: lang)).foregroundStyle(KPhone.text)
+                Spacer()
+                Text(subtitle).font(KFont.mono(11, .regular)).foregroundStyle(KStudy.text2).lineLimit(1)
+            }
+            .padding(.bottom, 8)
+            let all = tasks ?? []
+            let today = CoursesAPI.todayISO()
+            ForEach(Array(days.enumerated()), id: \.offset) { i, day in
+                let key = Self.iso.string(from: day)
+                let items = all.filter { $0.day == key }
+                let isToday = key == today
+                HStack(alignment: .top, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(d(names[i])).font(KFont.ui(14, isToday ? .bold : .medium, lang: lang))
+                            .foregroundStyle(isToday ? KStudy.priText : KPhone.text)
+                        Text(Format.num(Calendar(identifier: .gregorian).component(.day, from: day), lang)).font(KFont.mono(10, .regular)).foregroundStyle(KStudy.text2)
+                    }
+                    .frame(width: 58, alignment: .leading).padding(.top, 4)
+                    if items.isEmpty {
+                        Text(d("Dinlenme günü")).font(KFont.ui(13, lang: lang)).foregroundStyle(KStudy.text2)
+                            .frame(maxWidth: .infinity, minHeight: 40, alignment: .leading)
+                    } else {
+                        FlowLayout(spacing: 8, rowSpacing: 8) {
+                            ForEach(items) { t in taskChip(t, past: key < today) }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+                .padding(.vertical, 10)
+                .overlay(alignment: .top) { Rectangle().fill(KStudy.line).frame(height: 1) }
+            }
+        }
+        .padding(.horizontal, 20).padding(.vertical, 18)
+        .background(KStudy.card, in: RoundedRectangle(cornerRadius: 28, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 28, style: .continuous).stroke(KStudy.line, lineWidth: 1))
+    }
+
+    private func taskChip(_ t: PlanTask, past: Bool) -> some View {
+        let done = t.status == "done" || past
+        let course = CoursesAPI.lastCourses.first { $0.id == t.courseId }?.name[lang] ?? ""
+        return Button { app.go(t.route) } label: {
+            VStack(alignment: .leading, spacing: 2) {
+                if !course.isEmpty {
+                    Text(course.uppercased(with: lang.locale)).font(KFont.ui(10, .semibold, lang: lang)).foregroundStyle(t.look.fg).lineLimit(1)
+                }
+                Text(t.title).font(KFont.ui(12, .medium, lang: lang)).foregroundStyle(KPhone.text)
+                    .strikethrough(done).lineLimit(2).multilineTextAlignment(.leading)
+                Text(studyDuration(t.minutes, prefs)).font(KFont.ui(10, lang: lang)).foregroundStyle(KStudy.text2)
+            }
+            .padding(.horizontal, 10).padding(.vertical, 8)
+            .frame(width: 176, alignment: .leading)
+            .background(t.look.chip, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay(alignment: .leading) { Rectangle().fill(t.look.fg).frame(width: 4) }
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .opacity(done ? 0.6 : 1)
+        }
+        .buttonStyle(.plain)
+    }
+
+    /// Today's tasks with a tick each, and the start button.
+    private var todayCard: some View {
+        let today = CoursesAPI.todayISO()
+        let items = (tasks ?? []).filter { $0.day == today }
+        return VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(d("Bugün")).font(KFont.ui(18, .semibold, lang: lang)).foregroundStyle(KPhone.text)
+                Spacer()
+                Text(studyDuration(items.reduce(0) { $0 + $1.minutes }, prefs)).font(KFont.mono(12, .regular)).foregroundStyle(KStudy.text2)
+            }
+            .padding(.bottom, 8)
+            if items.isEmpty {
+                Text(d("Dinlenme günü")).font(KFont.ui(13, lang: lang)).foregroundStyle(KStudy.text2).padding(.vertical, 8)
+            }
+            ForEach(items) { t in
+                let done = t.status == "done"
+                HStack(spacing: 10) {
+                    Button { toggle(t) } label: {
+                        Circle().fill(done ? KStudy.ok : .clear).frame(width: 26, height: 26)
+                            .overlay(Circle().stroke(done ? .clear : KStudy.line, lineWidth: 1.5))
+                            .overlay { if done { KIcon(name: .check, size: 13, width: 2.4).foregroundStyle(KPhone.ctaText) } }
+                    }
+                    .accessibilityLabel(t.title)
+                    .accessibilityAddTraits(done ? .isSelected : [])
+                    Button { app.go(t.route) } label: {
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(t.title).font(KFont.ui(13, .semibold, lang: lang)).foregroundStyle(KPhone.text).strikethrough(done)
+                                .lineLimit(2).multilineTextAlignment(.leading)
+                            Text([studyDuration(t.minutes, prefs), t.why].filter { !$0.isEmpty }.joined(separator: " · "))
+                                .font(KFont.ui(11, lang: lang)).foregroundStyle(KStudy.text2).lineLimit(1)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .opacity(done ? 0.6 : 1)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.vertical, 8)
+                .overlay(alignment: .top) { Rectangle().fill(KStudy.line).frame(height: 1) }
+            }
+            if let next = items.first(where: { $0.status != "done" }) {
+                Button { app.go(next.route) } label: {
+                    Text(d("Bugünün planını başlat")).font(KFont.ui(14, .semibold, lang: lang)).foregroundStyle(KPhone.ctaText)
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                        .background(KStudy.pri, in: Capsule())
+                }
+                .padding(.top, 10)
+            }
+        }
+        .padding(18)
+        .background(KStudy.card, in: RoundedRectangle(cornerRadius: 28, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 28, style: .continuous).stroke(Color.pair(0xF2D9A8, 0x4A3A1C), lineWidth: 1.5))
+    }
+
+    private func toggle(_ t: PlanTask) {
+        guard let i = tasks?.firstIndex(where: { $0.id == t.id }) else { return }
+        let done = tasks?[i].status != "done"
+        tasks?[i].status = done ? "done" : "todo"
+        Task { await PlanAPI.setDone(t.id, done) }
+    }
+
+    // MARK: Phone
+
+    private var phoneBody: some View {
         VStack(spacing: 0) {
             HStack(spacing: 4) {
                 Button { app.back() } label: {
