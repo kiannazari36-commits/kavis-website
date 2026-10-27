@@ -15,6 +15,7 @@ struct LessonSummaryView: View {
 
     @State private var tab: Tab = MockFlag.value("tab") == "general" ? .general : .lesson
     @State private var general: GeneralSummary?
+    private var wantsGeneral: Bool { app.openGeneralSummary }
     @State private var exams: [CourseExam] = []
     @State private var starting = false
     @Environment(ToastCenter.self) private var toast
@@ -67,6 +68,7 @@ struct LessonSummaryView: View {
                 }
             }
         }
+        .onAppear { if app.openGeneralSummary { app.openGeneralSummary = false; tab = .general } }
         .task {
             guard data == nil else { return }
             async let summary = SummaryAPI.lessonData(materialId: materialId, lang: lang)

@@ -74,6 +74,8 @@ final class AppModel {
     var limitDevices: [Device] = []
     /// A share link opened while nobody was signed in: handled once the student is on the home screen.
     var pendingShare: String?
+    /// The lesson summary opens on its "Genel özet" tab (from the progress screen; read once).
+    var openGeneralSummary = false
 
     init() {
         user = AuthAPI.currentUser()
