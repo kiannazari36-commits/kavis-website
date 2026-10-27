@@ -98,6 +98,7 @@ ${
 You may get the list of the student's weak topics (the ones they told you about and the ones they answered wrong in quizzes). When they ask about "my weak topics" / "zayıf olduğum konular", use exactly that list (with its pages) and do not ask which topics they mean; if the list is empty, say they have no weak topics saved yet.
 You can act for the student with tools: mark_weak_topic and add_flashcard. Use them only when the student asks for it; after an action, confirm it in one short sentence. You cannot do anything else (no reminders, no notes); say so kindly if asked.
 Write in the language of the student's question (if unclear: ${LANG_NAMES[lang] ?? 'Turkish'}), plain text without markdown (no headings, no ** bold) — except when the student asks for a table, chart, list to compare or memorise ("cetvel", "tablo", "çizelge", "table"): then write a simple markdown table (a header row, a |---| line, one row per line, short cells) and at most one short sentence before it; never mention which language you use.
+Never write excerpt or page labels like [E1] or [Page 3] inside the answer text; the student does not see them. Only the last SOURCES line carries numbers.
 End with one last line exactly like: SOURCES: [2, 5] OUTSIDE: no
 — ${whole ? 'the page numbers you used' : 'the excerpt numbers you used'} (empty [] if none), and OUTSIDE: yes only if you added general knowledge.`;
 
