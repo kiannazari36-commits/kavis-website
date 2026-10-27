@@ -1,0 +1,18 @@
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 22px;
+  padding: 22px 16px 8px;
+  font-size: 13px;
+}
+
+.row a {
+  color: var(--text2);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.row a:hover {
+  text-decoration: underline;
+}

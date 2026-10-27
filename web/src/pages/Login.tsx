@@ -230,7 +230,13 @@ export default function Login() {
               <button type="button" role="checkbox" aria-checked={consent} className={s.consent} onClick={() => setConsent(!consent)}>
                 <span className={consent ? `${s.box} ${s.boxOn}` : s.box}>{consent && <Icon name="check" size={13} width={3} />}</span>
                 <span>
-                  <b>{t('terms')}</b> {t('and')} <b>{t('kvkk')}</b> {t('consentEnd')}
+                  <Link to="/terms" target="_blank" onClick={(e) => e.stopPropagation()}>
+                    <b>{t('terms')}</b>
+                  </Link>{' '}
+                  {t('and')}{' '}
+                  <Link to="/privacy" target="_blank" onClick={(e) => e.stopPropagation()}>
+                    <b>{t('kvkk')}</b>
+                  </Link> {t('consentEnd')}
                 </span>
               </button>
             )}

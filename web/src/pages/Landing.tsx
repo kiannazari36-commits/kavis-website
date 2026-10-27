@@ -5,6 +5,7 @@ import LangThemeSwitch from '../components/LangThemeSwitch';
 import Icon, { AppleLogo, PlayLogo, type IconName } from '../components/Icon';
 import StoreButton from '../components/StoreButton';
 import { APP_STORE_URL, MAC_STORE_URL, PLAY_STORE_URL } from '../config';
+import LegalLinks from '../components/LegalLinks';
 import s from './Landing.module.css';
 
 // Design: design/DeskApp.dc.html, screen "landing" (web).
@@ -146,6 +147,7 @@ export default function Landing() {
           </details>
         ))}
       </section>
+      <LegalLinks />
     </div>
   );
 }

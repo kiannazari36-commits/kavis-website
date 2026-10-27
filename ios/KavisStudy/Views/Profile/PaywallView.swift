@@ -11,6 +11,7 @@ struct PaywallView: View {
     @Environment(ToastCenter.self) private var toast
     @Environment(TrialModel.self) private var trial
     @Environment(\.colorScheme) private var scheme
+    @Environment(\.openURL) private var openURL
 
     /// Why the paywall opened (a text key, e.g. "pwWhyShare"), shown as the amber chip.
     let reason: String?
@@ -247,8 +248,8 @@ struct PaywallView: View {
                 .foregroundStyle(C.text3).multilineTextAlignment(.center)
             HStack(spacing: 14) {
                 link(d("Satın alımları geri yükle")) { Task { await restore() } }
-                link(d("Koşullar")) { toast.show(t("k165")) }
-                link(d("Gizlilik")) { toast.show(t("k165")) }
+                link(d("Koşullar")) { openLegal("terms") }
+                link(d("Gizlilik")) { openLegal("privacy") }
             }
             Button(action: close) {
                 Text(d("Ücretsiz planla devam et")).font(KFont.ui(14, .semibold, lang: lang)).foregroundStyle(C.priText).frame(minHeight: 36)
@@ -257,6 +258,11 @@ struct PaywallView: View {
         .padding(.horizontal, 20).padding(.top, 12).padding(.bottom, 8)
         .background(C.bg)
         .overlay(alignment: .top) { Rectangle().fill(C.line).frame(height: 1) }
+    }
+
+    /// Public web pages (draft texts, lawyer check pending) in the app language: `/terms`, `/privacy`.
+    private func openLegal(_ page: String) {
+        if let url = URL(string: "\(Config.webBaseURL)/\(page)?lang=\(lang.rawValue)") { openURL(url) }
     }
 
     private func link(_ title: String, action: @escaping () -> Void) -> some View {

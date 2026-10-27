@@ -30,6 +30,7 @@ import Welcome from './pages/Welcome';
 import Paywall from './pages/Paywall';
 import DeviceLimit from './pages/DeviceLimit';
 import ShareLink from './pages/ShareLink';
+import Legal from './pages/Legal';
 
 export default function App() {
   return (
@@ -67,6 +68,8 @@ export default function App() {
                   </Route>
                   <Route path="/premium" element={<Paywall />} />
                   <Route path="/devices" element={<DeviceLimit />} />
+                  <Route path="/terms" element={<Legal kind="terms" />} />
+                  <Route path="/privacy" element={<Legal kind="privacy" />} />
                   <Route path="/s/:shareId" element={<ShareLink />} />
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
