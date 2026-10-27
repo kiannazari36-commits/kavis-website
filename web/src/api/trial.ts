@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { currentUser } from './auth';
 
 // Free trial (CLAUDE.md): 3 days, max 2 PDFs, 60 assistant questions, each PDF max 100 pages.
 export const TRIAL_LIMITS = { days: 3, pdfs: 2, questions: 60, pagesPerPdf: 100 };
@@ -16,6 +17,8 @@ export const TRIAL_START: TrialStatus = { premium: false, ended: false, daysLeft
 
 /** Premium and trial status from the server (RPC access_status); Premium comes from a verified Apple purchase. */
 export async function getTrial(): Promise<TrialStatus | null> {
+  // Not signed in (landing, login, terms pages): nothing to ask, and the server would answer with a permission error.
+  if (!currentUser()) return null;
   const { data, error } = await supabase.rpc('access_status');
   if (error || !data) {
     if (error) console.error('access_status', error);

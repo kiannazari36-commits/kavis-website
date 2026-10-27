@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { I18nProvider } from './i18n/I18nProvider';
 import { ThemeProvider } from './theme/ThemeProvider';
@@ -8,32 +9,32 @@ import { TrialProvider } from './trial/TrialProvider';
 import AppShell from './components/AppShell';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
-import Home from './pages/Home';
-import Courses from './pages/Courses';
-import CourseFolder from './pages/CourseFolder';
-import Reader from './pages/Reader';
-import Assistant from './pages/Assistant';
-import Quiz from './pages/Quiz';
-import Summary from './pages/Summary';
-import Cards from './pages/Cards';
-import Plan from './pages/Plan';
-import Progress from './pages/Progress';
-import Settings from './pages/Settings';
-import Notifications from './pages/Notifications';
-import Schedule from './pages/Schedule';
-import Upload from './pages/Upload';
-import Record from './pages/Record';
-import Recording from './pages/Recording';
-import Samples from './pages/Samples';
-import Admin from './pages/Admin';
-import Welcome from './pages/Welcome';
-import Paywall from './pages/Paywall';
-import DeviceLimit from './pages/DeviceLimit';
-import ShareLink from './pages/ShareLink';
-import Legal from './pages/Legal';
-import Help from './pages/Help';
-import Exam from './pages/Exam';
-import Review from './pages/Review';
+const Home = lazy(() => import('./pages/Home'));
+const Courses = lazy(() => import('./pages/Courses'));
+const CourseFolder = lazy(() => import('./pages/CourseFolder'));
+const Reader = lazy(() => import('./pages/Reader'));
+const Assistant = lazy(() => import('./pages/Assistant'));
+const Quiz = lazy(() => import('./pages/Quiz'));
+const Summary = lazy(() => import('./pages/Summary'));
+const Cards = lazy(() => import('./pages/Cards'));
+const Plan = lazy(() => import('./pages/Plan'));
+const Progress = lazy(() => import('./pages/Progress'));
+const Settings = lazy(() => import('./pages/Settings'));
+const Notifications = lazy(() => import('./pages/Notifications'));
+const Schedule = lazy(() => import('./pages/Schedule'));
+const Upload = lazy(() => import('./pages/Upload'));
+const Record = lazy(() => import('./pages/Record'));
+const Recording = lazy(() => import('./pages/Recording'));
+const Samples = lazy(() => import('./pages/Samples'));
+const Admin = lazy(() => import('./pages/Admin'));
+const Welcome = lazy(() => import('./pages/Welcome'));
+const Paywall = lazy(() => import('./pages/Paywall'));
+const DeviceLimit = lazy(() => import('./pages/DeviceLimit'));
+const ShareLink = lazy(() => import('./pages/ShareLink'));
+const Legal = lazy(() => import('./pages/Legal'));
+const Help = lazy(() => import('./pages/Help'));
+const Exam = lazy(() => import('./pages/Exam'));
+const Review = lazy(() => import('./pages/Review'));
 
 export default function App() {
   return (
@@ -44,6 +45,8 @@ export default function App() {
           <ToastProvider>
             <BrowserRouter>
               <TrialProvider>
+                {/* Pages other than the first two load when they are opened (smaller first download). */}
+                <Suspense fallback={null}>
                 <Routes>
                   <Route path="/" element={<Landing />} />
                   <Route path="/login" element={<Login />} />
@@ -79,6 +82,7 @@ export default function App() {
                   <Route path="/s/:shareId" element={<ShareLink />} />
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
+                </Suspense>
               </TrialProvider>
             </BrowserRouter>
           </ToastProvider>

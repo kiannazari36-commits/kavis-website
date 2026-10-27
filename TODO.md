@@ -236,7 +236,7 @@ Technical notes and decisions:
 ## Release
 - [x] Static build ready for Vercel (`web/vercel.json`: page routing + noindex header)
 - [x] Test deploy on Vercel (free): https://kavis-website.vercel.app — no custom domain, search engines blocked; every push to `main` updates it
-- [ ] Split the JavaScript into smaller parts per page (now one ~190 KB gzip file)
+- [x] Split the JavaScript per page (27 Oct 2026): pages load when opened (`React.lazy` in `web/src/App.tsx`); first download 340 KB → 264 KB gzip, style file 28 KB → 6 KB. The rest is shared code (translations, Supabase); could be cut further later
 
 ## Public launch checklist (do all of these before opening the site to everyone)
 - [x] Real accounts and a real server (login, email verification, data per account) — replace `web/src/api/` mock functions (checked 27 Oct 2026: done)
@@ -244,7 +244,7 @@ Technical notes and decisions:
 - [x] Trial limits on the server (3 days, 2 PDFs, 60 assistant questions, 100 pages per PDF) (done 27 Oct 2026: RLS on upload, `can_use` in the AI functions, 100 pages in `process-material`; the last 4 functions got the gate today)
 - [x] 2-device limit on the server (RPC `register_device`, the web counts as one)
 - [ ] KVKK texts and privacy policy (and terms of use): drafts written and linked from sign-up, the site and the paywall; a lawyer must still check them and the `[PLACEHOLDERS]` must be filled; remove the "draft" banner then
-- [ ] Remove sample data: sample answers, the `?lang=` test switch, the sample lesson in the reader, and the example rows of `supabase/seed.sql`
+- [x] Sample data removed from the code (27 Oct 2026): the web has no sample answers / sample lesson left, the `?lang=` test switch is gone, `supabase/seed.sql` is deleted (it deleted and re-made one account's courses when run, so it was dangerous). **Still in the live database (Kian's own account, nothing deleted yet):** 4 empty example courses (Farmasötik Kimya II, Toksikoloji, Farmasötik Teknoloji III, Farmakognozi), 6 timetable rows and some example quizzes; the course Farmakoterapi holds Kian's own 3 PDFs and must stay. Delete them only with Kian's exact OK
 - [ ] Then remove noindex: `web/public/robots.txt`, the robots meta tag in `web/index.html` and the `X-Robots-Tag` header in `web/vercel.json`
 - [ ] Custom domain (e.g. kavis.study) in Vercel
 

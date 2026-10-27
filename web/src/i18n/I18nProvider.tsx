@@ -43,9 +43,6 @@ const I18nContext = createContext<I18n | null>(null);
 const STORAGE_KEY = 'kavis.lang';
 
 function readStoredLang(): Lang {
-  // A link can set the language: ?lang=fa
-  const fromUrl = new URLSearchParams(location.search).get('lang');
-  if (fromUrl && (LANGS as string[]).includes(fromUrl)) return fromUrl as Lang;
   try {
     const v = localStorage.getItem(STORAGE_KEY);
     if (v && (LANGS as string[]).includes(v)) return v as Lang;
