@@ -27,7 +27,7 @@ Bu dosya Kian için: ne bitti, ne bekliyor, kim ne yapacak. Ayrıntı için `TOD
 
 ## Onayını bekleyen (canlıya henüz yüklenmedi)
 - `build-plan` (sadece kod taşındı): push açılınca birlikte yüklenecek.
-- Takılı kalan iki ders (yeniden başlatmak AI parası harcar, senin kararın): `48aef5e6…` (durum `needs_ocr`, yeni sürümle OCR ile okunabilir) ve `8479526d…` (66 sayfa, 25 Ekim'den beri "işleniyor").
+- Takılı kalan iki ders: ben başlatamam, ders sahibi öğrencinin kendi girişi gerekir. `8479526d…` sahibi siteyi açınca kendiliğinden devam eder (~0,2–0,3 $), `48aef5e6…` sahibi "OCR ile oku" düğmesine basınca yeniden okunur (~0,3–0,5 $). Sahiplerine haber vermek yeterli: `48aef5e6…` (durum `needs_ocr`, yeni sürümle OCR ile okunabilir) ve `8479526d…` (66 sayfa, 25 Ekim'den beri "işleniyor").
 
 ## Benim yapacaklarım
 **Hesaplar gelmeden:** iPhone arayüz testlerini yeniden yazmak (yarım kaldı, `ios/KavisStudyUITests/FlowTests.swift` kaydedilmemiş duruyor), "Cihazdaki dersler" (çevrimdışı kopya).
