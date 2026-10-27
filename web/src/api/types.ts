@@ -52,7 +52,6 @@ export type ReaderBlock = {
   paragraphs: (Segment[] | { selectable: true; text: string })[];
   /** true: the server marked a molecule; the viewer finds which one from the text (components/molecules.ts). */
   molecule?: boolean;
-  audio?: boolean;
 };
 
 export type ReaderSection = { title: string; blocks: ReaderBlock[] };

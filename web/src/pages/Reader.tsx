@@ -725,7 +725,6 @@ const blockPlain = (b: ReaderBlock) =>
 
 function Block({ doc, block, terms, fontSize, term, onTerm, selected, highlights, onSelect, selActs, onTranslate, marks, ink, pen, onInk }: BlockProps) {
   const { t, lang } = useI18n();
-  const toast = useToast();
   const [molOpen, setMolOpen] = useState<Molecule | null>(null);
   // Chip only when we have the structure of a drug named in this block.
   const mols = findMolecules(blockPlain(block));
@@ -817,20 +816,6 @@ function Block({ doc, block, terms, fontSize, term, onTerm, selected, highlights
         </button>
       ))}
       {molOpen && <MoleculeDialog mol={molOpen} page={block.pageFrom} contentLang={doc.language as Lang} onClose={() => setMolOpen(null)} />}
-      {block.audio && (
-        <>
-          <button className={s.audio} onClick={() => toast(t('pageAloud'))}>
-            <span>
-              <Icon name="play" size={13} width={2.2} />
-            </span>
-            {t('teacherStopped')}
-          </button>
-          <button className={s.hint} onClick={() => toast(t('k165'))}>
-            <Icon name="question" size={15} />
-            {t('questionsFrom')}
-          </button>
-        </>
-      )}
     </article>
   );
 }

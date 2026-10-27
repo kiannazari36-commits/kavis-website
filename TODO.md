@@ -206,7 +206,7 @@ Step 4 of the app plan (26 Oct 2026): assistant, cards, quiz, plan (progress scr
 
 Still to build (screens):
 - [ ] Notifications screen, share sheet, placement test after upload
-- [ ] Reader extras: molecule viewer, audio per page, notes with Apple Pencil, section check quiz ("Başla")
+- [ ] Reader extras (iPad; web done: molecule viewer, section audio from the dock speaker, lecturer marks from recordings): audio per page, notes with Apple Pencil, section check quiz ("Başla")
 - [ ] Assistant extras: "Ben anlatayım" (teach-back), voice mode, easy explanation, real "Sürekli dinle" (speech recognition)
 - [ ] Upload extras: real camera and microphone capture (permission texts), the trial-limit sheet and fair-use sheet of the design (the lock dialog is used now)
 - [ ] Step 4: StoreKit, trial limits on the server, share links
