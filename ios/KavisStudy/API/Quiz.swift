@@ -77,7 +77,8 @@ enum QuizAPI {
     /// student's weak topics (what they asked to add, wrong answers) come first.
     static func sectionCheck(materialId: String, pageFrom: Int, pageTo: Int, seen: [String] = []) async -> Quiz? {
         if let lesson = await latest(kind: "lesson_end", materialId: materialId) {
-            let here = lesson.questions.filter { q in q.page.map { $0 >= pageFrom && $0 <= pageTo } ?? false }.filter { !seen.contains($0.id) }
+            let whole = pageFrom <= 0 && pageTo == .max
+            let here = lesson.questions.filter { q in whole || (q.page.map { $0 >= pageFrom && $0 <= pageTo } ?? false) }.filter { !seen.contains($0.id) }
             let weak = await weakQuestionIds(materialId: materialId, ids: here.map(\.id))
             let qs = Array((here.filter { weak.contains($0.id) } + here.filter { !weak.contains($0.id) }).prefix(3))
             return qs.isEmpty ? nil : Quiz(id: lesson.id, lang: lesson.lang, questions: qs)

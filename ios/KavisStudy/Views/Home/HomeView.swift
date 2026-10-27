@@ -239,10 +239,7 @@ struct HomeView: View {
                 }
                 .accessibilityLabel(t("home.k1884"))
                 .accessibilityAddTraits(reviewMenuOpen ? .isSelected : [])
-                Button {
-                    Task { await PlanAPI.setReview(r.id, done: true) }
-                    app.go(.cards(nil))
-                } label: {
+                Button { app.go(.review(r.id)) } label: {
                     HStack(spacing: 8) {
                         KIcon(name: .play, size: 14)
                         Text(t("home.k2062")).font(KFont.ui(15, .medium, lang: lang))

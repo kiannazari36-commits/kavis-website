@@ -52,6 +52,13 @@ enum Format {
     }
 
     /// 754 seconds → "12:34" (recording times; an hour or more → "1:02:34").
+    /// "S. 12" / "S. 12–13" (web `pagesShort`).
+    static func pagesShort(_ from: Int, _ to: Int, _ lang: Lang) -> String {
+        let range = from == to ? num(from, lang) : "\(num(from, lang))–\(num(to, lang))"
+        let word = switch lang { case .tr: "S."; case .en: from == to ? "p." : "pp."; case .fa, .ar: "ص." }
+        return "\(word) \(range)"
+    }
+
     static func clock(_ seconds: Int) -> String {
         let h = seconds / 3600, m = seconds / 60 % 60, s = seconds % 60
         return h > 0 ? String(format: "%d:%02d:%02d", h, m, s) : String(format: "%02d:%02d", m, s)

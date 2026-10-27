@@ -91,6 +91,39 @@ enum PlanAPI {
         return TodayReview(id: r.id, title: r.materials?.title ?? "", minutes: r.minutes, cards: r.content.cards ?? 0, questions: r.content.questions ?? 0)
     }
 
+    /// One review of the daily planner with its lesson (the "Bugünün tekrarı" screen, web `getReview`).
+    struct Review: Equatable {
+        let id: String
+        let materialId: String?
+        let courseId: String?
+        let title: String
+        let minutes: Int
+        let cards: Int
+        let status: String
+    }
+
+    static func review(_ id: String) async -> Review? {
+        struct Content: Decodable { let cards: Int? }
+        struct Material: Decodable { let title: String }
+        struct Row: Decodable { let id: String; let material_id, course_id: String?; let minutes: Int; let status: String; let content: Content; let materials: Material? }
+        guard let r = (try? await supabase.from("review_sessions").select("id, material_id, course_id, minutes, content, status, materials(title)")
+            .eq("id", value: id).limit(1).execute().value as [Row])?.first else { return nil }
+        return Review(id: r.id, materialId: r.material_id, courseId: r.course_id, title: r.materials?.title ?? "", minutes: r.minutes, cards: r.content.cards ?? 6, status: r.status)
+    }
+
+    /// The cards of the review: the lesson's due cards, else the course's.
+    static func reviewCards(_ r: Review) async -> [FlashCard] {
+        let own = r.materialId == nil ? [] : await CardsAPI.dueCards(materialId: r.materialId, limit: r.cards)
+        guard own.isEmpty, let course = r.courseId else { return own }
+        return await CardsAPI.dueCards(courseId: course, limit: r.cards)
+    }
+
+    /// Up to 3 questions of the lesson (weak topics first).
+    static func reviewQuestions(_ r: Review) async -> Quiz? {
+        guard let m = r.materialId, let q = await QuizAPI.sectionCheck(materialId: m, pageFrom: 0, pageTo: .max) else { return nil }
+        return q.questions.isEmpty ? nil : Quiz(id: q.id, lang: q.lang, questions: Array(q.questions.prefix(3)))
+    }
+
     /// "Sonra" moves the review to tomorrow; "done" closes it.
     static func setReview(_ id: String, done: Bool) async {
         if done {
