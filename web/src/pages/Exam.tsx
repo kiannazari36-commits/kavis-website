@@ -7,6 +7,7 @@ import Icon from '../components/Icon';
 import Switch from '../components/Switch';
 import { daysUntil, listCourses } from '../api/courses';
 import type { QuestionKind } from '../api/types';
+import { generateExamPack } from '../api/samples';
 import { buildExam, EXAM_KINDS, examWeek, readyQuestions, saveExamDays, upcomingExams, type CourseExam, type ExamKindName } from '../api/exam';
 import { useAsync } from '../hooks/useAsync';
 import { useTrial } from '../trial/TrialProvider';
@@ -47,6 +48,7 @@ export default function Exam() {
     setKinds(kinds.includes(k) ? kinds.filter((x) => x !== k) : [...kinds, k]);
   };
   const [building, setBuilding] = useState(false);
+  const [writing, setWriting] = useState(false);
   const [weekOpen, setWeekOpen] = useState(false);
 
   if (!courses || !exams) return <main className={s.main} />;
@@ -62,11 +64,33 @@ export default function Exam() {
   const daysLeft = week ? Math.max(0, daysUntil(week.from)) : null;
   const startName = courses.find((c) => c.id === selected)?.name ?? '';
 
+  // Goes straight to the exam. Questions of the chosen kinds that are not there yet are written first (AI, like the exam
+  // pack): the server picks what the lecturer said will be asked, what the student's samples and recordings show, then
+  // the weak topics, then the central topics of the lessons; a lesson not studied yet still gets questions.
   const start = () =>
     guard('generate', async () => {
       if (building || !chosen.length) return;
       setBuilding(true);
-      const r = await buildExam(chosen, count, weakFocus, kinds);
+      let r = await buildExam(chosen, count, weakFocus, kinds);
+      if ('error' in r && r.error === 'empty') {
+        const withPdf = courses.filter((c) => chosen.includes(c.id) && c.pdfs.length);
+        if (!withPdf.length) {
+          setBuilding(false);
+          return toast(t('exNoPdf'));
+        }
+        setWriting(true);
+        const each = Math.min(20, Math.max(5, Math.ceil(count / withPdf.length)));
+        for (const c of withPdf) {
+          const g = await generateExamPack(c.id, [], kinds, each);
+          if ('error' in g) {
+            setWriting(false);
+            setBuilding(false);
+            return toast(t(g.error === 'locked' ? 'trialQFull' : g.error === 'budget' ? 'askBudget' : 'exFailed'));
+          }
+        }
+        setWriting(false);
+        r = await buildExam(chosen, count, weakFocus, kinds);
+      }
       setBuilding(false);
       if ('error' in r) return toast(t(r.error === 'empty' ? 'exNone' : 'exFailed'));
       navigate(`/quiz?quiz=${r.quizId}`);
@@ -193,7 +217,7 @@ export default function Exam() {
       </section>
 
       <button className={s.start} aria-busy={building} disabled={building || !chosen.length} onClick={start}>
-        {building ? t('exBuilding') : mode === 'all' ? t('exStartAll') : t('exStartOne').replace('{c}', startName)}
+        {building ? t(writing ? 'exWriting' : 'exBuilding') : mode === 'all' ? t('exStartAll') : t('exStartOne').replace('{c}', startName)}
       </button>
 
       {weekOpen && (

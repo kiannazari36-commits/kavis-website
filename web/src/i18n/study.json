@@ -311,7 +311,9 @@
   "blankPlaceholder": "Boşluğa gelen kelimeyi yaz",
   "writtenPlaceholder": "Cevabını kendi cümlelerinle yaz",
   "judging": "Kontrol ediliyor…",
-  "sendAnswer": "Cevabı gönder"
+  "sendAnswer": "Cevabı gönder",
+  "exWriting": "Sorular senin için yazılıyor… (yaklaşık 1 dakika)",
+  "exNoPdf": "Bu derslerde henüz PDF yok. Önce bir PDF yükle."
  },
  "en": {
   "heroA": "How can I",
@@ -625,7 +627,9 @@
   "blankPlaceholder": "Type the missing word",
   "writtenPlaceholder": "Write your answer in your own words",
   "judging": "Checking…",
-  "sendAnswer": "Send answer"
+  "sendAnswer": "Send answer",
+  "exWriting": "Writing questions for you… (about a minute)",
+  "exNoPdf": "These courses have no PDF yet. Upload a PDF first."
  },
  "fa": {
   "heroA": "امروز چطور",
@@ -939,7 +943,9 @@
   "blankPlaceholder": "کلمهٔ جا افتاده را بنویس",
   "writtenPlaceholder": "پاسخت را با جمله‌های خودت بنویس",
   "judging": "در حال بررسی…",
-  "sendAnswer": "ارسال پاسخ"
+  "sendAnswer": "ارسال پاسخ",
+  "exWriting": "در حال نوشتن سؤال‌ها برایت… (حدود یک دقیقه)",
+  "exNoPdf": "این درس‌ها هنوز PDF ندارند. اول یک PDF بارگذاری کن."
  },
  "ar": {
   "heroA": "كيف يمكنني اليوم",
@@ -1253,6 +1259,8 @@
   "blankPlaceholder": "اكتب الكلمة الناقصة",
   "writtenPlaceholder": "اكتب إجابتك بأسلوبك",
   "judging": "جارٍ الفحص…",
-  "sendAnswer": "إرسال الإجابة"
+  "sendAnswer": "إرسال الإجابة",
+  "exWriting": "جارٍ كتابة الأسئلة لك… (نحو دقيقة)",
+  "exNoPdf": "لا توجد ملفات PDF في هذه المواد بعد. ارفع ملف PDF أولاً."
  }
 }
