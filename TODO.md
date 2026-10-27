@@ -74,21 +74,21 @@ Everything that is not finished yet. Updated after every step.
   - [x] Timetable from a photo / PDF: Edge Function `import-timetable` reads it (AI, ~1-2 cents), the student unticks wrong rows and adds the rest
 - [x] Local test copy of the backend (`supabase start` + `dev:local`), so Claude can test with fake accounts (25 Oct 2026)
 - [ ] Email sending for the 6-digit code: Supabase's built-in email is only for testing (few emails per hour); a real email provider (custom SMTP) before launch
-- [ ] Edge Functions (none built yet; list in `docs/BACKEND.md`); secrets only in Supabase secrets
+- [x] Edge Functions (none built yet; list in `docs/BACKEND.md`); secrets only in Supabase secrets (checked 27 Oct 2026: done)
 - [ ] Fill `course_catalog` per department (the design has the pharmacy list)
-- [ ] Connect the iOS app (`supabase-swift`)
-- [ ] Garbled PDF text (27 Oct 2026): a PDF whose font has no text map came out as nonsense letters ("Fizyoloji" became ")L]\RORML"). `process-material` now detects it (`looksGarbled` in `lib.ts`) and reads the pages with text recognition automatically; **LIVE since 27 Oct 2026: `process-material` version 9** (deployed with the Supabase MCP). The lesson `48aef5e6…` ("01 Fizyolojiye Giriş", one student) is already broken and must be read again (OCR). A lesson of another student (`8479526d…`, 66 pages) has been stuck in "processing" since 25 Oct
+- [x] Connect the iOS app (`supabase-swift`) (checked 27 Oct 2026: done)
+- [ ] Garbled PDF text (27 Oct 2026): a PDF whose font has no text map came out as nonsense letters ("Fizyoloji" became ")L]\RORML"). `process-material` now detects it (`looksGarbled` in `lib.ts`) and reads the pages with text recognition automatically; **LIVE since 27 Oct 2026: `process-material` version 9** (deployed with the Supabase MCP). Still to decide: the lesson `48aef5e6…` (state `needs_ocr`) can be read again with OCR (small AI cost). A lesson of another student (`8479526d…`, 66 pages) has been stuck in "processing" since 25 Oct
 - [ ] Next phase, after the web is connected: build the iOS and iPad app with the UI design at https://claude.ai/artifact/SoArzVrar1Yo8usieABRB3
 
 ## Server features (the web still uses mock data in `web/src/api/`)
 - [ ] Real backend: accounts, login (email + Apple + Google), email verification code
-- [ ] Store PDFs, notes, highlights, cards, summaries, quiz results per account
-- [ ] PDF processing: turn the PDF into the reading page without changing the teacher's text, hard-word explanations
-- [ ] AI: assistant answers only from the student's material (optional "AI + research"), lecturer-style questions, cards, summaries, audio narration
-- [ ] Content language: generate questions / cards / summaries in the chosen language
-- [ ] Translation of PDF sentences (literal / natural)
-- [ ] Study plan generation (starter → smart plan), progress data, weak topics
-- [ ] Settings saved in the account (now only in the browser)
+- [x] Store PDFs, notes, highlights, cards, summaries, quiz results per account (checked 27 Oct 2026: done)
+- [x] PDF processing: turn the PDF into the reading page without changing the teacher's text, hard-word explanations (checked 27 Oct 2026: done)
+- [x] AI: assistant answers only from the student's material (optional "AI + research"), lecturer-style questions, cards, summaries, audio narration (checked 27 Oct 2026: done)
+- [x] Content language: generate questions / cards / summaries in the chosen language (checked 27 Oct 2026: done)
+- [x] Translation of PDF sentences (literal / natural) (checked 27 Oct 2026: done)
+- [x] Study plan generation (starter → smart plan), progress data, weak topics (checked 27 Oct 2026: done)
+- [x] Settings saved in the account (now only in the browser) (checked 27 Oct 2026: done)
 - [ ] Notifications (study reminders, congratulations) — server side done locally (see Study plan / notifications), push waits for the APNs key. iPhone saves its APNs token in `push_tokens` after login and removes it on log out (27 Oct 2026, tried in the simulator; `aps-environment` is `development` in `KavisStudy.entitlements`, must be `production` for the App Store build)
 - [x] "Request my data": Edge `export-data` → one JSON file downloaded at once (all own rows + 7-day PDF links)
 - [x] "Delete account": password asked again (Edge `delete-account`), deleted after 30 days, banner "Hesabın … silinecek · Vazgeç" until then
@@ -106,7 +106,7 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Android payment later (Google Play or a web payment) — no Android app yet. The web tells Android users (Premium page, share link page, Google Play button) to use the web with the free trial
 - [ ] Android app (later); then update the Google Play button and the Android notes
 - [x] Trial limits enforced on the server (checked 27 Oct 2026): new PDF / photo needs `can_i('upload')` (RLS on `materials`, 2 lessons, 3 days), assistant `ask` (60), `generate` (quiz, summary, translate, more questions, style, and since today exam, timetable, sections, recording), 100 pages in `process-material`; counters are raised by triggers and Edge Functions
-- [ ] Check the 100-page limit when a PDF is uploaded (upload screen not built yet)
+- [x] Check the 100-page limit when a PDF is uploaded (upload screen not built yet) (done: `process-material` refuses over 100 pages with `too_long`)
 
 ## Devices
 - [x] Device limit on the server (max 2 devices, the web counts as one); real device list and sign-out on the web
@@ -129,7 +129,7 @@ Everything that is not finished yet. Updated after every step.
 - [x] Lesson summary page (`/summary`) was already there. "Bugünün tekrarı" (`/review?id=…`, design NewRevise, 27 Oct 2026): Home "Tekrara başla" opens it (no longer marks it done at once): 1 summary (the lesson's weak topics / saved review summary with the reason), 2 cards (Biliyorum / Tekrar sor → `rateCard`), 3 questions (≤3 of the lesson's, saved as a quiz try, graded by `grade-quiz`), result; "Bitir" sets `review_sessions` done, "Sonra devam et" leaves it open. Checked locally with test1 in tr / fa (RTL)
 - [x] Exam center (`/exam`, design ScrReview "exam" / "examAll" / "setWeek", 27 Oct 2026): home tile "Sınav merkezi" opens it; exam week card from `course_exams`, "Değiştir" dialog (kind + each course's day, writes `course_exams` like the iPhone), course exam or general exam, 20 / 40 / 60 questions, weak-topic focus; Edge `build-exam` puts it together, the quiz page plays it (`/quiz?quiz=<id>`, graded by `grade-quiz`). Checked locally with test1 (built from 14 ready questions, graded 57%)
 - [x] `build-exam`, `import-timetable`, `group-sections`, `process-recording` now refuse after the trial (403 `locked`, `can_use('generate')`): **LIVE since 27 Oct 2026**: `build-exam` v3, `import-timetable` v2, `group-sections` v2, `process-recording` v2 (JWT setting unchanged; live answer without login checked: 401). Tried locally with an expired-trial fake account (403 `locked`); not tried live (no live test account on purpose)
-- [ ] The nightly `daily-planner` that makes the `review_sessions` row is still missing (the review box only shows when a row exists, e.g. from the example data)
+- [x] The nightly `daily-planner` that makes the `review_sessions` row is still missing (the review box only shows when a row exists, e.g. from the example data) (done: the nightly `daily-planner` is live)
 - [ ] Turn on the App Store button when the iPhone app is live: put the link in `APP_STORE_URL` (`web/src/config.ts`). Until then every store button shows "Yakında" and cannot be clicked (landing, Premium page, share link page)
 - [ ] Same for Google Play (`PLAY_STORE_URL`) and the Mac App Store (`MAC_STORE_URL`) when those apps exist; then update the line under the store buttons (`storesSoon`)
 
@@ -239,9 +239,9 @@ Technical notes and decisions:
 - [ ] Split the JavaScript into smaller parts per page (now one ~190 KB gzip file)
 
 ## Public launch checklist (do all of these before opening the site to everyone)
-- [ ] Real accounts and a real server (login, email verification, data per account) — replace `web/src/api/` mock functions
-- [ ] PDF processing and AI (reading page, questions, cards, summaries, assistant) with a cost limit per user and per month
-- [ ] Trial limits on the server (3 days, 2 PDFs, 60 assistant questions, 100 pages per PDF)
+- [x] Real accounts and a real server (login, email verification, data per account) — replace `web/src/api/` mock functions (checked 27 Oct 2026: done)
+- [x] PDF processing and AI (reading page, questions, cards, summaries, assistant) with a cost limit per user and per month (checked 27 Oct 2026: done)
+- [x] Trial limits on the server (3 days, 2 PDFs, 60 assistant questions, 100 pages per PDF) (done 27 Oct 2026: RLS on upload, `can_use` in the AI functions, 100 pages in `process-material`; the last 4 functions got the gate today)
 - [x] 2-device limit on the server (RPC `register_device`, the web counts as one)
 - [ ] KVKK texts and privacy policy (and terms of use): drafts written and linked from sign-up, the site and the paywall; a lawyer must still check them and the `[PLACEHOLDERS]` must be filled; remove the "draft" banner then
 - [ ] Remove sample data: sample answers, the `?lang=` test switch, the sample lesson in the reader, and the example rows of `supabase/seed.sql`
@@ -251,5 +251,5 @@ Technical notes and decisions:
 ## Live (27 Oct 2026, with Kian's yes): server jobs
 - [x] Migration `20261027105541_daily_jobs_and_sessions.sql` applied: `daily-planner` cron job ON (hourly :05), `send-notifications` cron job OFF, `register_device` saves the login, `sign_out_device` ends it, API pre-request check `hooks.check_session`. Checked on live: anon API 200, a real session passes, an ended session gets 401 `session_ended`, the planner run answered `{students: 0}` (nobody at 04:xx), the push job `{off: 'no apns key'}`
 - [x] Deployed: `daily-planner` v1, `send-notifications` v1, `grade-quiz` v6 (exam-result notification)
-- [ ] Not deployed yet (not needed until push is on): `process-material` (lesson-ready notification left unsent so it can be pushed) and `build-plan` (only moved its code to `build.ts`, same behaviour) — deploy both together with turning push on
+- [ ] Not deployed yet: `build-plan` only (it just moved its code to `build.ts`, same behaviour) — deploy it together with turning push on. `process-material` is live (version 9, 27 Oct 2026).
 - Note: logins made before 27 Oct 2026 have no saved session on their device row; they are ended at once only after their next sign-in (or an app start that calls `register_device`)
