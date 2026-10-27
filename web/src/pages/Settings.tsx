@@ -16,10 +16,10 @@ import DeviceList from '../components/DeviceList';
 import { listDevices, signOutThisDevice, type Device } from '../api/devices';
 import { useAsync } from '../hooks/useAsync';
 import KeysDialog from '../components/KeysDialog';
+import { SUPPORT_EMAIL } from '../config';
 import s from './Settings.module.css';
 
 /** Where students write for help (Settings › Help and support). */
-const SUPPORT_EMAIL = 'kavisstudy@gmail.com';
 
 // Design: design/DeskApp.dc.html screen "settings" (web layout: section menu + cards),
 // section contents from design/NewIPad.dc.html "Profil ve ayarlar". "Content language" is new (CLAUDE.md).
@@ -406,6 +406,9 @@ export default function Settings() {
               <b>{t('helpT')}</b>
               <span>{t('helpS')}</span>
             </span>
+            <button className={s.ghost} onClick={() => navigate('/help')}>
+              {t('hpOpen')}
+            </button>
             <button className={s.ghost} onClick={() => navigate('/notifications')}>
               {t('notifsBtn')}
             </button>

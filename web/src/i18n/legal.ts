@@ -229,7 +229,7 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
         'Verilerini hizmeti sunmak (sözleşmenin ifası), hesabını ve cihaz sınırını yönetmek, aboneliği doğrulamak, güvenliği sağlamak ve hukuki yükümlülükleri yerine getirmek için işleriz. KVKK m.5/2 (c) sözleşmenin ifası, (ç) hukuki yükümlülük, (f) meşru menfaat; GDPR m.6(1)(b), (c), (f). Pazarlama bildirimi göndermeden önce ayrıca açık rızanı isteriz. [AVUKAT KONTROL EDECEK]',
       ] },
       { h: '4. Yapay zekâ işleme', p: [
-        'Özet, soru, kart ve asistan cevaplarını üretmek için içeriğin, Anthropic’in Claude yapay zekâ modeline gönderilir. Model yalnızca senin yüklediğin materyali kullanır. Anthropic ile veri işleme sözleşmemize göre içeriğin model eğitimi için kullanılmaz. [AVUKAT/SÖZLEŞME KONTROL EDECEK]',
+        'Özet, soru, kart ve asistan cevaplarını üretmek için içeriğin, Anthropic’in Claude yapay zekâ modeline gönderilir. Model yalnızca senin yüklediğin materyali kullanır. Yardım sohbetine yazdığın mesajlar yalnızca cevap verilmesi için yapay zekâya gönderilir ve kaydedilmez. Anthropic ile veri işleme sözleşmemize göre içeriğin model eğitimi için kullanılmaz. [AVUKAT/SÖZLEŞME KONTROL EDECEK]',
       ] },
       { h: '5. Verilerin saklandığı yer ve aktarım', p: [
         'Verilerin Supabase üzerinde AB’de (İrlanda, eu-west-1) saklanır. Yapay zekâ işleme için içerik Anthropic’e, abonelik doğrulaması için ilgili bilgiler Apple’a aktarılır; bu aktarımlar yurt dışına aktarım sayılabilir. KVKK m.9 ve GDPR Bölüm V kapsamındaki güvenceler uygulanır. [AVUKAT KONTROL EDECEK]',
@@ -268,7 +268,7 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
         'We process data to provide the service (performance of a contract), manage your account and device limit, verify your subscription, keep the service secure and meet legal obligations. GDPR Art. 6(1)(b), (c), (f); KVKK Art. 5/2 (c), (ç), (f). We ask for your explicit consent separately before sending any marketing. [LAWYER TO CHECK]',
       ] },
       { h: '4. AI processing', p: [
-        'To produce summaries, questions, cards and assistant answers, your content is sent to Anthropic’s Claude AI model. The model works only from the material you uploaded. Under our data-processing terms with Anthropic your content is not used to train models. [LAWYER / CONTRACT TO CHECK]',
+        'To produce summaries, questions, cards and assistant answers, your content is sent to Anthropic’s Claude AI model. The model works only from the material you uploaded. Messages you write in the help chat are sent to the AI only to answer them and are not saved. Under our data-processing terms with Anthropic your content is not used to train models. [LAWYER / CONTRACT TO CHECK]',
       ] },
       { h: '5. Where data is stored and transfers', p: [
         'Your data is stored with Supabase in the EU (Ireland, eu-west-1). For AI processing content is sent to Anthropic, and for subscription checks relevant data goes to Apple; these may be transfers outside your country. Safeguards under GDPR Chapter V and KVKK Art. 9 apply. [LAWYER TO CHECK]',
@@ -307,7 +307,7 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
         'داده‌ها را برای ارائه خدمت (اجرای قرارداد)، مدیریت حساب و محدودیت دستگاه، تأیید اشتراک، تأمین امنیت و انجام تعهدات قانونی پردازش می‌کنیم. GDPR ماده ۶(۱) بندهای b، c، f؛ KVKK ماده ۵/۲. پیش از ارسال هر پیام تبلیغاتی، رضایت صریح تو را جداگانه می‌گیریم. [وکیل بررسی کند]',
       ] },
       { h: '۴. پردازش با هوش مصنوعی', p: [
-        'برای ساخت خلاصه، پرسش، کارت و پاسخ دستیار، محتوای تو به مدل هوش مصنوعی Claude از شرکت Anthropic فرستاده می‌شود. مدل فقط از مطالبی که خودت بارگذاری کرده‌ای استفاده می‌کند. طبق شرایط پردازش داده با Anthropic، محتوای تو برای آموزش مدل استفاده نمی‌شود. [وکیل / قرارداد بررسی کند]',
+        'برای ساخت خلاصه، پرسش، کارت و پاسخ دستیار، محتوای تو به مدل هوش مصنوعی Claude از شرکت Anthropic فرستاده می‌شود. مدل فقط از مطالبی که خودت بارگذاری کرده‌ای استفاده می‌کند. پیام‌هایی که در گفتگوی راهنما می‌نویسی فقط برای پاسخ دادن به هوش مصنوعی فرستاده می‌شود و ذخیره نمی‌شود. طبق شرایط پردازش داده با Anthropic، محتوای تو برای آموزش مدل استفاده نمی‌شود. [وکیل / قرارداد بررسی کند]',
       ] },
       { h: '۵. محل نگهداری و انتقال', p: [
         'داده‌های تو نزد Supabase در اتحادیه اروپا (ایرلند، eu-west-1) ذخیره می‌شود. برای پردازش هوش مصنوعی محتوا به Anthropic و برای تأیید اشتراک اطلاعات لازم به اپل منتقل می‌شود؛ این موارد ممکن است انتقال به خارج از کشور تو باشد. تضمین‌های فصل پنجم GDPR و ماده ۹ KVKK اعمال می‌شود. [وکیل بررسی کند]',
@@ -346,7 +346,7 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
         'نعالج البيانات لتقديم الخدمة (تنفيذ العقد) وإدارة حسابك وحد الأجهزة والتحقق من الاشتراك وحفظ الأمان والوفاء بالالتزامات القانونية. GDPR المادة 6(1) البنود b وc وf؛ KVKK المادة 5/2. نطلب موافقتك الصريحة بشكل منفصل قبل إرسال أي رسائل تسويقية. [على المحامي المراجعة]',
       ] },
       { h: '4. المعالجة بالذكاء الاصطناعي', p: [
-        'لإنتاج الملخصات والأسئلة والبطاقات وإجابات المساعد، يُرسل محتواك إلى نموذج Claude للذكاء الاصطناعي من شركة Anthropic. يعمل النموذج بالمواد التي رفعتها أنت فقط. وفق شروط معالجة البيانات مع Anthropic لا يُستخدم محتواك لتدريب النماذج. [على المحامي / العقد المراجعة]',
+        'لإنتاج الملخصات والأسئلة والبطاقات وإجابات المساعد، يُرسل محتواك إلى نموذج Claude للذكاء الاصطناعي من شركة Anthropic. يعمل النموذج بالمواد التي رفعتها أنت فقط. تُرسل الرسائل التي تكتبها في محادثة المساعدة إلى الذكاء الاصطناعي للرد عليها فقط ولا تُحفظ. وفق شروط معالجة البيانات مع Anthropic لا يُستخدم محتواك لتدريب النماذج. [على المحامي / العقد المراجعة]',
       ] },
       { h: '5. مكان التخزين والنقل', p: [
         'تُخزَّن بياناتك لدى Supabase في الاتحاد الأوروبي (أيرلندا، eu-west-1). لأغراض الذكاء الاصطناعي يُرسل المحتوى إلى Anthropic، وللتحقق من الاشتراك تُرسل البيانات اللازمة إلى Apple؛ وقد يُعد ذلك نقلًا خارج بلدك. تُطبَّق الضمانات وفق الفصل الخامس من GDPR والمادة 9 من KVKK. [على المحامي المراجعة]',

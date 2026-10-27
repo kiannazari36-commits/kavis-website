@@ -11,3 +11,7 @@ export const MAC_STORE_URL = '';
 
 /** No Android app yet (CLAUDE.md): Android users use the web with the free trial. */
 export const isAndroid = () => /Android/i.test(navigator.userAgent);
+
+/** Support e-mail and how fast we answer it (shown on the Help page; Kian may change it to 48 later). */
+export const SUPPORT_EMAIL = 'kavisstudy@gmail.com';
+export const SUPPORT_REPLY_HOURS = 24;

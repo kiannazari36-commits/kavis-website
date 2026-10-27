@@ -31,6 +31,7 @@ import Paywall from './pages/Paywall';
 import DeviceLimit from './pages/DeviceLimit';
 import ShareLink from './pages/ShareLink';
 import Legal from './pages/Legal';
+import Help from './pages/Help';
 
 export default function App() {
   return (
@@ -64,6 +65,7 @@ export default function App() {
                     <Route path="/record" element={<Record />} />
                     <Route path="/recording" element={<Recording />} />
                     <Route path="/samples" element={<Samples />} />
+                    <Route path="/help" element={<Help />} />
                     <Route path="/admin" element={<Admin />} />
                   </Route>
                   <Route path="/premium" element={<Paywall />} />
