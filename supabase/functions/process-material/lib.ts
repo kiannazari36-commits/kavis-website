@@ -122,3 +122,20 @@ export function readyNotice(lang: string, title: string, st: Stats) {
       return { title: `${title} dersin hazır`, body: `${n.p} sayfa · ${n.t} terim · ${n.c} kart · ${n.q} soru hazırlandı.` };
   }
 }
+
+/**
+ * A PDF whose font has no text map gives nonsense instead of words (e.g. "Fizyoloji" comes out as ")L]\RORML": every
+ * letter moved by a fixed number). Its text must be read by text recognition (OCR) instead. True when the text of the
+ * first pages is Latin-script letters with far too few vowels or with many symbols between the letters. Arabic and
+ * Persian text is never judged here.
+ */
+export function looksGarbled(pages: string[]): boolean {
+  const sample = pages.filter((p) => p.trim()).slice(0, 5).join(' ').slice(0, 4000);
+  if (/\p{Script=Arabic}/u.test(sample)) return false;
+  const letters = sample.match(/[a-zA-ZçğıöşüÇĞİÖŞÜâîû]/g) ?? [];
+  if (letters.length < 100) return false;
+  const vowels = letters.filter((c) => /[aeiıioöuüAEIİOÖUÜâîû]/.test(c)).length;
+  const nonSpace = sample.replace(/\s/g, '').length || 1;
+  const odd = (sample.match(/[\\\]\[^_`{}|~¡¢£¤¥¦§¨©ª¬®¯°±²³´¶·¸¹º¼½¾¿\u0000-\u0008\u000e-\u001f�□]/g) ?? []).length;
+  return vowels / letters.length < 0.2 || odd / nonSpace > 0.04;
+}

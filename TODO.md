@@ -77,6 +77,7 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Edge Functions (none built yet; list in `docs/BACKEND.md`); secrets only in Supabase secrets
 - [ ] Fill `course_catalog` per department (the design has the pharmacy list)
 - [ ] Connect the iOS app (`supabase-swift`)
+- [ ] Garbled PDF text (27 Oct 2026): a PDF whose font has no text map came out as nonsense letters ("Fizyoloji" became ")L]\RORML"). `process-material` now detects it (`looksGarbled` in `lib.ts`) and reads the pages with text recognition automatically; **code ready, not deployed yet** (`supabase functions deploy process-material --project-ref lnbfcfxxrqohcnkhlcur`). The lesson `48aef5e6…` ("01 Fizyolojiye Giriş", one student) is already broken and must be read again (OCR). A lesson of another student (`8479526d…`, 66 pages) has been stuck in "processing" since 25 Oct
 - [ ] Next phase, after the web is connected: build the iOS and iPad app with the UI design at https://claude.ai/artifact/SoArzVrar1Yo8usieABRB3
 
 ## Server features (the web still uses mock data in `web/src/api/`)

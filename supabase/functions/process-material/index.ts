@@ -14,7 +14,7 @@ import Anthropic from 'npm:@anthropic-ai/sdk';
 import { extractText, getDocumentProxy } from 'npm:unpdf';
 import { PDFDocument } from 'npm:pdf-lib@1.17.1';
 import { OCR_SCHEMA, OCR_SYSTEM, pageTexts, toBase64, type OcrBatch } from './ocr.ts';
-import { batches, cleanHints, costUsd, markTerms, paragraphsOf, readyNotice } from './lib.ts';
+import { batches, cleanHints, costUsd, looksGarbled, markTerms, paragraphsOf, readyNotice } from './lib.ts';
 import { SCHEMA, SYSTEM, contentLanguage, styleNote, userMessage, type AiBatch } from './ai.ts';
 
 declare const EdgeRuntime: { waitUntil(p: Promise<unknown>): void };
@@ -219,6 +219,11 @@ async function runBatch(db: SupabaseClient, materialId: string, batchNo: number,
 
     if (batchNo === 0) {
       await clearOutput(db, materialId);
+      // A PDF whose font gives nonsense letters instead of words is read by text recognition from the page images.
+      if (!ocr && looksGarbled(text)) {
+        await runAgain(materialId, 0, true);
+        return;
+      }
       const chars = text.reduce((a, t) => a + t.replace(/\s/g, '').length, 0);
       if (!ocr && chars < 20 * Math.min(totalPages, 5)) {
         await refundTrial(db, materialId, uid);

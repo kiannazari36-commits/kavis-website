@@ -1,5 +1,5 @@
 // Run: node --experimental-strip-types supabase/functions/process-material/lib.test.ts
-import { batches, cleanHints, costUsd, markTerms, paragraphsOf, plain, readyNotice } from './lib.ts';
+import { batches, cleanHints, costUsd, looksGarbled, markTerms, paragraphsOf, plain, readyNotice } from './lib.ts';
 
 let fails = 0;
 const check = (name: string, ok: boolean) => {
@@ -42,4 +42,11 @@ const st = { pages: 5, terms: 4, cards: 4, questions: 2 };
 check('ready notice in Turkish', readyNotice('tr', 'Vitaminler', st).title === 'Vitaminler dersin hazır');
 check('ready notice in English', readyNotice('en', 'Vitamins', st).body === '5 pages · 4 terms · 4 cards · 2 questions prepared.');
 check('unknown language → Turkish', readyNotice('de', 'X', {}).body.startsWith('0 sayfa'));
+// The same text as the real broken PDF: every character moved by 29 (what a font without a text map gives).
+const shift = (t: string) => [...t].map((c) => String.fromCharCode(c.charCodeAt(0) - 29)).join('');
+const garbled = shift('Fizyoloji Nedir? Canlı organizmalardaki yapısal ve fonksiyonel işleyişi inceleyen bilim dalıdır. ').repeat(4);
+check('garbled font text is detected', looksGarbled([garbled.repeat(3)]));
+check('normal Turkish text is not garbled', !looksGarbled([page.repeat(4)]));
+check('short text is never judged', !looksGarbled(['xyz\\]']));
+check('Persian text is not judged', !looksGarbled(['فیزیولوژی علم مطالعه عملکرد موجودات زنده است و '.repeat(12)]));
 if (fails) process.exit(1);
