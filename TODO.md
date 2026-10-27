@@ -211,7 +211,7 @@ Still to build (screens):
 - [ ] Upload extras: real camera and microphone capture (permission texts), the trial-limit sheet and fair-use sheet of the design (the lock dialog is used now)
 - [ ] Step 4: StoreKit, trial limits on the server, share links
 - [ ] Real "Sign in with Apple" and Google sign-in; real email code (every account uses the demo code 481920 and "Kodu e-postadan yapıştır" fills it)
-- [ ] Profile photo picker (now a toast)
+- [x] Profile photo picker: photo → square 512 px JPEG in the private bucket `avatars` (`<user id>/avatar.jpg`, `profiles.avatar_path`), shown on profile and home (27 Oct 2026, tried locally). The web does not show it yet
 
 Known differences from the designs (decided on purpose):
 - The designs still show the old free plan ("Bu ay 2 dersten 1'i kullanıldı", "BU AY 1/2 ÜCRETSİZ DERS"). The app shows the 3-day trial (2 PDFs, 60 questions) instead, as in CLAUDE.md

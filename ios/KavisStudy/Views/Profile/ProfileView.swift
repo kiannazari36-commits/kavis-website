@@ -1,4 +1,5 @@
 import SwiftUI
+import PhotosUI
 
 /// Design: design/NewProfile.dc.html. Profile (photo, name, stats, plan, menu, log out) and "Hesap bilgilerim" (edit).
 struct ProfileView: View {
@@ -16,6 +17,8 @@ struct ProfileView: View {
     @State private var profile = Profile(name: "", email: "", school: "")
     @State private var saved = false
     @State private var loaded = false
+    @State private var photo: UIImage? = AvatarAPI.cached()
+    @State private var pickedPhoto: PhotosPickerItem?
     @State private var profileStats: ProfileStats?
     @State private var notifyTime = SettingsAPI.loadNow().notifyTime
 
@@ -35,7 +38,17 @@ struct ProfileView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(background.ignoresSafeArea())
+        .onChange(of: pickedPhoto) { _, item in
+            guard let item else { return }
+            Task {
+                guard let data = try? await item.loadTransferable(type: Data.self), let image = UIImage(data: data),
+                      let saved = await AvatarAPI.upload(image) else { return toast.show(prefs.t("errOther")) }
+                photo = saved
+                toast.show(d("Fotoğraf seçildi"))
+            }
+        }
         .task {
+            Task { photo = await AvatarAPI.fetch() }
             if !loaded {
                 // The phone's copy at once, then the account's profile from the server.
                 profile = AccountAPI.loadProfile(for: app.user)
@@ -94,6 +107,14 @@ struct ProfileView: View {
     }
 
     private func avatar(size: CGFloat, font: CGFloat) -> some View {
+        Group {
+            if let photo {
+                Image(uiImage: photo).resizable().scaledToFill().frame(width: size, height: size).clipShape(Circle())
+            } else { initialsAvatar(size: size, font: font) }
+        }
+    }
+
+    private func initialsAvatar(size: CGFloat, font: CGFloat) -> some View {
         Text(initials)
             .font(KFont.ui(font, .semibold, lang: .en))
             .foregroundStyle(KPhone.ctaText)
@@ -311,7 +332,7 @@ struct ProfileView: View {
                     HStack(spacing: 14) {
                         avatar(size: 72, font: 26)
                         VStack(alignment: .leading, spacing: 6) {
-                            Button { toast.show(d("Fotoğraf seçildi")) } label: {
+                            PhotosPicker(selection: $pickedPhoto, matching: .images) {
                                 Text(d("Fotoğraf seç"))
                                     .font(KFont.ui(13, lang: lang)).foregroundStyle(KPhone.text)
                                     .padding(.horizontal, 14).frame(height: 38)

@@ -68,6 +68,7 @@ struct HomeView: View {
         .animation(.easeOut(duration: 0.2), value: later)
         .animation(.easeOut(duration: 0.2), value: reviewMenuOpen)
         .task {
+            Task { photo = await AvatarAPI.fetch() }
             async let list = CoursesAPI.listCourses()
             async let week = PlanAPI.weekTasks()
             async let review = PlanAPI.todayReview()
@@ -79,6 +80,8 @@ struct HomeView: View {
     }
 
     // MARK: Top bar
+
+    @State private var photo: UIImage? = AvatarAPI.cached()
 
     private var fullName: String { app.user?.name ?? "Elif Yıldız" }
     private var firstName: String { fullName.split(separator: " ").first.map(String.init) ?? fullName }
@@ -121,11 +124,15 @@ struct HomeView: View {
     private var profileButton: some View {
         Button { app.go(.profile) } label: {
             HStack(spacing: 8) {
-                Text(initials)
-                    .font(KFont.ui(13, .semibold, lang: lang))
-                    .foregroundStyle(KPhone.ctaText)
-                    .frame(width: 34, height: 34)
-                    .background(KPhone.navActive, in: Circle())
+                if let photo {
+                    Image(uiImage: photo).resizable().scaledToFill().frame(width: 34, height: 34).clipShape(Circle())
+                } else {
+                    Text(initials)
+                        .font(KFont.ui(13, .semibold, lang: lang))
+                        .foregroundStyle(KPhone.ctaText)
+                        .frame(width: 34, height: 34)
+                        .background(KPhone.navActive, in: Circle())
+                }
                 (Text("\(t("home.k1440")) ") + Text(firstName).fontWeight(.semibold))
                     .font(KFont.ui(14, lang: lang))
                     .foregroundStyle(KPhone.text)
