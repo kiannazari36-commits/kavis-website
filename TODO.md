@@ -119,7 +119,7 @@ Everything that is not finished yet. Updated after every step.
 ## Web app — not built yet
 - [x] Upload screen for PDF (`/upload`, design ScrUpload) — [ ] photo and audio recording still "coming soon"
 - [x] Onboarding after sign-up on the web (25 Oct 2026, `/welcome`, until `profiles.onboarding_done`): language, school + department + class year, weekly plan (days, hours), this term's courses (suggestions per department in `web/src/api/onboarding.ts` + typed). "Ders ekle" on My Courses makes a course. Later: fill `course_catalog` per department and year; the 3 intro cards of the phone design are not on the web
-- [ ] Help & live support chat
+- [x] Help page `/help` with AI help chat (27 Oct 2026, local): Edge `help-chat` (Claude Haiku, public help text, nothing saved, 30 questions/day) + "Bize e-posta yaz" button (reply time in `SUPPORT_REPLY_HOURS`, `web/src/config.ts`). No live human chat (decided). [ ] Deploy `help-chat` to the live project (ask Kian first)
 - [ ] Live audio lesson, "Let me explain" (teach-back), solve a question photo
 - [ ] Pen / handwritten notes on the PDF, full PDF page view
 - [ ] Lesson summary / review pages ("Bugünün tekrarı", exam center)
@@ -185,7 +185,7 @@ Step 4 of the app plan (26 Oct 2026): assistant, cards, quiz, plan (progress scr
 - [x] Design texts of the study screens (cards, quiz, plan, progress, exam prep) added to `i18n-design.json` (`extract-design-texts.mjs` reads them now; older texts kept as they were)
 - Note: after the Mac restarts, `supabase start` may leave the Edge Functions container stopped (quiz grading then fails with 503); `supabase stop` + `supabase start` fixes it
 - [x] Photos and lecture recordings from the phone (27 Oct 2026): slide photos from the camera or the photo library (up to 30, drag / menu to reorder, shrunk to JPEG 2000 px) → `photo` lesson + `process-material`, uses a trial lesson; lecture recording from a file or live in class (M4A, goes on with the screen off) → Apple speech recognition on the device only, in the lesson's language → only the text to `process-recording`, linked to the chosen PDF. Permission texts in 4 languages. Tested locally without AI: photos stored in order, lesson row made
-- [ ] Phone recordings not tried end to end: the simulator cannot start Apple's on-device recognizer, so it needs a real iPhone (Turkish on-device dictation must be installed; Persian may not exist on the device → the app shows a message). The AI steps (photo OCR, recording match) not yet run from the phone
+- [ ] Phone recordings not tried end to end: the simulator cannot start Apple's on-device recognizer, so it needs a real iPhone (Turkish on-device dictation must be installed; Persian may not exist on the device → the app shows a message). Photo OCR of a phone photo lesson tested locally 27 Oct 2026: 2 pages, text copied exactly, $0.024; the recording match not yet run from the phone
 - [ ] Phone: no recording page yet ("Kaydı aç" opens the PDF lesson); the web's `/recording` page (transcript, lecturer's emphasis) still to build on iOS
 - [x] Profile screen on real data (27 Oct 2026): study time, streak, courses, PDFs, sample questions, reminder time; menu rows open courses / progress / settings. "Soru örneklerim" and "Yardım" rows still show a toast
 - [ ] The home "Bugün tekrar günü" card is still the design's sample data
