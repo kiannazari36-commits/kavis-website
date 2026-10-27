@@ -26,4 +26,7 @@ check('unknown question ids are ignored', grade([q('1', 0)], [a('x', 0), a('1', 
 check('levels: 49 beginner, 50 improving, 70 very_good, 85 expert',
   levelFor(49) === 'beginner' && levelFor(50) === 'improving' && levelFor(70) === 'very_good' && levelFor(85) === 'expert');
 check('topic weak under 60', topicState(59) === 'weak' && topicState(60) === 'known');
+const wr = grade([q('1', 0), q('w', 0, 'written')], [a('1', 0), a('w', null, { confidence: 'sure' })], new Map([['w', false]]));
+check('written answer judged wrong → 0 points, counted, confident mistake', wr.score === 50 && wr.results[1].correct === false && wr.confidentMistakes.length === 1);
+check('written answer judged right → 1 point', grade([q('w', 0, 'written')], [a('w', null)], new Map([['w', true]])).score === 100);
 if (fails) process.exit(1);

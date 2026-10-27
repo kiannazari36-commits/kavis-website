@@ -9,6 +9,7 @@ export type QuestionRow = {
   options: string[] | null;
   explanation: string | null;
   source_page: number | null;
+  model_answer?: string | null;
 };
 
 export type AnswerRow = {
@@ -22,7 +23,7 @@ export type AnswerRow = {
 export type Level = 'beginner' | 'improving' | 'very_good' | 'expert';
 
 export type Graded = {
-  /** Right / wrong per question; null = a written answer, graded later by AI. */
+  /** Right / wrong per question; null = a written answer the AI has not judged (empty or the AI was unavailable). */
   results: { question_id: string; correct: boolean | null }[];
   /** 0–100, over the questions that could be graded. null when none could. */
   score: number | null;
@@ -39,7 +40,7 @@ export function levelFor(score: number): Level {
 }
 
 /** Right = 1 point, right with any hint = half a point, wrong / "I don't know" = 0. */
-export function grade(questions: QuestionRow[], answers: AnswerRow[]): Graded {
+export function grade(questions: QuestionRow[], answers: AnswerRow[], written: Map<string, boolean> = new Map()): Graded {
   const byId = new Map(questions.map((q) => [q.id, q]));
   const results: Graded['results'] = [];
   const confidentMistakes: QuestionRow[] = [];
@@ -48,11 +49,13 @@ export function grade(questions: QuestionRow[], answers: AnswerRow[]): Graded {
   for (const a of answers) {
     const q = byId.get(a.question_id);
     if (!q) continue;
-    if (q.kind !== 'multiple_choice' || q.answer_index === null) {
+    // A written answer counts once the AI has judged it (`written`: question id → right / wrong); until then null.
+    const verdict = q.kind === 'written' ? written.get(q.id) : undefined;
+    if (verdict === undefined && (q.kind !== 'multiple_choice' || q.answer_index === null)) {
       results.push({ question_id: q.id, correct: null });
       continue;
     }
-    const correct = !a.dont_know && a.chosen_index === q.answer_index;
+    const correct = verdict !== undefined ? verdict && !a.dont_know : !a.dont_know && a.chosen_index === q.answer_index;
     results.push({ question_id: q.id, correct });
     graded++;
     if (correct) points += a.hints_used > 0 ? 0.5 : 1;
