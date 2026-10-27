@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "Kavis Study با دوربین از صفحه‌های درس، اسلایدها و جزوه‌ها عکس می‌گیرد و آن‌ها را به درسی خوانا تبدیل می‌کند.";
+"NSPhotoLibraryUsageDescription" = "Kavis Study عکس صفحه‌های درس و اسلایدها را از گالری‌ات به درس اضافه می‌کند.";
+"NSMicrophoneUsageDescription" = "Kavis Study صدای استاد را سر کلاس ضبط می‌کند. ضبط فقط در حساب خودت نگه داشته می‌شود.";
+"NSSpeechRecognitionUsageDescription" = "Kavis Study ضبط کلاس را روی همین گوشی به متن تبدیل می‌کند. فقط متن به سرور می‌رود.";

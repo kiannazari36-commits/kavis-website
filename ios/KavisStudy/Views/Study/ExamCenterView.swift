@@ -89,10 +89,12 @@ struct ExamCenterView: View {
     // MARK: Week
 
     /// The coming exam week: the kind of the nearest exam and the days of that kind close to it.
-    private var week: (kind: CourseExam.Kind, from: String, to: String)? {
+    private var week: (kind: CourseExam.Kind, from: String, to: String)? { Self.week(of: exams) }
+
+    static func week(of exams: [CourseExam]) -> (kind: CourseExam.Kind, from: String, to: String)? {
         guard let first = exams.first else { return nil }
-        let limit = Self.day(first.date).flatMap { Calendar.current.date(byAdding: .day, value: 21, to: $0) }
-        let same = exams.filter { $0.kind == first.kind && (Self.day($0.date).map { limit == nil || $0 <= limit! } ?? false) }
+        let limit = day(first.date).flatMap { Calendar.current.date(byAdding: .day, value: 21, to: $0) }
+        let same = exams.filter { $0.kind == first.kind && (day($0.date).map { limit == nil || $0 <= limit! } ?? false) }
         return (first.kind, first.date, same.map(\.date).max() ?? first.date)
     }
 
@@ -103,7 +105,7 @@ struct ExamCenterView: View {
         return f.date(from: iso)
     }
 
-    fileprivate static func kindName(_ k: CourseExam.Kind, _ prefs: AppPrefs) -> String {
+    static func kindName(_ k: CourseExam.Kind, _ prefs: AppPrefs) -> String {
         switch k {
         case .midterm: prefs.d("Vize")
         case .final: prefs.d("Final")
@@ -112,7 +114,7 @@ struct ExamCenterView: View {
     }
 
     /// "19–23 Ekim" / "30 Eki – 3 Kas".
-    fileprivate static func range(_ from: String, _ to: String, _ lang: Lang) -> String {
+    static func range(_ from: String, _ to: String, _ lang: Lang) -> String {
         guard let a = day(from), let b = day(to) else { return "" }
         let f = DateFormatter()
         f.locale = lang.locale

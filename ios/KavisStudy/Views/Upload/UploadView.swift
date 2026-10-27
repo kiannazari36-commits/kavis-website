@@ -1,18 +1,22 @@
+import AVFoundation
 import PDFKit
+import PhotosUI
 import SwiftUI
 import UniformTypeIdentifiers
 
 /// Design: design/ScrUpload.dc.html. Choose a PDF (or photos / a lecture recording), see the lesson being prepared,
 /// or an error when the PDF has no text. A PDF over 100 pages opens the "too long" sheet (CLAUDE.md: max 100 pages).
-/// A PDF is uploaded to the server and prepared there (UploadAPI, the same as the web); this screen follows it until
-/// the lesson is ready. Photos and lecture recordings are not sent to the server yet (see TODO.md).
+/// A PDF or photos of pages are uploaded to the server and prepared there (UploadAPI, the same as the web); this screen
+/// follows it until the lesson is ready. A lecture recording becomes text on the phone (Transcriber) and only the text
+/// goes to the server (RecordingAPI), which matches it with the chosen lesson's pages.
 struct UploadView: View {
     @Environment(AppPrefs.self) private var prefs
     @Environment(AppModel.self) private var app
     @Environment(ToastCenter.self) private var toast
     @Environment(TrialModel.self) private var trial
 
-    enum Mode { case pick, photo, audio, processing, error }
+    enum Mode { case pick, photo, audio, processing, error, recording }
+    enum RecStep { case listen, match, ready, failed }
 
     let kind: UploadKind
     @State private var mode: Mode
@@ -28,8 +32,18 @@ struct UploadView: View {
     @State private var status: UploadAPI.LessonStatus?
     @State private var partCount = 0
     @State private var busy = false
-    @State private var shots = 4
-    @State private var audioName: String?
+    /// Photo lesson: the pages in order.
+    @State private var photos: [PhotoPage] = []
+    @State private var galleryItems: [PhotosPickerItem] = []
+    @State private var showCamera = false
+    /// Recording: the lessons it can belong to, the chosen one, the sound and where its preparation is.
+    @State private var recLessons: [RecordingAPI.LessonPick] = []
+    @State private var recLessonId: String?
+    @State private var sound: SoundPick?
+    @State private var live = LiveRecorder()
+    @State private var recStep: RecStep = .listen
+    @State private var recPct = 0
+    @State private var recId: String?
     @State private var longSheet = false
     @State private var splitMode = true
     @State private var rangeFrom = "1"
@@ -66,6 +80,7 @@ struct UploadView: View {
                 case .audio: audioContent
                 case .processing: processingContent
                 case .error: errorContent
+                case .recording: recordingWork
                 }
             }
             if longSheet { longPdfSheet }
@@ -74,7 +89,7 @@ struct UploadView: View {
         .fileImporter(isPresented: Binding(get: { showPDFImporter || showAudioImporter }, set: { if !$0 { showPDFImporter = false; showAudioImporter = false } }),
                       allowedContentTypes: showAudioImporter ? [.audio] : [.pdf]) { result in
             guard case .success(let url) = result else { return }
-            if mode == .audio { audioName = url.lastPathComponent } else { handlePicked(url) }
+            if mode == .audio { pickSound(url) } else { handlePicked(url) }
         }
         .animation(.easeOut(duration: 0.2), value: longSheet)
         .animation(.easeInOut(duration: 0.2), value: mode)
@@ -89,10 +104,10 @@ struct UploadView: View {
 
     private var header: some View {
         ZStack {
-            Text(d("PDF yükle")).font(KFont.ui(17, .semibold, lang: lang)).foregroundStyle(KPhone.text)
+            Text(mode == .photo ? prefs.t("up_photoTitle") : mode == .audio || mode == .recording ? prefs.t("rec_title") : d("PDF yükle")).font(KFont.ui(17, .semibold, lang: lang)).foregroundStyle(KPhone.text)
                 .accessibilityAddTraits(.isHeader)
             HStack {
-                Button { app.back() } label: {
+                Button { _ = live.stop(); app.back() } label: {
                     KIcon(name: .close, size: 24, width: 1.8)
                         .foregroundStyle(KPhone.text)
                         .frame(width: 44, height: 44)
@@ -308,7 +323,7 @@ struct UploadView: View {
                     .background(KPhone.sub, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                     viewfinder
                     HStack {
-                        Button { shots = min(30, shots + 3); toast.show(d("Galeriden 3 fotoğraf eklendi")) } label: {
+                        PhotosPicker(selection: $galleryItems, maxSelectionCount: max(1, UploadAPI.maxPhotos - photos.count), matching: .images) {
                             KIcon(name: .image, size: 22, width: 1.7)
                                 .foregroundStyle(KPhone.text)
                                 .frame(width: 48, height: 48)
@@ -317,7 +332,7 @@ struct UploadView: View {
                         }
                         .accessibilityLabel(d("Galeriden seç"))
                         Spacer()
-                        Button { shots = min(30, shots + 1) } label: {
+                        Button { openCamera() } label: {
                             Circle().fill(KOnb.pri).frame(width: 54, height: 54)
                                 .frame(width: 72, height: 72)
                                 .background(KPhone.card, in: Circle())
@@ -325,23 +340,34 @@ struct UploadView: View {
                         }
                         .accessibilityLabel(d("Fotoğraf çek"))
                         Spacer()
-                        Text("\(Format.num(shots, lang))/\(Format.num(30, lang))").font(KFont.mono(12, .semibold)).foregroundStyle(KPhone.text2)
+                        Text("\(Format.num(photos.count, lang))/\(Format.num(UploadAPI.maxPhotos, lang))").font(KFont.mono(12, .semibold)).foregroundStyle(KPhone.text2)
                             .frame(width: 48)
                     }
                     .padding(.horizontal, 24)
-                    Text(d("ÇEKİLEN SAYFALAR · SIRALAMAK İÇİN SÜRÜKLE")).font(mono(10)).tracking(lang.isRTL ? 0 : 1).foregroundStyle(KOnb.text3)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(1...max(shots, 1), id: \.self) { i in thumb(i) }
+                    if !photos.isEmpty {
+                        Text(d("ÇEKİLEN SAYFALAR · SIRALAMAK İÇİN SÜRÜKLE")).font(mono(10)).tracking(lang.isRTL ? 0 : 1).foregroundStyle(KOnb.text3)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                ForEach(Array(photos.enumerated()), id: \.element.id) { i, p in thumb(i, p) }
+                            }
+                            .padding(.vertical, 6)
                         }
                     }
                     infoBox(.shield, d("Metin tanıma (OCR) ile her fotoğrafı okunabilir karta çeviririz; hocanın yazısı aynen korunur. El yazısı da olur. Sayfalar net, düz ve gölgesiz olsun."), size: 12)
+                    if !photos.isEmpty { fields }
                 }
                 .padding(.horizontal, 20).padding(.top, 4).padding(.bottom, 16)
             }
-            // Photos are not sent to the server yet (see TODO.md).
-            footer("\(d("Dersi hazırla · "))\(shots)\(d(" sayfa"))") { soon() }
+            .scrollDismissesKeyboard(.interactively)
+            footer("\(d("Dersi hazırla · "))\(Format.num(photos.count, lang))\(d(" sayfa"))", enabled: !photos.isEmpty && !busy, showQuota: true) { preparePhotos() }
+        }
+        .onChange(of: galleryItems) { _, items in
+            guard !items.isEmpty else { return }
+            Task { await addFromGallery(items) }
+        }
+        .fullScreenCover(isPresented: $showCamera) {
+            CameraPicker { image in addPhoto(image) }.ignoresSafeArea()
         }
     }
 
@@ -356,22 +382,27 @@ struct UploadView: View {
         .accessibilityAddTraits(on ? .isSelected : [])
     }
 
-    /// The camera view of the design (a still page with the corner marks). Taking real photos comes with the camera permission later.
+    /// The camera frame of the design: the last page taken, or the still page with the corner marks before the first
+    /// photo. Tapping it opens the camera too.
     private var viewfinder: some View {
         ZStack {
             Color(hex: 0x0E1218)
-            VStack(alignment: .leading, spacing: 8) {
-                Text(d("Antidotlar")).font(KFont.reading(11, .semibold, lang: lang)).foregroundStyle(Color(hex: 0x2A2420))
-                ForEach([0.92, 0.8, 0.88, 0.6, 0.84, 0.7], id: \.self) { w in
-                    GeometryReader { g in Capsule().fill(Color(hex: 0xB3A898)).frame(width: g.size.width * w, height: 4) }.frame(height: 4)
+            if let last = photos.last {
+                Image(uiImage: last.image).resizable().scaledToFit().padding(18)
+            } else {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(d("Antidotlar")).font(KFont.reading(11, .semibold, lang: lang)).foregroundStyle(Color(hex: 0x2A2420))
+                    ForEach([0.92, 0.8, 0.88, 0.6, 0.84, 0.7], id: \.self) { w in
+                        GeometryReader { g in Capsule().fill(Color(hex: 0xB3A898)).frame(width: g.size.width * w, height: 4) }.frame(height: 4)
+                    }
+                    Spacer(minLength: 0)
                 }
-                Spacer(minLength: 0)
+                .padding(.horizontal, 16).padding(.vertical, 18)
+                .frame(width: 200, height: 236)
+                .background(Color(hex: 0xF4F1EA), in: RoundedRectangle(cornerRadius: 4))
+                .shadow(color: .black.opacity(0.4), radius: 15, y: 10)
+                .rotationEffect(.degrees(-3))
             }
-            .padding(.horizontal, 16).padding(.vertical, 18)
-            .frame(width: 200, height: 236)
-            .background(Color(hex: 0xF4F1EA), in: RoundedRectangle(cornerRadius: 4))
-            .shadow(color: .black.opacity(0.4), radius: 15, y: 10)
-            .rotationEffect(.degrees(-3))
             ForEach(0..<4, id: \.self) { i in
                 CornerMark()
                     .stroke(KColor.amb, lineWidth: 3)
@@ -386,27 +417,48 @@ struct UploadView: View {
         }
         .frame(height: 290)
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .contentShape(Rectangle())
+        .onTapGesture { openCamera() }
         .environment(\.layoutDirection, .leftToRight)
     }
 
-    private func thumb(_ i: Int) -> some View {
-        VStack(alignment: .leading, spacing: 5) {
-            ForEach([0.9, 0.7, 0.85, 0.6], id: \.self) { w in
-                GeometryReader { g in Capsule().fill(Color(hex: 0xB7BEC8)).frame(width: g.size.width * w, height: 3) }.frame(height: 3)
+    /// A taken page: drag it onto another page to move it there; the menu moves or removes it.
+    private func thumb(_ i: Int, _ p: PhotoPage) -> some View {
+        Image(uiImage: p.thumb)
+            .resizable().scaledToFill()
+            .frame(width: 58, height: 74)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(RoundedRectangle(cornerRadius: 8).stroke(KPhone.line, lineWidth: 1))
+            .overlay(alignment: .bottomTrailing) {
+                Text(Format.num(i + 1, lang)).font(mono(10)).foregroundStyle(KPhone.ctaText)
+                    .frame(width: 18, height: 18).background(KOnb.pri, in: Circle()).padding(4)
             }
-            Spacer(minLength: 0)
-        }
-        .padding(.horizontal, 6).padding(.vertical, 8)
-        .frame(width: 58, height: 74)
-        .background(Color(hex: 0xF4F1EA), in: RoundedRectangle(cornerRadius: 8))
-        .overlay(RoundedRectangle(cornerRadius: 8).stroke(KPhone.line, lineWidth: 1))
-        .overlay(alignment: .bottomTrailing) {
-            Text(Format.num(i, lang)).font(mono(10)).foregroundStyle(KPhone.ctaText)
-                .frame(width: 18, height: 18).background(KOnb.pri, in: Circle()).padding(4)
+            .draggable(p.id.uuidString) { Image(uiImage: p.thumb).resizable().frame(width: 58, height: 74) }
+            .dropDestination(for: String.self) { ids, _ in
+                guard let id = ids.first, let from = photos.firstIndex(where: { $0.id.uuidString == id }), from != i else { return false }
+                withAnimation { photos.move(fromOffsets: IndexSet(integer: from), toOffset: from < i ? i + 1 : i) }
+                return true
+            }
+            .contextMenu {
+                if i > 0 { Button(movePageTexts().left) { photos.swapAt(i, i - 1) } }
+                if i < photos.count - 1 { Button(movePageTexts().right) { photos.swapAt(i, i + 1) } }
+                Button(movePageTexts().remove, role: .destructive) { _ = withAnimation { photos.remove(at: i) } }
+            }
+            .accessibilityLabel(prefs.t("up_photoPages", ["n": Format.num(i + 1, lang)]))
+    }
+
+    private func movePageTexts() -> (left: String, right: String, remove: String) {
+        switch lang {
+        case .tr: ("Öne al", "Geriye al", "Sayfayı sil")
+        case .en: ("Move earlier", "Move later", "Remove page")
+        case .fa: ("جلوتر ببر", "عقب‌تر ببر", "حذف صفحه")
+        case .ar: ("قدّمها", "أخّرها", "احذف الصفحة")
         }
     }
 
     // MARK: Audio
+
+    private var recLesson: RecordingAPI.LessonPick? { recLessons.first { $0.id == recLessonId } ?? recLessons.first }
 
     private var audioContent: some View {
         VStack(spacing: 0) {
@@ -420,16 +472,24 @@ struct UploadView: View {
                     }
                     VStack(alignment: .leading, spacing: 6) {
                         Text(d("Hangi derse ait?")).font(KFont.ui(13, .medium, lang: lang)).foregroundStyle(KPhone.text2)
-                        HStack(spacing: 10) {
-                            Text("PDF").font(KFont.mono(9, .semibold)).foregroundStyle(KOnb.priText)
-                                .padding(.horizontal, 5).padding(.vertical, 3).background(KOnb.priSoft, in: RoundedRectangle(cornerRadius: 4))
-                            Text(d("Hipertansiyon")).font(KFont.ui(15, .semibold, lang: lang)).foregroundStyle(KPhone.text)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            KIcon(name: .chevronDown, size: 14, width: 2).foregroundStyle(KPhone.text2)
+                        Menu {
+                            ForEach(recLessons) { l in
+                                Button(l.courseName.isEmpty ? l.title : "\(l.title) · \(l.courseName)") { recLessonId = l.id }
+                            }
+                        } label: {
+                            HStack(spacing: 10) {
+                                Text("PDF").font(KFont.mono(9, .semibold)).foregroundStyle(KOnb.priText)
+                                    .padding(.horizontal, 5).padding(.vertical, 3).background(KOnb.priSoft, in: RoundedRectangle(cornerRadius: 4))
+                                Text(recLesson?.title ?? prefs.t("rec_noLessons")).font(KFont.ui(15, .semibold, lang: lang))
+                                    .foregroundStyle(recLesson == nil ? KOnb.text3 : KPhone.text).lineLimit(1)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                KIcon(name: .chevronDown, size: 14, width: 2).foregroundStyle(KPhone.text2)
+                            }
+                            .padding(.horizontal, 14).frame(height: 52)
+                            .background(KPhone.card, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(KPhone.line, lineWidth: 1))
                         }
-                        .padding(.horizontal, 14).frame(height: 52)
-                        .background(KPhone.card, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                        .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(KPhone.line, lineWidth: 1))
+                        .disabled(recLessons.isEmpty)
                     }
                     HStack(spacing: 10) {
                         Button { showAudioImporter = true } label: {
@@ -442,38 +502,49 @@ struct UploadView: View {
                             .background(KOnb.priSoft, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                             .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(KOnb.pri, lineWidth: 2))
                         }
-                        Button { toast.show(d("Kayıt başladı · telefonu masaya koy")) } label: {
+                        .disabled(live.isRecording)
+                        Button { Task { await toggleLive() } } label: {
                             VStack(alignment: .leading, spacing: 8) {
                                 ZStack {
                                     Circle().stroke(KOnb.bad, lineWidth: 2)
-                                    Circle().fill(KOnb.bad).frame(width: 10, height: 10)
+                                    if live.isRecording {
+                                        RoundedRectangle(cornerRadius: 2).fill(KOnb.bad).frame(width: 9, height: 9)
+                                    } else {
+                                        Circle().fill(KOnb.bad).frame(width: 10, height: 10)
+                                    }
                                 }
                                 .frame(width: 22, height: 22)
-                                Text(d("Derste canlı kaydet")).font(KFont.ui(14, .bold, lang: lang)).foregroundStyle(KPhone.text)
+                                if let secs = live.seconds {
+                                    Text("\(Format.clock(secs)) · \(prefs.t("rec_stop"))").font(KFont.mono(14, .semibold)).foregroundStyle(KOnb.bad)
+                                } else {
+                                    Text(d("Derste canlı kaydet")).font(KFont.ui(14, .bold, lang: lang)).foregroundStyle(KPhone.text)
+                                }
                                 Text(d("Ekran kapalıyken de kaydeder")).font(KFont.ui(11, lang: lang)).foregroundStyle(KOnb.text3)
                             }
                             .frame(maxWidth: .infinity, minHeight: 104, alignment: .topLeading).padding(12)
                             .background(KPhone.card, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-                            .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(KPhone.line, lineWidth: 1))
+                            .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(live.isRecording ? KOnb.bad : KPhone.line, lineWidth: live.isRecording ? 2 : 1))
                         }
                     }
                     .buttonStyle(.plain)
-                    HStack(spacing: 12) {
-                        KIcon(name: .wave, size: 18, width: 1.8)
-                            .foregroundStyle(KOnb.priText)
-                            .frame(width: 36, height: 36)
-                            .background(KOnb.priSoft, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(audioName ?? "Farmakoterapi_08Ekim.m4a").font(KFont.ui(14, .semibold, lang: lang)).lineLimit(1).truncationMode(.middle).foregroundStyle(KPhone.text)
-                                .environment(\.layoutDirection, .leftToRight)
-                            Text("52:18 · 48 MB").font(mono(11)).foregroundStyle(KOnb.text3)
+                    if let sound {
+                        HStack(spacing: 12) {
+                            KIcon(name: .wave, size: 18, width: 1.8)
+                                .foregroundStyle(KOnb.priText)
+                                .frame(width: 36, height: 36)
+                                .background(KOnb.priSoft, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(sound.name).font(KFont.ui(14, .semibold, lang: lang)).lineLimit(1).truncationMode(.middle).foregroundStyle(KPhone.text)
+                                    .environment(\.layoutDirection, .leftToRight)
+                                Text("\(Format.clock(sound.seconds)) · \(Format.num(String(format: "%.1f", sound.megabytes), lang)) MB").font(mono(11)).foregroundStyle(KOnb.text3)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            KIcon(name: .check, size: 14, width: 2.6).foregroundStyle(KPhone.ctaText)
+                                .frame(width: 24, height: 24).background(KOnb.pri, in: Circle())
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        KIcon(name: .check, size: 14, width: 2.6).foregroundStyle(KPhone.ctaText)
-                            .frame(width: 24, height: 24).background(KOnb.pri, in: Circle())
+                        .padding(.horizontal, 14).padding(.vertical, 12)
+                        .background(KPhone.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                     }
-                    .padding(.horizontal, 14).padding(.vertical, 12)
-                    .background(KPhone.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                     VStack(alignment: .leading, spacing: 8) {
                         Text(d("HAZIRLAYACAKLARIMIZ")).font(mono(10)).tracking(lang.isRTL ? 0 : 1).foregroundStyle(KOnb.text3)
                         ForEach(["Konuşmanın tam metni, zaman damgalarıyla", "Her bölümün PDF sayfasıyla eşleşmesi", "Hocanın uzun durduğu ve tekrar ettiği konular", "“Sınavda çıkar” gibi ipuçları"], id: \.self) { line in
@@ -490,8 +561,108 @@ struct UploadView: View {
                 }
                 .padding(.horizontal, 20).padding(.top, 4).padding(.bottom, 16)
             }
-            footer(d("Metne çevir ve PDF ile eşleştir")) { soon() }
+            footer(d("Metne çevir ve PDF ile eşleştir"), enabled: sound != nil && recLesson != nil && !live.isRecording) { Task { await sendRecording() } }
         }
+        .task { recLessons = await RecordingAPI.lessonsForRecording() }
+    }
+
+    /// Texts of the recording screens that differ on the phone (the web's say "this computer").
+    private func recTexts() -> (keepOpen: String, noDevice: String, noSpeechPermission: String) {
+        switch lang {
+        case .tr: ("Konuşma bu telefonda metne çevriliyor; bitene kadar uygulamayı açık tut. Sonra metin PDF ile eşleştirilir, bu birkaç dakika sürebilir.",
+                   "Bu telefonda bu dil için cihaz üstü konuşma tanıma yok. Ayarlar › Genel › Klavye › Dikte'den dili ekleyip tekrar dene.",
+                   "Konuşma tanımaya izin verilmedi. Ayarlar'dan Kavis Study için izin verebilirsin.")
+        case .en: ("The talk is turned into text on this phone; keep the app open until it is done. Then the text is matched with the PDF, which can take a few minutes.",
+                   "This phone has no on-device speech recognition for this language. Add the language under Settings › General › Keyboard › Dictation and try again.",
+                   "Speech recognition is not allowed. You can allow it for Kavis Study in Settings.")
+        case .fa: ("گفتار روی همین گوشی به متن تبدیل می‌شود؛ تا پایان، برنامه را باز نگه دار. بعد متن با PDF تطبیق داده می‌شود که ممکن است چند دقیقه طول بکشد.",
+                   "این گوشی برای این زبان تشخیص گفتار روی دستگاه ندارد. زبان را از تنظیمات › عمومی › صفحه‌کلید › دیکته اضافه کن و دوباره امتحان کن.",
+                   "اجازهٔ تشخیص گفتار داده نشد. می‌توانی از تنظیمات برای Kavis Study اجازه بدهی.")
+        case .ar: ("يُحوَّل الكلام إلى نص على هذا الهاتف؛ أبقِ التطبيق مفتوحًا حتى ينتهي. ثم يُطابَق النص مع ملف PDF، وقد يستغرق ذلك بضع دقائق.",
+                   "لا يدعم هذا الهاتف التعرّف على الكلام على الجهاز لهذه اللغة. أضف اللغة من الإعدادات › عام › لوحة المفاتيح › الإملاء ثم حاول مجددًا.",
+                   "لم يُسمح بالتعرّف على الكلام. يمكنك السماح به لـ Kavis Study من الإعدادات.")
+        }
+    }
+
+    /// After "Metne çevir": the talk becomes text on the phone, then the server matches it with the PDF.
+    private var recordingWork: some View {
+        let steps = ["rec_stepListen", "rec_stepMatch"]
+        let at = recStep == .ready ? 2 : recStep == .match ? 1 : 0
+        return VStack(alignment: .leading, spacing: 18) {
+            HStack(spacing: 12) {
+                Text(prefs.t("rec_badge")).font(KFont.mono(9, .semibold)).foregroundStyle(KOnb.priText)
+                    .frame(width: 34, height: 40).background(KOnb.priSoft, in: RoundedRectangle(cornerRadius: 6))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(recLesson?.title ?? "").font(KFont.ui(15, .semibold, lang: lang)).foregroundStyle(KPhone.text)
+                    Text(sound?.name ?? "").font(mono(11)).foregroundStyle(KOnb.text3).lineLimit(1)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(.horizontal, 14).padding(.vertical, 12)
+            .background(KPhone.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            VStack(alignment: .leading, spacing: 6) {
+                Text(prefs.t(recStep == .ready ? "rec_ready" : "rec_working")).font(KFont.ui(28, .bold, lang: lang)).kTracking(-0.02, size: 28, lang: lang).foregroundStyle(KPhone.text)
+                    .accessibilityAddTraits(.isHeader)
+                if recStep == .failed {
+                    Text(prefs.t("rec_failed")).font(KFont.ui(14, lang: lang)).foregroundStyle(KOnb.bad)
+                } else if recStep != .ready {
+                    Text(recTexts().keepOpen).font(KFont.ui(14, lang: lang)).kLineHeight(1.5, size: 14, lang: lang).foregroundStyle(KPhone.text2)
+                }
+            }
+            .padding(.top, 6)
+            VStack(spacing: 0) {
+                ForEach(0..<2, id: \.self) { i in
+                    HStack(spacing: 14) {
+                        if i < at {
+                            KIcon(name: .check, size: 16, width: 2.6)
+                                .foregroundStyle(Color.pair(0xFFFCF6, 0x0E2A1D))
+                                .frame(width: 28, height: 28).background(KOnb.ok, in: Circle())
+                        } else if recStep != .failed {
+                            SpinnerRing().frame(width: 28, height: 28)
+                        } else {
+                            Circle().strokeBorder(KPhone.line, style: StrokeStyle(lineWidth: 2, dash: [3, 3])).frame(width: 24, height: 24).frame(width: 28, height: 28)
+                        }
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(prefs.t(steps[i])).font(KFont.ui(15, .semibold, lang: lang)).foregroundStyle(i <= at ? KPhone.text : KOnb.text3)
+                            Text([i == 0 && at == 0 ? Format.percent(recPct, lang) : "", prefs.t(i < at ? "up_done" : i == at && recStep != .failed ? "up_working" : "up_wait")]
+                                .filter { !$0.isEmpty }.joined(separator: " · "))
+                                .font(mono(11)).foregroundStyle(KOnb.text3)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .frame(minHeight: 62)
+                    .overlay(alignment: .bottom) { if i == 0 { Rectangle().fill(KPhone.line).frame(height: 1) } }
+                    .accessibilityElement(children: .combine)
+                }
+            }
+            .padding(.horizontal, 16).padding(.vertical, 6)
+            .background(KPhone.card, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            let pct = recStep == .ready ? 100 : at == 0 ? recPct / 2 : 75
+            HStack(spacing: 10) {
+                Capsule().fill(KPhone.line).frame(height: 8)
+                    .overlay(alignment: .leading) {
+                        GeometryReader { g in Capsule().fill(KOnb.pri).frame(width: g.size.width * CGFloat(pct) / 100) }
+                    }
+                Text(Format.percent(pct, lang)).font(KFont.mono(12, .regular)).foregroundStyle(KPhone.text2)
+            }
+            Spacer(minLength: 0)
+            if recStep == .ready, let pdf = recLesson?.id {
+                Button { app.reset(to: .home); app.go(.reader(pdf)) } label: {
+                    Text(prefs.t("up_open")).font(KFont.ui(16, .semibold, lang: lang)).foregroundStyle(KPhone.ctaText)
+                        .frame(maxWidth: .infinity, minHeight: 52)
+                        .background(KOnb.pri, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                }
+            } else if recStep == .failed {
+                Button { mode = .audio } label: {
+                    Text(prefs.t("back")).font(KFont.ui(16, .semibold, lang: lang)).foregroundStyle(KPhone.text)
+                        .frame(maxWidth: .infinity, minHeight: 52)
+                        .background(KPhone.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(KPhone.line, lineWidth: 1))
+                }
+            }
+        }
+        .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 20)
+        .task(id: recId) { await followRecording() }
     }
 
     // MARK: Processing
@@ -507,7 +678,8 @@ struct UploadView: View {
     private func stepDetail(_ i: Int) -> String {
         let x = status?.stats ?? [:]
         var parts: [String] = []
-        if i == 0, let picked { parts.append(Format.fileMeta(pages: picked.pages, megabytes: picked.megabytes, lang)) }
+        if i == 0, !photos.isEmpty { parts.append(prefs.t("up_photoPages", ["n": Format.num(photos.count, lang)])) }
+        if i == 0, photos.isEmpty, let picked { parts.append(Format.fileMeta(pages: picked.pages, megabytes: picked.megabytes, lang)) }
         if i == 1, let n = x["terms"], n > 0 { parts.append(Format.num(n, lang)) }
         if i == 3, let n = x["questions"], n > 0 { parts.append(Format.num(n, lang)) }
         if i == 4, let n = x["cards"], n > 0 { parts.append(Format.num(n, lang)) }
@@ -518,7 +690,12 @@ struct UploadView: View {
     private var processingContent: some View {
         VStack(alignment: .leading, spacing: 18) {
             HStack(spacing: 12) {
-                fileBadge(KOnb.priText, KOnb.priSoft)
+                if photos.isEmpty {
+                    fileBadge(KOnb.priText, KOnb.priSoft)
+                } else {
+                    Text(prefs.t("up_photoBadge")).font(KFont.mono(9, .semibold)).foregroundStyle(KOnb.priText)
+                        .frame(width: 34, height: 40).background(KOnb.priSoft, in: RoundedRectangle(cornerRadius: 6))
+                }
                 VStack(alignment: .leading, spacing: 2) {
                     Text(lessonName).font(KFont.ui(15, .semibold, lang: lang)).foregroundStyle(KPhone.text)
                     Text(courses.first { $0.id == courseId }?.name[lang] ?? "").font(mono(11)).foregroundStyle(KOnb.text3)
@@ -731,6 +908,133 @@ struct UploadView: View {
         }
     }
 
+    // MARK: Photo and recording actions
+
+    private func openCamera() {
+        guard photos.count < UploadAPI.maxPhotos else { return toast.show(prefs.t("up_photoMax", ["n": Format.num(UploadAPI.maxPhotos, lang)])) }
+        guard UIImagePickerController.isSourceTypeAvailable(.camera) else { return toast.show(cameraMissing) }
+        Task {
+            if AVCaptureDevice.authorizationStatus(for: .video) == .notDetermined { _ = await AVCaptureDevice.requestAccess(for: .video) }
+            if AVCaptureDevice.authorizationStatus(for: .video) == .authorized { showCamera = true } else { toast.show(cameraDenied) }
+        }
+    }
+
+    private var cameraMissing: String {
+        switch lang {
+        case .tr: "Bu cihazda kamera yok; galeriden seçebilirsin."
+        case .en: "This device has no camera; you can choose from the gallery."
+        case .fa: "این دستگاه دوربین ندارد؛ می‌توانی از گالری انتخاب کنی."
+        case .ar: "لا توجد كاميرا في هذا الجهاز؛ يمكنك الاختيار من المعرض."
+        }
+    }
+
+    private var cameraDenied: String {
+        switch lang {
+        case .tr: "Kameraya izin verilmedi. Ayarlar'dan Kavis Study için izin verebilirsin."
+        case .en: "Camera access is not allowed. You can allow it for Kavis Study in Settings."
+        case .fa: "اجازهٔ دوربین داده نشد. می‌توانی از تنظیمات برای Kavis Study اجازه بدهی."
+        case .ar: "لم يُسمح بالوصول إلى الكاميرا. يمكنك السماح به لـ Kavis Study من الإعدادات."
+        }
+    }
+
+    private func addPhoto(_ image: UIImage) {
+        guard photos.count < UploadAPI.maxPhotos else { return toast.show(prefs.t("up_photoMax", ["n": Format.num(UploadAPI.maxPhotos, lang)])) }
+        photos.append(PhotoPage(image))
+    }
+
+    private func addFromGallery(_ items: [PhotosPickerItem]) async {
+        galleryItems = []
+        for item in items {
+            guard let data = try? await item.loadTransferable(type: Data.self), let image = UIImage(data: data) else { continue }
+            addPhoto(image)
+        }
+    }
+
+    /// "Dersi hazırla · n sayfa": the photos go up as one lesson (it uses a trial lesson, like a PDF).
+    private func preparePhotos() {
+        guard !photos.isEmpty, !busy else { return }
+        trial.perform(.pdf) { Task { await uploadPhotos() } }
+    }
+
+    private func uploadPhotos() async {
+        busy = true
+        defer { busy = false }
+        let name = lessonName.trimmingCharacters(in: .whitespaces)
+        if name.isEmpty { lessonName = "\(prefs.t("up_photoName")) · \(Date().formatted(.dateTime.day().month(.abbreviated).locale(Locale(identifier: lang.rawValue))))" }
+        let files = photos.compactMap { UploadAPI.shrinkPhoto($0.image) }
+        do {
+            let id = try await UploadAPI.uploadPhotos(files, title: lessonName, courseId: courseId)
+            partCount = 1
+            status = nil
+            lessonId = id
+            mode = .processing
+            await trial.refresh()
+        } catch {
+            toast.show(prefs.t((error as? UploadAPI.Failure) == .trial ? "trialPdfFull" : "up_failed"))
+        }
+    }
+
+    /// A recording file from the picker: copied into the app (the picker's file is only lent).
+    private func pickSound(_ url: URL) {
+        let scoped = url.startAccessingSecurityScopedResource()
+        defer { if scoped { url.stopAccessingSecurityScopedResource() } }
+        let copy = FileManager.default.temporaryDirectory.appendingPathComponent(url.lastPathComponent)
+        try? FileManager.default.removeItem(at: copy)
+        guard (try? FileManager.default.copyItem(at: url, to: copy)) != nil else { return toast.show(prefs.t("rec_notAudio")) }
+        let secs = Transcriber.duration(copy)
+        guard secs > 0 else { return toast.show(prefs.t("rec_notAudio")) }
+        sound = SoundPick(url: copy, name: url.lastPathComponent, seconds: Int(secs.rounded()))
+    }
+
+    /// "Derste canlı kaydet" starts; tapped again it stops and the recording is the chosen sound.
+    private func toggleLive() async {
+        if live.isRecording {
+            guard let url = live.stop() else { return }
+            sound = SoundPick(url: url, name: prefs.t("rec_liveName"), seconds: Int(Transcriber.duration(url).rounded()))
+        } else if await live.start() {
+            toast.show(d("Kayıt başladı · telefonu masaya koy"))
+        } else {
+            toast.show(prefs.t("rec_noMic"))
+        }
+    }
+
+    /// "Metne çevir ve PDF ile eşleştir": the text is made on this phone, then sent with the recording.
+    private func sendRecording() async {
+        guard let lesson = recLesson else { return toast.show(prefs.t("rec_needLesson")) }
+        guard let sound else { return toast.show(prefs.t("rec_needSound")) }
+        recStep = .listen
+        recPct = 0
+        recId = nil
+        mode = .recording
+        do {
+            let segments = try await Transcriber.transcribe(sound.url, lang: lesson.language) { recPct = $0 }
+            guard !segments.isEmpty else { mode = .audio; return toast.show(prefs.t("rec_noSpeech")) }
+            recStep = .match
+            recId = try await RecordingAPI.addRecording(sound: sound.url, lesson: lesson, title: "\(lesson.title) · \(prefs.t("rec_word"))", segments: segments, seconds: sound.seconds)
+        } catch Transcriber.Failure.unsupported {
+            mode = .audio
+            toast.show(recTexts().noDevice)
+        } catch Transcriber.Failure.denied {
+            mode = .audio
+            toast.show(recTexts().noSpeechPermission)
+        } catch {
+            mode = .audio
+            toast.show(prefs.t("rec_failed"))
+        }
+    }
+
+    /// After sending: ask the server every 4 seconds until the recording is matched.
+    private func followRecording() async {
+        guard let recId else { return }
+        while !Task.isCancelled {
+            if let st = await UploadAPI.lessonStatus(recId) {
+                if st.status == .ready { recStep = .ready; return }
+                if st.status == .failed { recStep = .failed; return }
+            }
+            try? await Task.sleep(for: .seconds(4))
+        }
+    }
+
     // MARK: "This PDF is too long" sheet
 
     private struct LongTexts {
@@ -874,6 +1178,55 @@ struct UploadView: View {
             .frame(width: 64, height: 40)
             .overlay(RoundedRectangle(cornerRadius: 12).stroke(KPhone.line, lineWidth: 1))
             .accessibilityLabel(label)
+    }
+}
+
+/// One taken page of a photo lesson, with a small copy for the strip.
+struct PhotoPage: Identifiable {
+    let id = UUID()
+    let image: UIImage
+    let thumb: UIImage
+
+    init(_ image: UIImage) {
+        self.image = image
+        thumb = image.preparingThumbnail(of: CGSize(width: 116, height: 148)) ?? image
+    }
+}
+
+/// The chosen lecture recording (a file or a live recording) on this phone.
+struct SoundPick {
+    let url: URL
+    let name: String
+    let seconds: Int
+    var megabytes: Double { Double((try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0) / 1_048_576 }
+}
+
+/// The system camera for one photo at a time.
+struct CameraPicker: UIViewControllerRepresentable {
+    let onPhoto: (UIImage) -> Void
+    @Environment(\.dismiss) private var dismiss
+
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let c = UIImagePickerController()
+        c.sourceType = .camera
+        c.delegate = context.coordinator
+        return c
+    }
+
+    func updateUIViewController(_ c: UIImagePickerController, context: Context) {}
+
+    func makeCoordinator() -> Coordinator { Coordinator(self) }
+
+    final class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+        let parent: CameraPicker
+        init(_ parent: CameraPicker) { self.parent = parent }
+
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+            if let image = info[.originalImage] as? UIImage { parent.onPhoto(image) }
+            parent.dismiss()
+        }
+
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) { parent.dismiss() }
     }
 }
 

@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "Kavis Study uses the camera to turn photos of lecture pages, slides and notes into a readable lesson.";
+"NSPhotoLibraryUsageDescription" = "Kavis Study adds photos of lecture pages and slides from your library to a lesson.";
+"NSMicrophoneUsageDescription" = "Kavis Study records your lecturer in class. The recording is kept only in your account.";
+"NSSpeechRecognitionUsageDescription" = "Kavis Study turns the lecture recording into text on this phone. Only the text goes to the server.";

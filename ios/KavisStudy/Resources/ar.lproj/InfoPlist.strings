@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "يستخدم Kavis Study الكاميرا لتحويل صور صفحات المحاضرة والشرائح والملاحظات إلى درس مقروء.";
+"NSPhotoLibraryUsageDescription" = "يضيف Kavis Study صور صفحات المحاضرة والشرائح من معرضك إلى الدرس.";
+"NSMicrophoneUsageDescription" = "يسجّل Kavis Study شرح أستاذك في المحاضرة. يُحفظ التسجيل في حسابك فقط.";
+"NSSpeechRecognitionUsageDescription" = "يحوّل Kavis Study تسجيل المحاضرة إلى نص على هذا الهاتف. يُرسَل النص فقط إلى الخادم.";

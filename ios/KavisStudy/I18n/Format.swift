@@ -50,4 +50,10 @@ enum Format {
         case .ar: return "\(pages) صفحة · \(mb) ميغابايت"
         }
     }
+
+    /// 754 seconds → "12:34" (recording times; an hour or more → "1:02:34").
+    static func clock(_ seconds: Int) -> String {
+        let h = seconds / 3600, m = seconds / 60 % 60, s = seconds % 60
+        return h > 0 ? String(format: "%d:%02d:%02d", h, m, s) : String(format: "%02d:%02d", m, s)
+    }
 }

@@ -40,6 +40,15 @@ final class AppPrefs {
         Strings.design(turkish, lang)
     }
 
+    /// A design text that has sample numbers in it ("Bu dönem 5 ders · 13 PDF"): the sample numbers are swapped for the
+    /// real ones, written in the language's own digits.
+    func d(_ turkish: String, numbers: [(sample: String, value: Int)]) -> String {
+        var text = d(turkish)
+        for (i, n) in numbers.enumerated() { text = text.replacingOccurrences(of: n.sample, with: "\u{1}\(i)\u{2}") }
+        for (i, n) in numbers.enumerated() { text = text.replacingOccurrences(of: "\u{1}\(i)\u{2}", with: Format.num(n.value, lang)) }
+        return text
+    }
+
     init() {
         let d = UserDefaults.standard
         lang = d.string(forKey: Self.langKey).flatMap(Lang.init(rawValue:)) ?? .tr

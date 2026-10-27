@@ -114,3 +114,32 @@ enum ProgressAPI {
         return best
     }
 }
+
+/// The numbers on the profile screen, all from the student's own rows.
+struct ProfileStats: Equatable {
+    var minutes = 0
+    var streak = 0
+    var courses = 0
+    var pdfs = 0
+    /// Questions in the lecturer-style samples the student added ("Soru örneklerim").
+    var sampleQuestions = 0
+}
+
+extension ProgressAPI {
+    static func profileStats() async -> ProfileStats {
+        struct Session: Decodable { let minutes: Double? }
+        struct Sample: Decodable { let question_count: Int? }
+        async let sessionsQ: [Session] = supabase.from("study_sessions").select("minutes").execute().value
+        async let streakQ: Int = supabase.rpc("study_streak").execute().value
+        async let samplesQ: [Sample] = supabase.from("question_samples").select("question_count").execute().value
+        async let coursesQ = CoursesAPI.listCourses()
+        var s = ProfileStats()
+        s.minutes = Int(((try? await sessionsQ) ?? []).reduce(0) { $0 + ($1.minutes ?? 0) }.rounded())
+        s.streak = (try? await streakQ) ?? 0
+        s.sampleQuestions = ((try? await samplesQ) ?? []).reduce(0) { $0 + ($1.question_count ?? 0) }
+        let courses = await coursesQ
+        s.courses = courses.count
+        s.pdfs = courses.reduce(0) { $0 + $1.pdfs.count }
+        return s
+    }
+}

@@ -15,6 +15,8 @@ struct ProfileView: View {
     @State private var profile = Profile(name: "", email: "", school: "")
     @State private var saved = false
     @State private var loaded = false
+    @State private var profileStats: ProfileStats?
+    @State private var notifyTime = SettingsAPI.loadNow().notifyTime
 
     private var lang: Lang { prefs.lang }
     private func d(_ turkish: String) -> String { prefs.d(turkish) }
@@ -34,6 +36,10 @@ struct ProfileView: View {
                 loaded = true
                 profile = await AccountAPI.fetchProfile(for: app.user)
             }
+            async let s = ProgressAPI.profileStats()
+            async let st = SettingsAPI.fetch()
+            profileStats = await s
+            if let st = await st { notifyTime = st.notifyTime }
         }
         .animation(.easeInOut(duration: 0.2), value: mode)
     }
@@ -178,10 +184,10 @@ struct ProfileView: View {
 
     private var stats: some View {
         HStack(spacing: 8) {
-            ForEach([("42 sa", "çalışma"), ("6 gün", "çalışma serisi"), ("5", "ders sayısı")], id: \.1) { value, label in
-                Button(action: soon) {
+            ForEach(statItems, id: \.label) { value, label, action in
+                Button(action: action) {
                     VStack(spacing: 2) {
-                        Text(d(value)).font(KFont.ui(20, .semibold, lang: lang)).foregroundStyle(KPhone.text)
+                        Text(value).font(KFont.ui(20, .semibold, lang: lang)).foregroundStyle(KPhone.text)
                         Text(d(label)).font(KFont.ui(11, lang: lang)).foregroundStyle(KPhone.text2).lineLimit(1).minimumScaleFactor(0.8)
                     }
                     .frame(maxWidth: .infinity)
@@ -190,6 +196,17 @@ struct ProfileView: View {
                 }
             }
         }
+    }
+
+    /// Study time, streak and number of courses (design samples "42 sa", "6 gün", "5"); under an hour it shows minutes.
+    private var statItems: [(value: String, label: String, action: () -> Void)] {
+        let st = profileStats ?? ProfileStats()
+        let time = st.minutes >= 60
+            ? prefs.d("42 sa", numbers: [("42", Int((Double(st.minutes) / 60).rounded()))])
+            : prefs.d("33 dk", numbers: [("33", st.minutes)])
+        return [(time, "çalışma", { app.go(.progress) }),
+                (prefs.d("6 gün", numbers: [("6", st.streak)]), "çalışma serisi", { app.go(.progress) }),
+                (Format.num(st.courses, lang), "ders sayısı", { app.go(.courses) })]
     }
 
     /// Plan card. The design still shows the old "this month 1 of 2 courses" plan; the rules are now the 3-day trial.
@@ -242,14 +259,15 @@ struct ProfileView: View {
         let vio = (Color.pair(0xE8E6F6, 0x2C2A3A), Color.pair(0x4A3F9A, 0xB9B4F0))
         let grn = (Color.pair(0xE3F1E7, 0x1F3328), Color.pair(0x2E7D4F, 0x8FD3A8))
         let gray = (Color.pair(0xEFE8DC, 0x2B2520), Color.pair(0x6E645A, 0xBDB2A4))
+        let st = profileStats ?? ProfileStats()
         let rows = [
-            MenuRow(title: "Hesap bilgilerim", sub: "Ad, e-posta, üniversite, sınıf", icon: .person, chip: red.0, fg: red.1, action: { enterEdit() }),
-            MenuRow(title: "Derslerim klasörü", sub: "Bu dönem 5 ders · 13 PDF", icon: .folder, chip: amb.0, fg: amb.1, action: soon),
-            MenuRow(title: "İlerleme ve takvim", sub: "Haftalık süre, seviye, sınav haftası", icon: .chart, chip: grn.0, fg: grn.1, action: soon),
-            MenuRow(title: "Soru örneklerim", sub: "35 soru · hocanın tarzı çıkarıldı", icon: .help, chip: vio.0, fg: vio.1, action: soon),
-            MenuRow(title: "Bildirimler", sub: "Hatırlatma 09:00 · 1 saat önce", icon: .bellSmall, chip: gray.0, fg: gray.1, action: soon),
-            MenuRow(title: "Ayarlar", sub: "Çalışma planı, dil, tema", icon: .sliders, chip: gray.0, fg: gray.1, action: { app.go(.settings) }),
-            MenuRow(title: "Yardım ve geri bildirim", sub: "Sık sorulanlar, bize yaz", icon: .chat, chip: gray.0, fg: gray.1, action: { toast.show(d("Yardım merkezi açılıyor")) }),
+            MenuRow(title: "Hesap bilgilerim", sub: d("Ad, e-posta, üniversite, sınıf"), icon: .person, chip: red.0, fg: red.1, action: { enterEdit() }),
+            MenuRow(title: "Derslerim klasörü", sub: prefs.d("Bu dönem 5 ders · 13 PDF", numbers: [("13", st.pdfs), ("5", st.courses)]), icon: .folder, chip: amb.0, fg: amb.1, action: { app.go(.courses) }),
+            MenuRow(title: "İlerleme ve takvim", sub: d("Haftalık süre, seviye, sınav haftası"), icon: .chart, chip: grn.0, fg: grn.1, action: { app.go(.progress) }),
+            MenuRow(title: "Soru örneklerim", sub: prefs.d("35 soru · hocanın tarzı çıkarıldı", numbers: [("35", st.sampleQuestions)]), icon: .help, chip: vio.0, fg: vio.1, action: soon),
+            MenuRow(title: "Bildirimler", sub: prefs.d("Hatırlatma 09:00 · 1 saat önce").components(separatedBy: " · ")[0].replacingOccurrences(of: "09:00", with: Format.num(notifyTime, lang)), icon: .bellSmall, chip: gray.0, fg: gray.1, action: { app.go(.settings) }),
+            MenuRow(title: "Ayarlar", sub: d("Çalışma planı, dil, tema"), icon: .sliders, chip: gray.0, fg: gray.1, action: { app.go(.settings) }),
+            MenuRow(title: "Yardım ve geri bildirim", sub: d("Sık sorulanlar, bize yaz"), icon: .chat, chip: gray.0, fg: gray.1, action: { toast.show(d("Yardım merkezi açılıyor")) }),
         ]
         return VStack(spacing: 0) {
             ForEach(Array(rows.enumerated()), id: \.offset) { i, row in
@@ -261,7 +279,7 @@ struct ProfileView: View {
                             .background(row.chip, in: Circle())
                         VStack(alignment: .leading, spacing: 1) {
                             Text(d(row.title)).font(KFont.ui(15, .medium, lang: lang)).foregroundStyle(KPhone.text)
-                            Text(d(row.sub)).font(KFont.ui(12, lang: lang)).foregroundStyle(KPhone.text2)
+                            Text(row.sub).font(KFont.ui(12, lang: lang)).foregroundStyle(KPhone.text2)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         KIcon(name: .arrowRight, size: 14, width: 2, flipsInRTL: true).foregroundStyle(KPhone.text3)
