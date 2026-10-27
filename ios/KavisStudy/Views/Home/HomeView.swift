@@ -199,13 +199,15 @@ struct HomeView: View {
         return HStack(spacing: 12) {
             ForEach(items, id: \.1) { icon, key, chip, fg in
                 Button { tileTapped(key) } label: {
-                    HStack(spacing: 12) {
+                    HStack(spacing: 10) {
                         KIcon(name: icon, size: 20, width: 1.6).foregroundStyle(fg)
                             .frame(width: 44, height: 44).background(chip, in: Circle())
-                        Text(t(key)).font(KFont.ui(15, .medium, lang: lang)).foregroundStyle(KPhone.text).lineLimit(1).minimumScaleFactor(0.85)
+                        // Two lines when the plan panel narrows the tiles, so the name is never cut ("Sınav mer…").
+                        Text(t(key)).font(KFont.ui(15, .medium, lang: lang)).foregroundStyle(KPhone.text)
+                            .lineLimit(2).minimumScaleFactor(0.85).multilineTextAlignment(.leading)
                         Spacer(minLength: 0)
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, 12)
                     .frame(maxWidth: .infinity, minHeight: 74)
                     .kPhoneCard(radius: 22)
                 }
