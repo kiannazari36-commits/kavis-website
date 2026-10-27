@@ -646,9 +646,9 @@ struct UploadView: View {
                 Text(Format.percent(pct, lang)).font(KFont.mono(12, .regular)).foregroundStyle(KPhone.text2)
             }
             Spacer(minLength: 0)
-            if recStep == .ready, let pdf = recLesson?.id {
-                Button { app.reset(to: .home); app.go(.reader(pdf)) } label: {
-                    Text(prefs.t("up_open")).font(KFont.ui(16, .semibold, lang: lang)).foregroundStyle(KPhone.ctaText)
+            if recStep == .ready, let recId {
+                Button { app.reset(to: .home); app.go(.recording(recId)) } label: {
+                    Text(prefs.t("rec_open")).font(KFont.ui(16, .semibold, lang: lang)).foregroundStyle(KPhone.ctaText)
                         .frame(maxWidth: .infinity, minHeight: 52)
                         .background(KOnb.pri, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                 }

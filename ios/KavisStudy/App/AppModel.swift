@@ -41,6 +41,8 @@ enum Route: Equatable {
     case reader(String)
     /// "Ders özeti" of one lesson (design ScrReview, tab "Bu ders").
     case lessonSummary(String)
+    /// A lecture recording (transcript and the lecturer's emphasis), optionally from a moment (seconds).
+    case recording(String, at: Double = 0)
     case assistant
     case assistantChat(AssistantChatTarget)
 }
@@ -84,6 +86,7 @@ final class AppModel {
         case "uploadAudio": route = .upload(.audio)
         case "reader": route = .reader("hypertension")
         case "summary": route = .lessonSummary(MockFlag.value("material") ?? "")
+        case "recording": route = .recording(MockFlag.value("material") ?? "")
         case "assistant": route = .assistant
         case "chat": route = .assistantChat(AssistantChatTarget(topicId: "hypertension"))
         default: route = .splash

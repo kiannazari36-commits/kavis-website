@@ -93,4 +93,83 @@ enum RecordingAPI {
         Task { try? await supabase.functions.invoke("process-recording", options: FunctionInvokeOptions(body: Body(material_id: id, segments: segments, duration: seconds))) }
         return id
     }
+
+    // MARK: The recording page (web `getRecording`)
+
+    struct Part: Decodable { let start, end: Double; let page: Int; let topic_id: String? }
+    struct Topic: Decodable, Identifiable { let topic_id: String; let title: String; let minutes: Double; let repeats: Int; let said_exam: Bool; var id: String { topic_id } }
+    struct Quote: Decodable { let at: Double; let kind: String; let text: String; let topic_id: String? }
+
+    /// A recording with what the server found: the talk's lines, the PDF page of each part, time per topic and the
+    /// moments the lecturer stressed ("sınavda çıkar").
+    struct Recording {
+        let id: String
+        let title: String
+        let status: String
+        let seconds: Int
+        let pdf: (id: String, title: String, courseId: String?, language: String?)?
+        /// Signed link to the sound for 1 hour, or nil when only the text was kept.
+        let audioURL: URL?
+        let segments: [Segment]
+        let parts: [Part]
+        /// Most minutes first.
+        let topics: [Topic]
+        let quotes: [Quote]
+
+        var working: Bool { status == "processing" || status == "uploaded" }
+
+        /// The PDF page the talk was about at `sec` (0 = none).
+        func page(at sec: Double) -> Int { parts.first { sec >= $0.start && sec < $0.end }?.page ?? 0 }
+    }
+
+    static func getRecording(_ id: String) async -> Recording? {
+        struct File: Decodable { let storage_path: String }
+        struct Row: Decodable { let id, title, status: String; let duration_sec: Int?; let linked_material_id: String?; let material_files: [File]? }
+        struct Lecture: Decodable { let segments: [Segment]?; let parts: [Part]?; let topics: [Topic]?; let quotes: [Quote]? }
+        struct Content: Decodable { let lecture: Lecture? }
+        struct Pdf: Decodable { let id, title: String; let course_id, language: String? }
+        async let rowQ: [Row] = supabase.from("materials").select("id, title, status, duration_sec, linked_material_id, material_files(storage_path)")
+            .eq("id", value: id).limit(1).execute().value
+        async let contentQ: [Content] = supabase.from("material_content").select("lecture").eq("material_id", value: id).limit(1).execute().value
+        guard let m = (try? await rowQ)?.first else { return nil }
+        let lecture = (try? await contentQ)?.first?.lecture
+        var link: URL?
+        if let path = m.material_files?.first?.storage_path {
+            link = try? await supabase.storage.from("materials").createSignedURL(path: path, expiresIn: 3600)
+        }
+        var pdf: Pdf?
+        if let linked = m.linked_material_id {
+            pdf = (try? await supabase.from("materials").select("id, title, course_id, language").eq("id", value: linked).limit(1).execute().value as [Pdf])?.first
+        }
+        return Recording(
+            id: m.id, title: m.title, status: m.status, seconds: m.duration_sec ?? 0,
+            pdf: pdf.map { ($0.id, $0.title, $0.course_id, $0.language) }, audioURL: link,
+            segments: lecture?.segments ?? [], parts: lecture?.parts ?? [],
+            topics: (lecture?.topics ?? []).sorted { $0.minutes > $1.minutes }, quotes: lecture?.quotes ?? [])
+    }
+
+    /// One recording in a list (course folder, reader).
+    struct Item: Identifiable, Decodable {
+        let id: String
+        let title: String
+        let status: String
+        let duration_sec: Int?
+        let created_at: String?
+        var seconds: Int { duration_sec ?? 0 }
+        var day: String { String((created_at ?? "").prefix(10)) }
+    }
+
+    /// A course's recordings, newest first (course folder list).
+    static func recordingsOfCourse(_ courseId: String) async -> [Item] {
+        (try? await supabase.from("materials").select("id, title, status, duration_sec, created_at")
+            .eq("kind", value: "audio").eq("course_id", value: courseId)
+            .order("created_at", ascending: false).execute().value) ?? []
+    }
+
+    /// Recordings made for a lesson, newest first (the reader's "Ses kaydı" button).
+    static func recordingsOf(_ pdfId: String) async -> [Item] {
+        (try? await supabase.from("materials").select("id, title, status, duration_sec, created_at")
+            .eq("kind", value: "audio").eq("linked_material_id", value: pdfId)
+            .order("created_at", ascending: false).execute().value) ?? []
+    }
 }

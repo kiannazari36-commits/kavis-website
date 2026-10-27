@@ -267,6 +267,7 @@ struct CourseFolderView: View {
 
     let courseId: String
     @State private var course: Course?
+    @State private var recordings: [RecordingAPI.Item] = []
 
     private var lang: Lang { prefs.lang }
     private func d(_ turkish: String) -> String { prefs.d(turkish) }
@@ -279,6 +280,7 @@ struct CourseFolderView: View {
                     VStack(alignment: .leading, spacing: 14) {
                         summary(course)
                         if course.pdfs.isEmpty { empty } else { lessons(course) }
+                        if !recordings.isEmpty { recordingList }
                         Button(action: addPdf) {
                             HStack(spacing: 8) {
                                 KIcon(name: .plus, size: 18, width: 2)
@@ -295,13 +297,44 @@ struct CourseFolderView: View {
                 }
             }
             .scrollIndicators(.hidden)
-            .refreshable { course = await CoursesAPI.getCourse(id: courseId) }
+            .refreshable {
+                course = await CoursesAPI.getCourse(id: courseId)
+                recordings = await RecordingAPI.recordingsOfCourse(courseId)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(KPhone.authBg.ignoresSafeArea())
         .task {
             course = CoursesAPI.lastCourses.first { $0.id == courseId }
             course = await CoursesAPI.getCourse(id: courseId)
+            recordings = await RecordingAPI.recordingsOfCourse(courseId)
+        }
+    }
+
+    /// The course's lecture recordings (as on the web's course page); "Kaydı aç" opens the recording page.
+    private var recordingList: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(prefs.t("recList")).font(KFont.ui(18, .medium, lang: lang)).foregroundStyle(KPhone.text)
+            ForEach(recordings) { r in
+                Button { app.go(.recording(r.id)) } label: {
+                    HStack(spacing: 12) {
+                        KIcon(name: .mic, size: 22, width: 1.8).foregroundStyle(KPhone.brand)
+                            .frame(width: 46, height: 46).background(KPhone.sub, in: Circle())
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(r.title).font(KFont.ui(15, .medium, lang: lang)).foregroundStyle(KPhone.text).lineLimit(1)
+                            Text("\(r.status == "ready" ? Format.clock(r.seconds) : prefs.t(r.status == "failed" ? "recFailedShort" : "recWorkingShort")) · \(r.day)")
+                                .font(KFont.ui(11, lang: lang)).foregroundStyle(KPhone.text3)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        KIcon(name: .chevron, size: 18, width: 1.8, flipsInRTL: true).foregroundStyle(KPhone.text3)
+                    }
+                    .padding(.horizontal, 14).padding(.vertical, 12)
+                    .background(KPhone.card, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+                    .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).stroke(KPhone.line, lineWidth: 1))
+                }
+                .buttonStyle(.plain)
+                .accessibilityHint(prefs.t("rec_open"))
+            }
         }
     }
 
