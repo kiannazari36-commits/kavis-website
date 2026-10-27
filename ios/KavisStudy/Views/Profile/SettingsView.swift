@@ -418,12 +418,15 @@ struct SettingsView: View {
             HStack(spacing: 10) {
                 Text(d("Çeviri dilleri")).font(KFont.ui(15, lang: lang)).foregroundStyle(C.text)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                // Separate texts keep the order English · فارسی · العربية (in one text the two right-to-left names swap).
+                // Separate texts in a left-to-right row keep the order English · فارسی · العربية (a dot written together
+                // with a right-to-left name jumps to its other side).
                 HStack(spacing: 0) {
                     ForEach(Array(["English", "فارسی", "العربية"].enumerated()), id: \.offset) { i, name in
-                        Text((i > 0 ? " · " : "") + name)
+                        if i > 0 { Text(" · ") }
+                        Text(name)
                     }
                 }
+                .environment(\.layoutDirection, .leftToRight)
                 .font(KFont.ui(14, lang: .fa)).foregroundStyle(C.text3)
             }
             .frame(minHeight: 52)
