@@ -1,7 +1,7 @@
 // Edge Function grade-quiz: grades a finished quiz attempt of the signed-in student.
 // POST { attempt_id } → { score, level, results: [{ question_id, correct }] }
 // POST { question_id, answer } → { correct, feedback }: one typed answer (fill in the blank / written) judged right away,
-//   nothing is saved (the finished attempt is graded again with the attempt_id form).
+//   nothing is saved (the finished attempt is graded again with the attempt_id form); max 200 a day per student → 429 `limit`.
 // Writes (service role, never the apps): quiz_answers.correct, quiz_attempts.score/level,
 // quiz_answers.ai_feedback (written answers are judged by Claude Haiku against `quiz_questions.model_answer`), topic_progress (mastery, weak/known, next review), "Hatalarım" cards for wrong answers given with "sure",
 // and an 'exam_result' notification for real exams (lesson end, exam prep, combined; not section checks).
@@ -15,6 +15,8 @@ const cors = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 const LETTERS = 'ABCDEFGH';
+/** Typed answers judged by the AI per student per day (cost guard); a counter in the user's auth app_metadata, like help-chat. */
+const JUDGE_DAILY_LIMIT = 200;
 const MODEL = 'claude-haiku-5-5';
 const LANG_NAMES: Record<string, string> = { tr: 'Turkish', en: 'English', fa: 'Persian', ar: 'Arabic' };
 const VERDICT_SCHEMA = {
@@ -80,8 +82,14 @@ Deno.serve(async (req) => {
       .eq('id', body.question_id)
       .maybeSingle();
     if (!q || q.user_id !== uid || q.kind === 'multiple_choice' || !q.model_answer) return json({ error: 'not found' }, 404);
+    // Daily limit (an answer equal to the model answer needs no AI and is not counted).
     const qlang = (q.quizzes as unknown as { lang: string } | null)?.lang ?? 'tr';
     if (q.kind === 'fill_blank' && sameAnswer(answer, q.model_answer)) return json({ correct: true, feedback: '' });
+    const meta = (who.user.app_metadata ?? {}) as Record<string, unknown>;
+    const day = new Date().toISOString().slice(0, 10);
+    const used = meta.judge_day === day ? Number(meta.judge_count ?? 0) : 0;
+    if (used >= JUDGE_DAILY_LIMIT) return json({ error: 'limit' }, 429);
+    await admin.auth.admin.updateUserById(uid, { app_metadata: { ...meta, judge_day: day, judge_count: used + 1 } });
     const v = await judge(new Anthropic({ apiKey: key }), qlang, q.text, q.model_answer, answer, q.kind === 'fill_blank');
     return v ? json(v) : json({ error: 'ai' }, 502);
   }
