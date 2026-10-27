@@ -1,5 +1,6 @@
 import AVFoundation
 import SwiftUI
+import PencilKit
 
 /// Design: design/NewReader.dc.html (phone reading page), with the lesson data and behaviour of the web reader
 /// (`web/src/pages/Reader.tsx`). The teacher's text is shown exactly as it is. Hard words open an explanation; the
@@ -23,6 +24,10 @@ struct ReaderView: View {
     @State private var paused = false
     @State private var speaker = Speaker()
     @State private var noteMode = false
+    /// Handwritten notes by page (loaded with the lesson) and the molecule open in its sheet.
+    @State private var ink: [Int: PKDrawing] = [:]
+    @State private var inkSaving: [Int: Task<Void, Never>] = [:]
+    @State private var molecule: (mol: Molecule, page: Int)?
     /// The top block on screen (its index in the section) and every page seen since the last save.
     @State private var topBlock: Int?
     @State private var seen: Set<Int> = []
@@ -89,6 +94,7 @@ struct ReaderView: View {
             lesson = await ReaderAPI.getLesson(id: docID)
             loaded = true
             restorePlace()
+            ink = await InkAPI.load(materialId: docID)
             let recs = await RecordingAPI.recordingsOf(docID)
             recordingId = (recs.first { $0.status == "ready" } ?? recs.first)?.id
         }
@@ -105,6 +111,11 @@ struct ReaderView: View {
             if let lesson, let course = lesson.courseId {
                 let s = seconds
                 Task { await ReaderAPI.saveStudyTime(courseId: course, materialId: lesson.id, seconds: s) }
+            }
+        }
+        .sheet(isPresented: Binding(get: { molecule != nil }, set: { if !$0 { molecule = nil } })) {
+            if let molecule, let doc {
+                MoleculeSheet(molecule: molecule.mol, page: molecule.page, contentLang: doc.docLang).presentationDetents([.large])
             }
         }
         .animation(.easeOut(duration: 0.2), value: openTerm)
@@ -311,11 +322,42 @@ struct ReaderView: View {
             ForEach(Array(block.paragraphs.enumerated()), id: \.offset) { _, paragraph in
                 paragraphView(paragraph, paper: paper, docLang: docLang)
             }
+            ForEach(MoleculeLibrary.find(in: ([block.heading].compactMap { $0 } + block.paragraphs.map(\.plain)).joined(separator: " ")), id: \.id) { m in
+                Button { molecule = (m, block.pageFrom) } label: {
+                    HStack(spacing: 8) {
+                        KIcon(name: .flask, size: 16, width: 1.7)
+                        Text("\(t("molecule").components(separatedBy: " · ")[0]) · \(m.text(m.name, docLang))").font(KFont.ui(13, .medium, lang: lang))
+                    }
+                    .foregroundStyle(paper.ink)
+                    .padding(.horizontal, 14).frame(height: 38)
+                    .overlay(Capsule().stroke(paper.line, lineWidth: 1))
+                }
+            }
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(paper.card, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 24, style: .continuous).stroke(paper.line, lineWidth: 1))
+        .overlay {
+            InkCanvas(
+                drawing: Binding(get: { ink[block.pageFrom] ?? PKDrawing() }, set: { ink[block.pageFrom] = $0 }),
+                writing: noteMode,
+                inkColor: UIColor(paper.ink),
+                onChange: { saveInk(page: block.pageFrom, drawing: $0) }
+            )
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+    }
+
+    /// Saves a page's handwriting a moment after the last stroke.
+    private func saveInk(page: Int, drawing: PKDrawing) {
+        guard let id = lesson?.id else { return }
+        inkSaving[page]?.cancel()
+        inkSaving[page] = Task {
+            try? await Task.sleep(for: .seconds(1.5))
+            guard !Task.isCancelled else { return }
+            await InkAPI.save(materialId: id, page: page, drawing: drawing)
+        }
     }
 
     private func paragraphView(_ paragraph: Paragraph, paper: KPaper, docLang: Lang) -> some View {
@@ -451,7 +493,7 @@ struct ReaderView: View {
         let text = section.blocks.flatMap { block in
             [block.heading].compactMap { $0 } + block.paragraphs.map(\.plain)
         }.joined(separator: " ")
-        speaker.speak(text, language: doc.language)
+        speaker.speak(text, language: doc.language, rate: Float(settings.ttsRate), female: settings.ttsVoice == .female)
         toast.show(t("pageAloud"))
     }
 

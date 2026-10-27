@@ -94,7 +94,7 @@ final class AppModel {
         case "upload": route = .upload(.pdf)
         case "uploadPhoto": route = .upload(.photo)
         case "uploadAudio": route = .upload(.audio)
-        case "reader": route = .reader("hypertension")
+        case "reader": route = .reader(MockFlag.value("material") ?? "hypertension")
         case "summary": route = .lessonSummary(MockFlag.value("material") ?? "")
         case "samples": route = .samples(nil)
         case "quiz": route = .quiz(QuizTarget(materialId: "", kind: .exam, quizId: MockFlag.value("material")))
