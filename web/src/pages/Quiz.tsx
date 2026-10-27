@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useI18n } from '../i18n/I18nProvider';
 import { examLabel, num, pagesShort, percent } from '../i18n/format';
 import { useToast } from '../components/Toast';
 import Icon from '../components/Icon';
-import MolViewer from '../components/MolViewer';
+const MolViewer = lazy(() => import('../components/MolViewer'));
 import { addWrongsToPlan, coursesWithPack, getExamPack, getQuizById, getSectionCheck, moreSectionQuestions, saveAttempt, setStudyReminder } from '../api/quiz';
 import { generateExamPack, type QuestionType } from '../api/samples';
 
@@ -378,7 +378,9 @@ export default function Quiz() {
             {topics[topic].molecule && (
               <div className={s.mol}>
                 <span className={`mono ${s.label}`}>{t('molLabel')}</span>
-                <MolViewer size="full" mark="thiol" contentLang={cl} />
+                <Suspense fallback={null}>
+                  <MolViewer mol={topics[topic].molecule} size="full" mark={topics[topic].molecule === 'captopril' ? 'thiol' : ''} contentLang={cl} />
+                </Suspense>
               </div>
             )}
             <div className={s.actions}>
@@ -411,7 +413,11 @@ export default function Quiz() {
           <p className={s.qText} lang={cl} dir={cdir}>
             {Q.text}
           </p>
-          {Q.molecule && <MolViewer size="mini" mark="thiol" contentLang={cl} />}
+          {Q.molecule && (
+            <Suspense fallback={null}>
+              <MolViewer mol={Q.molecule} size="mini" mark={Q.molecule === 'captopril' ? 'thiol' : ''} contentLang={cl} />
+            </Suspense>
+          )}
           <div role="radiogroup" className={s.options} lang={cl} dir={cdir}>
             {Q.options.map((o, i) => (
               <button

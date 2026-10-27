@@ -1,5 +1,6 @@
 {
  "tr": {
+  "molDrugPage": "MOLEKÜL YAPISI · SAYFA {n}'TE GEÇEN İLAÇ",
   "pageInfo": "FARMAKOTERAPİ · SAYFA 12/48 · %25",
   "readingTheme": "Okuma teması",
   "share": "Paylaş",
@@ -11,7 +12,7 @@
   "translate": "Çevir",
   "selectSentence": "Cümleyi seç",
   "selectedSentence": "Seçili cümle",
-  "molecule": "Molekül yapısı · Kaptopril",
+  "molecule": "Molekül yapısı",
   "page13": "SAYFA 13",
   "tagSide": "Yan etki",
   "teacherStopped": "Hoca derste bu konuda 4 dk durdu",
@@ -136,6 +137,7 @@
   "resumeAt": "Kaldığın yerden devam: sayfa {p}"
  },
  "en": {
+  "molDrugPage": "MOLECULAR STRUCTURE · DRUG ON PAGE {n}",
   "pageInfo": "PHARMACOTHERAPY · PAGE 12/48 · 25%",
   "readingTheme": "Reading theme",
   "share": "Share",
@@ -147,7 +149,7 @@
   "translate": "Translate",
   "selectSentence": "Select the sentence",
   "selectedSentence": "Selected sentence",
-  "molecule": "Molecular structure · Captopril",
+  "molecule": "Molecular structure",
   "page13": "PAGE 13",
   "tagSide": "Side effect",
   "teacherStopped": "Lecturer spent 4 min on this in class",
@@ -272,6 +274,7 @@
   "resumeAt": "Back where you stopped: page {p}"
  },
  "fa": {
+  "molDrugPage": "ساختار مولکولی · دارویی که در صفحهٔ {n} آمده",
   "pageInfo": "دارودرمانی · صفحه 12/48 · 25%",
   "readingTheme": "تم خواندن",
   "share": "اشتراک‌گذاری",
@@ -283,7 +286,7 @@
   "translate": "ترجمه کن",
   "selectSentence": "جمله را انتخاب کن",
   "selectedSentence": "جمله انتخاب‌شده",
-  "molecule": "ساختار مولکولی · کاپتوپریل",
+  "molecule": "ساختار مولکولی",
   "page13": "صفحه 13",
   "tagSide": "عارضه جانبی",
   "teacherStopped": "استاد سر کلاس 4 دقیقه روی این مبحث ماند",
@@ -408,6 +411,7 @@
   "resumeAt": "ادامه از جایی که ماندی: صفحه {p}"
  },
  "ar": {
+  "molDrugPage": "البنية الجزيئية · الدواء المذكور في الصفحة {n}",
   "pageInfo": "العلاج الدوائي · الصفحة 12/48 · 25%",
   "readingTheme": "سمة القراءة",
   "share": "مشاركة",
@@ -419,7 +423,7 @@
   "translate": "ترجم",
   "selectSentence": "اختر الجملة",
   "selectedSentence": "الجملة المحددة",
-  "molecule": "البنية الجزيئية · كابتوبريل",
+  "molecule": "البنية الجزيئية",
   "page13": "صفحة 13",
   "tagSide": "أثر جانبي",
   "teacherStopped": "توقف الأستاذ 4 د عند هذا في الدرس",

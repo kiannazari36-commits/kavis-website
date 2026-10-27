@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useOutletContext, useSearchParams } from 'react-router-dom';
 import { LANG_NAMES, LANGS, useI18n, type Lang } from '../i18n/I18nProvider';
 import { useTheme } from '../theme/ThemeProvider';
@@ -8,6 +8,7 @@ import Wordmark from '../components/Wordmark';
 import { getPdf, recentPdfs } from '../api/courses';
 import { addHighlight, getLesson, markRead, saveStudyTime, tapTerm, translate, type TranslationStyle } from '../api/reader';
 import { askAssistant, latestThread, type ChatMessage, type SourceMode } from '../api/assistant';
+import { findMolecules, type Molecule } from '../components/molecules';
 import WebLinks from '../components/WebLinks';
 import ActNotes from '../components/ActNotes';
 import AnswerText from '../components/AnswerText';
@@ -716,9 +717,18 @@ type BlockProps = {
   onTranslate: () => void;
 };
 
+const MolViewer = lazy(() => import('../components/MolViewer'));
+
+/** Plain text of a block (heading + paragraphs), to find the drug it talks about. */
+const blockPlain = (b: ReaderBlock) =>
+  [b.heading ?? '', ...b.paragraphs.map((p) => (Array.isArray(p) ? p.map((x) => (typeof x === 'string' ? x : x.text)).join('') : p.text))].join(' ');
+
 function Block({ doc, block, terms, fontSize, term, onTerm, selected, highlights, onSelect, selActs, onTranslate, marks, ink, pen, onInk }: BlockProps) {
   const { t, lang } = useI18n();
   const toast = useToast();
+  const [molOpen, setMolOpen] = useState<Molecule | null>(null);
+  // Chip only when we have the structure of a drug named in this block.
+  const mols = findMolecules(blockPlain(block));
   const [tagKey, tagStyle] = TAGS[block.tag] ?? TAGS.definition;
   const pageLabel =
     block.pageFrom === block.pageTo
@@ -798,14 +808,15 @@ function Block({ doc, block, terms, fontSize, term, onTerm, selected, highlights
           ),
         )}
       </div>
-      {block.molecule && (
-        <button className={s.chipBtn} onClick={() => toast(t('k165'))}>
+      {mols.map((m) => (
+        <button key={m.id} className={s.chipBtn} onClick={() => setMolOpen(m)}>
           <span className={s.chipIcon}>
             <Icon name="molecule" size={16} />
           </span>
-          {t('molecule')}
+          {t('molecule')} · {m.name[lang]}
         </button>
-      )}
+      ))}
+      {molOpen && <MoleculeDialog mol={molOpen} page={block.pageFrom} contentLang={doc.language as Lang} onClose={() => setMolOpen(null)} />}
       {block.audio && (
         <>
           <button className={s.audio} onClick={() => toast(t('pageAloud'))}>
@@ -978,6 +989,34 @@ function TranslateDialog({ doc, materialId, source, page, onClose }: { doc: Read
           {text === undefined ? t('translating') : typeof text === 'string' ? text : t(text.error === 'locked' ? 'trLocked' : 'trFailed')}
         </p>
         <span className={s.trHint}>{t(style === 'literal' ? 'hintLiteral' : 'hintNatural')}</span>
+      </section>
+    </div>
+  );
+}
+
+function MoleculeDialog({ mol, page, contentLang, onClose }: { mol: Molecule; page: number; contentLang: Lang; onClose: () => void }) {
+  const { t, lang } = useI18n();
+  const cl = (LANGS as readonly string[]).includes(contentLang) ? contentLang : lang;
+  useEffect(() => {
+    const k = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    window.addEventListener('keydown', k);
+    return () => window.removeEventListener('keydown', k);
+  }, [onClose]);
+  return (
+    <div className={s.modal}>
+      <div className={s.scrim} onClick={onClose} />
+      <section role="dialog" aria-modal="true" aria-label={t('molecule')} className={s.dialog}>
+        <div className={s.dialogTop}>
+          <h2 className="mono" style={{ fontSize: 11, letterSpacing: '0.08em', color: 'var(--text2)', fontWeight: 400 }}>
+            {t('molDrugPage').replace('{n}', num(page, lang))}
+          </h2>
+          <button className={s.close} aria-label={t('close')} onClick={onClose}>
+            <Icon name="close" size={16} />
+          </button>
+        </div>
+        <Suspense fallback={null}>
+          <MolViewer mol={mol.id} size="full" contentLang={cl} />
+        </Suspense>
       </section>
     </div>
   );

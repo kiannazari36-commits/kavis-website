@@ -2,76 +2,28 @@ import { useState } from 'react';
 import { useI18n, type Lang } from '../i18n/I18nProvider';
 import { dirOf } from '../settings/SettingsProvider';
 import Icon from './Icon';
+import { MOLECULES, type MoleculeId } from './molecules';
 import s from './MolViewer.module.css';
 
-// Port of design/MolViewer.dc.html (captopril). Coordinates are in a 300×300 box.
-// The design has Turkish labels only; the other languages were added for the web.
-type L = Record<Lang, string>;
-type Group = { id: string; name: L; atoms: string[]; bonds: [string, string][]; note: L };
-
-const CAPTOPRIL = {
-  name: { tr: 'Kaptopril', en: 'Captopril', fa: 'کاپتوپریل', ar: 'كابتوبريل' } as L,
-  formula: 'C9H15NO3S',
-  mw: { tr: '217,3 g/mol', en: '217.3 g/mol', fa: '217.3 g/mol', ar: '217.3 g/mol' } as L,
-  cls: { tr: 'ACE inhibitörü', en: 'ACE inhibitor', fa: 'مهارکنندهٔ ACE', ar: 'مثبط ACE' } as L,
-  atoms: {
-    S: [34, 160, 'S', 'HS'], C1: [72, 138, 'C'], C2: [110, 160, 'C'], Me: [110, 204, 'C'], C3: [148, 138, 'C'], O3: [148, 94, 'O', 'O'],
-    N: [186, 160, 'N', 'N'], Ca: [218, 138, 'C'], Cb: [250, 162, 'C'], Cc: [238, 198, 'C'], Cd: [198, 198, 'C'], Cx: [218, 96, 'C'],
-    Ox1: [254, 78, 'O', 'O'], Ox2: [184, 78, 'O', 'OH'],
-  } as Record<string, [number, number, string, string?]>,
-  // [from, to, double?, side of the second line]
-  bonds: [
-    ['S', 'C1'], ['C1', 'C2'], ['C2', 'Me'], ['C2', 'C3'], ['C3', 'O3', 2, 1], ['C3', 'N'], ['N', 'Ca'], ['Ca', 'Cb'], ['Cb', 'Cc'],
-    ['Cc', 'Cd'], ['Cd', 'N'], ['Ca', 'Cx'], ['Cx', 'Ox1', 2, -1], ['Cx', 'Ox2'],
-  ] as [string, string, number?, number?][],
-  groups: [
-    {
-      id: 'thiol',
-      name: { tr: 'Tiyol (–SH)', en: 'Thiol (–SH)', fa: 'تیول (–SH)', ar: 'ثيول (–SH)' },
-      atoms: ['S'],
-      bonds: [['S', 'C1']],
-      note: {
-        tr: "ACE'nin aktif bölgesindeki çinkoya bağlanır. Kaptoprile özgü tat bozukluğu ve döküntü bu gruptan kaynaklanır.",
-        en: "Binds the zinc in ACE's active site. Captopril's typical taste disturbance and rash come from this group.",
-        fa: 'به روی جایگاه فعال ACE متصل می‌شود. اختلال چشایی و بثورات ویژهٔ کاپتوپریل از همین گروه است.',
-        ar: 'يرتبط بالزنك في الموقع النشط لإنزيم ACE. اضطراب التذوق والطفح الخاصان بالكابتوبريل ينتجان عن هذه المجموعة.',
-      },
-    },
-    {
-      id: 'proline',
-      name: { tr: 'Prolin + karboksil', en: 'Proline + carboxyl', fa: 'پرولین + کربوکسیل', ar: 'برولين + كربوكسيل' },
-      atoms: ['N', 'Ca', 'Cb', 'Cc', 'Cd', 'Cx', 'Ox1', 'Ox2'],
-      bonds: [['N', 'Ca'], ['Ca', 'Cb'], ['Cb', 'Cc'], ['Cc', 'Cd'], ['Cd', 'N'], ['Ca', 'Cx'], ['Cx', 'Ox1'], ['Cx', 'Ox2']],
-      note: {
-        tr: "Enzimin bağlandığı peptit ucunu taklit eder; ilacın ACE'ye oturmasını sağlar.",
-        en: 'Mimics the peptide end the enzyme binds to, so the drug fits into ACE.',
-        fa: 'انتهای پپتیدی را که آنزیم به آن متصل می‌شود تقلید می‌کند تا دارو در ACE جا بیفتد.',
-        ar: 'يحاكي طرف الببتيد الذي يرتبط به الإنزيم، فيستقر الدواء في ACE.',
-      },
-    },
-    {
-      id: 'amide',
-      name: { tr: 'Amit (C=O)', en: 'Amide (C=O)', fa: 'آمید (C=O)', ar: 'أميد (C=O)' },
-      atoms: ['C3', 'O3', 'N'],
-      bonds: [['C3', 'O3'], ['C3', 'N']],
-      note: {
-        tr: 'Enzimle hidrojen bağı kurar; prolin halkasını yan zincire bağlar.',
-        en: 'Forms a hydrogen bond with the enzyme and links the proline ring to the side chain.',
-        fa: 'با آنزیم پیوند هیدروژنی می‌سازد و حلقهٔ پرولین را به زنجیرهٔ جانبی وصل می‌کند.',
-        ar: 'يكوّن رابطة هيدروجينية مع الإنزيم ويربط حلقة البرولين بالسلسلة الجانبية.',
-      },
-    },
-  ] as Group[],
-};
-
+// Port of design/MolViewer.dc.html. The structures live in molecules.ts.
 const EL: Record<string, string> = { O: '#C0352B', N: '#2F5E9C', S: '#C99A12', C: '#6E645A' };
 const f = (n: number) => n.toFixed(1);
 
 // Names and notes follow `contentLang` (the course content language); buttons follow the app language.
-export default function MolViewer({ size = 'full', mark = '', contentLang }: { size?: 'full' | 'mini'; mark?: string; contentLang?: Lang }) {
+export default function MolViewer({
+  mol = 'captopril',
+  size = 'full',
+  mark = '',
+  contentLang,
+}: {
+  mol?: MoleculeId;
+  size?: 'full' | 'mini';
+  mark?: string;
+  contentLang?: Lang;
+}) {
   const { t, lang: appLang } = useI18n();
   const lang = contentLang ?? appLang;
-  const m = CAPTOPRIL;
+  const m = MOLECULES[mol];
   const full = size === 'full';
   const [deg, setDeg] = useState(0);
   const [ball, setBall] = useState(false);
@@ -87,6 +39,7 @@ export default function MolViewer({ size = 'full', mark = '', contentLang }: { s
     P[k] = [150 + x * cs - y * sn, 150 + x * sn + y * cs];
   }
 
+  const cen: [number, number] | null = m.center ? [150 + (m.center[0] - 150) * cs - (m.center[1] - 150) * sn, 150 + (m.center[0] - 150) * sn + (m.center[1] - 150) * cs] : null;
   let bonds = '';
   for (const [a0, z0, dbl, side] of m.bonds) {
     const a = P[a0];
@@ -96,10 +49,16 @@ export default function MolViewer({ size = 'full', mark = '', contentLang }: { s
       const dx = z[0] - a[0];
       const dy = z[1] - a[1];
       const len = Math.hypot(dx, dy);
-      const o = 7 * (side || 1);
+      let sd = side || 1;
+      if (side === 0 && cen) {
+        // ring bond: the second line goes towards the ring centre, a little shorter
+        sd = (cen[0] - (a[0] + z[0]) / 2) * (-dy / len) + (cen[1] - (a[1] + z[1]) / 2) * (dx / len) > 0 ? 1 : -1;
+      }
+      const o = 7 * sd;
+      const sh = side === 0 ? 0.18 : 0;
       const nx = (-dy / len) * o;
       const ny = (dx / len) * o;
-      bonds += `M${f(a[0] + nx)} ${f(a[1] + ny)} L${f(z[0] + nx)} ${f(z[1] + ny)} `;
+      bonds += `M${f(a[0] + dx * sh + nx)} ${f(a[1] + dy * sh + ny)} L${f(z[0] - dx * sh + nx)} ${f(z[1] - dy * sh + ny)} `;
     }
   }
 

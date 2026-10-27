@@ -50,6 +50,7 @@ export type ReaderBlock = {
   heading?: string;
   /** A paragraph is a list of segments, or one sentence the student can select. */
   paragraphs: (Segment[] | { selectable: true; text: string })[];
+  /** true: the server marked a molecule; the viewer finds which one from the text (components/molecules.ts). */
   molecule?: boolean;
   audio?: boolean;
 };
@@ -85,7 +86,7 @@ export type ExamTopic = {
   points: string[];
   /** What the lecturer said about it (from the lecture recording). */
   teacher?: string;
-  molecule?: 'captopril';
+  molecule?: 'captopril' | 'paracetamol';
 };
 
 /** A question (quiz_questions), in the content language. */
@@ -102,7 +103,7 @@ export type QuizQuestion = {
   /** Topic title, for the source line. */
   topic: string;
   hints: string[];
-  molecule?: 'captopril';
+  molecule?: 'captopril' | 'paracetamol';
 };
 
 /** A flash card, written in its deck's language (the content language). */

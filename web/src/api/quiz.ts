@@ -31,7 +31,7 @@ const toQuestion = (r: QRow): QuizQuestion => ({
   page: r.source_page,
   topic: r.material_topics?.title ?? '',
   hints: r.hints ?? [],
-  molecule: r.molecule?.name === 'captopril' ? 'captopril' : undefined,
+  molecule: r.molecule?.name === 'captopril' || r.molecule?.name === 'paracetamol' ? r.molecule.name : undefined,
 });
 
 /** The newest quiz of a kind for a course (or one lesson), with its questions in order. */
