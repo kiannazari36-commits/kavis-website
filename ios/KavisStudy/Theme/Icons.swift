@@ -3,6 +3,7 @@ import SwiftUI
 /// Line icons of the design (24 × 24, round caps). Paths are copied from the design files / web/src/components/Icon.tsx.
 enum KIconName: String {
     case lock = "M6 11h12v9H6z M8 11V8a4 4 0 0 1 8 0v3"
+    case download = "M12 4v11 M7 10l5 5 5-5 M5 20h14"
     case upload = "M6 3h8l5 5v13H6z M14 3v5h5 M12 18v-6 M9.5 14.5L12 12l2.5 2.5"
     case list = "M9 6h11 M9 12h11 M9 18h11 M4 6h.01 M4 12h.01 M4 18h.01"
     case checklist = "M9 5h10 M9 12h10 M9 19h10 M4 5l1 1 2-2 M4 12l1 1 2-2 M4 19h.01"

@@ -77,9 +77,13 @@ struct CoursesListView: View {
     @State private var loaded = false
     @State private var adding = false
     @State private var newName = ""
+    @State private var devOnly = false
+    /// Lessons with an offline copy on this phone (OfflineStore).
+    @State private var onDevice: Set<String> = Set(OfflineStore.lessons().map(\.id))
 
     private var lang: Lang { prefs.lang }
     private func d(_ turkish: String) -> String { prefs.d(turkish) }
+    private func deviceCount(_ c: Course) -> Int { c.pdfs.filter { onDevice.contains($0.id.lowercased()) }.count }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -92,9 +96,11 @@ struct CoursesListView: View {
                         .foregroundStyle(KPhone.text)
                         .accessibilityAddTraits(.isHeader)
                     totals
+                    filterRow
+                    if devOnly { Text(d("İnternetsiz açılabilen dersler")).font(KFont.ui(12, lang: lang)).foregroundStyle(KPhone.text2).padding(.top, -6) }
                     LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
-                        ForEach(courses) { folder($0) }
-                        addTile
+                        ForEach(courses.filter { !devOnly || deviceCount($0) > 0 }) { folder($0) }
+                        if !devOnly { addTile }
                     }
                     if !share.isEmpty { weekShare }
                 }
@@ -112,6 +118,7 @@ struct CoursesListView: View {
             guard !loaded else { return }
             loaded = true
             courses = await CoursesAPI.listCourses()
+            onDevice = Set(OfflineStore.lessons().map(\.id))
         }
         .alert(d("Ders ekle"), isPresented: $adding) {
             TextField(prefs.t("wel_coursePh"), text: $newName)
@@ -147,6 +154,30 @@ struct CoursesListView: View {
         }
     }
 
+    /// "Tümü" / "Cihazımdakiler · N" (design NewCourses).
+    private var filterRow: some View {
+        let devCourses = courses.filter { deviceCount($0) > 0 }.count
+        let pill = { (label: String, on: Bool, icon: Bool, action: @escaping () -> Void) in
+            Button(action: action) {
+                HStack(spacing: 6) {
+                    if icon { KIcon(name: .download, size: 14, width: 2) }
+                    Text(label)
+                }
+                .font(KFont.ui(13, on ? .semibold : .regular, lang: lang))
+                .foregroundStyle(on ? KPhone.ctaText : KPhone.text)
+                .padding(.horizontal, 16).frame(height: 38)
+                .background(on ? KPhone.cta : KPhone.card, in: Capsule())
+                .overlay(Capsule().stroke(on ? .clear : KPhone.line, lineWidth: 1))
+            }
+            .buttonStyle(.plain)
+            .accessibilityAddTraits(on ? .isSelected : [])
+        }
+        return HStack(spacing: 8) {
+            pill(d("Tümü"), !devOnly, false) { devOnly = false }
+            pill("\(d("Cihazımdakiler")) · \(Format.num(devCourses, lang))", devOnly, true) { devOnly = true }
+        }
+    }
+
     private func folder(_ c: Course) -> some View {
         let p = FolderPalette.colors(c.color)
         let st = CoursesAPI.stats(c)
@@ -167,6 +198,16 @@ struct CoursesListView: View {
                         .lineLimit(3)
                         .frame(minHeight: 40, alignment: .topLeading)
                         .multilineTextAlignment(.leading)
+                    if deviceCount(c) > 0 {
+                        HStack(spacing: 4) {
+                            KIcon(name: .download, size: 10, width: 2.2)
+                            Text("\(Format.num(deviceCount(c), lang))/\(Format.num(c.pdfs.count, lang)) \(d("CİHAZDA"))")
+                        }
+                        .font(KFont.mono(9, .regular))
+                        .foregroundStyle(KPhone.text2)
+                        .padding(.horizontal, 7).padding(.vertical, 2)
+                        .background(FolderPalette.glass, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+                    }
                     Spacer(minLength: 0)
                     HStack(spacing: 8) {
                         GeometryReader { g in
@@ -269,6 +310,11 @@ struct CourseFolderView: View {
     let courseId: String
     @State private var course: Course?
     @State private var recordings: [RecordingAPI.Item] = []
+    @State private var renaming = false
+    @State private var newName = ""
+    @State private var deleting = false
+    @State private var examOpen = false
+    @State private var exams: [CourseExam] = []
 
     private var lang: Lang { prefs.lang }
     private func d(_ turkish: String) -> String { prefs.d(turkish) }
@@ -310,6 +356,44 @@ struct CourseFolderView: View {
             course = CoursesAPI.lastCourses.first { $0.id == courseId }
             course = await CoursesAPI.getCourse(id: courseId)
             recordings = await RecordingAPI.recordingsOfCourse(courseId)
+            exams = await ExamsAPI.upcoming()
+        }
+        .alert(prefs.t("cfRenameTitle"), isPresented: $renaming) {
+            TextField(prefs.t("wel_coursePh"), text: $newName)
+            Button(prefs.t("cfSave")) { Task { await rename() } }
+            Button(prefs.t("schCancel"), role: .cancel) {}
+        }
+        .alert(prefs.t("cfDeleteTitle", ["x": course?.name[lang] ?? ""]), isPresented: $deleting) {
+            Button(prefs.t("cfDeleteYes"), role: .destructive) { Task { await remove() } }
+            Button(prefs.t("schCancel"), role: .cancel) {}
+        } message: {
+            let n = course?.pdfs.count ?? 0
+            Text(n == 0 ? prefs.t("cfDeleteEmpty") : prefs.t("cfDeleteBody", ["n": Format.num(n, lang)]))
+        }
+        .sheet(isPresented: $examOpen) {
+            ExamDateSheet(courseId: courseId, exams: exams) { exams = await ExamsAPI.upcoming(); course = await CoursesAPI.getCourse(id: courseId) }
+                .presentationDetents([.height(680)])
+        }
+    }
+
+    private func rename() async {
+        let name = newName.trimmingCharacters(in: .whitespaces)
+        guard !name.isEmpty, name != course?.name[lang] else { return }
+        if CoursesAPI.lastCourses.contains(where: { $0.id != courseId && $0.name.tr.lowercased() == name.lowercased() }) { return toast.show(prefs.t("cfNameTaken")) }
+        if await CoursesAPI.rename(courseId, to: name) {
+            course = await CoursesAPI.getCourse(id: courseId)
+            toast.show(prefs.t("cfRenamed"))
+        } else {
+            toast.show(prefs.t("wel_failed"))
+        }
+    }
+
+    private func remove() async {
+        if await CoursesAPI.delete(courseId) {
+            toast.show(prefs.t("cfDeleted"))
+            app.back(fallback: .courses)
+        } else {
+            toast.show(prefs.t("wel_failed"))
         }
     }
 
@@ -358,9 +442,23 @@ struct CourseFolderView: View {
             .background(FolderPalette.glass, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
         }
         return VStack(alignment: .leading, spacing: 14) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(c.exam[lang]).font(KFont.ui(12, .semibold, lang: lang)).foregroundStyle(p.fg)
-                Text(c.name[lang]).font(KFont.ui(26, .semibold, lang: lang)).kTracking(-0.02, size: 26, lang: lang).foregroundStyle(KPhone.text)
+            HStack(alignment: .top, spacing: 8) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(c.exam[lang]).font(KFont.ui(12, .semibold, lang: lang)).foregroundStyle(p.fg)
+                    Text(c.name[lang]).font(KFont.ui(26, .semibold, lang: lang)).kTracking(-0.02, size: 26, lang: lang).foregroundStyle(KPhone.text)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                Menu {
+                    Button { newName = c.name[lang]; renaming = true } label: { Label(prefs.t("cfRename"), systemImage: "pencil") }
+                    Button { examOpen = true } label: { Label(prefs.t("cfExam"), systemImage: "calendar") }
+                    Button(role: .destructive) { deleting = true } label: { Label(prefs.t("cfDelete"), systemImage: "trash") }
+                } label: {
+                    KIcon(name: .dots, size: 20, width: 2.4)
+                        .foregroundStyle(KPhone.text)
+                        .frame(width: 40, height: 40)
+                        .background(FolderPalette.glass, in: Circle())
+                }
+                .accessibilityLabel(prefs.t("cfMenu"))
             }
             HStack(spacing: 8) {
                 stat(Format.num(c.pdfs.count, lang), "PDF")
@@ -431,5 +529,73 @@ struct CourseFolderView: View {
         .padding(.vertical, 28).padding(.horizontal, 20)
         .frame(maxWidth: .infinity)
         .overlay(RoundedRectangle(cornerRadius: 24, style: .continuous).stroke(FolderPalette.line2, style: StrokeStyle(lineWidth: 1.5, dash: [6, 5])))
+    }
+}
+
+/// Sets or moves this course's exam day (table course_exams, as the exam week on the "Sınav merkezi" screen does).
+private struct ExamDateSheet: View {
+    @Environment(AppPrefs.self) private var prefs
+    @Environment(ToastCenter.self) private var toast
+    @Environment(\.dismiss) private var dismiss
+
+    let courseId: String
+    let exams: [CourseExam]
+    var onSaved: () async -> Void
+
+    @State private var kind: CourseExam.Kind = .midterm
+    @State private var date = Date()
+
+    private var lang: Lang { prefs.lang }
+    private func name(_ k: CourseExam.Kind) -> String {
+        prefs.t(k == .midterm ? "cfMidterm" : k == .final ? "cfFinal" : "cfMakeup")
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text(prefs.t("cfExam")).font(KFont.ui(20, .semibold, lang: lang)).foregroundStyle(KPhone.text)
+            Picker(prefs.t("cfExamKind"), selection: $kind) {
+                ForEach(CourseExam.Kind.allCases, id: \.self) { Text(name($0)).tag($0) }
+            }
+            .pickerStyle(.segmented)
+            DatePicker("", selection: $date, in: Date()..., displayedComponents: .date)
+                .datePickerStyle(.graphical)
+                .tint(KPhone.brand)
+                .labelsHidden()
+            Button { Task { await save() } } label: {
+                Text(prefs.t("cfSave")).font(KFont.ui(15, .medium, lang: lang))
+                    .foregroundStyle(KPhone.ctaText)
+                    .frame(maxWidth: .infinity, minHeight: 50)
+                    .background(KPhone.cta, in: Capsule())
+            }
+        }
+        .padding(20)
+        .frame(maxHeight: .infinity, alignment: .top)
+        .background(KPhone.authBg.ignoresSafeArea())
+        .onAppear { pick(kind) }
+        .onChange(of: kind) { _, k in pick(k) }
+    }
+
+    /// Shows the day already saved for this kind of exam.
+    private func pick(_ k: CourseExam.Kind) {
+        if let old = exams.first(where: { $0.courseId == courseId && $0.kind == k }), let d = Self.parse(old.date) { date = d }
+    }
+
+    private func save() async {
+        let day = CoursesAPI.isoString(date)
+        if await ExamsAPI.saveWeek(kind: kind, days: [courseId: day], existing: exams) {
+            await onSaved()
+            toast.show(prefs.t("cfExamSaved"))
+            dismiss()
+        } else {
+            toast.show(prefs.t("wel_failed"))
+        }
+    }
+
+    private static func parse(_ iso: String) -> Date? {
+        let f = DateFormatter()
+        f.calendar = Calendar(identifier: .gregorian)
+        f.locale = Locale(identifier: "en_US_POSIX")
+        f.dateFormat = "yyyy-MM-dd"
+        return f.date(from: iso)
     }
 }

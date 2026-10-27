@@ -75,6 +75,35 @@ enum CoursesAPI {
         return (course, pdf)
     }
 
+    /// New name for a course (own row; the same name twice is refused by the screen).
+    static func rename(_ id: String, to name: String) async -> Bool {
+        struct Patch: Encodable { let name: String }
+        return (try? await supabase.from("courses").update(Patch(name: name.trimmingCharacters(in: .whitespaces))).eq("id", value: id).execute()) != nil
+    }
+
+    /// Deletes a course folder together with its lessons (the summaries, cards and questions go with them) and the
+    /// original files. The count of lessons is shown to the student before this runs.
+    static func delete(_ id: String) async -> Bool {
+        struct File: Decodable { let storage_path: String }
+        struct Mat: Decodable { let id: String }
+        do {
+            let mats: [Mat] = try await supabase.from("materials").select("id").eq("course_id", value: id).execute().value
+            let ids = mats.map(\.id)
+            var paths: [String] = []
+            if !ids.isEmpty {
+                let files: [File] = (try? await supabase.from("material_files").select("storage_path").in("material_id", values: ids).execute().value) ?? []
+                paths = files.map(\.storage_path)
+                try await supabase.from("materials").delete().eq("course_id", value: id).execute()
+            }
+            try await supabase.from("courses").delete().eq("id", value: id).execute()
+            if !paths.isEmpty { _ = try? await supabase.storage.from("materials").remove(paths: paths) }
+            lastCourses.removeAll { $0.id == id }
+            return true
+        } catch {
+            return false
+        }
+    }
+
     private static let colors: [CourseColor] = [.red, .amb, .vio, .grn, .teal]
 
     /// New courses (own rows), with the next free colours; "started" ones get a placement test later.
@@ -120,6 +149,8 @@ enum CoursesAPI {
         f.dateFormat = "yyyy-MM-dd"
         return f
     }()
+
+    static func isoString(_ date: Date) -> String { isoFormatter.string(from: date) }
 
     /// Today as "2026-10-26" (local day).
     static func todayISO() -> String { isoFormatter.string(from: Date()) }

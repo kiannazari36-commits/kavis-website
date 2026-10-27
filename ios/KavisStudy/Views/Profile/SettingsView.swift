@@ -19,6 +19,8 @@ struct SettingsView: View {
     @State private var devices: [Device] = []
     @State private var weekMinutes = 0
     @State private var pdfCount = 0
+    @State private var offline: [(id: String, bytes: Int)] = []
+    @State private var manageOffline = false
     @State private var deleteOpen = false
     @State private var exportFile: ExportFile?
     @State private var timeOpen = false
@@ -156,6 +158,7 @@ struct SettingsView: View {
         .animation(.easeInOut(duration: 0.2), value: deleteOpen)
         .animation(.easeInOut(duration: 0.2), value: timeOpen)
         .sheet(item: $exportFile) { ShareSheet(items: [$0.url]) }
+        .sheet(isPresented: $manageOffline) { OfflineLessonsView { offline = OfflineStore.lessons() }.presentationDetents([.large]) }
         .task { await load() }
     }
 
@@ -176,6 +179,7 @@ struct SettingsView: View {
         devices = await list
         weekMinutes = await progress.weekMinutes.reduce(0, +)
         pdfCount = await courses.reduce(0) { $0 + $1.pdfs.count }
+        offline = OfflineStore.lessons()
         deletionDate = await AccountAPI.deletionDate()
     }
 
@@ -629,18 +633,18 @@ struct SettingsView: View {
                 HStack(alignment: .firstTextBaseline) {
                     Text(d("Cihazdaki dersler")).font(KFont.ui(15, lang: lang)).foregroundStyle(C.text)
                     Spacer()
-                    Text("\(Format.num(pdfCount, lang)) PDF").font(KFont.mono(12, .regular)).foregroundStyle(C.text2)
+                    Text("\(Format.num(offline.count, lang)) / \(Format.num(pdfCount, lang)) PDF").font(KFont.mono(12, .regular)).foregroundStyle(C.text2)
                 }
                 Capsule().fill(C.sub).frame(height: 6)
                     .overlay(alignment: .leading) {
-                        GeometryReader { g in Capsule().fill(C.pri).frame(width: g.size.width * 0.18) }
+                        GeometryReader { g in Capsule().fill(C.pri).frame(width: g.size.width * (pdfCount > 0 ? min(1, CGFloat(offline.count) / CGFloat(pdfCount)) : 0)) }
                     }
                 HStack(alignment: .top, spacing: 10) {
                     KIcon(name: .lock, size: 16, width: 1.8).foregroundStyle(C.ok).padding(.top, 1)
                     Text(d("PDF'lerin yalnızca uygulamanın içinde, şifreli saklanır. Telefonunun dosyalarında görünmez, başka uygulamalarla paylaşılamaz."))
                         .font(KFont.ui(12, lang: lang)).kLineHeight(1.45, size: 12, lang: lang).foregroundStyle(C.text2)
                 }
-                Button(action: soon) {
+                Button { manageOffline = true } label: {
                     Text(d("Cihazdaki dersleri yönet"))
                         .font(KFont.ui(12, lang: lang)).foregroundStyle(C.text)
                         .padding(.horizontal, 12).frame(height: 34)
