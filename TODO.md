@@ -173,7 +173,9 @@ Step 3 of the app plan (26 Oct 2026): upload and reader on the server
 Step 4 of the app plan (26 Oct 2026): assistant, cards, quiz, plan (progress screen still to do)
 - [x] Assistant on the server (Edge `assistant`, same as the web): the student's real courses, "only my PDFs" / "AI + research", the answer appears while it is written, sources ("↗ lesson · SAYFA n"), web links, what the assistant did (weak topic / card), conversation kept per course, AI note under the box, trial / budget errors. Quick actions ask in the student's words; "PDF ekle" opens the upload into the chosen course
 - [x] Assistant tried locally with a real question (26 Oct 2026, test3, "only my PDFs"): answer streamed from the lesson with "↗ ANTİHİSTAMİNİKLER · SAYFA 1 / 2", said honestly what the notes do not explain, chat saved, trial question counted; cost $0.0052
-- [ ] Assistant: photo / recording attachments, "Soruyu çözdür", voice and "Ben anlatayım" still a toast; "AI + research" (web search) not tried from the phone yet
+- [x] Assistant "+" menu (27 Oct 2026): "Soruyu çözdür" (camera or photo library → JPEG 1600 px → Edge `assistant` with `image`, solved step by step, the photo shows in the chat; counts a trial question), "Soru fotoğrafı" (the lecturer's question photo is saved as a question sample of the chosen course: `question-samples` bucket + `question_samples`, like the web's "Soru örneklerim"), "Ses kaydı" opens the recording upload. "Geçmiş" lists the student's conversations (newest first) and continues the chosen one. Checked locally with test3: a photo question solved from the lesson ($0.021), sample row saved, an old chat reopened
+- [ ] Assistant: voice and "Ben anlatayım" still a toast; "AI + research" (web search) not tried from the phone yet
+- [ ] Assistant answers sometimes contain the server's excerpt numbers "[E1]"; the iPhone hides them, the web still shows them (better: tell the AI in `supabase/functions/assistant` not to write them)
 - [x] Cards (design `ScrCards.dc.html`): cards due now from the server, flip, Bilmedim / Zor / Bildim with the web's spaced-repetition rule, saved to `flashcards`; home "Kartlar" tile opens it. Checked locally (rating saved, back in 4 days)
 - [x] Quiz (design `ScrQuiz.dc.html`, multiple choice): reader "Başla" opens the section check (last section: the whole lesson exam), hints (half point), "how sure", right / wrong, "emin olduğun bir hata" warning, explanation + "Sayfa n'e bak", result; the server grades (grade-quiz) and puts sure mistakes into "Hatalarım". Checked locally
 - [x] Home: "Bugünün planı" shows today's tasks of the server's week plan (build-plan, free, no AI) and opens them; the "Bugün tekrar günü" card only shows when the planner made a review for today
@@ -201,7 +203,7 @@ Step 4 of the app plan (26 Oct 2026): assistant, cards, quiz, plan (progress scr
 Still to build (screens):
 - [ ] Notifications screen, share sheet, placement test after upload
 - [ ] Reader extras: molecule viewer, audio per page, notes with Apple Pencil, section check quiz ("Başla")
-- [ ] Assistant extras: "Ben anlatayım" (teach-back), voice mode, easy explanation, "Soruyu çözdür", conversation history, real "Sürekli dinle" (speech recognition), real AI answers (now a mock that knows a few lesson answers and says "bulamadım" otherwise)
+- [ ] Assistant extras: "Ben anlatayım" (teach-back), voice mode, easy explanation, real "Sürekli dinle" (speech recognition)
 - [ ] Upload extras: real camera and microphone capture (permission texts), the trial-limit sheet and fair-use sheet of the design (the lock dialog is used now)
 - [ ] Step 4: StoreKit, trial limits on the server, share links
 - [ ] Real "Sign in with Apple" and Google sign-in; real email code (every account uses the demo code 481920 and "Kodu e-postadan yapıştır" fills it)

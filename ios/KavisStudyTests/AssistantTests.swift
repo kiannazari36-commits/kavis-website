@@ -7,6 +7,7 @@ final class AssistantTests: XCTestCase {
         XCTAssertEqual(AssistantAPI.visible("**Setirizin** daha az sedasyon yapar.\nSOURCES: 1"), "Setirizin daha az sedasyon yapar.")
         XCTAssertEqual(AssistantAPI.visible("Setirizin daha az sedasyon yapar.\nSOUR"), "Setirizin daha az sedasyon yapar.")
         XCTAssertEqual(AssistantAPI.visible("Sedasyon yapar."), "Sedasyon yapar.")
+        XCTAssertEqual(AssistantAPI.visible("Sedasyon yapar [E1]. Az geçer [E2, E3]."), "Sedasyon yapar. Az geçer.")
     }
 
     func testAssistantTextsExist() {
