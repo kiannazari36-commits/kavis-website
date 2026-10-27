@@ -49,6 +49,13 @@ targets:
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        # Permission texts (Turkish here; the other languages are in Resources/<lang>.lproj/InfoPlist.strings).
+        NSCameraUsageDescription: Ders sayfalarının, slaytların ve notlarının fotoğrafını çekip okunabilir derse çevirmek için.
+        NSPhotoLibraryUsageDescription: Galerindeki ders sayfası ve slayt fotoğraflarını derse eklemek için.
+        NSMicrophoneUsageDescription: Derste hocanın anlattıklarını kaydetmek için. Kayıt yalnızca senin hesabında saklanır.
+        NSSpeechRecognitionUsageDescription: Ders kaydını bu telefonda metne çevirmek için. Sunucuya sadece metin gider.
+        # A live lecture recording goes on while the screen is off.
+        UIBackgroundModes: [audio]
         UIAppFonts:
           - Poppins-Regular.ttf
           - Poppins-Medium.ttf

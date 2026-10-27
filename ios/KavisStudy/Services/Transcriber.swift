@@ -62,7 +62,8 @@ enum Transcriber {
                 left -= AVAudioFramePosition(buf.frameLength)
             }
             request.endAudio()
-            words += await recognize(recognizer, request).map { Word(start: $0.start + offset, end: $0.end + offset, text: $0.text) }
+            guard let found = await recognize(recognizer, request) else { throw Failure.unsupported }
+            words += found.map { Word(start: $0.start + offset, end: $0.end + offset, text: $0.text) }
             at += AVAudioFramePosition(perChunk)
             let pct = Int((Double(min(at, file.length)) / Double(max(file.length, 1)) * 100).rounded())
             await progress(pct)
@@ -76,20 +77,30 @@ enum Transcriber {
         let text: String
     }
 
-    /// One part's words with their times; an empty list when nothing was understood.
-    private static func recognize(_ recognizer: SFSpeechRecognizer, _ request: SFSpeechAudioBufferRecognitionRequest) async -> [Word] {
-        await withCheckedContinuation { c in
+    /// One part's words with their times; an empty list when nothing was understood, nil when the recognizer cannot start. A part that gets no answer in
+    /// 2 minutes is given up (the recognizer can stall), so a long recording never hangs.
+    private static func recognize(_ recognizer: SFSpeechRecognizer, _ request: SFSpeechAudioBufferRecognitionRequest) async -> [Word]? {
+        final class Box: @unchecked Sendable {
+            let lock = NSLock()
             var done = false
-            recognizer.recognitionTask(with: request) { result, error in
-                guard !done else { return }
+            var task: SFSpeechRecognitionTask?
+            /// True only for the first caller, so the answer is given once.
+            func finish() -> Bool { lock.lock(); defer { lock.unlock() }; if done { return false }; done = true; return true }
+        }
+        let box = Box()
+        return await withCheckedContinuation { c in
+            box.task = recognizer.recognitionTask(with: request) { result, error in
                 if let result, result.isFinal {
-                    done = true
-                    c.resume(returning: result.bestTranscription.segments.map { Word(start: $0.timestamp, end: $0.timestamp + $0.duration, text: $0.substring) })
-                } else if error != nil {
-                    // "No speech detected" in a silent part also ends here.
-                    done = true
-                    c.resume(returning: [])
+                    if box.finish() { c.resume(returning: result.bestTranscription.segments.map { Word(start: $0.timestamp, end: $0.timestamp + $0.duration, text: $0.substring) }) }
+                } else if let error {
+                    // "No speech detected" in a silent part ends here too (empty part); a recognizer that cannot start
+                    // (no language files on the device, or the simulator) is reported.
+                    let broken = (error as NSError).domain == "kLSRErrorDomain" && (error as NSError).code == 300
+                    if box.finish() { c.resume(returning: broken ? nil : []) }
                 }
+            }
+            DispatchQueue.global().asyncAfter(deadline: .now() + 120) {
+                if box.finish() { box.task?.cancel(); c.resume(returning: [] as [Word]?) }
             }
         }
     }

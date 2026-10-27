@@ -104,7 +104,7 @@ struct UploadView: View {
 
     private var header: some View {
         ZStack {
-            Text(mode == .photo ? prefs.t("up_photoTitle") : mode == .audio || mode == .recording ? prefs.t("rec_title") : d("PDF yükle")).font(KFont.ui(17, .semibold, lang: lang)).foregroundStyle(KPhone.text)
+            Text(d("PDF yükle")).font(KFont.ui(17, .semibold, lang: lang)).foregroundStyle(KPhone.text)
                 .accessibilityAddTraits(.isHeader)
             HStack {
                 Button { _ = live.stop(); app.back() } label: {
