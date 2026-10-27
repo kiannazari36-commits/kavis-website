@@ -7,6 +7,8 @@ struct ProgressView: View {
     @Environment(AppPrefs.self) private var prefs
     @Environment(AppModel.self) private var app
     @Environment(ToastCenter.self) private var toast
+    /// iPad (design NewIPad, "progress"): numbers in one row, then two columns.
+    @Environment(\.padRail) private var wide
 
     @State private var data: ProgressData?
     /// The course the numbers are limited to (nil = all) and the calendar's month (0 = this month, -1 = last month …).
@@ -24,12 +26,13 @@ struct ProgressView: View {
             KStudy.bg.ignoresSafeArea()
             VStack(spacing: 0) {
                 HStack(spacing: 10) {
-                    Text(d("İlerleme")).font(KFont.ui(28, .bold, lang: lang)).foregroundStyle(KPhone.text)
+                    Text(d("İlerleme")).font(KFont.ui(wide ? 40 : 28, wide ? .medium : .bold, lang: lang)).foregroundStyle(KPhone.text)
                         .accessibilityAddTraits(.isHeader)
                     Spacer()
                     courseMenu
                 }
-                .padding(.horizontal, 20).padding(.top, KLayout.top(60, minimum: 8)).padding(.bottom, 8)
+                .padding(.leading, wide ? 8 : 20).padding(.trailing, wide ? 32 : 20)
+                .padding(.top, wide ? KLayout.top(54, minimum: 10) + 8 : KLayout.top(60, minimum: 8)).padding(.bottom, 8)
                 ScrollView {
                     if let data {
                         if data.isEmpty { empty } else { content(data) }
@@ -88,7 +91,33 @@ struct ProgressView: View {
 
     // MARK: Content
 
-    private func content(_ p: ProgressData) -> some View {
+    @ViewBuilder private func content(_ p: ProgressData) -> some View {
+        if wide { wideContent(p) } else { phoneContent(p) }
+    }
+
+    private func wideContent(_ p: ProgressData) -> some View {
+        VStack(spacing: 16) {
+            stats(p)
+            HStack(alignment: .top, spacing: 16) {
+                VStack(spacing: 16) {
+                    timeCard(p)
+                    calendar(p)
+                }
+                .frame(maxWidth: .infinity)
+                VStack(spacing: 16) {
+                    if let exam = p.exam { examCard(exam) }
+                    levelCard(p)
+                    if !p.words.isEmpty { words(p) }
+                    if !p.dangerous.isEmpty { dangerous(p) }
+                    if let best = p.bestHours { bestHours(best) }
+                }
+                .frame(width: 380)
+            }
+        }
+        .padding(.leading, 8).padding(.trailing, 32).padding(.top, 8).padding(.bottom, 32)
+    }
+
+    private func phoneContent(_ p: ProgressData) -> some View {
         VStack(spacing: 12) {
             if let exam = p.exam { examCard(exam) }
             timeCard(p)
@@ -284,7 +313,7 @@ struct ProgressView: View {
             (Format.num(p.dueCards, lang), "Bugünkü kart", KPhone.text),
             (Format.num(p.streak, lang), "Gün seri", KStudy.ambText),
         ]
-        return LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
+        return LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: wide ? 14 : 8), count: wide ? 6 : 3), spacing: 8) {
             ForEach(items, id: \.1) { v, l, fg in
                 VStack(spacing: 2) {
                     Text(v).font(KFont.ui(20, .bold, lang: lang)).foregroundStyle(fg).lineLimit(1).minimumScaleFactor(0.6)

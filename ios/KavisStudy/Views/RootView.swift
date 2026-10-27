@@ -2,11 +2,25 @@ import SwiftUI
 
 /// Chooses the screen for the current route and carries the toast.
 struct RootView: View {
-    @Environment(AppPrefs.self) private var prefs
     @Environment(AppModel.self) private var app
-    @Environment(ToastCenter.self) private var toast
+    @Environment(\.horizontalSizeClass) private var sizeClass
+
+    /// iPad (full width): the left rail of design/NewIPad.dc.html around the app's screens.
+    private var rail: Bool { sizeClass == .regular && app.route.showsPadRail }
 
     var body: some View {
+        // The rail is a safe-area inset: each screen keeps its own background under it (as in the design), while
+        // its content starts after the rail.
+        screen
+            .environment(\.padRail, rail)
+            .safeAreaInset(edge: .leading, spacing: 0) {
+                if rail { PadRail().transition(.move(edge: .leading)) }
+            }
+        .animation(.easeInOut(duration: 0.25), value: rail)
+        .modifier(RootTasks())
+    }
+
+    private var screen: some View {
         Group {
             switch app.route {
             case .splash:
@@ -24,6 +38,10 @@ struct RootView: View {
                 CourseSetupView()
             case .home:
                 HomeView()
+            case .notifications:
+                NotificationsView()
+            case .timetable:
+                TimetableView()
             case .profile:
                 ProfileView()
             case .settings:
@@ -67,6 +85,17 @@ struct RootView: View {
             }
         }
         .animation(.easeInOut(duration: 0.25), value: app.route)
+    }
+}
+
+/// What runs for the whole app whatever the screen: the account's settings, share links and the sign-out check.
+private struct RootTasks: ViewModifier {
+    @Environment(AppPrefs.self) private var prefs
+    @Environment(AppModel.self) private var app
+    @Environment(ToastCenter.self) private var toast
+
+    func body(content: Content) -> some View {
+        content
         // The account's language and appearance apply on this phone too (set on another device or at sign-up),
         // and the reminder follows the account's settings.
         .task(id: app.user?.id) {

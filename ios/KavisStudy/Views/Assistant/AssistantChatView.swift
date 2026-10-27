@@ -9,14 +9,20 @@ struct AssistantChatView: View {
     @Environment(ToastCenter.self) private var toast
     @Environment(TrialModel.self) private var trial
     @Environment(NetworkMonitor.self) private var network
+    /// iPad: the chat sheet stays a readable width in the middle.
+    @Environment(\.padRail) private var wide
 
     let target: AssistantChatTarget
+    /// Set when the chat is the iPad reader's side panel (design NewIPad, reader): no backdrop or sheet, and the
+    /// close button hides the panel.
+    var onClose: (() -> Void)? = nil
 
     @State private var messages: [ChatMessage] = []
     /// The answer while the server writes it ("" = thinking, nothing written yet).
     @State private var streaming: String?
     @State private var threadId: String?
     @State private var draft = ""
+    @State private var quickOpen = false
     @State private var waiting = false
     @State private var listening = false
     @State private var femaleVoice = true
@@ -35,11 +41,18 @@ struct AssistantChatView: View {
     private var offline: Bool { !network.isOnline }
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            KPhone.authBg.ignoresSafeArea()
-            Color.black.opacity(0.35).ignoresSafeArea()
-            sheet
-                .padding(.top, KLayout.top(64, minimum: 10))
+        Group {
+            if onClose != nil {
+                panel
+            } else {
+                ZStack(alignment: .bottom) {
+                    KPhone.authBg.ignoresSafeArea()
+                    Color.black.opacity(0.35).ignoresSafeArea()
+                    sheet
+                        .frame(maxWidth: wide ? 760 : .infinity)
+                        .padding(.top, KLayout.top(64, minimum: 10))
+                }
+            }
         }
         .task {
             guard !started else { return }
@@ -53,6 +66,46 @@ struct AssistantChatView: View {
             if target.listen { toggleVoice() }
         }
         .onDisappear { speaker.stop(); dictation.stop() }
+    }
+
+    // MARK: iPad reader panel
+
+    private static let panelBg = Color.pair(0xFFFCF6, 0x1D1915)
+    private static let panelTop = Color.pair(0xF7E2C2, 0x3A2A1E)
+
+    private var panel: some View {
+        VStack(spacing: 0) {
+            ZStack(alignment: .topTrailing) {
+                VStack(spacing: 8) {
+                    Image("StarButton").resizable().scaledToFit().frame(width: 56, height: 56)
+                        .frame(width: 64, height: 64)
+                        .background(Circle().fill(RadialGradient(colors: [Color(hex: 0xB8404D), Color(hex: 0x9C2F3A), Color(hex: 0x7A2230)],
+                                                                 center: UnitPoint(x: 0.5, y: 0.3), startRadius: 0, endRadius: 34)))
+                        .background(Circle().fill(Color(hex: 0xF2B33D, opacity: 0.18)).padding(-10))
+                        .shadow(color: Color(hex: 0x9C2F3A, opacity: 0.3), radius: 15, y: 12)
+                        .accessibilityHidden(true)
+                    Wordmark(size: 16).padding(.top, 6).environment(\.layoutDirection, .leftToRight)
+                    Text(prefs.t("panelSource")).font(KFont.ui(12, lang: lang)).foregroundStyle(KPhone.text2)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.top, 22).padding(.bottom, 14).padding(.horizontal, 20)
+                Button { onClose?() } label: {
+                    KIcon(name: .close, size: 14, width: 2).foregroundStyle(KPhone.text2)
+                        .frame(width: 32, height: 32).background(KPhone.sub, in: Circle())
+                }
+                .accessibilityLabel(d("Kapat"))
+                .padding(12)
+            }
+            .background(RadialGradient(colors: [Self.panelTop, Self.panelBg], center: .top, startRadius: 0, endRadius: 260))
+            messagesList
+            composer
+        }
+        .background(Self.panelBg)
+        .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 30, style: .continuous).stroke(KPhone.line, lineWidth: 1))
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(d("Asistan"))
     }
 
     // MARK: Sheet
@@ -160,7 +213,7 @@ struct AssistantChatView: View {
         var text = d("Merhaba! Yalnızca “Hipertansiyon” PDF'ine dayanarak cevap veriyorum. Şu an sayfa 12'desin.")
         // The page remark belongs to the reader; here only the first sentence, with the course name.
         if let open = text.firstIndex(where: { "“«\"".contains($0) }), let close = text[text.index(after: open)...].firstIndex(where: { "”»\"".contains($0) }) {
-            text.replaceSubrange(text.index(after: open)..<close, with: course?.name[lang] ?? "")
+            text.replaceSubrange(text.index(after: open)..<close, with: target.lessonTitle ?? course?.name[lang] ?? "")
         }
         if let end = text.range(of: ". ") { text = String(text[..<end.lowerBound]) + "." }
         return text
@@ -292,13 +345,45 @@ struct AssistantChatView: View {
 
     // MARK: Composer
 
+    /// Ready questions (the web reader's quick menu): the first one asks for a simple explanation of the last topic.
+    private var quickItems: [(label: String, ask: String)] {
+        [(prefs.t("quickEasy"), prefs.t("quickEasyAsk")), (prefs.t("teacherEmph"), prefs.t("teacherEmph")),
+         (prefs.t("k98"), prefs.t("k98")), (prefs.t("k99"), prefs.t("k99"))]
+    }
+
     private var composer: some View {
         VStack(spacing: 6) {
-        HStack(spacing: 10) {
-            Button { toast.show(prefs.t("k165")) } label: {
-                KIcon(name: .sparkle, size: 20, width: 1.7).foregroundStyle(KPhone.text)
-                    .frame(width: 48, height: 48).overlay(Circle().stroke(KPhone.line, lineWidth: 1))
+        if quickOpen {
+            VStack(spacing: 0) {
+                ForEach(Array(quickItems.enumerated()), id: \.offset) { i, item in
+                    Button {
+                        quickOpen = false
+                        draft = item.ask
+                        send()
+                    } label: {
+                        Text(item.label).font(KFont.ui(14, i == 0 ? .semibold : .regular, lang: lang)).foregroundStyle(KPhone.text)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 16).frame(height: 44)
+                            .background(i == 0 ? KOnb.priSoft : .clear)
+                    }
+                    .buttonStyle(.plain)
+                    if i < quickItems.count - 1 { Rectangle().fill(KPhone.line).frame(height: 1) }
+                }
             }
+            .background(KPhone.card, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(KPhone.line, lineWidth: 1))
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel(prefs.t("quick"))
+        }
+        HStack(spacing: 10) {
+            Button { withAnimation(.easeOut(duration: 0.15)) { quickOpen.toggle() } } label: {
+                KIcon(name: .sparkle, size: 20, width: 1.7).foregroundStyle(quickOpen ? KOnb.priText : KPhone.text)
+                    .frame(width: 48, height: 48)
+                    .background(quickOpen ? KOnb.priSoft : .clear, in: Circle())
+                    .overlay(Circle().stroke(quickOpen ? KOnb.priText : KPhone.line, lineWidth: 1))
+            }
+            .disabled(offline)
             .accessibilityLabel(prefs.t("quick"))
             TextField("", text: $draft, prompt: Text(dictation.listening ? prefs.t("voiceRec") : target.teach ? prefs.t("teachPh") : d("Bu ders hakkında sor…")).foregroundStyle(KPhone.text3))
                 .font(KFont.ui(15, lang: lang)).foregroundStyle(KPhone.text)
@@ -360,7 +445,7 @@ struct AssistantChatView: View {
         messages.append(ChatMessage(role: .user, text: shown.isEmpty ? prefs.t("solveLabel") : shown, photo: photo))
         waiting = true
         streaming = ""
-        let result = await AssistantAPI.ask(question, courseId: isAll ? nil : target.topicId, threadId: threadId,
+        let result = await AssistantAPI.ask(question, courseId: isAll ? nil : target.topicId, materialId: target.materialId, threadId: threadId,
                                             mode: target.ai ? .ai : .pdf, lang: lang, photo: photo) { soFar in streaming = soFar }
         waiting = false
         streaming = nil

@@ -7,6 +7,8 @@ struct HomeView: View {
     @Environment(ToastCenter.self) private var toast
     @Environment(TrialModel.self) private var trial
     @Environment(NetworkMonitor.self) private var network
+    /// iPad (design NewIPad, home): two columns and the "Bugünün planı" column instead of the phone's side panel.
+    @Environment(\.padRail) private var wide
 
     private enum Later: Equatable { case evening, tomorrow, skip }
 
@@ -17,6 +19,7 @@ struct HomeView: View {
     @State private var courses: [Course] = CoursesAPI.lastCourses
     @State private var todayTasks: [PlanTask] = []
     @State private var todayReview: TodayReview?
+    @State private var tomorrowClasses: [ClassEntry] = []
 
     private var lang: Lang { prefs.lang }
     private func t(_ key: String, _ vars: [String: String] = [:]) -> String { prefs.t(key, vars) }
@@ -26,6 +29,7 @@ struct HomeView: View {
     var body: some View {
         ZStack {
             KPhone.homeBg.ignoresSafeArea()
+            if wide { wideLayout } else {
             VStack(spacing: 0) {
                 topBar
                 ScrollView {
@@ -44,15 +48,16 @@ struct HomeView: View {
                 }
                 .scrollIndicators(.hidden)
             }
+            }
             FloatingTabBar(onCourses: { app.go(.courses) }, onProgress: { app.go(.progress) }, onSettings: { app.go(.settings) })
                 .frame(maxHeight: .infinity, alignment: .bottom)
                 .padding(.bottom, 8)
             if !planOpen {
                 PlanTab(count: todayTasks.filter { $0.status != "done" }.count) { withAnimation(.easeOut(duration: 0.25)) { planOpen = true } }
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-                    .padding(.top, KLayout.top(296, minimum: 120))
+                    .padding(.top, wide ? 250 : KLayout.top(296, minimum: 120))
             }
-            if planOpen {
+            if planOpen && !wide {
                 PlanPanel(tasks: todayTasks, onClose: { withAnimation(.easeOut(duration: 0.25)) { planOpen = false } }, onItem: openTask, onWeek: { planOpen = false; app.go(.weekPlan) })
             }
             if let key = trial.lockedKey {
@@ -72,16 +77,278 @@ struct HomeView: View {
             async let list = CoursesAPI.listCourses()
             async let week = PlanAPI.weekTasks()
             async let review = PlanAPI.todayReview()
+            Task { unread = await NotificationsAPI.hasUnread() }
             await trial.refresh()
             courses = await list
             todayTasks = await week.filter { $0.day == CoursesAPI.todayISO() }
             todayReview = await review
+            if wide {
+                let wd = (Calendar(identifier: .gregorian).component(.weekday, from: Date()) + 5) % 7 + 1
+                tomorrowClasses = await TimetableAPI.list().filter { $0.weekday == wd % 7 + 1 }
+            }
         }
+    }
+
+    // MARK: iPad
+
+    /// Design NewIPad, home: greeting row, one-line title, then the main column (review, uploads, tiles, courses
+    /// grid, trial) and, when open, the "Bugünün planı" column.
+    private var wideLayout: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                HStack(spacing: 10) {
+                    profileButton
+                    Spacer()
+                    wideRoundButtons
+                }
+                (Text("\(t("home.k599")) ").foregroundStyle(KPhone.text3) + Text(t("home.k2555")).foregroundStyle(KPhone.text))
+                    .font(KFont.ui(44, .medium, lang: lang))
+                    .kTracking(-0.03, size: 44, lang: lang)
+                    .accessibilityAddTraits(.isHeader)
+                if offline { offlineBanner }
+                HStack(alignment: .top, spacing: 20) {
+                    VStack(alignment: .leading, spacing: 18) {
+                        review
+                        wideUploads
+                        wideTiles
+                        HStack(alignment: .firstTextBaseline) {
+                            (Text(prefs.d("Derslerim")) + Text(" · \(Format.num(courses.count, lang))\(prefs.d(" ders"))").foregroundStyle(KPhone.text3))
+                                .font(KFont.ui(22, .medium, lang: lang)).foregroundStyle(KPhone.text)
+                            Spacer()
+                            Button { app.go(.courses) } label: {
+                                Text(t("padCoursesLink")).font(KFont.ui(13, .medium, lang: lang)).foregroundStyle(KPhone.navActive)
+                            }
+                        }
+                        .padding(.top, 6)
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 14), count: planOpen ? 2 : 3), spacing: 14) {
+                            ForEach(courses) { c in courseTile(c) }
+                        }
+                        TrialCardView(status: trial.status, onPremium: { app.go(.paywall(nil)) })
+                    }
+                    .frame(maxWidth: .infinity)
+                    if planOpen {
+                        planColumn.frame(width: 340)
+                            .transition(.move(edge: .trailing).combined(with: .opacity))
+                    }
+                }
+            }
+            .padding(.leading, 8).padding(.trailing, planOpen ? 32 : 76)
+            .padding(.top, KLayout.top(54, minimum: 10) + 8).padding(.bottom, 32)
+        }
+        .scrollIndicators(.hidden)
+    }
+
+    /// Bell and assistant (the iPad header order of the design).
+    private var wideRoundButtons: some View {
+        HStack(spacing: 10) {
+            Button { app.go(.notifications) } label: {
+                KIcon(name: .bell, size: 20, width: 1.6)
+                    .foregroundStyle(KPhone.text)
+                    .frame(width: 48, height: 48)
+                    .background(KPhone.card, in: Circle())
+                    .overlay(Circle().stroke(KPhone.line, lineWidth: 1))
+                    .overlay(alignment: .topTrailing) {
+                        if unread { Circle().fill(KPhone.dot).frame(width: 8, height: 8).padding(.top, 12).padding(.trailing, 13) }
+                    }
+            }
+            .accessibilityLabel(t("home.k504"))
+            Button { app.go(.assistant) } label: {
+                Image("StarButton").resizable().scaledToFit().frame(width: 42, height: 42)
+                    .frame(width: 48, height: 48)
+                    .background(Circle().fill(RadialGradient(colors: [Color(hex: 0xB8404D), Color(hex: 0x9C2F3A), Color(hex: 0x7A2230)],
+                                                             center: UnitPoint(x: 0.5, y: 0.3), startRadius: 0, endRadius: 32)))
+                    .shadow(color: Color(hex: 0x9C2F3A, opacity: 0.28), radius: 9, y: 6)
+            }
+            .accessibilityLabel(t("home.k390"))
+        }
+    }
+
+    /// The four upload buttons as one row of pills (icon and word side by side).
+    private var wideUploads: some View {
+        func open(_ kind: UploadKind) -> () -> Void {
+            { if offline { toast.show(t("home.uploadOffline")) } else { trial.perform(.pdf) { app.go(.upload(kind)) } } }
+        }
+        let items: [(KIconName, String, () -> Void)] = [
+            (.upload, t("home.k1586"), open(.pdf)), (.camera, t("home.k1013"), open(.photo)), (.mic, t("home.k1832"), open(.audio)),
+            (.help, t("home.k1905"), { offline ? toast.show(t("home.uploadOffline")) : app.go(.samples(nil)) }),
+        ]
+        return HStack(spacing: 10) {
+            ForEach(Array(items.enumerated()), id: \.offset) { i, item in
+                Button(action: item.2) {
+                    HStack(spacing: 8) {
+                        KIcon(name: item.0, size: 18, width: 1.7)
+                        Text(item.1).font(KFont.ui(14, i == 0 ? .medium : .regular, lang: lang)).lineLimit(1).minimumScaleFactor(0.8)
+                    }
+                    .foregroundStyle(i == 0 ? KPhone.ctaText : KPhone.text)
+                    .padding(.horizontal, 10)
+                    .frame(maxWidth: .infinity, minHeight: 54)
+                    .background(i == 0 ? KPhone.navActive : KPhone.card, in: Capsule())
+                    .overlay(Capsule().stroke(i == 0 ? .clear : KPhone.line, lineWidth: 1))
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    private var wideTiles: some View {
+        let items: [(KIconName, String, Color, Color)] = [
+            (.checklist, "home.tileExam", KPhone.tile1, KPhone.tile1Text),
+            (.cards, "home.tileCards", KPhone.tile2, KPhone.tile2Text),
+            (.book, "home.tileSummary", KPhone.tile3, KPhone.tile3Text),
+        ]
+        return HStack(spacing: 12) {
+            ForEach(items, id: \.1) { icon, key, chip, fg in
+                Button { tileTapped(key) } label: {
+                    HStack(spacing: 12) {
+                        KIcon(name: icon, size: 20, width: 1.6).foregroundStyle(fg)
+                            .frame(width: 44, height: 44).background(chip, in: Circle())
+                        Text(t(key)).font(KFont.ui(15, .medium, lang: lang)).foregroundStyle(KPhone.text).lineLimit(1).minimumScaleFactor(0.85)
+                        Spacer(minLength: 0)
+                    }
+                    .padding(.horizontal, 16)
+                    .frame(maxWidth: .infinity, minHeight: 74)
+                    .kPhoneCard(radius: 22)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    /// One course in the grid: name, exam, how much of its PDFs is read.
+    private func courseTile(_ c: Course) -> some View {
+        let stats = CoursesAPI.stats(c)
+        let (chipBg, chipFg) = chipColors(c.color)
+        return Button { app.go(.course(c.id)) } label: {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("\(Format.num(c.pdfs.count, lang)) PDF").font(KFont.mono(10, .medium)).foregroundStyle(chipFg)
+                    .padding(.horizontal, 8).padding(.vertical, 3).background(chipBg, in: Capsule())
+                Text(c.name[lang]).font(KFont.ui(16, .semibold, lang: lang)).foregroundStyle(KPhone.text)
+                    .lineLimit(2).multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading)
+                Text(studyDuration(stats.minutes, prefs)).font(KFont.ui(12, lang: lang)).foregroundStyle(KPhone.text2)
+                Capsule().fill(KPhone.sub).frame(height: 6)
+                    .overlay(alignment: .leading) {
+                        GeometryReader { g in Capsule().fill(KPhone.navActive).frame(width: g.size.width * CGFloat(stats.percent) / 100) }
+                    }
+                Text(Format.percent(stats.percent, lang)).font(KFont.mono(11, .regular)).foregroundStyle(KPhone.text2)
+            }
+            .padding(16)
+            .frame(maxHeight: .infinity, alignment: .top)
+            .kPhoneCard(radius: 24)
+        }
+        .buttonStyle(.plain)
+    }
+
+    /// "Bugünün planı": today's tasks, the next exam, tomorrow's classes and the sample-questions shortcut.
+    private var planColumn: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(spacing: 10) {
+                (Text("\(t("home.p0a")) ").foregroundStyle(KPhone.text) + Text(t("home.p0b")).foregroundStyle(KPhone.text3))
+                    .font(KFont.ui(21, .medium, lang: lang))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Button { app.go(.weekPlan) } label: {
+                    Text(t("home.k1116")).font(KFont.ui(13, lang: lang)).foregroundStyle(KPhone.text2)
+                }
+                Button { withAnimation(.easeOut(duration: 0.25)) { planOpen = false } } label: {
+                    KIcon(name: .close, size: 14, width: 2.2).foregroundStyle(KPhone.text2)
+                        .frame(width: 38, height: 38).background(KPhone.card, in: Circle())
+                        .overlay(Circle().stroke(KPhone.line, lineWidth: 1))
+                }
+                .accessibilityLabel(t("home.k616"))
+            }
+            if todayTasks.isEmpty {
+                Text(t("plan.empty")).font(KFont.ui(14, lang: lang)).foregroundStyle(KPhone.text2)
+            }
+            ForEach(todayTasks) { item in
+                let look = item.look
+                let done = item.status == "done"
+                Button { openTask(item) } label: {
+                    HStack(spacing: 12) {
+                        KIcon(name: done ? .check : look.icon, size: 18, width: 1.6).foregroundStyle(look.fg)
+                            .frame(width: 42, height: 42).background(look.chip, in: Circle())
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(item.title).font(KFont.ui(15, .medium, lang: lang)).foregroundStyle(KPhone.text)
+                                .strikethrough(done).lineLimit(2).multilineTextAlignment(.leading)
+                            Text([t("plan.min", ["m": Format.num(item.minutes, lang)]), item.why].filter { !$0.isEmpty }.joined(separator: " · "))
+                                .font(KFont.ui(12, lang: lang)).foregroundStyle(KPhone.text2).lineLimit(2).multilineTextAlignment(.leading)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .padding(.horizontal, 14).padding(.vertical, 12)
+                    .kPhoneCard(radius: 22)
+                    .opacity(done ? 0.6 : 1)
+                }
+                .buttonStyle(.plain)
+            }
+            examCard
+            Button { app.go(.timetable) } label: {
+                shortcutRow(.calendar,
+                            top: tomorrowClasses.isEmpty ? t("padNoClassesTmr") : t("padClassesTmr", ["n": Format.num(tomorrowClasses.count, lang)]),
+                            title: tomorrowClasses.first.map { "\(Format.num($0.start, lang)) · \($0.title)" } ?? t("schTitle"))
+                    .kPhoneCard(radius: 24)
+            }
+            .buttonStyle(.plain)
+            Button { app.go(.samples(nil)) } label: {
+                HStack(spacing: 14) {
+                    KIcon(name: .help, size: 21, width: 1.7).foregroundStyle(KPhone.tile4Text)
+                        .frame(width: 50, height: 50).background(KPhone.tile4, in: Circle())
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(prefs.d("Elinde soru var mı?")).font(KFont.ui(15, .semibold, lang: lang)).foregroundStyle(KPhone.text)
+                        Text(t("padSamplesSub")).font(KFont.ui(12, lang: lang)).foregroundStyle(KPhone.text2).multilineTextAlignment(.leading)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .padding(.horizontal, 18).padding(.vertical, 16)
+                .background(KPhone.card, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: 26, style: .continuous).strokeBorder(KPhone.bannerLine, style: StrokeStyle(lineWidth: 1.5, dash: [6, 4])))
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    /// Days to the nearest exam of the student's courses (opens the exam center).
+    private var examCard: some View {
+        let today = CoursesAPI.todayISO()
+        let next = courses.compactMap { c in c.examDate.map { (c, $0) } }.filter { $0.1 >= today }.min { $0.1 < $1.1 }
+        return Button { app.go(.examCenter) } label: {
+            HStack(spacing: 14) {
+                VStack(spacing: 0) {
+                    Text(next.map { Format.num(CoursesAPI.daysUntil($0.1), lang) } ?? "–").font(KFont.ui(20, .bold, lang: lang))
+                    Text(prefs.d("GÜN")).font(KFont.ui(9, .semibold, lang: lang))
+                }
+                .foregroundStyle(KPhone.ctaText)
+                .frame(width: 56, height: 56).background(Color.white.opacity(0.16), in: Circle())
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(next.map { "\($0.0.name[lang]) · \($0.0.exam[lang])" } ?? t("padNoExam"))
+                        .font(KFont.ui(16, .semibold, lang: lang)).lineLimit(2).multilineTextAlignment(.leading)
+                    Text(t("padExamSoon")).font(KFont.ui(12, lang: lang)).opacity(0.8)
+                }
+                .foregroundStyle(KPhone.ctaText)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(18)
+            .background(KPhone.navActive, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func shortcutRow(_ icon: KIconName, top: String, title: String) -> some View {
+        HStack(spacing: 12) {
+            KIcon(name: icon, size: 20, width: 1.7).foregroundStyle(KPhone.tile4Text)
+                .frame(width: 46, height: 46).background(KPhone.tile4, in: Circle())
+            VStack(alignment: .leading, spacing: 2) {
+                Text(top).font(KFont.mono(10, .regular)).kTracking(0.06, size: 10, lang: lang).foregroundStyle(KPhone.text2)
+                Text(title).font(KFont.ui(15, .semibold, lang: lang)).foregroundStyle(KPhone.text).lineLimit(1)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            KIcon(name: .chevron, size: 14, width: 2, flipsInRTL: true).foregroundStyle(KPhone.text2)
+        }
+        .padding(.horizontal, 14).padding(.vertical, 12)
     }
 
     // MARK: Top bar
 
     @State private var photo: UIImage? = AvatarAPI.cached()
+    @State private var unread = false
 
     private var fullName: String { app.user?.name ?? "Elif Yıldız" }
     private var firstName: String { fullName.split(separator: " ").first.map(String.init) ?? fullName }
@@ -105,14 +372,14 @@ struct HomeView: View {
                 .shadow(color: Color(hex: 0x9C2F3A, opacity: 0.28), radius: 9, y: 6)
             }
             .accessibilityLabel(t("home.k390"))
-            Button(action: soon) {
+            Button { app.go(.notifications) } label: {
                 KIcon(name: .bell, size: 20, width: 1.6)
                     .foregroundStyle(KPhone.text)
                     .frame(width: 46, height: 46)
                     .background(KPhone.card, in: Circle())
                     .overlay(Circle().stroke(KPhone.line, lineWidth: 1))
                     .overlay(alignment: .topTrailing) {
-                        Circle().fill(KPhone.dot).frame(width: 8, height: 8).padding(.top, 11).padding(.trailing, 12)
+                        if unread { Circle().fill(KPhone.dot).frame(width: 8, height: 8).padding(.top, 11).padding(.trailing, 12) }
                     }
             }
             .accessibilityLabel(t("home.k504"))

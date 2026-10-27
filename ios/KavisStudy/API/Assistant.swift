@@ -135,7 +135,7 @@ enum AssistantAPI {
     /// Asks the assistant (Edge Function "assistant", the same as the web): it searches the student's lessons,
     /// answers only from them (or also from general knowledge and the web in "AI + research"), saves the chat and
     /// counts the trial question. The answer arrives piece by piece (`onText` gets the text so far).
-    static func ask(_ question: String, courseId: String?, threadId: String?, mode: SourceMode, lang: Lang, photo: Data? = nil,
+    static func ask(_ question: String, courseId: String?, materialId: String? = nil, threadId: String?, mode: SourceMode, lang: Lang, photo: Data? = nil,
                     onText: @escaping @MainActor (String) -> Void) async -> Result<(threadId: String, message: ChatMessage), AskError> {
         guard let token = try? await supabase.auth.session.accessToken else { return .failure(.other) }
         var req = URLRequest(url: Config.supabaseURL.appendingPathComponent("functions/v1/assistant"))
@@ -143,7 +143,7 @@ enum AssistantAPI {
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
         req.setValue(Config.supabaseKey, forHTTPHeaderField: "apikey")
         req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        let body: [String: Any?] = ["question": question, "course_id": courseId, "material_id": nil, "thread_id": threadId,
+        let body: [String: Any?] = ["question": question, "course_id": courseId, "material_id": materialId, "thread_id": threadId,
                                     "mode": mode.rawValue, "lang": lang.rawValue, "page_from": nil, "page_to": nil,
                                     "image": photo.map { ["media_type": "image/jpeg", "data": $0.base64EncodedString()] }]
         req.httpBody = try? JSONSerialization.data(withJSONObject: body.mapValues { $0 ?? NSNull() })

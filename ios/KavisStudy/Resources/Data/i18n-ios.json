@@ -18,7 +18,19 @@
   "pwLoading": "Fiyatlar App Store'dan geliyor…",
   "quizWrittenNote": "Yazılı cevaplar puanlanmaz. Cevabını PDF'teki model cevapla karşılaştır.",
   "quizWrittenCount": "{n} yazılı soru",
-  "molDrugPage": "MOLEKÜL YAPISI · SAYFA {n}'TE GEÇEN İLAÇ"
+  "molDrugPage": "MOLEKÜL YAPISI · SAYFA {n}'TE GEÇEN İLAÇ",
+  "quickEasy": "Kolay dille anlat",
+  "quickEasyAsk": "Son konuyu çok kolay bir dille, günlük hayattan bir benzetmeyle anlat.",
+  "padLight": "Açık moda geç",
+  "padDark": "Koyu moda geç",
+  "panelSource": "Yalnızca bu dersin PDF'inden",
+  "panelToggle": "Asistan paneli",
+  "padCoursesLink": "Derslerim klasörü ›",
+  "padSamplesSub": "Soru örneği ekle · hocanın tarzını öğrenelim",
+  "padExamSoon": "Sınav merkezinde özet ve sorular",
+  "padNoExam": "Sınav tarihi ekle",
+  "padClassesTmr": "OKUL PROGRAMI · YARIN {n} DERS",
+  "padNoClassesTmr": "OKUL PROGRAMI · YARIN DERS YOK"
  },
  "en": {
   "remindTitle": "Study time",
@@ -39,7 +51,19 @@
   "pwLoading": "Getting prices from the App Store…",
   "quizWrittenNote": "Written answers are not scored. Compare your answer with the model answer from the PDF.",
   "quizWrittenCount": "{n} written questions",
-  "molDrugPage": "MOLECULAR STRUCTURE · DRUG ON PAGE {n}"
+  "molDrugPage": "MOLECULAR STRUCTURE · DRUG ON PAGE {n}",
+  "quickEasy": "Explain in simple words",
+  "quickEasyAsk": "Explain the last topic in very simple words, with an everyday comparison.",
+  "padLight": "Switch to light mode",
+  "padDark": "Switch to dark mode",
+  "panelSource": "Only from this lesson's PDF",
+  "panelToggle": "Assistant panel",
+  "padCoursesLink": "My Courses folder ›",
+  "padSamplesSub": "Add a sample question · let's learn your lecturer's style",
+  "padExamSoon": "Summary and questions in the exam center",
+  "padNoExam": "Add an exam date",
+  "padClassesTmr": "SCHOOL TIMETABLE · {n} CLASSES TOMORROW",
+  "padNoClassesTmr": "SCHOOL TIMETABLE · NO CLASSES TOMORROW"
  },
  "fa": {
   "remindTitle": "وقت مطالعه",
@@ -60,7 +84,19 @@
   "pwLoading": "قیمت‌ها از App Store می‌آیند…",
   "quizWrittenNote": "پاسخ‌های تشریحی نمره نمی‌گیرند. پاسخت را با پاسخ نمونهٔ PDF مقایسه کن.",
   "quizWrittenCount": "{n} سؤال تشریحی",
-  "molDrugPage": "ساختار مولکولی · دارویی که در صفحهٔ {n} آمده"
+  "molDrugPage": "ساختار مولکولی · دارویی که در صفحهٔ {n} آمده",
+  "quickEasy": "ساده توضیح بده",
+  "quickEasyAsk": "آخرین مبحث را با زبانی خیلی ساده و با یک مثال از زندگی روزمره توضیح بده.",
+  "padLight": "رفتن به حالت روشن",
+  "padDark": "رفتن به حالت تیره",
+  "panelSource": "فقط از PDF همین درس",
+  "panelToggle": "پنل دستیار",
+  "padCoursesLink": "پوشهٔ درس‌های من ›",
+  "padSamplesSub": "نمونه‌سؤال اضافه کن · سبک استادت را یاد بگیریم",
+  "padExamSoon": "خلاصه و سؤال‌ها در مرکز آزمون",
+  "padNoExam": "تاریخ امتحان را اضافه کن",
+  "padClassesTmr": "برنامهٔ کلاس · فردا {n} کلاس",
+  "padNoClassesTmr": "برنامهٔ کلاس · فردا کلاس نداری"
  },
  "ar": {
   "remindTitle": "وقت الدراسة",
@@ -81,6 +117,18 @@
   "pwLoading": "جارٍ جلب الأسعار من App Store…",
   "quizWrittenNote": "الإجابات المكتوبة لا تُصحَّح. قارن إجابتك بالإجابة النموذجية من الملف.",
   "quizWrittenCount": "{n} أسئلة مكتوبة",
-  "molDrugPage": "البنية الجزيئية · الدواء المذكور في الصفحة {n}"
+  "molDrugPage": "البنية الجزيئية · الدواء المذكور في الصفحة {n}",
+  "quickEasy": "اشرح بكلمات بسيطة",
+  "quickEasyAsk": "اشرح آخر موضوع بكلمات بسيطة جدًا مع تشبيه من الحياة اليومية.",
+  "padLight": "التبديل إلى الوضع الفاتح",
+  "padDark": "التبديل إلى الوضع الداكن",
+  "panelSource": "فقط من ملف PDF لهذا الدرس",
+  "panelToggle": "لوحة المساعد",
+  "padCoursesLink": "مجلد دروسي ›",
+  "padSamplesSub": "أضف سؤالًا نموذجيًا · لنتعلّم أسلوب أستاذك",
+  "padExamSoon": "الملخص والأسئلة في مركز الامتحانات",
+  "padNoExam": "أضف موعد الامتحان",
+  "padClassesTmr": "الجدول الدراسي · غدًا {n} محاضرات",
+  "padNoClassesTmr": "الجدول الدراسي · لا محاضرات غدًا"
  }
 }

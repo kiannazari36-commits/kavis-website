@@ -80,6 +80,7 @@ struct QuizView: View {
                 header
                 if phase == .result { result } else if let question { body(question) } else { Spacer() }
             }
+            .padColumn()
             if phase == .conf { confidenceSheet }
         }
         .task {

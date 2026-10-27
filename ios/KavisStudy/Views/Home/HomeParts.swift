@@ -31,8 +31,14 @@ struct FloatingTabBar: View {
     var onCourses: () -> Void
     var onProgress: () -> Void
     var onSettings: () -> Void
+    /// On the iPad the left rail does this job, so the bar is not shown.
+    @Environment(\.padRail) private var padRail
 
     var body: some View {
+        if !padRail { bar }
+    }
+
+    private var bar: some View {
         HStack(spacing: 6) {
             if active == .courses { pill(.book, prefs.t("home.k785"), action: onCourses) } else {
                 navButton(.book, label: prefs.t("home.k785"), action: onCourses)
