@@ -32,6 +32,8 @@ import DeviceLimit from './pages/DeviceLimit';
 import ShareLink from './pages/ShareLink';
 import Legal from './pages/Legal';
 import Help from './pages/Help';
+import Exam from './pages/Exam';
+import Review from './pages/Review';
 
 export default function App() {
   return (
@@ -55,6 +57,8 @@ export default function App() {
                     <Route path="/assistant" element={<Assistant />} />
                     <Route path="/quiz" element={<Quiz />} />
                     <Route path="/summary" element={<Summary />} />
+                    <Route path="/exam" element={<Exam />} />
+                    <Route path="/review" element={<Review />} />
                     <Route path="/cards" element={<Cards />} />
                     <Route path="/plan" element={<Plan />} />
                     <Route path="/progress" element={<Progress />} />

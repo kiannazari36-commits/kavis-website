@@ -77,7 +77,7 @@ export default function Home() {
     ['help', 'k71', '/samples'],
   ];
   const tools: [IconName, string, string, string, string][] = [
-    ['list', 'k72', 'var(--pri-soft)', 'var(--pri-t)', '/quiz'],
+    ['list', 'k72', 'var(--pri-soft)', 'var(--pri-t)', '/exam'],
     ['cards', 'k73', 'var(--amb-soft)', 'var(--amb-t)', '/cards'],
     ['book', 'k74', 'var(--good-soft)', 'var(--good)', '/reader'],
   ];
@@ -104,7 +104,7 @@ export default function Home() {
               </span>
             </span>
             <span className={s.reviewBtns}>
-              <button className={s.reviewGo} onClick={() => (setReview(review.id, 'done'), navigate('/cards'))}>
+              <button className={s.reviewGo} onClick={() => navigate(`/review?id=${review.id}`)}>
                 <Icon name="play" size={15} />
                 {t('k67')}
               </button>

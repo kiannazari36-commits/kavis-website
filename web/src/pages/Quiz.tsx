@@ -5,7 +5,7 @@ import { examLabel, num, pagesShort, percent } from '../i18n/format';
 import { useToast } from '../components/Toast';
 import Icon from '../components/Icon';
 import MolViewer from '../components/MolViewer';
-import { addWrongsToPlan, coursesWithPack, getExamPack, getSectionCheck, moreSectionQuestions, saveAttempt, setStudyReminder } from '../api/quiz';
+import { addWrongsToPlan, coursesWithPack, getExamPack, getQuizById, getSectionCheck, moreSectionQuestions, saveAttempt, setStudyReminder } from '../api/quiz';
 import { generateExamPack, type QuestionType } from '../api/samples';
 
 const QTYPES: QuestionType[] = ['case', 'side_effects', 'dose', 'knowledge', 'structure'];
@@ -46,6 +46,10 @@ export default function Quiz() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const fromReader = params.get('from') === 'reader';
+  // An exam put together by the exam center (/exam): ?quiz=<id>. Played like the other quizzes, then back to the center.
+  const examQuizId = params.get('quiz') ?? '';
+  const own = !!examQuizId;
+  const examQuiz = useAsync(() => (own ? getQuizById(examQuizId) : Promise.resolve(null)), [examQuizId]);
   const courses = useAsync(listCourses, []);
   const ready = useAsync(coursesWithPack, []);
   // Chips: the courses with the nearest exams. Selected: ?course=, else the first one whose pack is ready.
@@ -56,7 +60,7 @@ export default function Quiz() {
   // Back to the lesson: after a section check, the next section of the same lesson.
   const lessonUrl = pdfId ? `/reader?course=${params.get('course') ?? ''}&pdf=${pdfId}${params.get('next') ? `&sec=${params.get('next')}` : ''}` : '/reader';
   const [made, setMade] = useState(0);
-  const pack = useAsync(() => (courseId ? getExamPack(courseId) : Promise.resolve(null)), [courseId, made]);
+  const pack = useAsync(() => (courseId && !own ? getExamPack(courseId) : Promise.resolve(null)), [courseId, made, own]);
   const [making, setMaking] = useState(false);
   // A new exam pack for this course (AI, Edge generate-quiz) in the question types the student picks
   // ("İstediğin tarzda"; none = a mix), like the lecturer's sample questions only when some were added.
@@ -96,10 +100,10 @@ export default function Quiz() {
   const [seen, setSeen] = useState<string[]>([]);
   const [gettingNew, setGettingNew] = useState(false);
   const check = nextCheck ?? firstCheck;
-  const cl: Lang = pack?.lang ?? 'tr';
+  const cl: Lang = (own ? examQuiz?.lang : pack?.lang) ?? 'tr';
   const cdir = dirOf(cl);
 
-  const [tab, setTab] = useState<Tab>(params.get('tab') === 'quiz' || fromReader ? 'quiz' : 'sum');
+  const [tab, setTab] = useState<Tab>(params.get('tab') === 'quiz' || fromReader || own ? 'quiz' : 'sum');
   const [topic, setTopic] = useState(0);
   const [list, setList] = useState<number[] | null>(null);
   const [qi, setQi] = useState(0);
@@ -125,11 +129,11 @@ export default function Quiz() {
     setRun((r) => r + 1);
   }, [courseId, packId]);
 
-  if (!courses || pack === undefined || (fromReader && check === undefined)) return <main className={s.main} />;
+  if (!courses || pack === undefined || (fromReader && check === undefined) || (own && examQuiz === undefined)) return <main className={s.main} />;
 
   // From the reader: the lesson's section check; otherwise the course's exam pack.
-  const quizId = fromReader ? check?.quizId : pack?.quizId;
-  const qs = (fromReader ? check?.questions : pack?.questions) ?? [];
+  const quizId = own ? examQuiz?.quizId : fromReader ? check?.quizId : pack?.quizId;
+  const qs = (own ? examQuiz?.questions : fromReader ? check?.questions : pack?.questions) ?? [];
   const topics = pack?.topics ?? [];
   const qList = list ?? qs.map((_, i) => i);
   const qIdx = qList[Math.min(qi, qList.length - 1)];
@@ -144,7 +148,9 @@ export default function Quiz() {
   const total = fromReader ? qList.length : qs.length;
 
   const course = courses.find((c) => c.id === courseId);
-  const subtitle = course?.examDate
+  const subtitle = own
+    ? `${t('exTitle')} · ${t('exRunSub').replace('{n}', num(qs.length, lang))}`
+    : course?.examDate
     ? [
         course.name,
         examLabel(course.examKind, course.examDate, lang),
@@ -254,7 +260,7 @@ export default function Quiz() {
   return (
     <main className={s.main}>
       <div className={s.head}>
-        <button className={s.round} aria-label={t('back')} onClick={() => (fromReader ? navigate(-1) : navigate('/home'))}>
+        <button className={s.round} aria-label={t('back')} onClick={() => (own ? navigate('/exam') : fromReader ? navigate(-1) : navigate('/home'))}>
           <Icon name="back" size={20} width={1.8} className="flip-rtl" />
         </button>
         <span className={s.titleBox}>
@@ -270,6 +276,7 @@ export default function Quiz() {
             </span>
           )}
         </span>
+        {!own && (
         <div role="radiogroup" className={s.courses}>
           {chips.map((c) => (
             <button
@@ -283,6 +290,7 @@ export default function Quiz() {
             </button>
           ))}
         </div>
+        )}
       </div>
 
       <div role="tablist" className={s.tabs}>
@@ -292,14 +300,16 @@ export default function Quiz() {
             ['quiz', 'tabQuiz'],
             ['res', 'tabRes'],
           ] as const
-        ).map(([id, key]) => (
+        )
+          .filter(([id]) => !own || id !== 'sum')
+          .map(([id, key]) => (
           <button key={id} role="tab" aria-selected={tab === id} className={tab === id ? s.tabOn : ''} onClick={() => pickTab(id)}>
             {t(key)}
           </button>
         ))}
       </div>
 
-      {!fromReader && pack === null && (
+      {!fromReader && !own && pack === null && (
         <section className={s.makeBox}>
           <b>{t('noPack')}</b>
           <span>{t('packHow')}</span>
@@ -314,7 +324,7 @@ export default function Quiz() {
           </div>
         </section>
       )}
-      {!fromReader && pack && (
+      {!fromReader && !own && pack && (
         <div className={s.remakeRow}>
           {stylePicker}
           <button className={s.remake} aria-busy={making} onClick={makePack}>
@@ -383,7 +393,7 @@ export default function Quiz() {
         </div>
       )}
 
-      {tab === 'quiz' && !Q && (fromReader || pack) && <p className={s.muted}>{t(fromReader ? 'noSectionQs' : 'noPack')}</p>}
+      {tab === 'quiz' && !Q && (fromReader || own || pack) && <p className={s.muted}>{t(fromReader ? 'noSectionQs' : 'noPack')}</p>}
 
       {tab === 'quiz' && Q && (
         <section className={s.qCard}>
@@ -486,8 +496,8 @@ export default function Quiz() {
             <span className={s.scoreMsg}>
               {(wrongs.length === 0 ? t('allGood') : num(wrongs.length, lang) + t('wrongsA')) + (hintedRight ? ' ' + num(hintedRight, lang) + t('hintedA') : '')}
             </span>
-            <button className={s.cont} onClick={() => (navigate(lessonUrl), !fromReader && toast(t('continueToast')))}>
-              {t(fromReader ? 'continueNext' : 'continueLesson')}
+            <button className={s.cont} onClick={() => (own ? navigate('/exam') : (navigate(lessonUrl), !fromReader && toast(t('continueToast'))))}>
+              {t(own ? 'exBackCenter' : fromReader ? 'continueNext' : 'continueLesson')}
               <Icon name="send" size={16} className="flip-rtl" />
             </button>
             <button

@@ -107,6 +107,8 @@ The app never writes AI output, scores, usage counters, subscriptions or shares 
 | Result: level, dangerous mistakes, pages to review | `quiz_attempts`, view `topic_mastery` |
 | Cards (Bildim / Bilmedim) | `flashcards` (app updates the spaced-repetition columns only) |
 | "Bugünün tekrarı" (summary + cards + 3 questions) | `review_sessions` (made by the daily planner); postpone / remove / done = update `status`, `scheduled_for` |
+| Web `/review?id=` (Bugünün tekrarı flow) | read `review_sessions` row, the lesson's due `flashcards` (`rateCard` updates the review state), ≤3 questions of the lesson's `quiz_questions` → attempt saved + `grade-quiz`; "Bitir" = `review_sessions.status = done` |
+| Web `/exam` (Sınav merkezi) | `course_exams` (read upcoming, insert / update the exam days), Edge `build-exam` (`overview`, `build`), then `/quiz?quiz=<id>` plays the built `quizzes` row and `grade-quiz` grades it |
 | Ders özeti, genel özet, sınav merkezi | `summaries` (kind lesson / overall / exam_prep / weak), view `topic_mastery`, `term_lookups` (most-tapped words) |
 | Soru örneklerim → "Hocanın soru tarzı" | insert `question_samples` (+ `question-samples` bucket) → Edge `analyze-style` → `teacher_styles`; switches "Sınavlarda / Kartlarda / Özetlerde" are app-editable |
 | Placement test result (known / weak / todo) | `topic_progress.state` |

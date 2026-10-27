@@ -52,6 +52,20 @@ async function latestQuiz(kind: 'exam_prep' | 'section_check' | 'lesson_end', fi
   return { quizId: quiz.id, lang: quiz.lang, fromSamples: quiz.teacher_style, questions: (data ?? []).map(toQuestion) };
 }
 
+/** One quiz by id with its questions (an exam put together by the exam center), or null. */
+export async function getQuizById(quizId: string) {
+  const { data: quiz } = await supabase.from('quizzes').select('id, lang, teacher_style').eq('id', quizId).maybeSingle<{ id: string; lang: Lang; teacher_style: boolean }>();
+  if (!quiz) return null;
+  const { data, error } = await supabase
+    .from('quiz_questions')
+    .select('id, style_tag, text, options, answer_index, explanation, source_page, hints, molecule, material_topics(title)')
+    .eq('quiz_id', quizId)
+    .order('sort_order')
+    .returns<QRow[]>();
+  if (error) console.error('quiz_questions', error);
+  return { quizId: quiz.id, lang: quiz.lang, fromSamples: false, questions: (data ?? []).map(toQuestion) };
+}
+
 /** null: the pack for this course is not made yet (the server makes it about a week before the exam). */
 export async function getExamPack(courseId: string): Promise<ExamPack | null> {
   const [quiz, summary] = await Promise.all([
