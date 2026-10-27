@@ -56,6 +56,10 @@ targets:
         NSSpeechRecognitionUsageDescription: Ders kaydını bu telefonda metne çevirmek için. Sunucuya sadece metin gider.
         # A live lecture recording goes on while the screen is off.
         UIBackgroundModes: [audio]
+        # `kavis://s/<slug>` opens a share link (also used for tests; the web address opens it as a universal link).
+        CFBundleURLTypes:
+          - CFBundleURLName: study.kavis.app
+            CFBundleURLSchemes: [kavis]
         UIAppFonts:
           - Poppins-Regular.ttf
           - Poppins-Medium.ttf
@@ -69,6 +73,7 @@ targets:
       path: KavisStudy/KavisStudy.entitlements
       properties:
         aps-environment: development
+        com.apple.developer.associated-domains: ["applinks:kavis-website.vercel.app"]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: study.kavis.app

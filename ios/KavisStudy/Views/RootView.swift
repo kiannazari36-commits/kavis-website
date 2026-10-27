@@ -78,11 +78,34 @@ struct RootView: View {
                 await ReminderService.refresh(s, lang: prefs.lang)
             }
         }
+        // A share link opened from outside (universal link or `kavis://s/<slug>`).
+        .onOpenURL { url in
+            if let slug = ShareAPI.slug(in: url) { app.pendingShare = slug }
+        }
+        .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
+            if let url = activity.webpageURL, let slug = ShareAPI.slug(in: url) { app.pendingShare = slug }
+        }
+        .task(id: "\(app.pendingShare ?? "")|\(app.route == .home)") {
+            // Its own task: clearing `pendingShare` changes the id and would cancel this one mid-request.
+            if app.pendingShare != nil, app.route == .home { Task { await openPendingShare() } }
+        }
         // Another device signed this phone out: the server answers 401 `session_ended`, so back to the start.
         .onReceive(NotificationCenter.default.publisher(for: .sessionEnded)) { _ in
             guard app.user != nil else { return }
             Task { await app.sessionEnded() }
         }
         .toastOverlay(toast, lang: prefs.lang)
+    }
+
+    /// Opens a waiting share link on the home screen: a Premium receiver gets the lesson summary; others see the
+    /// "Premium only" message.
+    private func openPendingShare() async {
+        guard let slug = app.pendingShare, app.route == .home else { return }
+        app.pendingShare = nil
+        switch await ShareAPI.open(slug: slug) {
+        case .opened(let id): app.go(.lessonSummary(id))
+        case .needsPremium: toast.show(prefs.t("sharePremiumOnly"))
+        case .notFound, .failed: toast.show(prefs.t("errOther"))
+        }
     }
 }

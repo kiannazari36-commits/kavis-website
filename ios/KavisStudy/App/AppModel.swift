@@ -68,6 +68,8 @@ final class AppModel {
     var readerPage: Int?
     /// The other devices of an account that is full (2 devices), shown on the device-limit screen.
     var limitDevices: [Device] = []
+    /// A share link opened while nobody was signed in: handled once the student is on the home screen.
+    var pendingShare: String?
 
     init() {
         user = AuthAPI.currentUser()
