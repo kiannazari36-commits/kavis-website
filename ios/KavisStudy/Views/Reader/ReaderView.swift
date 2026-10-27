@@ -83,7 +83,7 @@ struct ReaderView: View {
             if let text = translateText, let lesson, let doc { translationSheet(text, lesson: lesson, doc: doc) }
         }
         .fullScreenCover(isPresented: $showPdf) {
-            PdfFullView(materialId: docID, onAsk: { showPdf = false; withAnimation { panelOpen = true } }, onClose: { showPdf = false })
+            PdfFullView(materialId: docID, startPage: atPage ?? lesson?.lastPage ?? 1, onAsk: { showPdf = false; withAnimation { panelOpen = true } }, onClose: { showPdf = false })
         }
         .task {
             guard !loaded else { return }
