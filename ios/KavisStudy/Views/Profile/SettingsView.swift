@@ -7,6 +7,8 @@ import SwiftUI
 struct SettingsView: View {
     @Environment(AppPrefs.self) private var prefs
     @Environment(AppModel.self) private var app
+    /// iPad (design NewIPad, "settings"): account and plan on top, the other sections in two columns.
+    @Environment(\.padRail) private var wide
     @Environment(ToastCenter.self) private var toast
     @Environment(TrialModel.self) private var trial
     @Environment(\.colorScheme) private var scheme
@@ -57,35 +59,68 @@ struct SettingsView: View {
             C.bg.ignoresSafeArea()
             VStack(spacing: 0) {
                 Text(d("Ayarlar"))
-                    .font(KFont.ui(32, .bold, lang: lang))
-                    .kTracking(-0.02, size: 32, lang: lang)
+                    .font(KFont.ui(wide ? 40 : 32, wide ? .medium : .bold, lang: lang))
+                    .kTracking(wide ? -0.03 : -0.02, size: wide ? 40 : 32, lang: lang)
                     .foregroundStyle(C.text)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 20).padding(.top, KLayout.top(58, minimum: 8)).padding(.bottom, 10)
+                    .padding(.leading, wide ? 8 : 20).padding(.trailing, 20)
+                    .padding(.top, wide ? KLayout.top(54, minimum: 10) + 8 : KLayout.top(58, minimum: 8)).padding(.bottom, 10)
                     .accessibilityAddTraits(.isHeader)
                 ScrollView {
                     VStack(spacing: 8) {
-                        accountCard
-                        heading(d("Çalışma planı"))
-                        planCard
-                        heading(d("Dil ve bölüm"))
-                        langCard
-                        heading(d("Ses"))
-                        voiceCard
-                        heading(d("Bildirimler"))
-                        notifCard
-                        heading(d("Görünüm"))
-                        lookCard
-                        heading(d("Çevrimdışı kullanım"))
-                        offlineCard
-                        heading(prefs.t("devTitle"))
-                        devicesCard
-                        heading(d("Okul ders programı"))
-                        scheduleCard
-                        heading(d("Yardım ve destek"))
-                        helpCard
-                        heading(d("Hesap ve gizlilik"))
-                        privacyCard
+                        if wide {
+                            accountCard
+                            heading(d("Çalışma planı"))
+                            planCard
+                            HStack(alignment: .top, spacing: 16) {
+                                VStack(spacing: 8) {
+                                    heading(d("Dil ve bölüm"))
+                                    langCard
+                                    heading(d("Ses"))
+                                    voiceCard
+                                    heading(d("Bildirimler"))
+                                    notifCard
+                                    heading(d("Okul ders programı"))
+                                    scheduleCard
+                                }
+                                .frame(maxWidth: .infinity, alignment: .top)
+                                VStack(spacing: 8) {
+                                    heading(d("Görünüm"))
+                                    lookCard
+                                    heading(d("Çevrimdışı kullanım"))
+                                    offlineCard
+                                    heading(prefs.t("devTitle"))
+                                    devicesCard
+                                    heading(d("Yardım ve destek"))
+                                    helpCard
+                                    heading(d("Hesap ve gizlilik"))
+                                    privacyCard
+                                }
+                                .frame(maxWidth: .infinity, alignment: .top)
+                            }
+                        } else {
+                            accountCard
+                            heading(d("Çalışma planı"))
+                            planCard
+                            heading(d("Dil ve bölüm"))
+                            langCard
+                            heading(d("Ses"))
+                            voiceCard
+                            heading(d("Bildirimler"))
+                            notifCard
+                            heading(d("Görünüm"))
+                            lookCard
+                            heading(d("Çevrimdışı kullanım"))
+                            offlineCard
+                            heading(prefs.t("devTitle"))
+                            devicesCard
+                            heading(d("Okul ders programı"))
+                            scheduleCard
+                            heading(d("Yardım ve destek"))
+                            helpCard
+                            heading(d("Hesap ve gizlilik"))
+                            privacyCard
+                        }
                         Button { Task { await app.signOut() } } label: {
                             Text(prefs.t("logout"))
                                 .font(KFont.ui(15, .medium, lang: lang))
@@ -99,7 +134,8 @@ struct SettingsView: View {
                             .foregroundStyle(C.text3)
                             .padding(.top, 10)
                     }
-                    .padding(.horizontal, 16).padding(.bottom, 120)
+                    .frame(maxWidth: wide ? .infinity : nil)
+                    .padding(.leading, wide ? 8 : 16).padding(.trailing, wide ? 32 : 16).padding(.bottom, wide ? 32 : 120)
                 }
                 .scrollIndicators(.hidden)
                 .refreshable { await load() }
