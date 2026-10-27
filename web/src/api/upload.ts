@@ -17,7 +17,7 @@ export async function inspectPdf(file: File): Promise<PdfInfo> {
   const pdf = await getDocumentProxy(new Uint8Array(await file.arrayBuffer()));
   const { totalPages, text } = await extractText(pdf, { mergePages: false });
   const chars = text.reduce((a, t) => a + t.replace(/\s/g, '').length, 0);
-  return { pages: totalPages, hasText: chars >= 20 * Math.min(totalPages, 5), sizeMb: Math.round((file.size / 1048576) * 10) / 10 };
+  return { pages: totalPages, hasText: chars >= 20 * Math.min(totalPages, 5), sizeMb: Math.max(0.1, Math.round((file.size / 1048576) * 10) / 10) };
 }
 
 /** How many lessons a long PDF becomes: parts of at most MAX_PAGES pages. */

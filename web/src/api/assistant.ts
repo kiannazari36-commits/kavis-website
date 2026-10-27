@@ -64,7 +64,7 @@ export async function latestThread(courseId: string | null, materialId?: string)
   const messages = ((data ?? []) as Row[]).map((m) => ({
     id: m.id,
     role: m.role,
-    text: m.content,
+    text: m.role === 'assistant' ? clean(m.content) : m.content,
     mode: m.source_mode,
     sources: (m.sources ?? []).filter((x) => x.material_id).map((x) => ({ lesson: lessons.get(x.material_id!) || '', page: x.page ?? null })),
     links: (m.sources ?? []).filter((x) => x.url).map((x) => ({ url: x.url!, title: x.title || x.url! })),
@@ -82,8 +82,11 @@ export type QuestionPhoto = { media_type: 'image/jpeg'; data: string };
 /** The answer while it is written: the closing "SOURCES: …" line is the server's, not for the student; no ** bold. */
 const visible = (text: string) => {
   const at = text.indexOf('SOURCES:');
-  return (at < 0 ? text.replace(/\n?S(O(U(R(C(E(S)?)?)?)?)?)?$/, '') : text.slice(0, at)).replace(/\*\*/g, '').trimEnd();
+  return clean(at < 0 ? text.replace(/\n?S(O(U(R(C(E(S)?)?)?)?)?)?$/, '') : text.slice(0, at)).trimEnd();
 };
+
+/** No ** bold and no excerpt numbers like "[E1]" or "[E1, E3]" (the server's search labels, not for the student). */
+const clean = (text: string) => text.replace(/\*\*/g, '').replace(/ ?\[E\d+(?:\s*,\s*E\d+)*\]/g, '');
 
 /**
  * Asks the assistant (Edge Function "assistant"): it searches the student's lessons, answers only from them
@@ -140,7 +143,7 @@ export async function askAssistant(
       } else if (e.done) {
         return {
           threadId: e.thread_id!,
-          message: { id: crypto.randomUUID(), role: 'assistant', text: e.answer ?? visible(text), mode: where.mode, sources: e.sources ?? [], links: e.links ?? [], acts: e.acts ?? [], outsidePdf: !!e.outside_pdf },
+          message: { id: crypto.randomUUID(), role: 'assistant', text: e.answer ? clean(e.answer) : visible(text), mode: where.mode, sources: e.sources ?? [], links: e.links ?? [], acts: e.acts ?? [], outsidePdf: !!e.outside_pdf },
         };
       }
     }
