@@ -3,8 +3,7 @@ import { useI18n } from '../i18n/I18nProvider';
 import Wordmark from '../components/Wordmark';
 import Icon from '../components/Icon';
 import AppStoreButton from '../components/AppStoreButton';
-import { getPremiumOffer } from '../api/premium';
-import { useAsync } from '../hooks/useAsync';
+import { premiumOffer } from '../api/premium';
 import { isAndroid } from '../config';
 import s from './Paywall.module.css';
 
@@ -17,7 +16,7 @@ export default function Paywall() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const why = params.get('why');
-  const offer = useAsync(getPremiumOffer, []);
+  const offer = premiumOffer;
 
   const close = () => (window.history.length > 1 ? navigate(-1) : navigate('/home'));
 

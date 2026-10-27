@@ -1,7 +1,7 @@
-// Premium (paywall) mock data from design/NewIPad.dc.html: 3-day trial vs Premium table and the three plans.
+// Premium page content (fixed text, not student data) from design/NewIPad.dc.html: 3-day trial vs Premium table and the three plans.
 // There is no monthly free plan: the left column is the trial (CLAUDE.md).
 // No prices here: Apple sets the local price per country (CLAUDE.md).
-import type { L10n, PremiumPlan } from '../types';
+import type { L10n, PremiumPlan } from './types';
 
 export const COMPARE_ROWS: [L10n, L10n, L10n][] = [
   [
