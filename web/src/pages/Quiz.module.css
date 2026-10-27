@@ -909,3 +909,30 @@
   justify-content: space-between;
   gap: 10px;
 }
+
+/* Typed answers: fill in the blank (one line) and written (a few lines) */
+.typed {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.typedIn {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text);
+  padding: 12px 16px;
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.typedIn:focus {
+  outline: 2px solid var(--amber, #f2b33d);
+  outline-offset: 1px;
+}

@@ -1,5 +1,5 @@
 // Run: node --experimental-strip-types supabase/functions/grade-quiz/grade.test.ts
-import { grade, levelFor, topicState, type AnswerRow, type QuestionRow } from './grade.ts';
+import { grade, levelFor, sameAnswer, topicState, type AnswerRow, type QuestionRow } from './grade.ts';
 
 const q = (id: string, answer: number, kind: QuestionRow['kind'] = 'multiple_choice'): QuestionRow => ({
   id, kind, answer_index: kind === 'written' ? null : answer, topic_id: 't', text: `Q${id}`, options: ['a', 'b', 'c'], explanation: null, source_page: 1,
@@ -29,4 +29,5 @@ check('topic weak under 60', topicState(59) === 'weak' && topicState(60) === 'kn
 const wr = grade([q('1', 0), q('w', 0, 'written')], [a('1', 0), a('w', null, { confidence: 'sure' })], new Map([['w', false]]));
 check('written answer judged wrong → 0 points, counted, confident mistake', wr.score === 50 && wr.results[1].correct === false && wr.confidentMistakes.length === 1);
 check('written answer judged right → 1 point', grade([q('w', 0, 'written')], [a('w', null)], new Map([['w', true]])).score === 100);
+check('sameAnswer ignores case, accents, spaces, punctuation', sameAnswer(' Bradikinin. ', 'bradıkinin') && sameAnswer('ACE inhibitörü', 'ace inhibitoru') && !sameAnswer('a', 'b') && !sameAnswer('', ''));
 if (fails) process.exit(1);

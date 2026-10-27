@@ -1,8 +1,8 @@
 // Edge Function build-exam: "Sınav merkezi" (design ScrReview, tab "Sınav"). No AI, free: an exam is put together
-// from the multiple-choice questions the server already wrote for the student's lessons (lesson end, section checks,
+// from the questions (multiple choice, fill in the blank, written) the server already wrote for the student's lessons (lesson end, section checks,
 // exam packs, new questions).
-// POST { action: 'overview' }                                   → { courses: [{ course_id, questions }] }
-// POST { action: 'build', course_ids, count, weak_focus }       → { quiz_id, questions } or 404 { error: 'empty' }
+// POST { action: 'overview' }                                   → { courses: [{ course_id, questions (multiple choice), types: { multiple_choice, fill_blank, written counts } }] }
+// POST { action: 'build', course_ids, count, weak_focus, types? } → { quiz_id, questions } or 404 { error: 'empty' }
 //   One course = "Derse özel sınav", several = "Genel sınav" (quizzes.kind 'combined'). With weak_focus, half of the
 //   questions come from the student's weak topics and earlier wrong answers. The questions are copied into the new
 //   quiz, so grade-quiz grades it like any other; quizzes.options.sources keeps each question's lesson
@@ -27,14 +27,16 @@ function secretKey() {
 /** Quiz kinds whose questions are about the student's own lessons (not placement / style samples). */
 const SOURCE_KINDS = ['section_check', 'lesson_end', 'exam_prep', 'review'];
 
+type Kind = 'multiple_choice' | 'fill_blank' | 'written';
+const KINDS: Kind[] = ['multiple_choice', 'fill_blank', 'written'];
 type Question = {
-  id: string; quiz_id: string; topic_id: string | null; style_tag: string | null; text: string; options: string[];
+  id: string; kind: Kind; model_answer: string | null; quiz_id: string; topic_id: string | null; style_tag: string | null; text: string; options: string[];
   answer_index: number | null; explanation: string | null; source_page: number | null; hints: unknown; molecule: unknown;
 };
 type Source = Question & { course_id: string; material_id: string | null; lang: string };
 
-/** Every multiple-choice question of the student's lessons in these courses (the same text once). */
-async function sourceQuestions(db: SupabaseClient, uid: string, courseIds?: string[]): Promise<Source[]> {
+/** Every question of the student's lessons in these courses, of the chosen types (the same text once). */
+async function sourceQuestions(db: SupabaseClient, uid: string, courseIds?: string[], kinds: Kind[] = KINDS): Promise<Source[]> {
   const { data: mats } = await db.from('materials').select('id, course_id').eq('user_id', uid);
   const courseOf = new Map((mats ?? []).map((m) => [m.id as string, m.course_id as string]));
   const { data: quizzes } = await db.from('quizzes').select('id, course_id, material_id, lang').eq('user_id', uid).in('kind', SOURCE_KINDS);
@@ -46,12 +48,12 @@ async function sourceQuestions(db: SupabaseClient, uid: string, courseIds?: stri
   }
   if (!quizInfo.size) return [];
   const { data: rows } = await db.from('quiz_questions')
-    .select('id, quiz_id, topic_id, style_tag, text, options, answer_index, explanation, source_page, hints, molecule')
-    .in('quiz_id', [...quizInfo.keys()]).eq('kind', 'multiple_choice');
+    .select('id, quiz_id, kind, model_answer, topic_id, style_tag, text, options, answer_index, explanation, source_page, hints, molecule')
+    .in('quiz_id', [...quizInfo.keys()]).in('kind', kinds);
   const seen = new Set<string>();
   const out: Source[] = [];
   for (const r of (rows ?? []) as Question[]) {
-    if (!Array.isArray(r.options) || r.options.length < 2) continue;
+    if (r.kind === 'multiple_choice' ? !Array.isArray(r.options) || r.options.length < 2 : !r.model_answer) continue;
     const key = r.text.trim().toLowerCase();
     if (seen.has(key)) continue;
     seen.add(key);
@@ -108,15 +110,23 @@ Deno.serve(async (req) => {
     if (body.action === 'overview') {
       const qs = await sourceQuestions(db, uid);
       const counts = new Map<string, number>();
-      for (const q of qs) counts.set(q.course_id, (counts.get(q.course_id) ?? 0) + 1);
-      return json({ courses: [...counts].map(([course_id, questions]) => ({ course_id, questions })) });
+      const perKind = new Map<string, Record<string, number>>();
+      for (const q of qs) {
+        counts.set(q.course_id, (counts.get(q.course_id) ?? 0) + (q.kind === 'multiple_choice' ? 1 : 0));
+        const k = perKind.get(q.course_id) ?? {};
+        k[q.kind] = (k[q.kind] ?? 0) + 1;
+        perKind.set(q.course_id, k);
+      }
+      return json({ courses: [...counts].map(([course_id, questions]) => ({ course_id, questions, types: perKind.get(course_id) })) });
     }
 
     if (body.action === 'build') {
       const courseIds = (Array.isArray(body.course_ids) ? body.course_ids : []).map(String);
       if (!courseIds.length) return json({ error: 'courses' }, 400);
       const count = Math.min(Math.max(Number(body.count) || 20, 5), 60);
-      const qs = await sourceQuestions(db, uid, courseIds);
+      // The question types the student chose for this exam (none = multiple choice only, like before).
+      const kinds = (Array.isArray(body.types) ? body.types : []).filter((x: unknown) => (KINDS as string[]).includes(String(x))) as Kind[];
+      const qs = await sourceQuestions(db, uid, courseIds, kinds.length ? kinds : ['multiple_choice']);
       if (!qs.length) return json({ error: 'empty' }, 404);
       const chosen = pick(qs, await weakIds(db, uid, qs), count, body.weak_focus !== false);
       // The language most of the questions are in (the content language of those lessons).
@@ -128,11 +138,11 @@ Deno.serve(async (req) => {
         course_id: courseIds.length === 1 ? courseIds[0] : null,
         kind: 'combined',
         lang,
-        options: { count, weak_focus: body.weak_focus !== false, course_ids: courseIds, source: 'exam_center' },
+        options: { count, weak_focus: body.weak_focus !== false, course_ids: courseIds, source: 'exam_center', types: kinds.length ? kinds : ['multiple_choice'] },
       }).select('id').single();
       if (error) throw error;
       const { data: copies, error: e2 } = await db.from('quiz_questions').insert(chosen.map((q, i) => ({
-        quiz_id: quiz.id, user_id: uid, topic_id: q.topic_id, sort_order: i, kind: 'multiple_choice', style_tag: q.style_tag,
+        quiz_id: quiz.id, user_id: uid, topic_id: q.topic_id, sort_order: i, kind: q.kind, model_answer: q.model_answer, style_tag: q.style_tag,
         text: q.text, options: q.options, answer_index: q.answer_index, explanation: q.explanation, source_page: q.source_page,
         hints: q.hints ?? [], molecule: q.molecule,
       }))).select('id, sort_order');

@@ -6,6 +6,7 @@ import { useToast } from '../components/Toast';
 import Icon from '../components/Icon';
 import Switch from '../components/Switch';
 import { daysUntil, listCourses } from '../api/courses';
+import type { QuestionKind } from '../api/types';
 import { buildExam, EXAM_KINDS, examWeek, readyQuestions, saveExamDays, upcomingExams, type CourseExam, type ExamKindName } from '../api/exam';
 import { useAsync } from '../hooks/useAsync';
 import { useTrial } from '../trial/TrialProvider';
@@ -39,6 +40,12 @@ export default function Exam() {
   const [allPicked, setAllPicked] = useState<string[] | null>(null);
   const [count, setCount] = useState(40);
   const [weakFocus, setWeakFocus] = useState(true);
+  // Which kinds of questions the exam has (the student's choice for this exam).
+  const [kinds, setKinds] = useState<QuestionKind[]>(['multiple_choice']);
+  const toggleKind = (k: QuestionKind) => {
+    if (kinds.includes(k) && kinds.length === 1) return;
+    setKinds(kinds.includes(k) ? kinds.filter((x) => x !== k) : [...kinds, k]);
+  };
   const [building, setBuilding] = useState(false);
   const [weekOpen, setWeekOpen] = useState(false);
 
@@ -59,7 +66,7 @@ export default function Exam() {
     guard('generate', async () => {
       if (building || !chosen.length) return;
       setBuilding(true);
-      const r = await buildExam(chosen, count, weakFocus);
+      const r = await buildExam(chosen, count, weakFocus, kinds);
       setBuilding(false);
       if ('error' in r) return toast(t(r.error === 'empty' ? 'exNone' : 'exFailed'));
       navigate(`/quiz?quiz=${r.quizId}`);
@@ -162,6 +169,16 @@ export default function Exam() {
             {COUNTS.map((n) => (
               <button key={n} role="radio" aria-checked={count === n} className={count === n ? s.segOn : ''} onClick={() => setCount(n)}>
                 {num(n, lang)}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className={s.opt}>
+          <span>{t('pickKinds')}</span>
+          <div role="group" aria-label={t('pickKinds')} className={s.seg}>
+            {(['multiple_choice', 'fill_blank', 'written'] as const).map((k) => (
+              <button key={k} aria-pressed={kinds.includes(k)} className={kinds.includes(k) ? s.segOn : ''} onClick={() => toggleKind(k)}>
+                {t(`kind_${k}`)}
               </button>
             ))}
           </div>

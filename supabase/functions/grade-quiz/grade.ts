@@ -2,7 +2,7 @@
 
 export type QuestionRow = {
   id: string;
-  kind: 'multiple_choice' | 'written';
+  kind: 'multiple_choice' | 'fill_blank' | 'written';
   answer_index: number | null;
   topic_id: string | null;
   text: string;
@@ -39,6 +39,13 @@ export function levelFor(score: number): Level {
   return 'expert';
 }
 
+/** Same short answer after lower-casing (Turkish rules), removing accents / punctuation / extra spaces: a fill-in-the-blank answer that needs no AI. */
+export function sameAnswer(a: string, b: string): boolean {
+  const norm = (x: string) =>
+    x.toLocaleLowerCase('tr').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ı/g, 'i').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+  return norm(a) !== '' && norm(a) === norm(b);
+}
+
 /** Right = 1 point, right with any hint = half a point, wrong / "I don't know" = 0. */
 export function grade(questions: QuestionRow[], answers: AnswerRow[], written: Map<string, boolean> = new Map()): Graded {
   const byId = new Map(questions.map((q) => [q.id, q]));
@@ -50,7 +57,7 @@ export function grade(questions: QuestionRow[], answers: AnswerRow[], written: M
     const q = byId.get(a.question_id);
     if (!q) continue;
     // A written answer counts once the AI has judged it (`written`: question id → right / wrong); until then null.
-    const verdict = q.kind === 'written' ? written.get(q.id) : undefined;
+    const verdict = q.kind !== 'multiple_choice' ? written.get(q.id) : undefined;
     if (verdict === undefined && (q.kind !== 'multiple_choice' || q.answer_index === null)) {
       results.push({ question_id: q.id, correct: null });
       continue;

@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { currentUser } from './auth';
+import type { QuestionKind } from './types';
 
 // "Soru örneklerim": the lecturer's old or class questions per course (table question_samples, files in the private
 // "question-samples" bucket). The server reads them and finds the lecturer's question style (Edge analyze-style →
@@ -115,11 +116,12 @@ export async function setStyleUse(courseId: string, field: 'use_in_quizzes' | 'u
 }
 
 /**
- * A new exam pack for the course (Edge generate-quiz, AI): in the question types the student chose (none = a mix),
+ * A new exam pack for the course (Edge generate-quiz, AI): in the question styles the student chose (none = a mix) and
+ * the question kinds (multiple choice / fill in the blank / written),
  * and like the lecturer's sample questions when the student added some.
  */
-export async function generateExamPack(courseId: string, styles: QuestionType[] = [], count = 10): Promise<{ questions: number } | Fail> {
-  const { data, error } = await supabase.functions.invoke('generate-quiz', { body: { course_id: courseId, count, styles } });
+export async function generateExamPack(courseId: string, styles: QuestionType[] = [], types: QuestionKind[] = ['multiple_choice'], count = 10): Promise<{ questions: number } | Fail> {
+  const { data, error } = await supabase.functions.invoke('generate-quiz', { body: { course_id: courseId, count, styles, types } });
   if (error) return fail(error);
   return { questions: (data as { questions: number }).questions };
 }

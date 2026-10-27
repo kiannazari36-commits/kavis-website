@@ -1,5 +1,6 @@
 // Edge Function generate-quiz: the exam pack of a course ("Sınava özel").
-// POST { course_id, count?, styles? } → { quiz_id, questions }. styles = the question types the student chose
+// POST { course_id, count?, styles?, types? } → { quiz_id, questions }. types = the question formats the student chose:
+// multiple_choice, fill_blank (one blank "____"), written (open question); none = multiple_choice. styles = the question types the student chose
 // ("Hangi tarzda soru istersin?"): case, side_effects, dose, knowledge, structure; none = a mix. From the course's
 // lessons (most important pages first: what the lecturer said will be in the exam, weak topics, central topics),
 // like the student's sample questions when they added some (teacher_styles, "Sınavlarda" on), the AI writes exam
@@ -36,10 +37,12 @@ const SCHEMA = obj({
   questions: {
     type: 'array',
     items: obj({
+      kind: { type: 'string', enum: ['multiple_choice', 'fill_blank', 'written'] },
       style: { type: 'string', enum: ['case', 'side_effects', 'dose', 'knowledge', 'structure'] },
       text: str,
       options: { type: 'array', items: str },
       answer_index: int,
+      model_answer: str,
       explanation: str,
       lesson: int,
       page: int,
@@ -52,12 +55,12 @@ const SCHEMA = obj({
   },
 });
 type Out = {
-  questions: { style: string; text: string; options: string[]; answer_index: number; explanation: string; lesson: number; page: number; hints: string[] }[];
+  questions: { kind: 'multiple_choice' | 'fill_blank' | 'written'; style: string; text: string; options: string[]; answer_index: number; model_answer: string; explanation: string; lesson: number; page: number; hints: string[] }[];
   topics: { title: string; lesson: number; page_from: number; page_to: number; points: string[]; reason: 'teacher' | 'weak' | 'samples' | 'base'; teacher: string }[];
 };
 
 const SYSTEM = `You write an exam-prep pack for one university course in a study app: exam questions and a short exam summary, from the lecturer's own lesson text.
-Rules for questions: only facts from the given pages; prefer what the lecturer said will be in the exam, the student's weak topics and central topics. Exactly 5 options unless the lecturer's style says otherwise, answer_index 0-based, explanation = why the answer is right (1-2 sentences), lesson and page = where the answer is. 3 hints that help the student THINK: 1 = the key concept to recall, 2 = something that rules out some options, 3 = narrows it to about two options; hints never mention pages and never contain the answer. If a lecturer style is given, follow its share of question types and its patterns.
+Question formats (kind): multiple_choice = 5 options, answer_index 0-based, model_answer ""; fill_blank = a sentence from the lesson with ONE key term replaced by "____" in text, options [], answer_index -1, model_answer = the missing term only (1-3 words); written = an open question answered in 1-3 sentences, options [], answer_index -1, model_answer = the key facts a right answer must contain. For fill_blank and written, explanation = a short pointer to where it is in the lesson. Use only the formats asked for. Rules for questions: only facts from the given pages; prefer what the lecturer said will be in the exam, the student's weak topics and central topics. For multiple choice exactly 5 options unless the lecturer's style says otherwise, answer_index 0-based, explanation = why the answer is right (1-2 sentences), lesson and page = where the answer is. 3 hints that help the student THINK: 1 = the key concept to recall, 2 = something that rules out some options (for fill_blank / written: a first letter or related concept), 3 = narrows it to about two options (for fill_blank / written: the nearest hint short of the answer); hints never mention pages and never contain the answer. If a lecturer style is given, follow its share of question types and its patterns.
 topics: 4-6 topics to revise most for this exam, most important first: lesson, pages, 3-4 short points each, reason ("teacher" = the lecturer stressed it or said it will be in the exam, "weak" = the student's weak topic, "samples" = asked often in the lecturer's old questions (only when a lecturer style is given), "base" = central to the course), teacher = the lecturer's words about it if given, else "".
 Write everything in the CONTENT LANGUAGE given.`;
 
@@ -76,6 +79,9 @@ Deno.serve(async (req) => {
   const count = Math.min(20, Math.max(5, Number(body.count) || 10));
   const TYPES = ['case', 'side_effects', 'dose', 'knowledge', 'structure'];
   const wanted = (Array.isArray(body.styles) ? body.styles : []).filter((x: unknown) => TYPES.includes(String(x))) as string[];
+  const KINDS = ['multiple_choice', 'fill_blank', 'written'] as const;
+  const kinds = (Array.isArray(body.types) ? body.types : []).filter((x: unknown) => (KINDS as readonly string[]).includes(String(x))) as (typeof KINDS)[number][];
+  if (!kinds.length) kinds.push('multiple_choice');
   if (typeof courseId !== 'string') return json({ error: 'course_id' }, 400);
   const { data: course } = await db.from('courses').select('user_id, name, language, content_lang_override').eq('id', courseId).maybeSingle();
   if (!course || course.user_id !== uid) return json({ error: 'not found' }, 404);
@@ -143,7 +149,8 @@ Deno.serve(async (req) => {
     : 'Lecturer style unknown: mix short patient cases with knowledge questions.';
   const wantedText = wanted.length ? `\nThe student asked for these question types only: ${wanted.join(', ')} (share them about equally).` : '';
 
-  const user = `Course: ${course.name}\nCONTENT LANGUAGE: ${LANG_NAMES[lang] ?? 'Turkish'}\nWrite ${count} questions.\n\n${styleText}${wantedText}\n\nLessons:\n${lessons.map((l, i) => `L${i + 1}: ${l.title}`).join('\n')}\n\nTopics:\n${topicText || '-'}\n\nWhat the lecturer said in recorded classes:\n${quotes || '-'}\n\nPages:\n${chosen.map((p) => `[L${p.lesson} p.${p.page}] ${p.text}`).join('\n')}`;
+  const kindsText = `\nQuestion formats asked for (kind): ${kinds.join(', ')} — share them about equally.`;
+  const user = `Course: ${course.name}\nCONTENT LANGUAGE: ${LANG_NAMES[lang] ?? 'Turkish'}\nWrite ${count} questions.\n\n${styleText}${wantedText}${kindsText}\n\nLessons:\n${lessons.map((l, i) => `L${i + 1}: ${l.title}`).join('\n')}\n\nTopics:\n${topicText || '-'}\n\nWhat the lecturer said in recorded classes:\n${quotes || '-'}\n\nPages:\n${chosen.map((p) => `[L${p.lesson} p.${p.page}] ${p.text}`).join('\n')}`;
 
   try {
     const client = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')!.trim() });
@@ -166,25 +173,29 @@ Deno.serve(async (req) => {
 
     const { data: quiz, error } = await db
       .from('quizzes')
-      .insert({ user_id: uid, course_id: courseId, kind: 'exam_prep', lang, teacher_style: !!useStyle, options: { count, styles: wanted } })
+      .insert({ user_id: uid, course_id: courseId, kind: 'exam_prep', lang, teacher_style: !!useStyle, options: { count, styles: wanted, types: kinds } })
       .select('id')
       .single();
     if (error) throw error;
-    const questions = out.questions.filter((q) => q.options.length >= 2 && q.answer_index >= 0 && q.answer_index < q.options.length);
+    const questions = out.questions.filter((q) =>
+      kinds.includes(q.kind) &&
+      (q.kind === 'multiple_choice' ? q.options.length >= 2 && q.answer_index >= 0 && q.answer_index < q.options.length : q.model_answer.trim().length > 0 && (q.kind !== 'fill_blank' || q.text.includes('____'))),
+    );
     if (questions.length) {
       const { error: e2 } = await db.from('quiz_questions').insert(
         questions.map((q, i) => ({
           quiz_id: quiz.id,
           user_id: uid,
           sort_order: i,
-          kind: 'multiple_choice',
+          kind: q.kind,
           style_tag: q.style,
           text: q.text,
-          options: q.options,
-          answer_index: q.answer_index,
+          options: q.kind === 'multiple_choice' ? q.options : [],
+          answer_index: q.kind === 'multiple_choice' ? q.answer_index : null,
+          model_answer: q.kind === 'multiple_choice' ? null : q.model_answer.trim(),
           explanation: q.explanation,
           source_page: q.page || null,
-          hints: cleanHints(q.hints, q.options, q.answer_index).slice(0, 3),
+          hints: cleanHints(q.hints, q.kind === 'multiple_choice' ? q.options : [q.model_answer], q.kind === 'multiple_choice' ? q.answer_index : 0).slice(0, 3),
         })),
       );
       if (e2) throw e2;

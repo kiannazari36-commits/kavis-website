@@ -1,7 +1,7 @@
 import { supabase } from './supabase';
 import { currentUser } from './auth';
 import type { Lang } from '../i18n/I18nProvider';
-import type { ExamTopic, QuizQuestion } from './types';
+import type { ExamTopic, QuestionKind, QuizQuestion } from './types';
 import { runPlanner } from './plan';
 
 /** Exam-prep pack of a course: summary topics by importance + a quiz in the lecturer's style (made by the server). */
@@ -10,6 +10,8 @@ export type ExamPack = { quizId: string; lang: Lang; fromSamples: boolean; topic
 
 type QRow = {
   id: string;
+  kind: QuestionKind;
+  model_answer: string | null;
   style_tag: string | null;
   text: string;
   options: string[] | null;
@@ -23,10 +25,13 @@ type QRow = {
 
 const toQuestion = (r: QRow): QuizQuestion => ({
   id: r.id,
+  kind: r.kind,
+  ...(r.model_answer ? { modelAnswer: r.model_answer } : {}),
   style: r.style_tag ?? 'knowledge',
   text: r.text,
   options: r.options ?? [],
-  answer: r.answer_index ?? 0,
+  // Text answers are judged by the server; the app keeps the verdict as 1 (right) / 0 (wrong), so the scoring is the same.
+  answer: r.kind === 'multiple_choice' ? (r.answer_index ?? 0) : 1,
   why: r.explanation ?? '',
   page: r.source_page,
   topic: r.material_topics?.title ?? '',
@@ -44,7 +49,7 @@ async function latestQuiz(kind: 'exam_prep' | 'section_check' | 'lesson_end', fi
   if (!quiz) return null;
   const { data, error: e2 } = await supabase
     .from('quiz_questions')
-    .select('id, style_tag, text, options, answer_index, explanation, source_page, hints, molecule, material_topics(title)')
+    .select('id, kind, model_answer, style_tag, text, options, answer_index, explanation, source_page, hints, molecule, material_topics(title)')
     .eq('quiz_id', quiz.id)
     .order('sort_order')
     .returns<QRow[]>();
@@ -58,7 +63,7 @@ export async function getQuizById(quizId: string) {
   if (!quiz) return null;
   const { data, error } = await supabase
     .from('quiz_questions')
-    .select('id, style_tag, text, options, answer_index, explanation, source_page, hints, molecule, material_topics(title)')
+    .select('id, kind, model_answer, style_tag, text, options, answer_index, explanation, source_page, hints, molecule, material_topics(title)')
     .eq('quiz_id', quizId)
     .order('sort_order')
     .returns<QRow[]>();
@@ -146,7 +151,7 @@ export async function sectionCheckCounter(materialId: string): Promise<{ count: 
   return { count: () => n };
 }
 
-export type GivenAnswer = { questionId: string; chosen: number | null; hints: number; confidence?: 'sure' | 'unsure' | 'guess' };
+export type GivenAnswer = { questionId: string; chosen: number | null; written?: string; hints: number; confidence?: 'sure' | 'unsure' | 'guess' };
 
 /**
  * Saves a finished try, then asks the server to grade it (Edge Function grade-quiz): it sets right/wrong,
@@ -163,7 +168,8 @@ export async function saveAttempt(quizId: string, answers: GivenAnswer[]) {
     attempt_id: id,
     question_id: a.questionId,
     user_id: user.id,
-    chosen_index: a.chosen,
+    chosen_index: a.written === undefined ? a.chosen : null,
+    written_answer: a.written ?? null,
     hints_used: a.hints,
     confidence: a.confidence ?? null,
   }));
@@ -187,4 +193,14 @@ export async function setStudyReminder(time: string) {
   if (!user) return;
   const { error } = await supabase.from('user_settings').update({ notify_time: time }).eq('user_id', user.id);
   if (error) console.error('setStudyReminder', error);
+}
+
+/**
+ * Judges one typed answer right away (Edge grade-quiz with `question_id`): fill in the blank / written questions.
+ * Returns the verdict and a short feedback in the content language, or null when the AI is not available.
+ */
+export async function judgeAnswer(questionId: string, answer: string): Promise<{ correct: boolean; feedback: string } | null> {
+  const { data, error } = await supabase.functions.invoke('grade-quiz', { body: { question_id: questionId, answer } });
+  if (error || typeof (data as { correct?: unknown })?.correct !== 'boolean') return null;
+  return data as { correct: boolean; feedback: string };
 }

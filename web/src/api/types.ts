@@ -89,13 +89,19 @@ export type ExamTopic = {
 };
 
 /** A question (quiz_questions), in the content language. */
+/** The three question types: multiple_choice, fill_blank (one "____" in the text), written (open question). */
+export type QuestionKind = 'multiple_choice' | 'fill_blank' | 'written';
+
 export type QuizQuestion = {
   id: string;
+  kind: QuestionKind;
+  /** fill_blank / written: the right answer, shown after the answer was judged. */
+  modelAnswer?: string;
   /** case | side_effects | dose | knowledge | structure — label in study.json (style_*). */
   style: string;
   text: string;
   options: string[];
-  /** Index of the right option. */
+  /** Index of the right option. For fill_blank / written the app stores the judge's verdict here: 1 = right, 0 = wrong. */
   answer: number;
   why: string;
   page: number | null;

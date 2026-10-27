@@ -5,15 +5,16 @@ import { examLabel, num, pagesShort, percent } from '../i18n/format';
 import { useToast } from '../components/Toast';
 import Icon from '../components/Icon';
 const MolViewer = lazy(() => import('../components/MolViewer'));
-import { addWrongsToPlan, coursesWithPack, getExamPack, getQuizById, getSectionCheck, moreSectionQuestions, saveAttempt, setStudyReminder } from '../api/quiz';
+import { addWrongsToPlan, coursesWithPack, getExamPack, getQuizById, getSectionCheck, judgeAnswer, moreSectionQuestions, saveAttempt, setStudyReminder } from '../api/quiz';
 import { generateExamPack, type QuestionType } from '../api/samples';
 
+const KINDS: QuestionKind[] = ['multiple_choice', 'fill_blank', 'written'];
 const QTYPES: QuestionType[] = ['case', 'side_effects', 'dose', 'knowledge', 'structure'];
 import { daysUntil, listCourses } from '../api/courses';
 import { useAsync } from '../hooks/useAsync';
 import { dirOf } from '../settings/SettingsProvider';
 import type { Lang } from '../i18n/I18nProvider';
-import type { ExamTopic, QuizQuestion } from '../api/types';
+import type { ExamTopic, QuestionKind, QuizQuestion } from '../api/types';
 import { useTrial } from '../trial/TrialProvider';
 import s from './Quiz.module.css';
 
@@ -64,9 +65,24 @@ export default function Quiz() {
   const [making, setMaking] = useState(false);
   // A new exam pack for this course (AI, Edge generate-quiz) in the question types the student picks
   // ("İstediğin tarzda"; none = a mix), like the lecturer's sample questions only when some were added.
+  // Which kinds of questions the exam has (a choice per exam): multiple choice, fill in the blank, written.
+  const [kinds, setKinds] = useState<QuestionKind[]>(['multiple_choice']);
+  const toggleKind = (k: QuestionKind) => {
+    if (kinds.includes(k) && kinds.length === 1) return;
+    setKinds(kinds.includes(k) ? kinds.filter((x) => x !== k) : [...kinds, k]);
+  };
   const [styles, setStyles] = useState<QuestionType[]>([]);
   const toggleStyle = (k: QuestionType) => setStyles(styles.includes(k) ? styles.filter((x) => x !== k) : [...styles, k]);
   const stylePicker = (
+    <>
+    <div className={s.stylePick} role="group" aria-label={t('pickKinds')}>
+      <span>{t('pickKinds')}</span>
+      {KINDS.map((k) => (
+        <button key={k} aria-pressed={kinds.includes(k)} className={kinds.includes(k) ? s.styleOn : ''} onClick={() => toggleKind(k)}>
+          {t(`kind_${k}`)}
+        </button>
+      ))}
+    </div>
     <div className={s.stylePick} role="group" aria-label={t('pickStyle')}>
       <span>{t('pickStyle')}</span>
       <button aria-pressed={!styles.length} className={!styles.length ? s.styleOn : ''} onClick={() => setStyles([])}>
@@ -78,12 +94,13 @@ export default function Quiz() {
         </button>
       ))}
     </div>
+    </>
   );
   const makePack = () =>
     guard('generate', async () => {
       if (!courseId || making) return;
       setMaking(true);
-      const r = await generateExamPack(courseId, styles);
+      const r = await generateExamPack(courseId, styles, kinds);
       setMaking(false);
       if ('error' in r) return toast(t(r.error === 'locked' ? 'trialQFull' : r.error === 'budget' ? 'askBudget' : 'packFailed'));
       toast(t('packMade').replace('{n}', String(r.questions)));
@@ -110,6 +127,10 @@ export default function Quiz() {
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [conf, setConf] = useState<Record<number, Confidence>>({});
   const [hints, setHints] = useState<Record<number, number>>({});
+  // Typed answers (fill in the blank / written), their feedback, and the question being judged.
+  const [texts, setTexts] = useState<Record<number, string>>({});
+  const [fb, setFb] = useState<Record<number, string>>({});
+  const [judging, setJudging] = useState(false);
   const [finds, setFinds] = useState<Record<number, Find>>({});
   const [time, setTime] = useState('09:00');
   const [savedRun, setSavedRun] = useState(-1);
@@ -125,6 +146,8 @@ export default function Quiz() {
     setAnswers({});
     setConf({});
     setHints({});
+    setTexts({});
+    setFb({});
     setFinds({});
     setRun((r) => r + 1);
   }, [courseId, packId]);
@@ -166,6 +189,8 @@ export default function Quiz() {
     setAnswers(only ? a2 : {});
     if (!only) setConf({});
     setHints({});
+    setTexts({});
+    setFb({});
     setFinds({});
     setList(lst);
     setQi(0);
@@ -196,6 +221,8 @@ export default function Quiz() {
     setAnswers({});
     setConf({});
     setHints({});
+    setTexts({});
+    setFb({});
     setFinds({});
     setList(null);
     setQi(0);
@@ -208,7 +235,9 @@ export default function Quiz() {
       setSavedRun(run);
       saveAttempt(
         quizId,
-        qList.filter((k) => answers[k] !== undefined).map((k) => ({ questionId: qs[k].id, chosen: answers[k], hints: hints[k] ?? 0, confidence: conf[k] })),
+        qList
+          .filter((k) => answers[k] !== undefined)
+          .map((k) => ({ questionId: qs[k].id, chosen: answers[k], ...(qs[k].kind !== 'multiple_choice' ? { written: texts[k] ?? '' } : {}), hints: hints[k] ?? 0, confidence: conf[k] })),
       );
     }
     setTab('res');
@@ -222,7 +251,7 @@ export default function Quiz() {
   };
   const nextQ = () => {
     if (sel === undefined) {
-      toast(t('pickFirst'));
+      toast(t(isText ? 'typeFirst' : 'pickFirst'));
       return;
     }
     if (!revealed) {
@@ -235,19 +264,35 @@ export default function Quiz() {
   // First an option (it can still be changed), then "how sure are you?": after that the question is answered —
   // right or wrong is shown with the right answer and why, and nothing can be changed. A wrong one is already
   // explained, so the results show it open.
-  const revealed = sel !== undefined && conf[qIdx] !== undefined;
+  const isText = !!Q && Q.kind !== 'multiple_choice';
+  // A typed answer is judged by the server when it is sent, so it counts as answered right then.
+  const revealed = isText ? sel !== undefined : sel !== undefined && conf[qIdx] !== undefined;
   const pick = (i: number) => {
     if (revealed) return;
     setAnswers({ ...answers, [qIdx]: i });
   };
   const pickSure = (c: Confidence) => {
     if (revealed) return;
-    if (sel === undefined) {
+    if (sel === undefined && !isText) {
       toast(t('pickFirst'));
       return;
     }
     setConf({ ...conf, [qIdx]: c });
-    if (Q && sel !== Q.answer) setFinds({ ...finds, [qIdx]: { mode: 'show', hints: 1, bad: -1 } });
+    if (Q && !isText && sel !== Q.answer) setFinds({ ...finds, [qIdx]: { mode: 'show', hints: 1, bad: -1 } });
+  };
+  // Sends the typed answer: the server judges it against the model answer and gives a short feedback.
+  const sendText = async () => {
+    const text = (texts[qIdx] ?? '').trim();
+    if (!Q || judging || revealed) return;
+    if (!text) return toast(t('typeFirst'));
+    if (conf[qIdx] === undefined) return toast(t('sureFirst'));
+    setJudging(true);
+    const v = await judgeAnswer(Q.id, text);
+    setJudging(false);
+    if (!v) return toast(t('judgeFailed'));
+    setAnswers({ ...answers, [qIdx]: v.correct ? 1 : 0 });
+    setFb({ ...fb, [qIdx]: v.feedback });
+    if (!v.correct) setFinds({ ...finds, [qIdx]: { mode: 'show', hints: 1, bad: -1 } });
   };
   const addHint = () => {
     if (nH >= 3) {
@@ -418,6 +463,36 @@ export default function Quiz() {
               <MolViewer mol={Q.molecule} size="mini" mark={Q.molecule === 'captopril' ? 'thiol' : ''} contentLang={cl} />
             </Suspense>
           )}
+          {isText ? (
+            <div className={s.typed} lang={cl} dir={cdir}>
+              {Q.kind === 'fill_blank' ? (
+                <input
+                  className={s.typedIn}
+                  value={texts[qIdx] ?? ''}
+                  disabled={revealed || judging}
+                  placeholder={t('blankPlaceholder')}
+                  aria-label={t('kind_fill_blank')}
+                  onChange={(e) => setTexts({ ...texts, [qIdx]: e.target.value })}
+                  onKeyDown={(e) => e.key === 'Enter' && sendText()}
+                />
+              ) : (
+                <textarea
+                  className={s.typedIn}
+                  rows={4}
+                  value={texts[qIdx] ?? ''}
+                  disabled={revealed || judging}
+                  placeholder={t('writtenPlaceholder')}
+                  aria-label={t('kind_written')}
+                  onChange={(e) => setTexts({ ...texts, [qIdx]: e.target.value })}
+                />
+              )}
+              {!revealed && (
+                <button className={s.next} disabled={judging} onClick={sendText}>
+                  {judging ? t('judging') : t('sendAnswer')}
+                </button>
+              )}
+            </div>
+          ) : (
           <div role="radiogroup" className={s.options} lang={cl} dir={cdir}>
             {Q.options.map((o, i) => (
               <button
@@ -439,7 +514,8 @@ export default function Quiz() {
               </button>
             ))}
           </div>
-          {sel !== undefined && !revealed && (
+          )}
+          {!isText && sel !== undefined && !revealed && (
             <span className={s.sureNudge} role="status">
               {t('sureNudge')}
             </span>
@@ -447,8 +523,9 @@ export default function Quiz() {
           {revealed && (
             <div className={s.verdict} role="status" lang={cl} dir={cdir}>
               <span className={sel === Q.answer ? s.solved : s.wrongNow}>
-                {sel === Q.answer ? t('rightNow') : `${t('wrongNow')} ${LETTERS[Q.answer]}) ${Q.options[Q.answer]}`}
+                {sel === Q.answer ? t('rightNow') : `${t('wrongNow')} ${isText ? (Q.modelAnswer ?? '') : `${LETTERS[Q.answer]}) ${Q.options[Q.answer]}`}`}
               </span>
+              {isText && fb[qIdx] && <span className={s.whyText}>{fb[qIdx]}</span>}
               {Q.why && (
                 <span className={s.whyText}>
                   <b>{t('why')}</b> {Q.why}
@@ -548,6 +625,7 @@ export default function Quiz() {
                 q={qs[k]}
                 cl={cl}
                 your={answers[k]}
+                typed={texts[k]}
                 sure={conf[k] === 'sure'}
                 find={finds[k] ?? { mode: 'choose', hints: 1, bad: -1 }}
                 setFind={(v) => setFinds({ ...finds, [k]: v })}
@@ -564,6 +642,7 @@ function Wrong({
   q,
   cl,
   your,
+  typed,
   sure,
   find,
   setFind,
@@ -571,13 +650,15 @@ function Wrong({
   q: QuizQuestion;
   cl: Lang;
   your?: number;
+  typed?: string;
   sure: boolean;
   find: Find;
   setFind: (f: Find) => void;
 }) {
   const { t } = useI18n();
-  const reveal = find.mode === 'show' || find.mode === 'solved';
+  const reveal = find.mode === 'show' || find.mode === 'solved' || q.kind !== 'multiple_choice';
   const opt = (i: number) => `${LETTERS[i]}) ${q.options[i]}`;
+  const text = q.kind !== 'multiple_choice';
 
   return (
     <div className={s.wrong}>
@@ -586,17 +667,17 @@ function Wrong({
       </span>
       <div className={s.wrongTags}>
         <span className={s.bad}>
-          {t('yourAnswer')} {your === undefined ? t('emptyAns') : opt(your)}
+          {t('yourAnswer')} {text ? typed || t('emptyAns') : your === undefined ? t('emptyAns') : opt(your)}
         </span>
         {reveal && (
           <span className={s.good}>
-            {t('correct')} {opt(q.answer)}
+            {t('correct')} {text ? q.modelAnswer : opt(q.answer)}
           </span>
         )}
         {sure && <span className={s.warn}>{t('wasSure')}</span>}
       </div>
 
-      {find.mode === 'choose' && (
+      {find.mode === 'choose' && !text && (
         <div className={s.wrongActs}>
           <button className={s.ghost} onClick={() => setFind({ mode: 'find', hints: 1, bad: -1 })}>
             <Icon name="bulb" size={15} />
@@ -608,7 +689,7 @@ function Wrong({
         </div>
       )}
 
-      {find.mode === 'find' && (
+      {find.mode === 'find' && !text && (
         <div className={s.findBox} lang={cl} dir={dirOf(cl)}>
           {q.hints.slice(0, find.hints).map((h, i) => (
             <div key={i} className={s.hint}>

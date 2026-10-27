@@ -1,6 +1,7 @@
 import { supabase } from './supabase';
 import { currentUser } from './auth';
 import { isoToday } from './courses';
+import type { QuestionKind } from './types';
 
 // "Sınav merkezi" (design ScrReview "exam" / "examAll" / "setWeek"): the exam week from the courses' exam days, and
 // exams put together by the server from the questions already written for the student's lessons (Edge Function
@@ -70,10 +71,10 @@ export async function readyQuestions(): Promise<Record<string, number>> {
   return Object.fromEntries((data.courses as { course_id: string; questions: number }[]).map((c) => [c.course_id, c.questions]));
 }
 
-/** Puts an exam together: one course or several, `count` questions, half on weak topics when `weakFocus`. */
-export async function buildExam(courseIds: string[], count: number, weakFocus: boolean): Promise<{ quizId: string } | { error: 'empty' | 'failed' }> {
+/** Puts an exam together: one course or several, `count` questions of the chosen kinds, half on weak topics when `weakFocus`. */
+export async function buildExam(courseIds: string[], count: number, weakFocus: boolean, types: QuestionKind[] = ['multiple_choice']): Promise<{ quizId: string } | { error: 'empty' | 'failed' }> {
   const { data, error } = await supabase.functions.invoke('build-exam', {
-    body: { action: 'build', course_ids: courseIds, count, weak_focus: weakFocus },
+    body: { action: 'build', course_ids: courseIds, count, weak_focus: weakFocus, types },
   });
   if (error) {
     const status = (error as { context?: { status?: number } }).context?.status;
