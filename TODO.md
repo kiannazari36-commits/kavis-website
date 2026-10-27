@@ -119,7 +119,7 @@ Everything that is not finished yet. Updated after every step.
 ## Web app — not built yet
 - [x] Upload screen for PDF (`/upload`, design ScrUpload) — [ ] photo and audio recording still "coming soon"
 - [x] Onboarding after sign-up on the web (25 Oct 2026, `/welcome`, until `profiles.onboarding_done`): language, school + department + class year, weekly plan (days, hours), this term's courses (suggestions per department in `web/src/api/onboarding.ts` + typed). "Ders ekle" on My Courses makes a course. Later: fill `course_catalog` per department and year; the 3 intro cards of the phone design are not on the web
-- [x] Help page `/help` with AI help chat (27 Oct 2026, local): Edge `help-chat` (Claude Haiku, public help text, nothing saved, 30 questions/day) + "Bize e-posta yaz" button (reply time in `SUPPORT_REPLY_HOURS`, `web/src/config.ts`). No live human chat (decided). [ ] Deploy `help-chat` to the live project (ask Kian first)
+- [x] Help page `/help` with AI help chat (27 Oct 2026, local): Edge `help-chat` (Claude Haiku, public help text, nothing saved, 30 questions/day) + "Bize e-posta yaz" button (reply time in `SUPPORT_REPLY_HOURS`, `web/src/config.ts`). No live human chat (decided). Deployed to the live project 27 Oct 2026 (verify_jwt true, reachable, 401 without login)
 - [ ] Live audio lesson, "Let me explain" (teach-back), solve a question photo
 - [ ] Pen / handwritten notes on the PDF, full PDF page view
 - [ ] Lesson summary / review pages ("Bugünün tekrarı", exam center)
