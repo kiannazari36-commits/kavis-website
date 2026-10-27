@@ -1,5 +1,5 @@
-import Foundation
 import Supabase
+import UIKit
 
 /// A course (or "all my courses") the assistant can answer about: the student's own courses, like the web.
 struct AssistantTopic: Identifiable, Hashable {
@@ -35,6 +35,16 @@ struct ChatMessage: Identifiable, Equatable {
     var links: [Link] = []
     var acts: [Act] = []
     var outsidePdf = false
+    /// The question photo of "Soruyu çözdür" (only on this phone; the server keeps the text).
+    var photo: Data? = nil
+}
+
+/// A past conversation ("Geçmiş"), newest first.
+struct ChatThread: Identifiable, Equatable {
+    let id: String
+    let courseId: String?
+    let title: String
+    let updatedAt: Date?
 }
 
 enum AssistantAPI {
@@ -59,19 +69,68 @@ enum AssistantAPI {
         var q = supabase.from("assistant_threads").select("id")
         q = courseId.map { q.eq("course_id", value: $0) } ?? q.is("course_id", value: nil)
         guard let thread = (try? await q.order("updated_at", ascending: false).limit(1).execute().value as [Thread])?.first else { return (nil, []) }
+        return (thread.id, await messages(threadId: thread.id))
+    }
+
+    /// The messages of one conversation, oldest first.
+    static func messages(threadId: String) async -> [ChatMessage] {
         struct Src: Decodable { let material_id: String?; let page: Int?; let url: String?; let title: String?; let act: String? }
         struct Row: Decodable { let role: String; let content: String; let sources: [Src]?; let outside_pdf: Bool? }
         let rows: [Row] = (try? await supabase.from("assistant_messages").select("role, content, sources, outside_pdf")
-            .eq("thread_id", value: thread.id).order("created_at").execute().value) ?? []
+            .eq("thread_id", value: threadId).order("created_at").execute().value) ?? []
+        if CoursesAPI.lastCourses.isEmpty { _ = await CoursesAPI.listCourses() }
         let lessons = Dictionary(CoursesAPI.lastCourses.flatMap { c in c.pdfs.map { ($0.id, $0.title.tr) } }, uniquingKeysWith: { a, _ in a })
-        return (thread.id, rows.map { r in
+        return rows.map { r in
             let s = r.sources ?? []
-            return ChatMessage(role: ChatMessage.Role(rawValue: r.role) ?? .assistant, text: r.content,
+            return ChatMessage(role: ChatMessage.Role(rawValue: r.role) ?? .assistant, text: r.role == "assistant" ? visible(r.content) : r.content,
                                sources: s.compactMap { x in x.material_id.map { ChatMessage.Source(lesson: lessons[$0] ?? "", page: x.page) } },
                                links: s.compactMap { x in x.url.map { ChatMessage.Link(url: $0, title: x.title ?? $0) } },
                                acts: s.compactMap { x in x.act.map { ChatMessage.Act(kind: $0, title: x.title ?? "") } },
                                outsidePdf: r.outside_pdf ?? false)
-        })
+        }
+    }
+
+    /// The student's conversations, newest first ("Geçmiş" on the assistant's start screen).
+    static func threads() async -> [ChatThread] {
+        struct Row: Decodable { let id: String; let course_id: String?; let title: String?; let updated_at: String }
+        let rows: [Row] = (try? await supabase.from("assistant_threads").select("id, course_id, title, updated_at")
+            .order("updated_at", ascending: false).limit(50).execute().value) ?? []
+        let f = ISO8601DateFormatter()
+        f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let plain = ISO8601DateFormatter()
+        return rows.map { ChatThread(id: $0.id, courseId: $0.course_id, title: $0.title ?? "", updatedAt: f.date(from: $0.updated_at) ?? plain.date(from: $0.updated_at)) }
+    }
+
+    /// A photo for "Soruyu çözdür": upright JPEG, longest side 1600 px (same as the web).
+    static func photoForAssistant(_ image: UIImage) -> Data? {
+        let scale = min(1, 1600 / max(image.size.width, image.size.height))
+        let size = CGSize(width: (image.size.width * scale).rounded(), height: (image.size.height * scale).rounded())
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        return UIGraphicsImageRenderer(size: size, format: format).image { _ in image.draw(in: CGRect(origin: .zero, size: size)) }
+            .jpegData(compressionQuality: 0.85)
+    }
+
+    /// "Soru fotoğrafı": the photo of a lecturer's question becomes one of the course's question samples
+    /// (`question_samples` + the private "question-samples" bucket, same as the web's "Soru örneklerim").
+    static func addQuestionSample(_ jpeg: Data, courseId: String, title: String) async -> Bool {
+        guard let user = supabase.auth.currentUser else { return false }
+        let uid = user.id.uuidString.lowercased()
+        let path = "\(uid)/\(courseId)/\(UUID().uuidString.lowercased()).jpg"
+        let bucket = supabase.storage.from("question-samples")
+        do {
+            try await bucket.upload(path, data: jpeg, options: FileOptions(contentType: "image/jpeg"))
+        } catch {
+            return false
+        }
+        struct Row: Encodable { let user_id, course_id, kind, title, storage_path: String }
+        do {
+            try await supabase.from("question_samples").insert(Row(user_id: uid, course_id: courseId, kind: "photo", title: title, storage_path: path)).execute()
+            return true
+        } catch {
+            _ = try? await bucket.remove(paths: [path])
+            return false
+        }
     }
 
     enum AskError: Error { case locked, budget, declined, other }
@@ -84,13 +143,15 @@ enum AssistantAPI {
         } else if let tail = t.range(of: #"\n?S(O(U(R(C(E(S)?)?)?)?)?)?$"#, options: .regularExpression) {
             t.removeSubrange(tail)
         }
+        // "[E1]" are the server's excerpt numbers, not for the student (the sources show the pages).
+        t = t.replacingOccurrences(of: #" ?\[E\d+(, ?E\d+)*\]"#, with: "", options: .regularExpression)
         return t.replacingOccurrences(of: "**", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     /// Asks the assistant (Edge Function "assistant", the same as the web): it searches the student's lessons,
     /// answers only from them (or also from general knowledge and the web in "AI + research"), saves the chat and
     /// counts the trial question. The answer arrives piece by piece (`onText` gets the text so far).
-    static func ask(_ question: String, courseId: String?, threadId: String?, mode: SourceMode, lang: Lang,
+    static func ask(_ question: String, courseId: String?, threadId: String?, mode: SourceMode, lang: Lang, photo: Data? = nil,
                     onText: @escaping @MainActor (String) -> Void) async -> Result<(threadId: String, message: ChatMessage), AskError> {
         guard let token = try? await supabase.auth.session.accessToken else { return .failure(.other) }
         var req = URLRequest(url: Config.supabaseURL.appendingPathComponent("functions/v1/assistant"))
@@ -99,7 +160,8 @@ enum AssistantAPI {
         req.setValue(Config.supabaseKey, forHTTPHeaderField: "apikey")
         req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         let body: [String: Any?] = ["question": question, "course_id": courseId, "material_id": nil, "thread_id": threadId,
-                                    "mode": mode.rawValue, "lang": lang.rawValue, "page_from": nil, "page_to": nil, "image": nil]
+                                    "mode": mode.rawValue, "lang": lang.rawValue, "page_from": nil, "page_to": nil,
+                                    "image": photo.map { ["media_type": "image/jpeg", "data": $0.base64EncodedString()] }]
         req.httpBody = try? JSONSerialization.data(withJSONObject: body.mapValues { $0 ?? NSNull() })
 
         struct Event: Decodable {

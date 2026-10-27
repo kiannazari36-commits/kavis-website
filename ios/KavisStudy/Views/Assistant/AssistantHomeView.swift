@@ -1,3 +1,5 @@
+import AVFoundation
+import PhotosUI
 import SwiftUI
 
 /// Design: design/NewAssistant.dc.html. Start of the assistant: choose the course, the source ("only my PDFs" or
@@ -17,6 +19,15 @@ struct AssistantHomeView: View {
     @State private var panel: Panel = .none
     @State private var draft = ""
     @FocusState private var focused: Bool
+    /// What a chosen photo is for: "Soruyu çözdür" or a lecturer's question for "Soru örneklerim".
+    private enum PhotoUse { case solve, sample }
+    @State private var photoUse: PhotoUse?
+    @State private var askSource = false
+    @State private var showCamera = false
+    @State private var showLibrary = false
+    @State private var libraryItem: PhotosPickerItem?
+    @State private var historyOpen = MockFlag.value("assistantPanel") == "history"
+    @State private var history: [ChatThread]?
 
     private var lang: Lang { prefs.lang }
     private func d(_ turkish: String) -> String { prefs.d(turkish) }
@@ -45,6 +56,116 @@ struct AssistantHomeView: View {
             topics = await AssistantAPI.listTopics()
             if MockFlag.value("assistantPanel") == "menu" { panel = .menu }
         }
+        .confirmationDialog(d(photoUse == .sample ? "Soru fotoğrafı" : "Soruyu çözdür"), isPresented: $askSource, titleVisibility: .visible) {
+            Button(d("Fotoğraf çek")) { openCamera() }
+            Button(d("Galeriden seç")) { showLibrary = true }
+        }
+        .photosPicker(isPresented: $showLibrary, selection: $libraryItem, matching: .images)
+        .onChange(of: libraryItem) { _, item in
+            guard let item else { return }
+            libraryItem = nil
+            Task {
+                if let data = try? await item.loadTransferable(type: Data.self), let image = UIImage(data: data) { usePhoto(image) } else { toast.show(prefs.t("solveBadFile")) }
+            }
+        }
+        .fullScreenCover(isPresented: $showCamera) { CameraPicker { usePhoto($0) }.ignoresSafeArea() }
+        .sheet(isPresented: $historyOpen) { historySheet.presentationDetents([.medium, .large]) }
+    }
+
+    // MARK: Photos ("Soruyu çözdür", "Soru fotoğrafı")
+
+    /// "Soruyu çözdür" needs a chosen course (or all courses); a question sample needs one real course.
+    private func pickPhoto(_ use: PhotoUse) {
+        guard let topic, use == .solve || topic.courseId != nil else {
+            panel = .menu
+            return toast.show(d("Önce sorunun hangi dersle ilgili olduğunu seç"))
+        }
+        let open = { photoUse = use; askSource = true }
+        if use == .solve { trial.perform(.question, run: open) } else { open() }
+    }
+
+    private func openCamera() {
+        guard UIImagePickerController.isSourceTypeAvailable(.camera) else { showLibrary = true; return }
+        Task {
+            if AVCaptureDevice.authorizationStatus(for: .video) == .notDetermined { _ = await AVCaptureDevice.requestAccess(for: .video) }
+            if AVCaptureDevice.authorizationStatus(for: .video) == .authorized { showCamera = true } else { showLibrary = true }
+        }
+    }
+
+    private func usePhoto(_ image: UIImage) {
+        guard let topic, let jpeg = AssistantAPI.photoForAssistant(image) else { return toast.show(prefs.t("solveBadFile")) }
+        switch photoUse {
+        case .solve:
+            let question = draft.trimmingCharacters(in: .whitespacesAndNewlines)
+            draft = ""
+            app.go(.assistantChat(AssistantChatTarget(topicId: topic.id, question: question, ai: ai, photo: jpeg)))
+        case .sample:
+            guard let course = topic.courseId else { return }
+            Task {
+                let f = DateFormatter()
+                f.locale = lang.locale
+                f.setLocalizedDateFormatFromTemplate("dMMM HHmm")
+                let ok = await AssistantAPI.addQuestionSample(jpeg, courseId: course, title: "\(d("Soru fotoğrafı")) · \(f.string(from: Date()))")
+                toast.show(prefs.t(ok ? "smp_added" : "smp_failed"))
+            }
+        case nil: break
+        }
+        photoUse = nil
+    }
+
+    // MARK: "Geçmiş"
+
+    private var historySheet: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(d("Geçmiş")).font(KFont.ui(20, .bold, lang: lang)).foregroundStyle(KPhone.text).accessibilityAddTraits(.isHeader)
+            if let history {
+                if history.isEmpty {
+                    Text(prefs.t("noThread")).font(KFont.ui(14, lang: lang)).foregroundStyle(KPhone.text2)
+                }
+                ScrollView {
+                    VStack(spacing: 8) {
+                        ForEach(history) { th in
+                            let course = topics.first { $0.courseId != nil && $0.courseId == th.courseId } ?? topics.first { $0.isAll }
+                            Button {
+                                historyOpen = false
+                                app.go(.assistantChat(AssistantChatTarget(topicId: course?.id ?? "all", ai: ai, threadId: th.id)))
+                            } label: {
+                                HStack(spacing: 12) {
+                                    KIcon(name: .chat, size: 18, width: 1.7).foregroundStyle(KPhone.text)
+                                        .frame(width: 36, height: 36).background(KPhone.seg, in: Circle())
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(th.title.isEmpty ? prefs.t("solveLabel") : th.title).font(KFont.ui(14, .semibold, lang: lang)).foregroundStyle(KPhone.text).lineLimit(2)
+                                        Text([course?.name[lang] ?? "", th.updatedAt.map(dayText) ?? ""].filter { !$0.isEmpty }.joined(separator: " · "))
+                                            .font(KFont.ui(12, lang: lang)).foregroundStyle(KPhone.text2).lineLimit(1)
+                                    }
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    KIcon(name: .chevron, size: 16, width: 1.8, flipsInRTL: true).foregroundStyle(KPhone.text3)
+                                }
+                                .padding(.horizontal, 14).padding(.vertical, 10)
+                                .background(KPhone.card, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                                .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(KPhone.line, lineWidth: 1))
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+            } else {
+                SwiftUI.ProgressView().frame(maxWidth: .infinity)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.pair(0xF4EFE6, 0x15120F).ignoresSafeArea())
+        .environment(\.layoutDirection, lang.isRTL ? .rightToLeft : .leftToRight)
+        .task { history = await AssistantAPI.threads() }
+    }
+
+    private func dayText(_ date: Date) -> String {
+        let f = DateFormatter()
+        f.locale = lang.locale
+        f.setLocalizedDateFormatFromTemplate("dMMM")
+        return Format.num(f.string(from: date), lang)
     }
 
     private var background: some View {
@@ -67,7 +188,7 @@ struct AssistantHomeView: View {
             .background(KPhone.card, in: Capsule())
             .overlay(Capsule().stroke(KPhone.line, lineWidth: 1))
             Spacer()
-            roundButton(.menuLines, label: d("Geçmiş"), flips: false) { soon() }
+            roundButton(.menuLines, label: d("Geçmiş"), flips: false) { history = nil; historyOpen = true }
         }
         .padding(.horizontal, 20).padding(.top, KLayout.top(54, minimum: 6) + 6)
     }
@@ -324,12 +445,16 @@ struct AssistantHomeView: View {
             ForEach(Array(items.enumerated()), id: \.offset) { _, item in
                 Button {
                     panel = .none
-                    // A PDF goes through the upload screen into the chosen course; photos, recordings and
-                    // "Soruyu çözdür" come with the camera and microphone work (see TODO.md).
-                    guard item.0 == .pdf else { return soon() }
-                    trial.perform(.pdf) {
-                        app.uploadCourseId = topic?.courseId
-                        app.go(.upload(.pdf))
+                    switch item.0 {
+                    case .pdf:
+                        // A PDF goes through the upload screen into the chosen course.
+                        trial.perform(.pdf) {
+                            app.uploadCourseId = topic?.courseId
+                            app.go(.upload(.pdf))
+                        }
+                    case .photo: pickPhoto(.sample)
+                    case .audio: app.go(.upload(.audio))
+                    case nil: pickPhoto(.solve)
                     }
                 } label: {
                     HStack(spacing: 12) {

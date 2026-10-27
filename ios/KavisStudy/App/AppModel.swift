@@ -8,6 +8,10 @@ struct AssistantChatTarget: Equatable {
     var topicId: String
     var question: String = ""
     var ai = false
+    /// "Soruyu çözdür": a JPEG of the question, solved step by step.
+    var photo: Data? = nil
+    /// A conversation from "Geçmiş" to continue (else the course's latest one).
+    var threadId: String? = nil
 }
 
 /// What the student uploads (the three start buttons on home).

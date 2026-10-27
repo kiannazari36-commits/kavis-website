@@ -43,10 +43,12 @@ struct AssistantChatView: View {
         .task {
             guard !started else { return }
             started = true
-            let thread = await AssistantAPI.latestThread(courseId: isAll ? nil : target.topicId)
+            // A conversation from "Geçmiş" goes on where it stopped; otherwise the course's latest one.
+            let thread = if let id = target.threadId { (id: Optional(id), messages: await AssistantAPI.messages(threadId: id)) }
+                else { await AssistantAPI.latestThread(courseId: isAll ? nil : target.topicId) }
             threadId = thread.id
             messages = [ChatMessage(role: .assistant, text: welcome)] + thread.messages
-            if !target.question.isEmpty { await ask(target.question) }
+            if !target.question.isEmpty || target.photo != nil { await ask(target.question, photo: target.photo) }
         }
         .onDisappear { speaker.stop() }
     }
@@ -197,7 +199,14 @@ struct AssistantChatView: View {
         return VStack(alignment: mine ? .trailing : .leading, spacing: 6) {
             Group {
                 if mine {
-                    Text(message.text).font(KFont.ui(14, lang: lang)).kLineHeight(1.55, size: 14, lang: lang)
+                    VStack(alignment: .trailing, spacing: 8) {
+                        if let data = message.photo, let image = UIImage(data: data) {
+                            Image(uiImage: image).resizable().scaledToFit().frame(maxWidth: 220, maxHeight: 260)
+                                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                .accessibilityLabel(prefs.t("solveLabel"))
+                        }
+                        Text(message.text).font(KFont.ui(14, lang: lang)).kLineHeight(1.55, size: 14, lang: lang)
+                    }
                 } else {
                     AnswerText(text: message.text, lang: lang)
                 }
@@ -324,12 +333,13 @@ struct AssistantChatView: View {
     }
 
     /// Adds the question and the answer while the server writes it; the server saves both and counts the question.
-    private func ask(_ question: String) async {
-        messages.append(ChatMessage(role: .user, text: question))
+    /// With a photo ("Soruyu çözdür") the server solves the question in it step by step.
+    private func ask(_ question: String, photo: Data? = nil) async {
+        messages.append(ChatMessage(role: .user, text: question.isEmpty ? prefs.t("solveLabel") : question, photo: photo))
         waiting = true
         streaming = ""
         let result = await AssistantAPI.ask(question, courseId: isAll ? nil : target.topicId, threadId: threadId,
-                                            mode: target.ai ? .ai : .pdf, lang: lang) { soFar in streaming = soFar }
+                                            mode: target.ai ? .ai : .pdf, lang: lang, photo: photo) { soFar in streaming = soFar }
         waiting = false
         streaming = nil
         switch result {
