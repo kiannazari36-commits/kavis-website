@@ -13,6 +13,7 @@ struct ReaderView: View {
     @Environment(\.colorScheme) private var scheme
     /// iPad (design NewIPad, reader): one wide header, section tabs, a 620 pt reading column and the assistant panel.
     @Environment(\.padRail) private var wide
+    @Environment(TrialModel.self) private var trial
 
     let docID: String
 
@@ -37,6 +38,7 @@ struct ReaderView: View {
     /// iPad: the assistant panel on the right (open by default, as in the design).
     @State private var panelOpen = true
     @State private var showPdf = false
+    @State private var shareOpen = false
 
     private static let fontSizes = [18, 20, 22, 24]
 
@@ -81,6 +83,7 @@ struct ReaderView: View {
             }
             if let lesson, let id = openTerm, let term = lesson.terms[id] { termPopover(term) }
             if let text = translateText, let lesson, let doc { translationSheet(text, lesson: lesson, doc: doc) }
+            if shareOpen, let lesson { ShareDialog(materialId: docID, lessonTitle: lesson.title, onClose: { shareOpen = false }) }
         }
         .fullScreenCover(isPresented: $showPdf) {
             PdfFullView(materialId: docID, startPage: atPage ?? lesson?.lastPage ?? 1, onAsk: { showPdf = false; withAnimation { panelOpen = true } }, onClose: { showPdf = false })
@@ -94,6 +97,8 @@ struct ReaderView: View {
             let recs = await RecordingAPI.recordingsOf(docID)
             recordingId = (recs.first { $0.status == "ready" } ?? recs.first)?.id
             marks = await RecordingAPI.lectureMarks(docID)
+            // So the share button knows at once whether the student has Premium.
+            if !trial.status.premium { await trial.refresh() }
         }
         .task(id: paused) {
             // The study timer: counts every second while the student is reading.
@@ -117,6 +122,7 @@ struct ReaderView: View {
         }
         .animation(.easeOut(duration: 0.2), value: openTerm)
         .animation(.easeOut(duration: 0.2), value: translateText)
+        .animation(.easeOut(duration: 0.2), value: shareOpen)
     }
 
     // MARK: Progress
@@ -231,6 +237,7 @@ struct ReaderView: View {
                     KIcon(name: .mic, size: 19, width: 1.8)
                 }
             }
+            if lesson != nil { shareButton }
             circleButton(label: t("textSize")) { cycleFontSize() } content: {
                 Text("Aa").font(KFont.reading(17, .semibold, lang: .en))
             }
@@ -297,11 +304,25 @@ struct ReaderView: View {
                     KIcon(name: .mic, size: 19, width: 1.8)
                 }
             }
+            if lesson != nil { shareButton }
             circleButton(label: t("textSize")) { cycleFontSize() } content: {
                 Text("Aa").font(KFont.reading(16, .bold, lang: .en))
             }
         }
         .padding(.horizontal, 16).padding(.top, KLayout.top(54, minimum: 6) + 6)
+    }
+
+    /// Share what the app made of this lesson (design NewIPad "sh.open"); Premium only, else the paywall says why.
+    private var shareButton: some View {
+        circleButton(label: t("share")) {
+            Task {
+                // The saved status can be old (Premium bought on another device): ask the server before saying no.
+                if trial.lockReason(for: .share) != nil { await trial.refresh() }
+                if let key = trial.lockReason(for: .share) { app.go(.paywall(key)) } else { shareOpen = true }
+            }
+        } content: {
+            KIcon(name: .share, size: 19, width: 1.8)
+        }
     }
 
     private func circleButton<Content: View>(label: String, action: @escaping () -> Void, @ViewBuilder content: () -> Content) -> some View {

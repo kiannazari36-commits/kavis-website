@@ -12,6 +12,21 @@ enum ShareAPI {
         case failed
     }
 
+    /// What can be shared: only what the app made, never the teacher's PDF (CLAUDE.md).
+    enum Item: String, CaseIterable, Encodable { case summary, cards, quiz }
+
+    /// A new share link for a lesson (Edge Function `create-share`, Premium only); nil when it could not be made.
+    static func create(materialId: String, items: [Item]) async -> URL? {
+        struct Body: Encodable { let material_id: String; let items: [Item] }
+        struct Answer: Decodable { let slug: String }
+        do {
+            let a: Answer = try await supabase.functions.invoke("create-share", options: FunctionInvokeOptions(body: Body(material_id: materialId, items: items)))
+            return URL(string: "\(Config.webBaseURL)/s/\(a.slug)")
+        } catch {
+            return nil
+        }
+    }
+
     /// The slug of a share link, or nil when the address is something else.
     static func slug(in url: URL) -> String? {
         let parts = url.pathComponents.filter { $0 != "/" }
