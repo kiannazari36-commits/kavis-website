@@ -105,7 +105,7 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Prices come from the App Store (never hardcoded) — web shows "Price in the App Store"
 - [ ] Android payment later (Google Play or a web payment) — no Android app yet. The web tells Android users (Premium page, share link page, Google Play button) to use the web with the free trial
 - [ ] Android app (later); then update the Google Play button and the Android notes
-- [ ] Trial limits enforced on the server (3 days, 2 PDFs, 60 questions, 100 pages per PDF). The web reads the status from `access_status()` and locks Premium-only actions; the counters are raised by the server (Edge Functions, not built yet)
+- [x] Trial limits enforced on the server (checked 27 Oct 2026): new PDF / photo needs `can_i('upload')` (RLS on `materials`, 2 lessons, 3 days), assistant `ask` (60), `generate` (quiz, summary, translate, more questions, style, and since today exam, timetable, sections, recording), 100 pages in `process-material`; counters are raised by triggers and Edge Functions
 - [ ] Check the 100-page limit when a PDF is uploaded (upload screen not built yet)
 
 ## Devices
@@ -128,7 +128,7 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Pen / handwritten notes on the PDF, full PDF page view
 - [x] Lesson summary page (`/summary`) was already there. "Bugünün tekrarı" (`/review?id=…`, design NewRevise, 27 Oct 2026): Home "Tekrara başla" opens it (no longer marks it done at once): 1 summary (the lesson's weak topics / saved review summary with the reason), 2 cards (Biliyorum / Tekrar sor → `rateCard`), 3 questions (≤3 of the lesson's, saved as a quiz try, graded by `grade-quiz`), result; "Bitir" sets `review_sessions` done, "Sonra devam et" leaves it open. Checked locally with test1 in tr / fa (RTL)
 - [x] Exam center (`/exam`, design ScrReview "exam" / "examAll" / "setWeek", 27 Oct 2026): home tile "Sınav merkezi" opens it; exam week card from `course_exams`, "Değiştir" dialog (kind + each course's day, writes `course_exams` like the iPhone), course exam or general exam, 20 / 40 / 60 questions, weak-topic focus; Edge `build-exam` puts it together, the quiz page plays it (`/quiz?quiz=<id>`, graded by `grade-quiz`). Checked locally with test1 (built from 14 ready questions, graded 57%)
-- [ ] `build-exam` does not check Premium / trial on the server (the web asks `guard('generate')`, the iPhone does not): decide if the server should refuse after the trial (needs a live Edge Function change)
+- [ ] `build-exam`, `import-timetable`, `group-sections`, `process-recording` now refuse after the trial (403 `locked`, `can_use('generate')`): **written and tried locally 27 Oct 2026, NOT deployed to the live project yet** (needs Kian's OK; deploy these 4 functions, JWT setting unchanged)
 - [ ] The nightly `daily-planner` that makes the `review_sessions` row is still missing (the review box only shows when a row exists, e.g. from the example data)
 - [ ] Turn on the App Store button when the iPhone app is live: put the link in `APP_STORE_URL` (`web/src/config.ts`). Until then every store button shows "Yakında" and cannot be clicked (landing, Premium page, share link page)
 - [ ] Same for Google Play (`PLAY_STORE_URL`) and the Mac App Store (`MAC_STORE_URL`) when those apps exist; then update the line under the store buttons (`storesSoon`)
@@ -242,7 +242,7 @@ Technical notes and decisions:
 - [ ] Real accounts and a real server (login, email verification, data per account) — replace `web/src/api/` mock functions
 - [ ] PDF processing and AI (reading page, questions, cards, summaries, assistant) with a cost limit per user and per month
 - [ ] Trial limits on the server (3 days, 2 PDFs, 60 assistant questions, 100 pages per PDF)
-- [ ] 2-device limit on the server (the web counts as one)
+- [x] 2-device limit on the server (RPC `register_device`, the web counts as one)
 - [ ] KVKK texts and privacy policy (and terms of use): drafts written and linked from sign-up, the site and the paywall; a lawyer must still check them and the `[PLACEHOLDERS]` must be filled; remove the "draft" banner then
 - [ ] Remove sample data: sample answers, the `?lang=` test switch, the sample lesson in the reader, and the example rows of `supabase/seed.sql`
 - [ ] Then remove noindex: `web/public/robots.txt`, the robots meta tag in `web/index.html` and the `X-Robots-Tag` header in `web/vercel.json`

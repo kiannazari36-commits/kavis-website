@@ -121,6 +121,9 @@ Deno.serve(async (req) => {
     }
 
     if (body.action === 'build') {
+      // After the trial only Premium may build a new exam (CLAUDE.md).
+      const { data: allowed } = await db.rpc('can_use', { feature: 'generate', uid });
+      if (!allowed) return json({ error: 'locked' }, 403);
       const courseIds = (Array.isArray(body.course_ids) ? body.course_ids : []).map(String);
       if (!courseIds.length) return json({ error: 'courses' }, 400);
       const count = Math.min(Math.max(Number(body.count) || 20, 5), 60);

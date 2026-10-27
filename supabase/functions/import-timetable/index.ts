@@ -59,6 +59,10 @@ Deno.serve(async (req) => {
   if (!who?.user) return json({ error: 'not signed in' }, 401);
   const uid = who.user.id;
 
+  // After the trial only Premium may start new AI work (CLAUDE.md); the web's lock is only for show.
+  const { data: allowed } = await db.rpc('can_use', { feature: 'generate', uid });
+  if (!allowed) return json({ error: 'locked' }, 403);
+
   const body = await req.json().catch(() => ({}));
   const file = body.file;
   if (!file || !TYPES.includes(file.media_type) || typeof file.data !== 'string' || file.data.length > 14_000_000) return json({ error: 'file' }, 400);
