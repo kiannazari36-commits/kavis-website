@@ -58,7 +58,15 @@
   "ofAllAsk": "Cihazdaki tüm dersler silinsin mi?",
   "ofAllBody": "Dersler hesabında kalır; internetle açınca yeniden kaydedilir. İnternetsizken yazıp henüz gönderilmemiş el yazısı notlar da silinir.",
   "ofRemoved": "Cihazdan silindi",
-  "ofLesson": "Ders"
+  "ofLesson": "Ders",
+  "trialSheetT": "Deneme süresinde {n} ders hakkın doldu",
+  "trialSheetD": "Yüklediğin {n} dersle çalışmaya devam edebilirsin. Yeni ders eklemek için Premium'a geç.",
+  "trialLater": "Şimdilik değil",
+  "fairT": "Bu ay {n} dersi geçtin",
+  "fairD": "Yeni dersin yine hazırlanıyor. Adil kullanım nedeniyle yeni abonelik ayın başlayana kadar biraz daha uzun sürebilir. {date} tarihinde hız normale döner.",
+  "fairOk": "Tamam",
+  "fairWhat": "Adil kullanım nedir?",
+  "fairInfo": "Premium'da ayda {n} ders ve 1.000 soruya kadar en hızlı hizmeti alırsın. Sonrasında da kullanmaya devam edersin; yalnızca biraz daha yavaş olur. Sayaç, Premium'a geçtiğin gün her ay yeniden başlar."
  },
  "en": {
   "remindTitle": "Study time",
@@ -119,7 +127,15 @@
   "ofAllAsk": "Delete all lessons on this device?",
   "ofAllBody": "The lessons stay in your account and are saved again when you open them online. Handwritten notes written offline and not yet sent are deleted too.",
   "ofRemoved": "Removed from this device",
-  "ofLesson": "Lesson"
+  "ofLesson": "Lesson",
+  "trialSheetT": "You've used your {n} trial lessons",
+  "trialSheetD": "You can keep studying with the {n} lessons you uploaded. Go Premium to add new lessons.",
+  "trialLater": "Not now",
+  "fairT": "You've passed {n} lessons this month",
+  "fairD": "Your new lesson is still being prepared. Under fair use, it may take a little longer until your next subscription month starts. Full speed returns on {date}.",
+  "fairOk": "OK",
+  "fairWhat": "What is fair use?",
+  "fairInfo": "Premium gives you the fastest service for up to {n} lessons and 1,000 questions a month. After that you can keep going; it is just a little slower. The count restarts every month on the day you joined Premium."
  },
  "fa": {
   "remindTitle": "وقت مطالعه",
@@ -180,7 +196,15 @@
   "ofAllAsk": "همه درس‌های روی دستگاه حذف شوند؟",
   "ofAllBody": "درس‌ها در حسابت می‌مانند و با باز کردن آنلاین دوباره ذخیره می‌شوند. یادداشت‌های دست‌نویسی که آفلاین نوشته‌ای و هنوز ارسال نشده‌اند هم حذف می‌شوند.",
   "ofRemoved": "از دستگاه حذف شد",
-  "ofLesson": "درس"
+  "ofLesson": "درس",
+  "trialSheetT": "سهم {n} درس دورهٔ آزمایشی‌ات تمام شد",
+  "trialSheetD": "می‌توانی با {n} درسی که بارگذاری کردی ادامه بدهی. برای افزودن درس جدید پریمیوم بگیر.",
+  "trialLater": "فعلاً نه",
+  "fairT": "این ماه از {n} درس گذشتی",
+  "fairD": "درس جدیدت همچنان آماده می‌شود. به دلیل استفادهٔ منصفانه، تا شروع ماه بعدی اشتراکت ممکن است کمی بیشتر طول بکشد. از {date} سرعت به حالت عادی برمی‌گردد.",
+  "fairOk": "باشه",
+  "fairWhat": "استفادهٔ منصفانه چیست؟",
+  "fairInfo": "با پریمیوم تا {n} درس و ۱۰۰۰ سؤال در ماه سریع‌ترین سرویس را داری. بعد از آن هم ادامه می‌دهی؛ فقط کمی کندتر است. شمارش هر ماه در روزی که پریمیوم گرفتی از نو شروع می‌شود."
  },
  "ar": {
   "remindTitle": "وقت الدراسة",
@@ -241,6 +265,14 @@
   "ofAllAsk": "حذف كل الدروس على الجهاز؟",
   "ofAllBody": "تبقى الدروس في حسابك وتُحفظ مجددًا عند فتحها عبر الإنترنت. تُحذف أيضًا الملاحظات المكتوبة بخط اليد دون اتصال ولم تُرسل بعد.",
   "ofRemoved": "تم الحذف من الجهاز",
-  "ofLesson": "درس"
+  "ofLesson": "درس",
+  "trialSheetT": "استنفدت درسَي الفترة التجريبية",
+  "trialSheetD": "يمكنك مواصلة الدراسة بالدرسين اللذين رفعتهما. لإضافة دروس جديدة اشترك في بريميوم.",
+  "trialLater": "ليس الآن",
+  "fairT": "تجاوزت {n} درسًا هذا الشهر",
+  "fairD": "ما زال درسك الجديد قيد التجهيز. بسبب الاستخدام العادل قد يستغرق وقتًا أطول قليلًا حتى يبدأ شهر اشتراكك التالي. تعود السرعة إلى طبيعتها في {date}.",
+  "fairOk": "حسنًا",
+  "fairWhat": "ما هو الاستخدام العادل؟",
+  "fairInfo": "مع بريميوم تحصل على أسرع خدمة حتى {n} درسًا و1000 سؤال شهريًا. بعدها تستمر في الاستخدام لكن أبطأ قليلًا. يبدأ العدّ من جديد كل شهر في يوم اشتراكك في بريميوم."
  }
 }

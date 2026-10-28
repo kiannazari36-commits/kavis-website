@@ -14,6 +14,7 @@ struct UploadView: View {
     @Environment(AppModel.self) private var app
     @Environment(ToastCenter.self) private var toast
     @Environment(TrialModel.self) private var trial
+    @State private var fairOpen = false
 
     enum Mode { case pick, photo, audio, processing, error, recording }
     enum RecStep { case listen, match, ready, failed }
@@ -85,7 +86,20 @@ struct UploadView: View {
             }
             .padColumn()
             if longSheet { longPdfSheet }
+            if let key = trial.lockedKey {
+                if key == "trialPdfFull" {
+                    TrialLimitSheet(onLater: { trial.lockedKey = nil }, onPremium: { trial.lockedKey = nil; app.go(.paywall(nil)) })
+                } else {
+                    TrialLockedDialog(messageKey: key, ended: trial.status.ended, onCancel: { trial.lockedKey = nil },
+                                      onPremium: { trial.lockedKey = nil; app.go(.paywall(nil)) })
+                }
+            }
+            if fairOpen {
+                FairUseSheet(used: trial.status.fairUsed, resetsOn: trial.status.fairResetsOn) { fairOpen = false }
+            }
         }
+        .animation(.easeOut(duration: 0.2), value: trial.lockedKey)
+        .animation(.easeOut(duration: 0.2), value: fairOpen)
         // One picker for both kinds: SwiftUI shows only one `.fileImporter` per view.
         .fileImporter(isPresented: Binding(get: { showPDFImporter || showAudioImporter }, set: { if !$0 { showPDFImporter = false; showAudioImporter = false } }),
                       allowedContentTypes: showAudioImporter ? [.audio] : [.pdf]) { result in
@@ -98,6 +112,9 @@ struct UploadView: View {
             // "Bu derse PDF ekle" in a course folder chooses that course.
             if let id = app.uploadCourseId { courseId = id; app.uploadCourseId = nil }
             courses = await CoursesAPI.listCourses()
+            // Test switch: `-kavis.sheet trial | fair` opens the limit sheets (try them without a real upload).
+            if MockFlag.value("sheet") == "trial" { trial.lockedKey = "trialPdfFull" }
+            if MockFlag.value("sheet") == "fair" { fairOpen = true }
         }
     }
 
@@ -864,7 +881,8 @@ struct UploadView: View {
             } catch {
                 let reason = error as? UploadAPI.Failure ?? .network
                 if first == nil {
-                    toast.show(reason == .trial ? prefs.t("trialPdfFull") : reason == .tooBig
+                    if reason == .trial { trial.lockedKey = "trialPdfFull"; return }
+                    toast.show(reason == .tooBig
                         ? prefs.t("up_tooBig", ["mb": Format.num(Int((Double(file.count) / 1_048_576).rounded()), lang)]) : prefs.t("up_failed"))
                     return
                 }
@@ -877,6 +895,7 @@ struct UploadView: View {
         lessonId = first
         mode = .processing
         await trial.refresh()
+        if trial.status.fairSlow { fairOpen = true }
     }
 
     /// "Metin tanıma ile dene": a lesson the server found scanned is read again with text recognition; a PDF that is
