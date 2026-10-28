@@ -75,7 +75,7 @@ Deno.serve(async (req) => {
   // After the trial a new one cannot be made: the saved one stays.
   if (!allowed) return saved ? json({ points: savedContent?.points ?? [], lang: saved.lang }) : json({ error: 'locked' }, 403);
   const month = new Date().toISOString().slice(0, 7) + '-01';
-  const { data: use } = await db.from('usage_monthly').select('input_tokens, output_tokens, cost_usd, generations').eq('user_id', uid).eq('month', month).maybeSingle();
+  const { data: use } = await db.from('usage_monthly').select('input_tokens, output_tokens, cost_usd, generations, cache_read_tokens, cache_write_tokens').eq('user_id', uid).eq('month', month).maybeSingle();
   if (use && Number(use.cost_usd) >= MONTHLY_BUDGET_USD) return json({ error: 'budget' }, 429);
 
   const [{ data: chunks }, { data: quiz }] = await Promise.all([
@@ -97,7 +97,11 @@ Deno.serve(async (req) => {
       fallbacks: 'default',
       output_config: { effort: 'low', format: { type: 'json_schema', schema: SCHEMA } },
       system: SYSTEM,
-      messages: [{ role: 'user', content: `Lesson: ${m.title}\nCONTENT LANGUAGE: ${LANG_NAMES[lang] ?? 'Turkish'}\n\nThe student's weak topics: ${weak.length ? '\n' + weak.map((t) => `- ${t.title} (p.${t.page_from ?? '?'}-${t.page_to ?? t.page_from ?? '?'})`).join('\n') : 'none'}\n\nPages:\n${text}` }],
+      // The lesson text comes first and is cached (a new summary after the weak list changed reads it from the cache).
+      messages: [{ role: 'user', content: [
+        { type: 'text', text: `Lesson: ${m.title}\n\nPages:\n${text}`, cache_control: { type: 'ephemeral' } },
+        { type: 'text', text: `CONTENT LANGUAGE: ${LANG_NAMES[lang] ?? 'Turkish'}\n\nThe student's weak topics: ${weak.length ? '\n' + weak.map((t) => `- ${t.title} (p.${t.page_from ?? '?'}-${t.page_to ?? t.page_from ?? '?'})`).join('\n') : 'none'}` },
+      ] }],
     };
     // deno-lint-ignore no-explicit-any
     const res = await client.beta.messages.create(params as any);
@@ -106,12 +110,16 @@ Deno.serve(async (req) => {
     if (res.stop_reason === 'max_tokens' || !block || block.type !== 'text') return json({ error: 'ai' }, 502);
     const points = (JSON.parse(block.text) as { points: Point[] }).points.slice(0, 10);
     await db.from('summaries').insert({ user_id: uid, course_id: m.course_id, material_id: materialId, lang, kind: 'lesson', content: { points, weakKey } });
+    const cw = res.usage.cache_creation_input_tokens ?? 0;
+    const cr = res.usage.cache_read_input_tokens ?? 0;
     await db.from('usage_monthly').upsert({
       user_id: uid,
       month,
-      input_tokens: Number(use?.input_tokens ?? 0) + res.usage.input_tokens,
+      input_tokens: Number(use?.input_tokens ?? 0) + res.usage.input_tokens + cw + cr,
       output_tokens: Number(use?.output_tokens ?? 0) + res.usage.output_tokens,
-      cost_usd: Number(use?.cost_usd ?? 0) + costUsd(res.usage.input_tokens, res.usage.output_tokens),
+      cost_usd: Number(use?.cost_usd ?? 0) + costUsd(res.usage.input_tokens, res.usage.output_tokens, cw, cr),
+      cache_write_tokens: Number(use?.cache_write_tokens ?? 0) + cw,
+      cache_read_tokens: Number(use?.cache_read_tokens ?? 0) + cr,
       generations: Number(use?.generations ?? 0) + 1,
     });
     return json({ points, lang });

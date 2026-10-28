@@ -71,7 +71,7 @@ Deno.serve(async (req) => {
   const { data: allowed } = await db.rpc('can_use', { feature: 'generate', uid });
   if (!allowed) return json({ error: 'locked' }, 403);
   const month = new Date().toISOString().slice(0, 7) + '-01';
-  const { data: use } = await db.from('usage_monthly').select('input_tokens, output_tokens, cost_usd, generations').eq('user_id', uid).eq('month', month).maybeSingle();
+  const { data: use } = await db.from('usage_monthly').select('input_tokens, output_tokens, cost_usd, generations, cache_read_tokens, cache_write_tokens').eq('user_id', uid).eq('month', month).maybeSingle();
   if (use && Number(use.cost_usd) >= MONTHLY_BUDGET_USD) return json({ error: 'budget' }, 429);
 
   type Topic = { id: string; title: string; page_from: number | null; page_to: number | null; topic_progress: { state: string; mastery: number | null }[] };
@@ -92,7 +92,9 @@ Deno.serve(async (req) => {
     text += line;
   }
   const lang = quiz.lang ?? 'tr';
-  const user = `Lesson: ${m.title}\nCONTENT LANGUAGE: ${LANG_NAMES[lang] ?? 'Turkish'}\nWrite ${count} new questions about pages ${from}-${to}.\n${weakHere.length ? `The student is weak at these topics: put most of the questions (at least ${Math.min(count, 2)}) on them:\n${weakHere.map((t) => `- ${t.title} (p.${t.page_from}-${t.page_to ?? t.page_from})`).join('\n')}\n` : ''}\nQuestions the student already had (do not repeat):\n${(old ?? []).map((q) => '- ' + String(q.text).split('\n\n')[0]).join('\n') || '-'}\n\nPages:\n${text}`;
+  const user = `Lesson: ${m.title}\nCONTENT LANGUAGE: ${LANG_NAMES[lang] ?? 'Turkish'}\nWrite ${count} new questions about pages ${from}-${to}.\n${weakHere.length ? `The student is weak at these topics: put most of the questions (at least ${Math.min(count, 2)}) on them:\n${weakHere.map((t) => `- ${t.title} (p.${t.page_from}-${t.page_to ?? t.page_from})`).join('\n')}\n` : ''}\nQuestions the student already had (do not repeat):\n${(old ?? []).map((q) => '- ' + String(q.text).split('\n\n')[0]).join('\n') || '-'}`;
+  // The lesson pages come first and are cached: the next "more questions" for the same section reads them from the cache.
+  const pagesText = `Pages:\n${text}`;
 
   try {
     const client = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')!.trim() });
@@ -103,7 +105,7 @@ Deno.serve(async (req) => {
       fallbacks: 'default',
       output_config: { effort: 'low', format: { type: 'json_schema', schema: SCHEMA } },
       system: SYSTEM,
-      messages: [{ role: 'user', content: user }],
+      messages: [{ role: 'user', content: [{ type: 'text', text: pagesText, cache_control: { type: 'ephemeral' } }, { type: 'text', text: user }] }],
     };
     // deno-lint-ignore no-explicit-any
     const res = await client.beta.messages.create(params as any);
@@ -132,12 +134,16 @@ Deno.serve(async (req) => {
       }));
     const { data: saved, error } = await db.from('quiz_questions').insert(questions).select('id');
     if (error) throw error;
+    const cw = res.usage.cache_creation_input_tokens ?? 0;
+    const cr = res.usage.cache_read_input_tokens ?? 0;
     await db.from('usage_monthly').upsert({
       user_id: uid,
       month,
-      input_tokens: Number(use?.input_tokens ?? 0) + res.usage.input_tokens,
+      input_tokens: Number(use?.input_tokens ?? 0) + res.usage.input_tokens + cw + cr,
       output_tokens: Number(use?.output_tokens ?? 0) + res.usage.output_tokens,
-      cost_usd: Number(use?.cost_usd ?? 0) + costUsd(res.usage.input_tokens, res.usage.output_tokens),
+      cost_usd: Number(use?.cost_usd ?? 0) + costUsd(res.usage.input_tokens, res.usage.output_tokens, cw, cr),
+      cache_write_tokens: Number(use?.cache_write_tokens ?? 0) + cw,
+      cache_read_tokens: Number(use?.cache_read_tokens ?? 0) + cr,
       generations: Number(use?.generations ?? 0) + 1,
     });
     return json({ quiz_id: quiz.id, ids: (saved ?? []).map((r) => r.id) });

@@ -217,7 +217,8 @@ Deno.serve(async (req) => {
     output_config: { effort: 'low' },
     tools: [...TOOLS, ...(mode === 'ai' ? [{ type: 'web_search_20260209', name: 'web_search', max_uses: WEB_SEARCHES }] : [])],
     system: [
-      { type: 'text', text: system(mode, lang, !!whole, !!image) },
+      // Tools + instructions are the same for every question (per mode/language): cached once they pass the minimum length.
+      { type: 'text', text: system(mode, lang, !!whole, !!image), ...(whole ? {} : { cache_control: { type: 'ephemeral' } }) },
       // The lesson text is the same for every question on this lesson, so it is cached.
       ...(whole ? [{ type: 'text', text: `The lesson "${lessonTitle}", whole text:\n\n${whole}`, cache_control: { type: 'ephemeral' } }] : []),
     ],
@@ -426,7 +427,7 @@ async function count(db: SupabaseClient, uid: string, month: string, u: { input:
     const { data: t } = await db.from('trial_usage').select('assistant_questions').eq('user_id', uid).maybeSingle();
     await db.from('trial_usage').upsert({ user_id: uid, assistant_questions: (t?.assistant_questions ?? 0) + 1 });
   }
-  const { data: m } = await db.from('usage_monthly').select('input_tokens, output_tokens, cost_usd, assistant_questions').eq('user_id', uid).eq('month', month).maybeSingle();
+  const { data: m } = await db.from('usage_monthly').select('input_tokens, output_tokens, cost_usd, assistant_questions, cache_read_tokens, cache_write_tokens').eq('user_id', uid).eq('month', month).maybeSingle();
   await db.from('usage_monthly').upsert({
     user_id: uid,
     month,
@@ -434,5 +435,7 @@ async function count(db: SupabaseClient, uid: string, month: string, u: { input:
     output_tokens: Number(m?.output_tokens ?? 0) + u.output,
     cost_usd: Number(m?.cost_usd ?? 0) + costUsd(u.input, u.output, u.cacheWrite, u.cacheRead) + u.searches * 0.01,
     assistant_questions: Number(m?.assistant_questions ?? 0) + 1,
+    cache_write_tokens: Number(m?.cache_write_tokens ?? 0) + u.cacheWrite,
+    cache_read_tokens: Number(m?.cache_read_tokens ?? 0) + u.cacheRead,
   });
 }

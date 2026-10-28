@@ -89,7 +89,7 @@ Deno.serve(async (req) => {
   const { data: allowed } = await db.rpc('can_use', { feature: 'generate', uid });
   if (!allowed) return json({ error: 'locked' }, 403);
   const month = new Date().toISOString().slice(0, 7) + '-01';
-  const { data: use } = await db.from('usage_monthly').select('input_tokens, output_tokens, cost_usd, generations').eq('user_id', uid).eq('month', month).maybeSingle();
+  const { data: use } = await db.from('usage_monthly').select('input_tokens, output_tokens, cost_usd, generations, cache_read_tokens, cache_write_tokens').eq('user_id', uid).eq('month', month).maybeSingle();
   if (use && Number(use.cost_usd) >= MONTHLY_BUDGET_USD) return json({ error: 'budget' }, 429);
 
   const { data: lessons } = await db.from('materials').select('id, title, language').eq('course_id', courseId).eq('status', 'ready').in('kind', ['pdf', 'photo']).order('created_at');
@@ -150,7 +150,9 @@ Deno.serve(async (req) => {
   const wantedText = wanted.length ? `\nThe student asked for these question types only: ${wanted.join(', ')} (share them about equally).` : '';
 
   const kindsText = `\nQuestion formats asked for (kind): ${kinds.join(', ')} — share them about equally.`;
-  const user = `Course: ${course.name}\nCONTENT LANGUAGE: ${LANG_NAMES[lang] ?? 'Turkish'}\nWrite ${count} questions.\n\n${styleText}${wantedText}${kindsText}\n\nLessons:\n${lessons.map((l, i) => `L${i + 1}: ${l.title}`).join('\n')}\n\nTopics:\n${topicText || '-'}\n\nWhat the lecturer said in recorded classes:\n${quotes || '-'}\n\nPages:\n${chosen.map((p) => `[L${p.lesson} p.${p.page}] ${p.text}`).join('\n')}`;
+  const user = `Course: ${course.name}\nCONTENT LANGUAGE: ${LANG_NAMES[lang] ?? 'Turkish'}\nWrite ${count} questions.\n\n${styleText}${wantedText}${kindsText}\n\nLessons:\n${lessons.map((l, i) => `L${i + 1}: ${l.title}`).join('\n')}\n\nTopics:\n${topicText || '-'}\n\nWhat the lecturer said in recorded classes:\n${quotes || '-'}`;
+  // The chosen pages come first and are cached: a second quiz on the same pages reads them from the cache.
+  const pagesText = `Pages:\n${chosen.map((p) => `[L${p.lesson} p.${p.page}] ${p.text}`).join('\n')}`;
 
   try {
     const client = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')!.trim() });
@@ -161,7 +163,7 @@ Deno.serve(async (req) => {
       fallbacks: 'default',
       output_config: { effort: 'medium', format: { type: 'json_schema', schema: SCHEMA } },
       system: SYSTEM,
-      messages: [{ role: 'user', content: user }],
+      messages: [{ role: 'user', content: [{ type: 'text', text: pagesText, cache_control: { type: 'ephemeral' } }, { type: 'text', text: user }] }],
     };
     // deno-lint-ignore no-explicit-any
     const res = await client.beta.messages.create(params as any);
@@ -215,12 +217,16 @@ Deno.serve(async (req) => {
       return { title: t.title, kind: kindOf[t.reason], reason, pageFrom: t.page_from, pageTo: t.page_to, points: t.points.slice(0, 4), ...(t.teacher ? { teacher: t.teacher } : {}) };
     });
     await db.from('summaries').insert({ user_id: uid, course_id: courseId, lang, kind: 'exam_prep', content: { topics: summaryTopics } });
+    const cw = res.usage.cache_creation_input_tokens ?? 0;
+    const cr = res.usage.cache_read_input_tokens ?? 0;
     await db.from('usage_monthly').upsert({
       user_id: uid,
       month,
-      input_tokens: Number(use?.input_tokens ?? 0) + res.usage.input_tokens,
+      input_tokens: Number(use?.input_tokens ?? 0) + res.usage.input_tokens + cw + cr,
       output_tokens: Number(use?.output_tokens ?? 0) + res.usage.output_tokens,
-      cost_usd: Number(use?.cost_usd ?? 0) + costUsd(res.usage.input_tokens, res.usage.output_tokens),
+      cost_usd: Number(use?.cost_usd ?? 0) + costUsd(res.usage.input_tokens, res.usage.output_tokens, cw, cr),
+      cache_write_tokens: Number(use?.cache_write_tokens ?? 0) + cw,
+      cache_read_tokens: Number(use?.cache_read_tokens ?? 0) + cr,
       generations: Number(use?.generations ?? 0) + 1,
     });
     return json({ quiz_id: quiz.id, questions: questions.length });
