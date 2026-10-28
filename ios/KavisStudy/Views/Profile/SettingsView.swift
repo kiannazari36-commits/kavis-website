@@ -643,6 +643,7 @@ struct SettingsView: View {
                     KIcon(name: .lock, size: 16, width: 1.8).foregroundStyle(C.ok).padding(.top, 1)
                     Text(d("PDF'lerin yalnızca uygulamanın içinde, şifreli saklanır. Telefonunun dosyalarında görünmez, başka uygulamalarla paylaşılamaz."))
                         .font(KFont.ui(12, lang: lang)).kLineHeight(1.45, size: 12, lang: lang).foregroundStyle(C.text2)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 Button { manageOffline = true } label: {
                     Text(d("Cihazdaki dersleri yönet"))
@@ -662,6 +663,7 @@ struct SettingsView: View {
         card {
             Text(prefs.t("devHint"))
                 .font(KFont.ui(12, lang: lang)).kLineHeight(1.4, size: 12, lang: lang).foregroundStyle(C.text3)
+                .fixedSize(horizontal: false, vertical: true)
                 .padding(.vertical, 12)
             ForEach(devices) { device in
                 divider
