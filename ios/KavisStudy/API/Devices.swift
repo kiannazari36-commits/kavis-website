@@ -26,8 +26,44 @@ enum DevicesAPI {
         return id
     }
 
-    /// Name of this phone, e.g. "iPhone" or "iPad".
-    static func thisDeviceName() -> String { UIDevice.current.model }
+    /// Readable name of this device, e.g. "iPhone 15 Pro · iOS 18" (the name the user gave it is not available
+    /// without an entitlement, so the model name comes from the hardware identifier).
+    static func thisDeviceName() -> String {
+        let info = ProcessInfo.processInfo
+        // In the simulator the real model is in this variable.
+        let id = info.environment["SIMULATOR_MODEL_IDENTIFIER"] ?? hardwareIdentifier()
+        let fallback = UIDevice.current.userInterfaceIdiom == .pad ? "iPad" : "iPhone"
+        return "\(modelName(for: id, fallback: fallback)) · iOS \(info.operatingSystemVersion.majorVersion)"
+    }
+
+    private static func hardwareIdentifier() -> String {
+        var sys = utsname()
+        uname(&sys)
+        return withUnsafePointer(to: &sys.machine) { $0.withMemoryRebound(to: CChar.self, capacity: 1) { String(cString: $0) } }
+    }
+
+    /// "iPhone16,1" → "iPhone 15 Pro". An unknown (newer) identifier gives the fallback, "iPhone" or "iPad".
+    static func modelName(for identifier: String, fallback: String) -> String {
+        let names: [String: String] = [
+            "iPhone12,1": "iPhone 11", "iPhone12,3": "iPhone 11 Pro", "iPhone12,5": "iPhone 11 Pro Max", "iPhone12,8": "iPhone SE (2nd gen)",
+            "iPhone13,1": "iPhone 12 mini", "iPhone13,2": "iPhone 12", "iPhone13,3": "iPhone 12 Pro", "iPhone13,4": "iPhone 12 Pro Max",
+            "iPhone14,2": "iPhone 13 Pro", "iPhone14,3": "iPhone 13 Pro Max", "iPhone14,4": "iPhone 13 mini", "iPhone14,5": "iPhone 13",
+            "iPhone14,6": "iPhone SE (3rd gen)", "iPhone14,7": "iPhone 14", "iPhone14,8": "iPhone 14 Plus",
+            "iPhone15,2": "iPhone 14 Pro", "iPhone15,3": "iPhone 14 Pro Max", "iPhone15,4": "iPhone 15", "iPhone15,5": "iPhone 15 Plus",
+            "iPhone16,1": "iPhone 15 Pro", "iPhone16,2": "iPhone 15 Pro Max",
+            "iPhone17,1": "iPhone 16 Pro", "iPhone17,2": "iPhone 16 Pro Max", "iPhone17,3": "iPhone 16", "iPhone17,4": "iPhone 16 Plus", "iPhone17,5": "iPhone 16e",
+            "iPhone18,1": "iPhone 17 Pro", "iPhone18,2": "iPhone 17 Pro Max", "iPhone18,3": "iPhone 17", "iPhone18,4": "iPhone Air",
+            "iPad13,4": "iPad Pro 11", "iPad13,5": "iPad Pro 11", "iPad13,6": "iPad Pro 11", "iPad13,7": "iPad Pro 11",
+            "iPad13,8": "iPad Pro 12.9", "iPad13,9": "iPad Pro 12.9", "iPad13,10": "iPad Pro 12.9", "iPad13,11": "iPad Pro 12.9",
+            "iPad14,3": "iPad Pro 11", "iPad14,4": "iPad Pro 11", "iPad14,5": "iPad Pro 12.9", "iPad14,6": "iPad Pro 12.9",
+            "iPad16,3": "iPad Pro 11", "iPad16,4": "iPad Pro 11", "iPad16,5": "iPad Pro 13", "iPad16,6": "iPad Pro 13",
+            "iPad13,1": "iPad Air (4th gen)", "iPad13,2": "iPad Air (4th gen)", "iPad13,16": "iPad Air (5th gen)", "iPad13,17": "iPad Air (5th gen)",
+            "iPad14,8": "iPad Air 11", "iPad14,9": "iPad Air 11", "iPad14,10": "iPad Air 13", "iPad14,11": "iPad Air 13",
+            "iPad14,1": "iPad mini (6th gen)", "iPad14,2": "iPad mini (6th gen)", "iPad16,1": "iPad mini (A17 Pro)", "iPad16,2": "iPad mini (A17 Pro)",
+            "iPad12,1": "iPad (9th gen)", "iPad12,2": "iPad (9th gen)", "iPad13,18": "iPad (10th gen)", "iPad13,19": "iPad (10th gen)",
+        ]
+        return names[identifier] ?? fallback
+    }
 
     private static var kind: DeviceKind { UIDevice.current.userInterfaceIdiom == .pad ? .ipad : .iphone }
 

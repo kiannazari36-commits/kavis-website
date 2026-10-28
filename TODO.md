@@ -126,7 +126,7 @@ Everything that is not finished yet. Updated after every step.
 - [x] Device limit on the server (max 2 devices, the web counts as one); real device list and sign-out on the web
 - [x] Signing a device out ends its login at once (27 Oct 2026, live): RPC `sign_out_device` deletes that device's auth session (saved by `register_device`) and every API request of an ended login gets 401 `session_ended` (pre-request check). No Edge Function needed. Checked locally: the other login got 401 at once, refresh refused, the own login kept working
 - [x] Web: on a 401 `session_ended` answer, log out and show the login screen (done 27 Oct 2026, `web/src/api/supabase.ts`; tried locally: session deleted → login screen). iOS done 27 Oct 2026 (a URLProtocol in `API/Supabase.swift` sees the answer; tried locally: session deleted → next tap goes to the welcome screen)
-- [ ] Real device names from the apps (the web name comes from the browser)
+- [x] Real device names from the apps (the web name comes from the browser): iOS sends e.g. "iPhone 15 Pro · iOS 18" / "iPad Pro 13 · iOS 18" from the hardware identifier (`DevicesAPI.modelName`, 3 unit tests); an unknown newer model shows "iPhone" / "iPad" until the table gets it. A device registered earlier keeps its old name until the next sign-in re-registers it.
 
 ## Sharing
 - [x] Big PDFs no longer stop half way (26 Oct 2026): process-material reads the page texts once and keeps them as `pages.json` next to the PDF (migration `materials_page_texts` allows JSON in the bucket); a lesson still "processing" after 5 minutes goes on from its last batch when the app opens (`resumeStuckLessons` in the web)

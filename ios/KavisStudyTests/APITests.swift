@@ -147,3 +147,18 @@ final class OnboardingRulesTests: XCTestCase {
         XCTAssertEqual(qs[1].answer, 1)
     }
 }
+
+final class DeviceNameTests: XCTestCase {
+    func testKnownModels() {
+        XCTAssertEqual(DevicesAPI.modelName(for: "iPhone16,1", fallback: "iPhone"), "iPhone 15 Pro")
+        XCTAssertEqual(DevicesAPI.modelName(for: "iPad16,5", fallback: "iPad"), "iPad Pro 13")
+    }
+
+    func testUnknownModelFallsBack() {
+        XCTAssertEqual(DevicesAPI.modelName(for: "iPhone99,9", fallback: "iPhone"), "iPhone")
+    }
+
+    func testNameHasPlatform() {
+        XCTAssertTrue(DevicesAPI.thisDeviceName().contains("· iOS"))
+    }
+}
