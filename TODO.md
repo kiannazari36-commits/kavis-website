@@ -81,7 +81,7 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Next phase, after the web is connected: build the iOS and iPad app with the UI design at https://claude.ai/artifact/SoArzVrar1Yo8usieABRB3
 
 ## Shared processing of identical PDFs — local only, not live
-- [x] Built and tested locally (28 Oct 2026): `materials.content_hash` + `copy_shared_lesson()` (migration `20261028090000_shared_lessons.sql`), `process-material` hashes the file on the server and copies a ready lesson of another student instead of calling the AI; tests `supabase/tests/20_shared_lessons.sql`.
+- [x] Built and tested locally, then LIVE (28 Oct 2026, Kian's yes in chat; migration applied as `20261028120304`, `process-material` v10, checked live: column exists, `copy_shared_lesson` callable by service_role only, students cannot set the hash): `materials.content_hash` + `copy_shared_lesson()` (migration `20261028120304_shared_lessons.sql`), `process-material` hashes the file on the server and copies a ready lesson of another student instead of calling the AI; tests `supabase/tests/20_shared_lessons.sql`.
 - [ ] Go live (needs Kian's yes): apply the migration, deploy `process-material`.
 - [ ] Privacy text: say processed lesson data may be reused between students who upload the identical file (lawyer check).
 
