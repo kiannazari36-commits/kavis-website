@@ -35,8 +35,14 @@ struct ReaderView: View {
     @State private var topBlock: Int?
     @State private var seen: Set<Int> = []
     @State private var atPage: Int?
-    /// iPad: the assistant panel on the right (open by default, as in the design).
-    @State private var panelOpen = true
+    /// iPad: the assistant panel. Landscape: on the right, open by default (design). Portrait: a sheet over the lower part
+    /// of the reading page, closed by default, so the reading column keeps its width.
+    @State private var panelChoice: Bool?
+    @State private var portrait = false
+    private var panelOpen: Bool {
+        get { panelChoice ?? !portrait }
+        nonmutating set { panelChoice = newValue }
+    }
     @State private var showPdf = false
     @State private var shareOpen = false
 
@@ -61,6 +67,14 @@ struct ReaderView: View {
     }
 
     var body: some View {
+        GeometryReader { geo in
+            content(geo.size)
+                .frame(width: geo.size.width, height: geo.size.height)
+                .onChange(of: geo.size, initial: true) { _, size in portrait = size.height > size.width }
+        }
+    }
+
+    private func content(_ size: CGSize) -> some View {
         ZStack {
             KRead.bg.ignoresSafeArea()
             HStack(spacing: 0) {
@@ -71,7 +85,7 @@ struct ReaderView: View {
                             .frame(maxHeight: .infinity, alignment: .bottom).padding(.bottom, wide ? 24 : 8)
                     }
                 }
-                if wide, panelOpen, let lesson {
+                if wide, !portrait, panelOpen, let lesson {
                     AssistantChatView(
                         target: AssistantChatTarget(topicId: lesson.courseId ?? "all", materialId: docID, lessonTitle: lesson.title),
                         onClose: { withAnimation(.easeOut(duration: 0.2)) { panelOpen = false } }
@@ -80,6 +94,18 @@ struct ReaderView: View {
                     .padding(.vertical, 16).padding(.trailing, 16)
                     .transition(.move(edge: .trailing).combined(with: .opacity))
                 }
+            }
+            if wide, portrait, panelOpen, let lesson {
+                AssistantChatView(
+                    target: AssistantChatTarget(topicId: lesson.courseId ?? "all", materialId: docID, lessonTitle: lesson.title),
+                    onClose: { withAnimation(.easeOut(duration: 0.2)) { panelOpen = false } }
+                )
+                .frame(maxWidth: 760)
+                .frame(height: size.height * 0.62)
+                .shadow(color: .black.opacity(0.18), radius: 24, y: 6)
+                .padding(.horizontal, 16).padding(.bottom, 16)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
             }
             if let lesson, let id = openTerm, let term = lesson.terms[id] { termPopover(term) }
             if let text = translateText, let lesson, let doc { translationSheet(text, lesson: lesson, doc: doc) }
