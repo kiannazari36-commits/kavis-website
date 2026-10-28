@@ -158,6 +158,11 @@ struct ReaderView: View {
     private func restorePlace() {
         let asked = app.readerPage
         app.readerPage = nil
+        // After a section check: the next section, from its top (as on the web).
+        if let next = app.readerSection {
+            app.readerSection = nil
+            if let doc, next < doc.sections.count { goSection(next); return }
+        }
         guard let lesson, let doc = lesson.doc, (asked ?? lesson.lastPage) > 1 else { return }
         let last = asked ?? lesson.lastPage
         guard let s = doc.sections.firstIndex(where: { $0.blocks.contains { last >= $0.pageFrom && last <= $0.pageTo } }) else { return }
@@ -589,7 +594,7 @@ struct ReaderView: View {
                 // The short check of this section's pages; the last section opens the whole end-of-lesson exam.
                 Button {
                     guard let lesson, let section else { return }
-                    app.go(.quiz(QuizTarget(materialId: lesson.id, kind: last ? .final : .check, pageFrom: section.pageFrom, pageTo: section.pageTo)))
+                    app.go(.quiz(QuizTarget(materialId: lesson.id, kind: last ? .final : .check, pageFrom: section.pageFrom, pageTo: section.pageTo, nextSection: last ? nil : sectionIndex + 1)))
                 } label: {
                     Text(t("start")).font(KFont.ui(13, .semibold, lang: lang)).foregroundStyle(KPhone.ctaText)
                         .padding(.horizontal, 18).frame(height: 40).background(KPhone.cta, in: Capsule())

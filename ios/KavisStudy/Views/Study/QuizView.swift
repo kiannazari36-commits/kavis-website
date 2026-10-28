@@ -9,6 +9,8 @@ struct QuizTarget: Equatable {
     var quizId: String? = nil
     var pageFrom = 0
     var pageTo = 0
+    /// Section check: the section the lesson opens at after "Devam et" (the next one, as on the web).
+    var nextSection: Int? = nil
 }
 
 /// Design: design/ScrQuiz.dc.html (multiple choice). Choose an option, say how sure you are, see right / wrong with
@@ -489,7 +491,7 @@ if !gradable.isEmpty {
             Spacer()
             VStack(spacing: 10) {
                 if target.kind == .check {
-                    Button { app.back() } label: { primaryLabel(t("resume")) }
+                    Button { app.readerSection = target.nextSection; app.back() } label: { primaryLabel(t("resume")) }
                     Button { newQuestions() } label: {
                         secondaryLabel(gettingNew ? t("packMaking") : t("newA") + Format.num(3, lang) + t("retryB"))
                     }

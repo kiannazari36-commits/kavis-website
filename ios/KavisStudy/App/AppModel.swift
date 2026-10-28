@@ -77,6 +77,8 @@ final class AppModel {
     var uploadCourseId: String?
     /// The page the reader should open at (from the lesson summary; read once by the reader).
     var readerPage: Int?
+    /// The section the reader opens at once (set by a section check's "Devam et", read once by the reader).
+    var readerSection: Int?
     /// The other devices of an account that is full (2 devices), shown on the device-limit screen.
     var limitDevices: [Device] = []
     /// A share link opened while nobody was signed in: handled once the student is on the home screen.
