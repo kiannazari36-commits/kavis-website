@@ -82,7 +82,8 @@ Everything that is not finished yet. Updated after every step.
 
 ## Prompt caching (28 Oct 2026) — local only, not live
 - [x] `usage_monthly.cache_read_tokens` / `cache_write_tokens` (migration `20261028140000_usage_cache_tokens.sql`); `assistant`, `more-questions`, `lesson-summary`, `generate-quiz` fill them and price cache reads/writes. Lesson text is the first (cached) block in the last three; `assistant` also caches tools + instructions when only excerpts are sent (excerpts change every question, so they are not cached).
-- [ ] Go live: apply the migration, then deploy the four functions (needs Kian's yes).
+- [x] Owner page `/admin`: "Bu ayın harcaması" board (total vs. `MONTHLY_TOTAL_BUDGET_USD` = 150 in `owner-overview`, cache hit share, top 5 spenders, lessons this month per student).
+- [ ] Go live: apply the migration, then deploy the four functions + `owner-overview` (needs Kian's yes; the board shows 0 % cache until the migration is live).
 
 ## Invite codes (free Premium for ~100 first users) — local only, not live
 - [x] Built and tested locally: migration `20261028130000_promo_codes.sql` (tables `promo_codes`, `promo_redemptions`, `promo_attempts`, store_provider value `promo`, SQL `redeem_promo_code`, `make_promo_codes`, `access_status` now returns `premium_until` + `premium_source`), Edge Function `redeem-code`, web (Premium page + Settings, "Davet kodum var", 4 languages), iPhone (Paywall + plan card, 4 languages), tests `supabase/tests/30_promo_codes.sql` (18 checks), owner script `supabase/scripts/make-codes.sql`.

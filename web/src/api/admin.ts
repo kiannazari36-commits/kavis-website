@@ -11,11 +11,12 @@ export type AdminUser = {
   confirmed: boolean;
   status: 'premium' | 'trial' | 'ended';
   lessons: number;
+  lessonsMonth: number;
   questions: number;
   cost: number;
 };
 export type AdminStats = {
-  totals: { users: number; new7: number; active7: number; premium: number; trial: number; ended: number; lessons: number; costMonth: number };
+  totals: { users: number; new7: number; active7: number; premium: number; trial: number; ended: number; lessons: number; costMonth: number; budget: number; cacheShare: number };
   users: AdminUser[];
 };
 

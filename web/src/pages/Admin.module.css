@@ -117,6 +117,53 @@
   font-size: 13px;
 }
 
+.bar {
+  height: 12px;
+  border-radius: 6px;
+  background: var(--sub);
+  overflow: hidden;
+}
+
+.bar i {
+  display: block;
+  height: 100%;
+  border-radius: 6px;
+  background: var(--pri);
+}
+
+.bar i.barOver {
+  background: var(--amb);
+}
+
+.sub {
+  margin: 6px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.top {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.top li {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13.5px;
+}
+
+.top li b {
+  flex: 1;
+  font-weight: 600;
+}
+
 .tableWrap {
   overflow-x: auto;
 }

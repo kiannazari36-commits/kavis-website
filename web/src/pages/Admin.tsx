@@ -34,6 +34,8 @@ export default function Admin() {
   const { totals, users } = stats;
   const q = query.trim().toLocaleLowerCase(lang);
   const shown = q ? users.filter((u) => u.email.toLocaleLowerCase(lang).includes(q) || u.name.toLocaleLowerCase(lang).includes(q)) : users;
+  const top = [...users].filter((u) => u.cost > 0).sort((a, b) => b.cost - a.cost).slice(0, 5);
+  const pct = Math.min(100, (totals.costMonth / totals.budget) * 100);
   const day = (iso: string | null) => (iso ? shortDate(iso.slice(0, 10), lang) : '—');
   const tiles: [string, number | string][] = [
     ['adm_users', num(totals.users, lang)],
@@ -71,6 +73,38 @@ export default function Admin() {
 
       <section className={s.card}>
         <div className={s.listHead}>
+          <h2>{t('adm_spend')}</h2>
+          <small className={s.note}>
+            {t('adm_budget')}: <span className="mono">${num(totals.budget, lang)}</span> · {t('adm_cache')}: <span className="mono">{num(Math.round(totals.cacheShare * 100), lang)}%</span>
+          </small>
+        </div>
+        <div className={s.bar} role="progressbar" aria-valuemin={0} aria-valuemax={totals.budget} aria-valuenow={totals.costMonth}>
+          <i className={totals.costMonth > totals.budget ? s.barOver : ''} style={{ width: `${pct}%` }} />
+        </div>
+        <small className={s.note}>
+          <span className="mono">${totals.costMonth.toFixed(2)}</span> / <span className="mono">${num(totals.budget, lang)}</span>
+          {totals.costMonth > totals.budget && ` · ${t('adm_over')}`}
+        </small>
+        {top.length > 0 && (
+          <>
+            <h3 className={s.sub}>{t('adm_top')}</h3>
+            <ol className={s.top}>
+              {top.map((u) => (
+                <li key={u.email}>
+                  <b dir="ltr">{u.email}</b>
+                  <span className="mono">${u.cost.toFixed(2)}</span>
+                  <small className={s.note}>
+                    {num(u.questions, lang)} {t('adm_questions').toLocaleLowerCase(lang)} · {num(u.lessonsMonth, lang)} {t('adm_lessonsMonth').toLocaleLowerCase(lang)}
+                  </small>
+                </li>
+              ))}
+            </ol>
+          </>
+        )}
+      </section>
+
+      <section className={s.card}>
+        <div className={s.listHead}>
           <h2>{t('adm_list')}</h2>
           <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t('adm_search')} aria-label={t('adm_search')} />
         </div>
@@ -83,6 +117,7 @@ export default function Admin() {
                 <th>{t('adm_last')}</th>
                 <th>{t('adm_status')}</th>
                 <th>{t('adm_lessonsCol')}</th>
+                <th>{t('adm_lessonsMonth')}</th>
                 <th>{t('adm_questions')}</th>
                 <th>{t('adm_costCol')}</th>
               </tr>
@@ -101,6 +136,7 @@ export default function Admin() {
                     <span className={`${s.badge} ${s[u.status]}`}>{t(`adm_st_${u.status}`)}</span>
                   </td>
                   <td className="mono">{num(u.lessons, lang)}</td>
+                  <td className="mono">{num(u.lessonsMonth, lang)}</td>
                   <td className="mono">{num(u.questions, lang)}</td>
                   <td className="mono">${u.cost.toFixed(2)}</td>
                 </tr>

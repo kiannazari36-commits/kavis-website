@@ -1,11 +1,13 @@
 // Edge Function owner-overview (was admin-stats; renamed because ad blockers block "…-stats" addresses): the owner's page (/admin) — how many people signed up, who they are, trial / Premium,
-// lessons and AI cost. Only the app owner may call it: their user id is below (ADMIN_USER_IDS overrides it, e.g.
+// lessons and AI cost (per student this month, total vs. the budget line, cache hit share). Only the app owner may call it: their user id is below (ADMIN_USER_IDS overrides it, e.g.
 // for the local test copy). Read only. E-mails are personal data (KVKK): only for running the app.
 // POST {} → { totals, users: [{ email, joined, lastLogin, confirmed, status, lessons, questions, cost }] }
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const OWNER = '9a69763b-e12c-4e47-a993-739188d9d652';
 const TRIAL_DAYS = 3;
+// The whole month's AI budget for all students together (US dollars): the spend board draws its line here. Easy to change.
+const MONTHLY_TOTAL_BUDGET_USD = 150;
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -19,6 +21,12 @@ function secretKey() {
   if (legacy) return legacy;
   const keys = JSON.parse(Deno.env.get('SUPABASE_SECRET_KEYS') ?? '{}') as Record<string, string>;
   return Object.values(keys)[0] ?? '';
+}
+
+function cacheShare(rows: { input_tokens: number | string; cache_read_tokens: number | string }[]) {
+  const input = rows.reduce((a, r) => a + Number(r.input_tokens), 0);
+  const read = rows.reduce((a, r) => a + Number(r.cache_read_tokens), 0);
+  return input > 0 ? Math.round((read / input) * 1000) / 1000 : 0;
 }
 
 Deno.serve(async (req) => {
@@ -36,12 +44,13 @@ Deno.serve(async (req) => {
   const [{ data: list }, { data: profiles }, { data: lessons }, { data: usage }, { data: subs }] = await Promise.all([
     db.auth.admin.listUsers({ perPage: 1000 }),
     db.from('profiles').select('id, full_name, trial_started_at'),
-    db.from('materials').select('user_id'),
-    db.from('usage_monthly').select('user_id, cost_usd, assistant_questions').eq('month', month),
+    db.from('materials').select('user_id, created_at'),
+    db.from('usage_monthly').select('user_id, cost_usd, assistant_questions, input_tokens, cache_read_tokens, cache_write_tokens').eq('month', month),
     db.from('subscriptions').select('user_id, status, expires_at'),
   ]);
 
   const now = Date.now();
+  const monthStart = new Date(month).getTime();
   const DAY = 86_400_000;
   const users = (list?.users ?? []).map((u) => {
     const p = (profiles ?? []).find((x) => x.id === u.id);
@@ -58,6 +67,7 @@ Deno.serve(async (req) => {
       confirmed: !!u.email_confirmed_at,
       status: premium ? 'premium' : trialEnds > now ? 'trial' : 'ended',
       lessons: (lessons ?? []).filter((m) => m.user_id === u.id).length,
+      lessonsMonth: (lessons ?? []).filter((m) => m.user_id === u.id && new Date(m.created_at).getTime() >= monthStart).length,
       questions: Number(use?.assistant_questions ?? 0),
       cost: Math.round(Number(use?.cost_usd ?? 0) * 100) / 100,
     };
@@ -74,6 +84,9 @@ Deno.serve(async (req) => {
     ended: users.filter((u) => u.status === 'ended').length,
     lessons: (lessons ?? []).length,
     costMonth: Math.round(users.reduce((a, u) => a + u.cost, 0) * 100) / 100,
+    budget: MONTHLY_TOTAL_BUDGET_USD,
+    // Share of the month's input tokens that were read from the prompt cache (cache reads cost a tenth).
+    cacheShare: cacheShare(usage ?? []),
   };
   return json({ totals, users });
 });
