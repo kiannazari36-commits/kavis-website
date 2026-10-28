@@ -7,6 +7,8 @@
 // materials.status / page_count, material_content (reader_doc + stats), material_terms, material_topics,
 // material_chunks (assistant search), card_decks + flashcards, quizzes + quiz_questions, usage_monthly,
 // and a "lesson ready" notification. The teacher's text is cut from the PDF, never written by the AI.
+// An identical PDF (same SHA-256, computed here) that another student already has "ready" is copied by the SQL
+// function copy_shared_lesson instead (no AI call); see reuseShared.
 // Photos of pages and scanned PDFs (POST { material_id, ocr: true }) first go through text recognition (ocr.ts):
 // the AI copies each page's text exactly, in batches of 4 pages, then the same steps follow.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
@@ -83,10 +85,38 @@ Deno.serve(async (req) => {
   if (m.status !== 'uploaded' && m.status !== 'failed' && !again) return json({ status: m.status });
   // A scanned PDF gave its trial lesson back; reading it with text recognition uses one again.
   if (again && !m.counted_in_trial && !(await chargeTrial(db, id, m.user_id))) return json({ error: 'trial' }, 403);
+  // The same file as a lesson another student already has ready: copy it, no AI (and no AI budget) needed.
+  if (m.kind === 'pdf' && !again && !ocr) {
+    const shared = await reuseShared(db, id, m.title);
+    if (shared) return json({ status: 'ready', shared: true });
+  }
   await db.from('materials').update({ status: 'processing', error: null }).eq('id', id);
   EdgeRuntime.waitUntil(runBatch(db, id, 0, ocr));
   return json({ status: 'processing' }, 202);
 });
+
+/**
+ * Fingerprint (SHA-256) of the file, computed here from the stored bytes (a client-sent hash is never trusted).
+ * If another student has the identical file ready, the SQL function copy_shared_lesson makes a deep copy of the
+ * lesson data (no personal data, no link to the source). Any problem: false, and the normal path runs.
+ */
+async function reuseShared(db: SupabaseClient, materialId: string, title: string) {
+  try {
+    const { data: file } = await db.from('material_files').select('storage_path').eq('material_id', materialId).order('sort_order').limit(1).maybeSingle();
+    if (!file) return false;
+    const digest = await crypto.subtle.digest('SHA-256', await download(db, file.storage_path));
+    const hash = Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, '0')).join('');
+    await db.from('materials').update({ content_hash: hash }).eq('id', materialId);
+    const { data: copied, error } = await db.rpc('copy_shared_lesson', { dst: materialId });
+    if (error || !copied) return false;
+    const { data: mat } = await db.from('materials').select('user_id').eq('id', materialId).single();
+    await finish(db, materialId, mat!.user_id, title);
+    return true;
+  } catch (e) {
+    console.error('process-material reuse', materialId, e);
+    return false;
+  }
+}
 
 type FileRow = { storage_path: string; mime_type: string | null };
 

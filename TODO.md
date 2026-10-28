@@ -80,6 +80,11 @@ Everything that is not finished yet. Updated after every step.
 - [ ] Garbled PDF text (27 Oct 2026): a PDF whose font has no text map came out as nonsense letters ("Fizyoloji" became ")L]\RORML"). `process-material` now detects it (`looksGarbled` in `lib.ts`) and reads the pages with text recognition automatically; **LIVE since 27 Oct 2026: `process-material` version 9** (deployed with the Supabase MCP). Still to decide: the lesson `48aef5e6…` (state `needs_ocr`) can be read again with OCR (small AI cost). A lesson of another student (`8479526d…`, 66 pages) has been stuck in "processing" since 25 Oct. Checked 27 Oct 2026 (read-only): neither can be started from here, `process-material` only accepts the lesson's owner. `8479526d…` (done 16 of 66 pages) is resumed by the web on its owner's next visit (`resumeStuckLessons`, estimate $0.2–0.3 of AI); `48aef5e6…` (26 pages, already counted as a trial lesson) restarts when its owner taps the OCR button (estimate $0.3–0.5)
 - [ ] Next phase, after the web is connected: build the iOS and iPad app with the UI design at https://claude.ai/artifact/SoArzVrar1Yo8usieABRB3
 
+## Shared processing of identical PDFs — local only, not live
+- [x] Built and tested locally (28 Oct 2026): `materials.content_hash` + `copy_shared_lesson()` (migration `20261028090000_shared_lessons.sql`), `process-material` hashes the file on the server and copies a ready lesson of another student instead of calling the AI; tests `supabase/tests/20_shared_lessons.sql`.
+- [ ] Go live (needs Kian's yes): apply the migration, deploy `process-material`.
+- [ ] Privacy text: say processed lesson data may be reused between students who upload the identical file (lawyer check).
+
 ## Server features (the web still uses mock data in `web/src/api/`)
 - [ ] Real backend: accounts, login (email + Apple + Google), email verification code
 - [x] Store PDFs, notes, highlights, cards, summaries, quiz results per account (checked 27 Oct 2026: done)

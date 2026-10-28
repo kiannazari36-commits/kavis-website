@@ -26,6 +26,7 @@ Bu dosya Kian için: ne bitti, ne bekliyor, kim ne yapacak. Ayrıntı için `TOD
 10. Anthropic anahtarı ~22 Ocak 2027'de bitiyor, yenile.
 
 ## Onayını bekleyen (canlıya henüz yüklenmedi)
+- **Aynı PDF'in ortak işlenmesi** (sadece yerelde yapıldı ve denendi): migration `20261028090000_shared_lessons.sql` + `process-material` fonksiyonu canlıya yüklenecek. Aynı dosyayı yükleyen ikinci öğrenci için yapay zekâ çağrılmıyor (maliyet tek sefer). Kişisel veri kopyalanmıyor. Gizlilik metnine "aynı dosyayı yükleyen öğrenciler arasında işlenmiş ders verisi yeniden kullanılabilir" cümlesi eklenmeli (avukat kontrolüne dahil).
 - `build-plan` (sadece kod taşındı): push açılınca birlikte yüklenecek.
 - Takılı kalan iki ders: ben başlatamam, ders sahibi öğrencinin kendi girişi gerekir. `8479526d…` sahibi siteyi açınca kendiliğinden devam eder (~0,2–0,3 $), `48aef5e6…` sahibi "OCR ile oku" düğmesine basınca yeniden okunur (~0,3–0,5 $). Sahiplerine haber vermek yeterli: `48aef5e6…` (durum `needs_ocr`, yeni sürümle OCR ile okunabilir) ve `8479526d…` (66 sayfa, 25 Ekim'den beri "işleniyor").
 
