@@ -56,6 +56,21 @@ export default function Login() {
   const blocked = signup && !consent;
   const score = passwordScore(password);
 
+  // Back from Google (?oauth=1): the session is ready or about to be; continue once, like after a password login.
+  // This lives here (not in Verify) because the return URL opens the normal sign-up screen.
+  useEffect(() => {
+    if (new URLSearchParams(location.search).get('oauth') !== '1') return;
+    let done = false;
+    const go = () => {
+      if (done) return;
+      done = true;
+      afterLogin(navigate);
+    };
+    const off = onSignedIn(go);
+    hasSession().then((yes) => yes && go());
+    return off;
+  }, [navigate]);
+
   const social = async (p: Provider) => {
     setBusy(true);
     try {
@@ -273,20 +288,6 @@ function Verify({ email, onBack }: { email: string; onBack: () => void }) {
 
   // Link mode: when the student opens the email link (often in a new tab), continue here too.
   useEffect(() => (EMAIL_CODE ? undefined : onSignedIn(() => afterLogin(navigate))), [navigate]);
-
-  // Back from Google (?oauth=1): the session is ready or about to be; continue once, like after a password login.
-  useEffect(() => {
-    if (new URLSearchParams(location.search).get('oauth') !== '1') return;
-    let done = false;
-    const go = () => {
-      if (done) return;
-      done = true;
-      afterLogin(navigate);
-    };
-    const off = onSignedIn(go);
-    hasSession().then((yes) => yes && go());
-    return off;
-  }, [navigate]);
 
   useEffect(() => {
     if (left <= 0) return;
