@@ -1,3 +1,4 @@
+import { normalizeImage } from '../api/heic';
 import { useEffect, useRef, useState, type DragEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useI18n } from '../i18n/I18nProvider';
@@ -135,12 +136,14 @@ export default function Upload() {
   };
 
   // Photos: added in the order chosen, then moved with the arrows; each photo is one page.
-  const addPhotos = (list: FileList | null) => {
+  const addPhotos = async (list: FileList | null) => {
     const images = [...(list ?? [])].filter((f) => f.type.startsWith('image/') || /\.(heic|heif)$/i.test(f.name));
     if (!images.length) return toast(t('up_notImage'));
     const room = MAX_PHOTOS - photos.length;
     if (images.length > room) toast(t('up_photoMax').replace('{n}', num(MAX_PHOTOS, lang)));
-    setPhotos([...photos, ...images.slice(0, Math.max(0, room)).map((file) => ({ file, url: URL.createObjectURL(file) }))]);
+    // iPhone photos (HEIC) become JPEG here, so the preview shows in every browser.
+    const ready = await Promise.all(images.slice(0, Math.max(0, room)).map((f) => normalizeImage(f).catch(() => f)));
+    setPhotos((cur) => [...cur, ...ready.map((file) => ({ file, url: URL.createObjectURL(file) }))]);
     if (!title) setTitle(t('up_photoName'));
   };
   const movePhoto = (i: number, by: number) => {

@@ -1,3 +1,4 @@
+import { normalizeImage } from './heic';
 import { supabase } from './supabase';
 import { currentUser } from './auth';
 
@@ -90,10 +91,10 @@ const PHOTO_SIDE = 2000;
 
 /**
  * A photo made ready for text recognition: turned upright, at most 2000 px on its long side, saved as JPEG
- * (HEIC from iPhones can only be read by Safari; other browsers throw → the page shows a message).
+ * (HEIC from iPhones is turned into JPEG first, see heic.ts; a file the browser cannot read throws → the page shows a message).
  */
 export async function shrinkPhoto(file: File): Promise<Blob> {
-  const img = await createImageBitmap(file, { imageOrientation: 'from-image' });
+  const img = await createImageBitmap(await normalizeImage(file), { imageOrientation: 'from-image' });
   const scale = Math.min(1, PHOTO_SIDE / Math.max(img.width, img.height));
   const canvas = document.createElement('canvas');
   canvas.width = Math.round(img.width * scale);

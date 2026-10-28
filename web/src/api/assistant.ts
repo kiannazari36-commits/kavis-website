@@ -1,3 +1,4 @@
+import { normalizeImage } from './heic';
 import { functionsUrl, publishableKey, supabase } from './supabase';
 import { listCourses } from './courses';
 import { COURSE_COLOR } from '../components/courseColors';
@@ -153,7 +154,7 @@ export async function askAssistant(
 
 /** A photo as a small JPEG for the assistant (longest side 1600 px). */
 export async function photoForAssistant(file: File): Promise<QuestionPhoto> {
-  const img = await createImageBitmap(file, { imageOrientation: 'from-image' });
+  const img = await createImageBitmap(await normalizeImage(file), { imageOrientation: 'from-image' });
   const scale = Math.min(1, 1600 / Math.max(img.width, img.height));
   const canvas = document.createElement('canvas');
   canvas.width = Math.round(img.width * scale);
