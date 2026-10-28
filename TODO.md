@@ -91,11 +91,11 @@ Everything that is not finished yet. Updated after every step.
 
 ## Shared processing of identical PDFs — local only, not live
 - [x] Built and tested locally, then LIVE (28 Oct 2026, Kian's yes in chat; migration applied as `20261028120304`, `process-material` v10, checked live: column exists, `copy_shared_lesson` callable by service_role only, students cannot set the hash): `materials.content_hash` + `copy_shared_lesson()` (migration `20261028120304_shared_lessons.sql`), `process-material` hashes the file on the server and copies a ready lesson of another student instead of calling the AI; tests `supabase/tests/20_shared_lessons.sql`.
-- [ ] Go live (needs Kian's yes): apply the migration, deploy `process-material`.
-- [ ] Privacy text: say processed lesson data may be reused between students who upload the identical file (lawyer check).
+- [x] Live (28 Oct 2026, with Kian's yes): migration `20261028120304` applied, `process-material` v10 deployed.
+- [x] Privacy text: the sentence about reusing processed lesson data of an identical file is in the draft (28 Oct 2026, 4 languages, section 4); the lawyer check stays under "Texts and legal".
 
 ## Server features (the web still uses mock data in `web/src/api/`)
-- [ ] Real backend: accounts, login (email + Apple + Google), email verification code
+- [x] Real backend: accounts, login (web: email + link, Google; iPhone: email + code). Only Sign in with Apple is open (needs the Apple Developer account, see the Apple line above and in the iOS section).
 - [x] Store PDFs, notes, highlights, cards, summaries, quiz results per account (checked 27 Oct 2026: done)
 - [x] PDF processing: turn the PDF into the reading page without changing the teacher's text, hard-word explanations (checked 27 Oct 2026: done)
 - [x] AI: assistant answers only from the student's material (optional "AI + research"), lecturer-style questions, cards, summaries, audio narration (checked 27 Oct 2026: done)
@@ -174,7 +174,7 @@ Step 2 of the app plan (26 Oct 2026): profile, first steps and courses on the se
 - [x] Profile (name, school, department, class year) read from and saved to `profiles`; settings (study days / hours …) to `user_settings`; the first steps set `onboarding_done` and `app_lang`
 - [x] Onboarding: school field and class-year chips on the department step (as on the web); term course setup suggests the courses of the chosen department and creates the course folders on the server
 - [x] "Derslerim" list and "Ders klasörü" (design `NewCourses.dc.html`): real courses, PDFs, reading % and study minutes; "Ders ekle" creates a course; home tab bar "Derslerim" and the home folder card (real numbers + first three courses) open it
-- [ ] Course folder: tapping a PDF opens the reader (step 3, the reader is still the sample lesson); the "Cihazımdakiler" filter and "CİHAZDA" tags wait for offline downloads; renaming / deleting a course, exam dates
+- [ ] Course folder: renaming / deleting a course, exam dates (the reader opens real lessons; the "Cihazımdakiler" filter and "CİHAZDA" tags are done, 28 Oct 2026)
 
 Step 3 of the app plan (26 Oct 2026): upload and reader on the server
 - [x] PDF upload like the web (`API/Upload.swift`): file to the "materials" bucket, lesson row (the database checks the trial), `process-material`; the screen asks the server every 4 s, shows the steps with the server's numbers and "Derse git"; scanned PDFs → "Metin tanıma ile dene" (OCR); over 100 pages → equal parts or a page range (PDFKit); course chosen from the student's courses ("Bu derse PDF ekle" chooses it)
@@ -204,7 +204,7 @@ Step 4 of the app plan (26 Oct 2026): assistant, cards, quiz, plan (progress scr
 - [x] Written and fill-in-the-blank questions (checked 27 Oct 2026, the old note was out of date): `generate-quiz` and `build-exam` write / use all 3 kinds (live), the web plays and judges them (`Quiz.tsx`, `grade-quiz`), the exam center writes missing ones. Left on purpose: the automatic lesson-end quiz from `process-material` stays multiple choice (cheaper per lesson); the student asks for the other kinds in the pack maker
 - [x] Settings (design `ScrSettings.dc.html`; tab bar "Ayarlar", profile "Ayarlar" row, `-kavis.route settings`): study plan (days, hours, this week vs goal), app language (saved to `profiles.app_lang`), translation style, content language (PDF / app / a language), department, reading voice and speed, review reminder, cheer notifications, notification time, appearance light / dark / system (`user_settings.app_theme`), offline mode and auto-download, My devices (sign out a device with `sign_out_device`), "Hesap bilgilerimi iste" (Edge export-data, share sheet), "Hesabı sil" (password again, Edge delete-account, deleted after 30 days), log out. All saved to `user_settings`. Checked locally with test3
 - [x] School timetable on the phone (28 Oct 2026, design `NewSchedule.dc.html`, route `.timetable`, `-kavis.route timetable`, opened from Settings "Ders programım"): day tabs, classes with reminder bell, "Ders ekle", long-press to delete. Tried locally (added a class). Still missing: reading a photo / PDF of the timetable (Edge `import-timetable` exists, costs 1-2 cents), the reminder settings block and the notification preview
-- [ ] Settings parts still a toast: "Cihazdaki dersleri yönet" ("Sık sorulanlar" opens the web help page since 27 Oct 2026); "Cihazdaki dersler" shows the account's PDF count (no offline copy on the phone yet); reading voice / speed are saved but nothing reads aloud yet; no local notifications are scheduled yet for the reminder time
+- [ ] Settings: "Çalıştığım PDF'leri indir" is only a saved switch (lessons are kept when opened online; no download ahead of time). Done since: "Cihazdaki dersleri yönet" list, real offline count, reading voice / speed (read aloud in the reader), local reminder notifications (`ReminderService`)
 - [x] Settings follow-ups: the account's language and theme are applied after sign-in / at start (`RootView` task, `AccountAPI.fetchLang`); the daily reminder is a local notification at "Bildirim saati" when the reminder switch is on (`Services/ReminderService.swift`, texts in the iOS-only `i18n-ios.json`; asks permission the first time; same text every day, not only on review days); a requested account deletion shows "Hesabın … tarihinde silinecek" with "Vazgeç" (Edge delete-account cancel). Checked locally with test3
 - [x] 3rd-device screen (`DeviceLimitView`, same as the web's /devices): after login or at start on an account with 2 active devices the app stops there, the student signs one out (`sign_out_device`), this phone registers and the app goes on. Checked locally with test3
 - [x] Design texts of the study screens (cards, quiz, plan, progress, exam prep) added to `i18n-design.json` (`extract-design-texts.mjs` reads them now; older texts kept as they were)
@@ -227,9 +227,9 @@ Still to build (screens):
 - [x] Reader extras done on the iPhone 27 Oct 2026: molecule viewer (SceneKit 3D, turns with a finger, groups light up; library copied from the web with `node ios/scripts/export-molecules.mjs`, run it again when the web adds molecules), "Dinle" reads the open section with the Settings voice and speed, handwritten notes on every page card (PencilKit; `annotations` kind `ink` + file in bucket `ink`, tried locally). Still open: section check quiz "Başla" from the reader; the web does not show the iPhone's ink notes; iPad layout
 - [x] Assistant quick menu (28 Oct 2026, the sparkle button in the chat): "Kolay dille anlat" (new texts `quickEasy` / `quickEasyAsk` in `i18n-ios.json`, need a native-speaker check in fa / ar), "Hoca derste neyi vurguladı?", "Bana soru sor", "Kart yap" (as the web reader). Menu tried; the questions themselves not sent (AI cost)
 - [ ] Assistant extras still open: a hands-free loop (listen → answer → listen again) was not built, only dictation + read-aloud
-- [ ] Upload extras: real camera and microphone capture (permission texts), the trial-limit sheet and fair-use sheet of the design (the lock dialog is used now)
-- [ ] Step 4: StoreKit, trial limits on the server, share links
-- [ ] Real "Sign in with Apple" and Google sign-in; real email code (every account uses the demo code 481920 and "Kodu e-postadan yapıştır" fills it)
+- [x] Upload extras: trial-limit sheet and fair-use sheet (`UploadLimitSheets.swift`), camera / microphone permission texts. (Real capture on a physical iPhone is not tried: simulator.)
+- [x] Step 4: StoreKit code (`API/Store.swift`; products and a real purchase need the Apple Developer account), trial limits on the server, share links
+- [ ] Real "Sign in with Apple" and Google sign-in on iOS (the real email code is done: `verifyOTP`; the demo code is gone)
 - [x] Profile photo picker: photo → square 512 px JPEG in the private bucket `avatars` (`<user id>/avatar.jpg`, `profiles.avatar_path`), shown on profile and home (27 Oct 2026, tried locally). The web does not show it yet
 
 Known differences from the designs (decided on purpose):
