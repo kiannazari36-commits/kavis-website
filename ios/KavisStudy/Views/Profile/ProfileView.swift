@@ -244,7 +244,11 @@ struct ProfileView: View {
         let sub: String
         if s.premium {
             title = "Premium"
-            sub = prefs.t("pwIphoneSub")
+            if s.premiumSource == "promo", let until = s.premiumUntil {
+                sub = prefs.t("codeActive", ["date": RedeemCodeView.dateText(until, lang: lang)])
+            } else {
+                sub = prefs.t("pwIphoneSub")
+            }
         } else if s.ended {
             title = prefs.t("trialEnded")
             sub = prefs.t("trialKeep")

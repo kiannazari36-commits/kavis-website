@@ -223,6 +223,7 @@ struct PaywallView: View {
                 KIcon(name: .check, size: 18, width: 2.4).foregroundStyle(C.onPri).frame(width: 34, height: 34).background(C.pri, in: Circle())
                 Text(t("pwActive")).font(KFont.ui(17, .bold, lang: lang)).foregroundStyle(C.text)
             }
+            RedeemCodeView()
             Text(t("pwIphoneSub")).font(KFont.ui(13, lang: lang)).foregroundStyle(C.text2)
             Button { manageOpen = true } label: {
                 Text(t("pwManage")).font(KFont.ui(15, .semibold, lang: lang)).foregroundStyle(C.onPri)
@@ -251,6 +252,7 @@ struct PaywallView: View {
                 link(d("Koşullar")) { openLegal("terms") }
                 link(d("Gizlilik")) { openLegal("privacy") }
             }
+            RedeemCodeView()
             Button(action: close) {
                 Text(d("Ücretsiz planla devam et")).font(KFont.ui(14, .semibold, lang: lang)).foregroundStyle(C.priText).frame(minHeight: 36)
             }

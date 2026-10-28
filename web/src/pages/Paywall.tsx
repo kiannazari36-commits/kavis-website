@@ -3,6 +3,7 @@ import { useI18n } from '../i18n/I18nProvider';
 import Wordmark from '../components/Wordmark';
 import Icon from '../components/Icon';
 import AppStoreButton from '../components/AppStoreButton';
+import RedeemCode from '../components/RedeemCode';
 import { premiumOffer } from '../api/premium';
 import { isAndroid } from '../config';
 import s from './Paywall.module.css';
@@ -84,6 +85,7 @@ export default function Paywall() {
             <AppStoreButton />
           </div>
         )}
+        <RedeemCode />
         <div className={s.links}>
           <button onClick={close}>{t('back')}</button>
         </div>

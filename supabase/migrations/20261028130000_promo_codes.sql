@@ -96,7 +96,7 @@ grant execute on function public.redeem_promo_code(uuid, text) to service_role;
 -- Owner helper (paste in the SQL editor): make n codes. See supabase/scripts/make-codes.sql.
 create or replace function public.make_promo_codes(n int, days int default 30, max_uses int default 1,
                                                    expires timestamptz default null, note text default null)
-returns table (code text, days int, max_uses int, expires_at timestamptz)
+returns table (new_code text, new_days int, new_max_uses int, new_expires_at timestamptz)
 language plpgsql security definer set search_path = '' as $$
 declare
   alphabet constant text := '23456789ABCDEFGHJKMNPQRSTUVWXYZ';   -- no 0/O/1/I/L
@@ -125,7 +125,8 @@ declare
   started timestamptz;
   t       record;
   prem    boolean;
-  s       record;
+  s_until timestamptz;
+  s_src   public.store_provider;
 begin
   if uid is null then return null; end if;
   select trial_started_at into started from public.profiles where id = uid;
@@ -133,14 +134,14 @@ begin
     into t from public.trial_usage where user_id = uid;
   prem := public.is_premium(uid);
   if prem then
-    select provider, expires_at into s from public.subscriptions
+    select provider, expires_at into s_src, s_until from public.subscriptions
      where user_id = uid and status in ('active', 'grace', 'billing_retry') and (expires_at is null or expires_at > now())
      order by expires_at desc nulls first limit 1;
   end if;
   return jsonb_build_object(
     'premium',        prem,
-    'premium_until',  case when prem then s.expires_at end,
-    'premium_source', case when prem then s.provider end,
+    'premium_until',  s_until,
+    'premium_source', s_src,
     'trial_ends_at',  started + interval '3 days',
     'trial_ended',    now() >= started + interval '3 days',
     'days_left',      greatest(0, ceil(extract(epoch from (started + interval '3 days' - now())) / 86400))::int,

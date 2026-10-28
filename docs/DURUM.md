@@ -26,6 +26,7 @@ Bu dosya Kian için: ne bitti, ne bekliyor, kim ne yapacak. Ayrıntı için `TOD
 10. Anthropic anahtarı ~22 Ocak 2027'de bitiyor, yenile.
 
 ## Onayını bekleyen (canlıya henüz yüklenmedi)
+- **Davet kodu (30 gün ücretsiz Premium)** — yerelde hazır ve test edildi, canlıya YÜKLENMEDİ. Canlıya alınacaklar: migration `20261028130000_promo_codes.sql` + Edge Function `redeem-code` (`verify_jwt = true`). Web ve iPhone ekranları kodda hazır (web'i yayınlamak için push yeterli; iPhone için yeni TestFlight sürümü). Kod yapma: `supabase/scripts/make-codes.sql`'i Supabase SQL Editor'e yapıştır. Aylık yapay zekâ bütçesi öğrenci başına 3 $ olarak kalır (davet kodu bunu artırmaz).
 - **Aynı PDF'in ortak işlenmesi** canlıya alındı (28 Ekim): migration `20261028120304_shared_lessons.sql` + `process-material` (v10). Canlıda kontrol edildi: sütun var, kopyalama fonksiyonunu sadece sunucu çağırabiliyor, öğrenci parmak izini değiştiremiyor. Aynı dosyayı yükleyen ikinci öğrenci için yapay zekâ çağrılmaz. Gizlilik metnine bu cümle eklendi (28 Ekim, 4 dilde, madde 4); avukat kontrolüne dahil.
 - `build-plan` (sadece kod taşındı): push açılınca birlikte yüklenecek.
 - Takılı kalan iki ders: ben başlatamam, ders sahibi öğrencinin kendi girişi gerekir. `8479526d…` sahibi siteyi açınca kendiliğinden devam eder (~0,2–0,3 $), `48aef5e6…` sahibi "OCR ile oku" düğmesine basınca yeniden okunur (~0,3–0,5 $). Sahiplerine haber vermek yeterli: `48aef5e6…` (durum `needs_ocr`, yeni sürümle OCR ile okunabilir) ve `8479526d…` (66 sayfa, 25 Ekim'den beri "işleniyor").

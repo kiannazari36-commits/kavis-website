@@ -15,6 +15,8 @@ export type Action = 'pdf' | 'question' | 'generate' | 'share';
 
 type Ctx = {
   trial: TrialStatus;
+  /** Asks the server again (after redeeming an invite code). */
+  refresh: () => Promise<void>;
   /** Runs `fn` if allowed, otherwise shows why it is locked. */
   guard: (action: Action, fn: () => void) => void;
 };
@@ -27,11 +29,11 @@ export function TrialProvider({ children }: { children: ReactNode }) {
   const [trial, setTrial] = useState<TrialStatus>(TRIAL_START);
 
   // From the server at start and after every sign-in.
+  const refresh = useCallback(() => getTrial().then((s) => void (s && setTrial(s))), []);
   useEffect(() => {
-    const load = () => getTrial().then((s) => s && setTrial(s));
-    load();
-    return onSignedIn(load);
-  }, []);
+    void refresh();
+    return onSignedIn(() => void refresh());
+  }, [refresh]);
   const [locked, setLocked] = useState<string | null>(null);
 
   const guard = useCallback(
@@ -47,7 +49,7 @@ export function TrialProvider({ children }: { children: ReactNode }) {
   );
 
   return (
-    <TrialContext.Provider value={{ trial, guard }}>
+    <TrialContext.Provider value={{ trial, guard, refresh }}>
       {children}
       {locked && (
         <div className={s.modal}>

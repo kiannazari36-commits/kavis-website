@@ -12,6 +12,7 @@ import { useContentLang, useSettings } from '../settings/SettingsProvider';
 import { currentUser, logOut } from '../api/auth';
 import { clearProfile, deleteAccount, getProfile, requestMyData, saveProfile, type Profile } from '../api/account';
 import { useTrial } from '../trial/TrialProvider';
+import RedeemCode from '../components/RedeemCode';
 import DeviceList from '../components/DeviceList';
 import { listDevices, signOutThisDevice, type Device } from '../api/devices';
 import { useAsync } from '../hooks/useAsync';
@@ -130,7 +131,9 @@ export default function Settings() {
               <span>{[profile.email, profile.school, studyLine(profile.department, profile.classYear, lang)].filter(Boolean).join(' · ')}</span>
               <span className={s.planTag}>
                 {trial.premium
-                  ? 'Premium'
+                  ? trial.premiumUntil
+                    ? t('codeActive').replace('{date}', new Date(trial.premiumUntil).toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric' }))
+                    : 'Premium'
                   : trial.ended
                     ? t('trialEnded')
                     : `${t('trialTitle')} · ${t('trialDaysLeft').replace('{n}', num(trial.daysLeft, lang))}`}
@@ -142,6 +145,11 @@ export default function Settings() {
             <button className={s.amb} onClick={() => navigate('/premium')}>
               {t('goPremium')}
             </button>
+          </section>
+          <section className={s.card}>
+            <Row title={t('codeHave')}>
+              <RedeemCode />
+            </Row>
           </section>
           {editing && (
             <form

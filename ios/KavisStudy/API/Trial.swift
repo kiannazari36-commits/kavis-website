@@ -18,6 +18,9 @@ struct TrialStatus: Equatable {
     /// Premium fair use (RPC `access_status` → `fair_use`): lessons added this subscription month and the day full speed returns.
     var fairUsed = 0
     var fairResetsOn: String?
+    /// When Premium ends and where it came from (`apple`, `promo` = invite code); nil without an end date.
+    var premiumUntil: Date?
+    var premiumSource: String?
 
     /// After the trial (and without Premium): reading old PDFs, notes, highlights, cards, summaries and
     /// offline use stay. New PDF upload, new assistant questions, new quizzes/cards and sharing need Premium.
@@ -49,13 +52,15 @@ enum TrialAPI {
     static func getTrial() async -> TrialStatus? {
         if let flag = MockFlag.value("trial"), let mock = mocks[flag] { return mock }
         struct Row: Decodable { let premium: Bool; let trial_ended: Bool; let days_left: Int; let lessons_used: Int; let questions_used: Int
+            let premium_until: String?; let premium_source: String?
             struct Fair: Decodable { let used: Int; let resets_on: String }
             let fair_use: Fair?
         }
         guard supabase.auth.currentUser != nil,
               let a: Row = try? await supabase.rpc("access_status").execute().value else { return nil }
         last = TrialStatus(premium: a.premium, ended: a.trial_ended, daysLeft: a.days_left, pdfsUsed: a.lessons_used, questionsUsed: a.questions_used,
-                           fairUsed: a.fair_use?.used ?? 0, fairResetsOn: a.fair_use?.resets_on)
+                           fairUsed: a.fair_use?.used ?? 0, fairResetsOn: a.fair_use?.resets_on,
+                           premiumUntil: a.premium_until.flatMap(PromoAPI.parseDate), premiumSource: a.premium_source)
         return last
     }
 }
