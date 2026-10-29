@@ -21,11 +21,13 @@ enum KStudy {
 extension PlanTask {
     /// Where a task is done: the lesson, its exam, the cards, or the course.
     var route: Route {
+        let course: Route = courseId.map { .course($0) } ?? .courses
         switch target {
-        case "reader" where materialId != nil: .reader(materialId!)
-        case "cards", "review": .cards(courseId)
-        case "quiz", "exam_prep" where materialId != nil: .quiz(QuizTarget(materialId: materialId!, kind: .final))
-        default: courseId.map { .course($0) } ?? .courses
+        case "reader": return materialId.map { .reader($0) } ?? course
+        case "cards", "review": return .cards(courseId)
+        // A quiz task without a lesson opens the course (the `where` of one pattern used to cover only "exam_prep" and crashed here).
+        case "quiz", "exam_prep": return materialId.map { .quiz(QuizTarget(materialId: $0, kind: .final)) } ?? course
+        default: return course
         }
     }
 }

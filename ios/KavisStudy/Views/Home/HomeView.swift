@@ -58,7 +58,7 @@ struct HomeView: View {
                     .padding(.top, wide ? 250 : KLayout.top(296, minimum: 120))
             }
             if planOpen && !wide {
-                PlanPanel(tasks: todayTasks, onClose: { withAnimation(.easeOut(duration: 0.25)) { planOpen = false } }, onItem: openTask, onWeek: { planOpen = false; app.go(.weekPlan) })
+                PlanPanel(tasks: todayTasks, onClose: { withAnimation(.easeOut(duration: 0.25)) { planOpen = false } }, onItem: openTask, onToggle: toggleDone, onWeek: { planOpen = false; app.go(.weekPlan) })
             }
             if let key = trial.lockedKey {
                 TrialLockedDialog(
@@ -263,23 +263,27 @@ struct HomeView: View {
             ForEach(todayTasks) { item in
                 let look = item.look
                 let done = item.status == "done"
-                Button { openTask(item) } label: {
-                    HStack(spacing: 12) {
-                        KIcon(name: done ? .check : look.icon, size: 18, width: 1.6).foregroundStyle(look.fg)
-                            .frame(width: 42, height: 42).background(look.chip, in: Circle())
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(item.title).font(KFont.ui(15, .medium, lang: lang)).foregroundStyle(KPhone.text)
-                                .strikethrough(done).lineLimit(2).multilineTextAlignment(.leading)
-                            Text([t("plan.min", ["m": Format.num(item.minutes, lang)]), item.why].filter { !$0.isEmpty }.joined(separator: " · "))
-                                .font(KFont.ui(12, lang: lang)).foregroundStyle(KPhone.text2).lineLimit(2).multilineTextAlignment(.leading)
+                HStack(spacing: 12) {
+                    Button { openTask(item) } label: {
+                        HStack(spacing: 12) {
+                            KIcon(name: look.icon, size: 18, width: 1.6).foregroundStyle(look.fg)
+                                .frame(width: 42, height: 42).background(look.chip, in: Circle())
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(item.title).font(KFont.ui(15, .medium, lang: lang)).foregroundStyle(KPhone.text)
+                                    .strikethrough(done).lineLimit(2).multilineTextAlignment(.leading)
+                                Text([t("plan.min", ["m": Format.num(item.minutes, lang)]), item.why].filter { !$0.isEmpty }.joined(separator: " · "))
+                                    .font(KFont.ui(12, lang: lang)).foregroundStyle(KPhone.text2).lineLimit(2).multilineTextAlignment(.leading)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .contentShape(Rectangle())
                     }
-                    .padding(.horizontal, 14).padding(.vertical, 12)
-                    .kPhoneCard(radius: 22)
-                    .opacity(done ? 0.6 : 1)
+                    .buttonStyle(.plain)
+                    PlanCheck(done: done, title: item.title) { toggleDone(item) }
                 }
-                .buttonStyle(.plain)
+                .padding(.horizontal, 14).padding(.vertical, 12)
+                .kPhoneCard(radius: 22)
+                .opacity(done ? 0.6 : 1)
             }
             examCard
             Button { app.go(.timetable) } label: {
@@ -484,11 +488,18 @@ struct HomeView: View {
         if reviewMenuOpen && later == nil && todayReview != nil { reviewMenu }
     }
 
-    /// A plan task opens where it is done (the lesson, its exam or the cards) and counts as done.
+    /// A plan task opens where it is done (the lesson, its exam or the cards). It is not ticked: the student does that.
     private func openTask(_ task: PlanTask) {
         planOpen = false
         app.go(task.route)
-        if task.status != "done" { Task { await PlanAPI.setDone(task.id, true) } }
+    }
+
+    /// The student ticks a task as done, or takes the tick back.
+    private func toggleDone(_ task: PlanTask) {
+        guard let i = todayTasks.firstIndex(where: { $0.id == task.id }) else { return }
+        let done = todayTasks[i].status != "done"
+        todayTasks[i].status = done ? "done" : "todo"
+        Task { await PlanAPI.setDone(task.id, done) }
     }
 
     private func reviewHero(_ r: TodayReview) -> some View {

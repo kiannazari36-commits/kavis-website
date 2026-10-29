@@ -279,3 +279,7 @@ Technical notes and decisions:
 - [x] Deployed: `daily-planner` v1, `send-notifications` v1, `grade-quiz` v6 (exam-result notification)
 - [ ] Not deployed yet: `build-plan` only (it just moved its code to `build.ts`, same behaviour) — deploy it together with turning push on. `process-material` is live (version 9, 27 Oct 2026).
 - Note: logins made before 27 Oct 2026 have no saved session on their device row; they are ended at once only after their next sign-in (or an app start that calls `register_device`)
+
+## iPhone / iPad: same as the web (30 Oct 2026)
+- [x] "Bugünün planı" (phone panel and iPad column): a row opens its task, the circle at the end is ticked by the student only (opening no longer ticks it); fixed a crash when a "quiz" plan task had no lesson (`PlanTask.route`). Built and tried in the iPhone simulator on the local backend; iPad not looked at (same code)
+- [x] Cards: due cards on weak topics come first (`CardsAPI.dueCards`, same rule as the web). Built, not tried in the simulator: the local database lacks the new `flashcards.material_id` column (only the live one has it)

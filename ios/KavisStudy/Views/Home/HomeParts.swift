@@ -135,6 +135,7 @@ struct PlanPanel: View {
     let tasks: [PlanTask]
     var onClose: () -> Void
     var onItem: (PlanTask) -> Void
+    var onToggle: (PlanTask) -> Void
     var onWeek: () -> Void
 
     var body: some View {
@@ -173,29 +174,30 @@ struct PlanPanel: View {
                             ForEach(tasks) { item in
                                 let look = item.look
                                 let done = item.status == "done"
-                                Button { onItem(item) } label: {
-                                    HStack(spacing: 12) {
-                                        KIcon(name: done ? .check : look.icon, size: 19, width: 1.6)
-                                            .foregroundStyle(look.fg)
-                                            .frame(width: 44, height: 44)
-                                            .background(look.chip, in: Circle())
-                                        VStack(alignment: .leading, spacing: 2) {
-                                            Text(item.title).font(KFont.ui(15, .medium, lang: lang)).foregroundStyle(KPhone.text)
-                                                .strikethrough(done).lineLimit(2).multilineTextAlignment(.leading)
-                                            Text([prefs.t("plan.min", ["m": Format.num(item.minutes, lang)]), item.why].filter { !$0.isEmpty }.joined(separator: " · "))
-                                                .font(KFont.ui(12, lang: lang)).foregroundStyle(KPhone.text2).lineLimit(2).multilineTextAlignment(.leading)
+                                HStack(spacing: 12) {
+                                    Button { onItem(item) } label: {
+                                        HStack(spacing: 12) {
+                                            KIcon(name: look.icon, size: 19, width: 1.6)
+                                                .foregroundStyle(look.fg)
+                                                .frame(width: 44, height: 44)
+                                                .background(look.chip, in: Circle())
+                                            VStack(alignment: .leading, spacing: 2) {
+                                                Text(item.title).font(KFont.ui(15, .medium, lang: lang)).foregroundStyle(KPhone.text)
+                                                    .strikethrough(done).lineLimit(2).multilineTextAlignment(.leading)
+                                                Text([prefs.t("plan.min", ["m": Format.num(item.minutes, lang)]), item.why].filter { !$0.isEmpty }.joined(separator: " · "))
+                                                    .font(KFont.ui(12, lang: lang)).foregroundStyle(KPhone.text2).lineLimit(2).multilineTextAlignment(.leading)
+                                            }
+                                            .frame(maxWidth: .infinity, alignment: .leading)
                                         }
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        KIcon(name: .chevron, size: 14, width: 2, flipsInRTL: true)
-                                            .foregroundStyle(KPhone.text2)
-                                            .frame(width: 34, height: 34)
-                                            .overlay(Circle().stroke(KPhone.line, lineWidth: 1))
+                                        .contentShape(Rectangle())
                                     }
-                                    .padding(.horizontal, 14).padding(.vertical, 12)
-                                    .frame(minHeight: 72)
-                                    .kPhoneCard(radius: 22)
-                                    .opacity(done ? 0.6 : 1)
+                                    .buttonStyle(.plain)
+                                    PlanCheck(done: done, title: item.title) { onToggle(item) }
                                 }
+                                .padding(.horizontal, 14).padding(.vertical, 12)
+                                .frame(minHeight: 72)
+                                .kPhoneCard(radius: 22)
+                                .opacity(done ? 0.6 : 1)
                             }
                         }
                         .padding(.horizontal, 18).padding(.bottom, 30)
@@ -333,5 +335,25 @@ struct TrialLockedDialog: View {
             .accessibilityAddTraits(.isModal)
         }
         .transition(.opacity)
+    }
+}
+
+/// The circle at the end of a plan row: the student ticks a task as done (or takes it back) by hand; opening the task does not tick it.
+struct PlanCheck: View {
+    let done: Bool
+    let title: String
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Circle().fill(done ? KStudy.ok : .clear).frame(width: 26, height: 26)
+                .overlay(Circle().stroke(done ? .clear : KStudy.line, lineWidth: 1.5))
+                .overlay { if done { KIcon(name: .check, size: 13, width: 2.4).foregroundStyle(KPhone.ctaText) } }
+                .frame(width: 44, height: 44)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(title)
+        .accessibilityAddTraits(done ? [.isButton, .isSelected] : .isButton)
     }
 }
