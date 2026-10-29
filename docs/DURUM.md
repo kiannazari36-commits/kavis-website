@@ -40,4 +40,4 @@ Bu dosya Kian için: ne bitti, ne bekliyor, kim ne yapacak. Ayrıntı için `TOD
 **Sonra:** iPad'in kalan küçük işleri, Android.
 
 ## Oturumlar (Claude'da)
-Her iş ayrı bir oturumda yapıldı. Biten hepsi "Bitti" grubunda. Yeni iş için yeni oturum aç; eskisine dönmen gerekmez.
+Biten oturumlar arşivlendi; kayıtları `docs/OTURUM-KAYDI.md` içinde (ne yapıldı, ne kaldı). Yeni iş için yeni oturum aç; eskisine dönmen gerekmez.
