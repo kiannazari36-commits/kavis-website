@@ -27,6 +27,8 @@ Bu dosya Kian için: ne bitti, ne bekliyor, kim ne yapacak. Ayrıntı için `TOD
 10. Anthropic anahtarı ~22 Ocak 2027'de bitiyor, yenile.
 
 ## Son canlıya alınanlar (28 Ekim 2026)
+- **Hatalarım kartları PDF'ine bağlandı** (30 Ekim 2026, Kian'ın evetiyle canlıya alındı): migration `20261029225801_mistake_cards_material` (kartlara `material_id`, PDF silinince kart da gider; PDF'i silinmiş 4 eski kart temizlendi) + `grade-quiz` v9. Bugünün planında göreve tıklayınca göreve gitme de yayında.
+
 - **Önbellek (prompt caching) + sahip harcama tablosu** — 28 Ekim 2026'da canlıya alındı: migration `20261028133745_usage_cache_tokens`, fonksiyonlar `assistant` v10, `more-questions` v3, `lesson-summary` v3, `generate-quiz` v4, `owner-overview` v2. Ücretli yapay zekâ testi yapılmadı; ilk gerçek sorularda sahip sayfasında önbellek oranı görünür.
 - **Davet kodu (30 gün ücretsiz Premium)** — 28 Ekim 2026'da canlıya alındı: migration `20261028133734_promo_codes`, Edge Function `redeem-code` v1 (`verify_jwt = true`), web push ile yayında. Kalan: iPhone için yeni TestFlight sürümü; kod yapmak için `supabase/scripts/make-codes.sql`'i Supabase SQL Editor'e yapıştır. Aylık yapay zekâ bütçesi öğrenci başına 3 $ olarak kalır.
 - **Aynı PDF'in ortak işlenmesi** canlıya alındı (28 Ekim): migration `20261028120304_shared_lessons.sql` + `process-material` (v10). Canlıda kontrol edildi: sütun var, kopyalama fonksiyonunu sadece sunucu çağırabiliyor, öğrenci parmak izini değiştiremiyor. Aynı dosyayı yükleyen ikinci öğrenci için yapay zekâ çağrılmaz. Gizlilik metnine bu cümle eklendi (28 Ekim, 4 dilde, madde 4); avukat kontrolüne dahil.
