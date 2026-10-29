@@ -11,21 +11,25 @@ type Row = {
   ease: number;
   reps: number;
   again_count: number;
+  material_id: string | null;
   card_decks: { title: string | null; lang: FlashCard['lang']; course_id: string | null; material_id: string | null };
 };
 
+type WeakTopic = { material_topics: { material_id: string; page_from: number | null; page_to: number | null } };
+
 /**
- * Cards due now (spaced repetition), oldest first; optionally only one course's decks, or one lesson's deck
+ * Cards due now (spaced repetition), cards on the student's weak topics first, then oldest first; optionally only one course's decks, or one lesson's deck
  * (from the reader).
  * Cards are made by the server (lesson processing, "add mistakes to cards"); the app only updates the review state.
  */
 export async function dueCards(where: { courseId?: string; materialId?: string } = {}, limit = 30): Promise<FlashCard[]> {
+  // Take more than needed, so weak-topic cards can move to the front before the cut.
   let q = supabase
     .from('flashcards')
-    .select('id, question, answer, note, page, interval_days, ease, reps, again_count, card_decks!inner(title, lang, course_id, material_id)')
+    .select('id, question, answer, note, page, interval_days, ease, reps, again_count, material_id, card_decks!inner(title, lang, course_id, material_id)')
     .lte('due_at', new Date().toISOString())
     .order('due_at')
-    .limit(limit);
+    .limit(Math.max(limit * 5, 150));
   if (where.materialId) q = q.eq('card_decks.material_id', where.materialId);
   else if (where.courseId) q = q.eq('card_decks.course_id', where.courseId);
   const { data, error } = await q.returns<Row[]>();
@@ -33,7 +37,20 @@ export async function dueCards(where: { courseId?: string; materialId?: string }
     console.error('dueCards', error);
     return [];
   }
-  return data.map((r) => ({
+  // A card is on a weak topic when its page lies in the page range of a weak topic of the same lesson (mistake cards
+  // carry their lesson in `material_id`, lesson cards in their deck).
+  const { data: weakRows } = await supabase
+    .from('topic_progress')
+    .select('material_topics!inner(material_id, page_from, page_to)')
+    .eq('state', 'weak')
+    .returns<WeakTopic[]>();
+  const weak = (weakRows ?? []).map((w) => w.material_topics);
+  const onWeakTopic = (r: Row) => {
+    const lesson = r.material_id ?? r.card_decks.material_id;
+    return r.page !== null && weak.some((t) => t.material_id === lesson && t.page_from !== null && r.page! >= t.page_from && r.page! <= (t.page_to ?? t.page_from));
+  };
+  const sorted = [...data].sort((a, b) => Number(onWeakTopic(b)) - Number(onWeakTopic(a))).slice(0, limit);
+  return sorted.map((r) => ({
     id: r.id,
     q: r.question,
     a: r.answer,
