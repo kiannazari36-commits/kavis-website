@@ -73,7 +73,8 @@ Everything that is not finished yet. Updated after every step.
   - [x] School timetable screen `/schedule` (design NewSchedule; from the plan page's "Okul programım"): tomorrow's classes, day tabs, reminder bell per class, add / delete classes (`timetable_entries`), reminder switches and time (`user_settings.class_*`), notification preview + sample browser notification
   - [x] Timetable from a photo / PDF: Edge Function `import-timetable` reads it (AI, ~1-2 cents), the student unticks wrong rows and adds the rest
 - [x] Local test copy of the backend (`supabase start` + `dev:local`), so Claude can test with fake accounts (25 Oct 2026)
-- [ ] Email sending for the 6-digit code: Supabase's built-in email is only for testing (few emails per hour); a real email provider (custom SMTP) before launch
+- [x] Email sending for the 6-digit code (29 Oct 2026): Resend (region eu-west-1, domain kavis.study) as custom SMTP in Supabase, sender kod@kavis.study, 100 emails/hour; "Confirm signup" template shows {{ .Token }} in tr/en/fa/ar by `app_lang`; web shows the code screen (`EMAIL_CODE = true`); Site URL https://kavis.study
+  - [ ] Other Supabase email templates (reset password, change email) still the English default: translate later
 - [x] Edge Functions (none built yet; list in `docs/BACKEND.md`); secrets only in Supabase secrets (checked 27 Oct 2026: done)
 - [ ] Fill `course_catalog` per department (the design has the pharmacy list)
 - [x] Connect the iOS app (`supabase-swift`) (checked 27 Oct 2026: done)

@@ -14,9 +14,9 @@ type Mode = 'signup' | 'login' | 'verify' | 'forgot' | 'reset';
 const MODES: Mode[] = ['login', 'verify', 'forgot', 'reset'];
 
 const RESEND_SECONDS = 42;
-// Sign-up confirmation: false = the email has a link (now), true = a 6-digit code (needs {{ .Token }} in the
-// Supabase "Confirm sign up" template). The code screen of the design stays here for later.
-const EMAIL_CODE = false;
+// Sign-up confirmation: false = the email has a link, true = a 6-digit code (now; needs {{ .Token }} in the
+// Supabase "Confirm sign up" template, set 29 Oct 2026).
+const EMAIL_CODE = true;
 
 /** After login: if the account is already on 2 devices, choose one to sign out first. */
 async function afterLogin(navigate: (to: string) => void) {
