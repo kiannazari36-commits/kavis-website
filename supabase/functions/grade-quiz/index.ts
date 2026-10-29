@@ -98,11 +98,11 @@ Deno.serve(async (req) => {
 
   const { data: attempt } = await admin
     .from('quiz_attempts')
-    .select('id, quiz_id, user_id, score, level, quizzes(course_id, lang, kind)')
+    .select('id, quiz_id, user_id, score, level, quizzes(course_id, lang, kind, material_id)')
     .eq('id', attempt_id)
     .maybeSingle();
   if (!attempt || attempt.user_id !== uid) return json({ error: 'not found' }, 404);
-  const quiz = attempt.quizzes as unknown as { course_id: string | null; lang: string; kind: string };
+  const quiz = attempt.quizzes as unknown as { course_id: string | null; lang: string; kind: string; material_id: string | null };
 
   const { data: answers } = await admin
     .from('quiz_answers')
@@ -189,9 +189,16 @@ Deno.serve(async (req) => {
       const { data: existing } = await admin.from('flashcards').select('question').eq('deck_id', deck.id);
       // The question part of each card (the options come after an empty line), to skip mistakes already added.
       const have = new Set((existing ?? []).map((c) => (c.question as string).split('\n\n')[0]));
+      // The lesson each mistake belongs to (its topic's lesson, else the quiz's), so the card goes when the lesson is deleted.
+      const topicIds = [...new Set(g.confidentMistakes.map((q) => q.topic_id).filter((x): x is string => !!x))];
+      const { data: topics } = topicIds.length
+        ? await admin.from('material_topics').select('id, material_id').in('id', topicIds)
+        : { data: [] as { id: string; material_id: string }[] };
+      const lessonOf = new Map((topics ?? []).map((x) => [x.id, x.material_id]));
       const cards = g.confidentMistakes
         .filter((q) => !have.has(q.text))
         .map((q) => ({
+          material_id: (q.topic_id && lessonOf.get(q.topic_id)) || quiz.material_id || null,
           deck_id: deck!.id,
           user_id: uid,
           // The options stay on the card, so a test question can still be answered.
