@@ -337,6 +337,8 @@
 
 .planText {
   flex: 1;
+  color: inherit;
+  text-decoration: none;
   display: flex;
   flex-direction: column;
   gap: 2px;

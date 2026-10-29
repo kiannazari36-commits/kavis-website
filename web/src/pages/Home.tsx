@@ -9,7 +9,7 @@ import { getProfile } from '../api/account';
 import { useAsync } from '../hooks/useAsync';
 import { courseCount, duration, num } from '../i18n/format';
 import { daysUntil, isoToday } from '../api/courses';
-import { ensureWeekPlan, getTodayReview, setReview, setTaskDone } from '../api/plan';
+import { ensureWeekPlan, getTodayReview, setReview, setTaskDone, taskLink } from '../api/plan';
 import { listOwnPlan } from '../api/ownPlan';
 import { useSettings } from '../settings/SettingsProvider';
 import { useTrial } from '../trial/TrialProvider';
@@ -50,7 +50,7 @@ export default function Home() {
   const weekdayNow = ((new Date().getDay() + 6) % 7) + 1;
   const todayTasks =
     mode === 'aim'
-      ? (week?.tasks ?? []).filter((x) => x.day === isoToday()).map((x) => ({ ...x, own: false, link: '' }))
+      ? (week?.tasks ?? []).filter((x) => x.day === isoToday()).map((x) => ({ ...x, own: false, link: taskLink(x) }))
       : mode === 'own'
         ? (own ?? [])
             .filter((x) => x.weekday === weekdayNow)
@@ -199,10 +199,10 @@ export default function Home() {
               return (
                 <div key={p.id} className={s.planRow}>
                   <span className={`mono ${s.time}`}>{p.time}</span>
-                  <span className={s.planText}>
+                  <Link to={p.link} className={s.planText}>
                     <b>{p.title}</b>
                     <span>{`${duration(p.minutes, lang)} · ${p.why}`}</span>
-                  </span>
+                  </Link>
                   {p.own ? (
                     <Link to={p.link} className={s.check} aria-label={p.title}>
                       <Icon name="chevron" size={13} width={2.4} className="flip-rtl" />
