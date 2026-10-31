@@ -114,8 +114,9 @@ export async function recentPdfs(n: number): Promise<{ course: Course; pdf: Pdf 
 export function courseStats(c: Course) {
   const minutes = c.pdfs.reduce((a, p) => a + p.minutes, 0);
   const pages = c.pdfs.reduce((a, p) => a + p.pages, 0);
-  const readPages = c.pdfs.reduce((a, p) => a + (p.pages * p.read) / 100, 0);
-  return { minutes, pages, pct: pages ? Math.round((readPages / pages) * 100) : 0 };
+  // Every PDF counts the same, so the total matches the rings the student sees.
+  const readSum = c.pdfs.reduce((a, p) => a + p.read, 0);
+  return { minutes, pages, pct: c.pdfs.length ? Math.round(readSum / c.pdfs.length) : 0 };
 }
 
 /** Today as YYYY-MM-DD in the student's local time. */
