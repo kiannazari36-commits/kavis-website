@@ -35,6 +35,8 @@ export type Course = {
   /** Rank among classmates (not on the server yet). */
   rank?: number;
   pdfs: Pdf[];
+  /** The exam summary made from the lecturer's sample questions (a lesson of its own kind; not counted in the PDFs). */
+  summary?: Pdf;
 };
 
 /** Part of a paragraph: plain text, or a hard word (term key) that opens an explanation. */

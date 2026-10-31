@@ -339,3 +339,30 @@
     grid-template-columns: 1fr;
   }
 }
+
+.makeAlt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 6px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  border: 1.5px solid var(--pri);
+  background: transparent;
+  color: var(--pri);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.openSum {
+  align-self: center;
+  border: 0;
+  background: transparent;
+  color: var(--text2);
+  font: inherit;
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+}

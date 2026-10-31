@@ -333,7 +333,13 @@
   "schPickOne": "En az bir ders seç.",
   "schBadFile": "Bu dosya okunamadı. Bir fotoğraf ya da en fazla 10 MB PDF seç.",
   "schReadFailed": "Program okunamadı. Daha net bir fotoğrafla tekrar dene.",
-  "schNoneFound": "Bu dosyada ders programı bulamadık."
+  "schNoneFound": "Bu dosyada ders programı bulamadık.",
+  "smp_sumBtn": "Çıkan konulardan sınav özeti üret",
+  "smp_sumRedo": "Sınav özetini yeniden üret",
+  "smp_sumOpen": "Hazır sınav özetini aç",
+  "smp_sumMaking": "Özet hazırlanıyor, bir iki dakika sürebilir…",
+  "smp_sumNote": "Sadece örnek sorularda çıkan konular, senin PDF’lerinden tam anlatılır ve okuma sayfasında açılır. Kalemle işaretleyebilir, asistana sorabilirsin.",
+  "smp_sumFolder": "Sınav özeti"
  },
  "en": {
   "pdfs": "PDFs",
@@ -669,7 +675,13 @@
   "schPickOne": "Tick at least one class.",
   "schBadFile": "This file could not be read. Choose a photo or a PDF of at most 10 MB.",
   "schReadFailed": "The timetable could not be read. Try again with a clearer photo.",
-  "schNoneFound": "We found no timetable in this file."
+  "schNoneFound": "We found no timetable in this file.",
+  "smp_sumBtn": "Make an exam summary of the asked topics",
+  "smp_sumRedo": "Make the exam summary again",
+  "smp_sumOpen": "Open the ready exam summary",
+  "smp_sumMaking": "Preparing the summary, this can take a minute or two…",
+  "smp_sumNote": "Only the topics asked in the sample questions, explained fully from your PDFs and opened on the reading page. You can highlight it and ask the assistant.",
+  "smp_sumFolder": "Exam summary"
  },
  "fa": {
   "pdfs": "PDFها",
@@ -1005,7 +1017,13 @@
   "schPickOne": "دست‌کم یک کلاس انتخاب کن.",
   "schBadFile": "این فایل خوانده نشد. یک عکس یا PDF حداکثر ۱۰ مگابایت انتخاب کن.",
   "schReadFailed": "برنامه خوانده نشد. با عکسی واضح‌تر دوباره امتحان کن.",
-  "schNoneFound": "در این فایل برنامهٔ درسی پیدا نکردیم."
+  "schNoneFound": "در این فایل برنامهٔ درسی پیدا نکردیم.",
+  "smp_sumBtn": "خلاصهٔ امتحان از مباحث پرسیده‌شده بساز",
+  "smp_sumRedo": "خلاصهٔ امتحان را دوباره بساز",
+  "smp_sumOpen": "باز کردن خلاصهٔ آمادهٔ امتحان",
+  "smp_sumMaking": "خلاصه آماده می‌شود، شاید یکی دو دقیقه طول بکشد…",
+  "smp_sumNote": "فقط مباحثی که در سؤال‌های نمونه آمده، از PDFهای خودت کامل توضیح داده می‌شود و در صفحهٔ مطالعه باز می‌شود. می‌توانی با مداد علامت بزنی و از دستیار بپرسی.",
+  "smp_sumFolder": "خلاصهٔ امتحان"
  },
  "ar": {
   "pdfs": "ملفات PDF",
@@ -1341,6 +1359,12 @@
   "schPickOne": "اختر محاضرة واحدة على الأقل.",
   "schBadFile": "تعذّرت قراءة هذا الملف. اختر صورة أو ملف PDF لا يزيد عن 10 ميغابايت.",
   "schReadFailed": "تعذّرت قراءة الجدول. حاول مرة أخرى بصورة أوضح.",
-  "schNoneFound": "لم نجد جدول محاضرات في هذا الملف."
+  "schNoneFound": "لم نجد جدول محاضرات في هذا الملف.",
+  "smp_sumBtn": "أنشئ ملخص امتحان من المواضيع المسؤول عنها",
+  "smp_sumRedo": "أنشئ ملخص الامتحان من جديد",
+  "smp_sumOpen": "افتح ملخص الامتحان الجاهز",
+  "smp_sumMaking": "يجري تجهيز الملخص، وقد يستغرق دقيقة أو دقيقتين…",
+  "smp_sumNote": "المواضيع التي وردت في الأسئلة النموذجية فقط، تُشرح كاملة من ملفاتك وتُفتح في صفحة القراءة. يمكنك التظليل وسؤال المساعد.",
+  "smp_sumFolder": "ملخص الامتحان"
  }
 }

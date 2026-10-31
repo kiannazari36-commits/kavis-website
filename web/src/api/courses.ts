@@ -46,18 +46,16 @@ async function load(): Promise<{ courses: Course[]; overrides: Record<string, Co
   const list = courses.data.map((c): Course => {
     if (c.content_lang_override) overrides[c.id] = c.content_lang_override;
     const next = c.course_exams.filter((e) => e.exam_date >= today).sort((a, b) => a.exam_date.localeCompare(b.exam_date))[0];
-    const pdfs = c.materials
-      .filter((m) => m.parent_id === null && (m.kind === 'pdf' || m.kind === 'photo'))
-      .map(
-        (m): Pdf => ({
-          id: m.id,
-          title: m.title,
-          pages: m.page_count ?? 0,
-          read: m.reading_progress[0]?.percent_read ?? 0,
-          minutes: Math.round(minutes.get(m.id) ?? 0),
-          lastRead: m.reading_progress[0]?.updated_at,
-        }),
-      );
+    const toPdf = (m: CourseRow['materials'][number]): Pdf => ({
+      id: m.id,
+      title: m.title,
+      pages: m.page_count ?? 0,
+      read: m.reading_progress[0]?.percent_read ?? 0,
+      minutes: Math.round(minutes.get(m.id) ?? 0),
+      lastRead: m.reading_progress[0]?.updated_at,
+    });
+    const pdfs = c.materials.filter((m) => m.parent_id === null && (m.kind === 'pdf' || m.kind === 'photo')).map(toPdf);
+    const summary = c.materials.find((m) => m.kind === 'exam_summary');
     return {
       id: c.id,
       name: c.name,
@@ -67,6 +65,7 @@ async function load(): Promise<{ courses: Course[]; overrides: Record<string, Co
       examDate: next?.exam_date,
       examKind: next?.kind,
       pdfs,
+      summary: summary && toPdf(summary),
     };
   });
   return { courses: list, overrides };
@@ -97,7 +96,7 @@ export async function getCourse(id: string): Promise<Course | null> {
 
 export async function getPdf(courseId: string, pdfId: string): Promise<{ course: Course; pdf: Pdf } | null> {
   const course = await getCourse(courseId);
-  const pdf = course?.pdfs.find((p) => p.id === pdfId);
+  const pdf = course?.pdfs.find((p) => p.id === pdfId) ?? (course?.summary?.id === pdfId ? course.summary : undefined);
   return course && pdf ? { course, pdf } : null;
 }
 

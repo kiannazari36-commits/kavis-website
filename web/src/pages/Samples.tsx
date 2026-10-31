@@ -14,6 +14,7 @@ import {
   generateExamPack,
   getStyle,
   listSamples,
+  makeExamSummary,
   setStyleUse,
   type QuestionType,
   type TeacherStyle,
@@ -47,7 +48,7 @@ export default function Samples() {
   const pdfIn = useRef<HTMLInputElement>(null);
   const [writing, setWriting] = useState(false);
   const [text, setText] = useState('');
-  const [busy, setBusy] = useState<'add' | 'analyze' | 'make' | null>(null);
+  const [busy, setBusy] = useState<'add' | 'analyze' | 'make' | 'summary' | null>(null);
 
   const addFiles = async (list: FileList | null) => {
     const files = [...(list ?? [])].filter((f) => f.size <= 15 * 1048576);
@@ -88,6 +89,16 @@ export default function Samples() {
       if ('error' in r) return toast(t(r.error === 'locked' ? 'trialQFull' : r.error === 'budget' ? 'askBudget' : 'smp_failed'));
       toast(t('smp_made').replace('{n}', num(r.questions, lang)));
       navigate(`/quiz?course=${courseId}&tab=quiz`);
+    });
+  const summary = courses.find((c) => c.id === courseId)?.summary;
+  const makeSummary = () =>
+    guard('generate', async () => {
+      if (!samples.length) return toast(t('smp_needSample'));
+      setBusy('summary');
+      const r = await makeExamSummary(courseId);
+      setBusy(null);
+      if ('error' in r) return toast(t(r.error === 'locked' ? 'trialQFull' : r.error === 'budget' ? 'askBudget' : 'smp_failed'));
+      navigate(`/reader?course=${courseId}&pdf=${r.materialId}`);
     });
   const toggle = (field: (typeof USES)[number][0], key: (typeof USES)[number][1]) => {
     if (!current) return;
@@ -230,6 +241,16 @@ export default function Samples() {
             {busy === 'make' ? t('smp_making') : t('smp_makeBtn')}
           </button>
           <span className={s.small}>{t('smp_makeNote')}</span>
+          <button className={s.makeAlt} aria-busy={busy === 'summary'} onClick={makeSummary} disabled={!courseId || busy === 'summary'}>
+            <Icon name="file" size={16} />
+            {busy === 'summary' ? t('smp_sumMaking') : t(summary ? 'smp_sumRedo' : 'smp_sumBtn')}
+          </button>
+          {summary && (
+            <button className={s.openSum} onClick={() => navigate(`/reader?course=${courseId}&pdf=${summary.id}`)}>
+              {t('smp_sumOpen')}
+            </button>
+          )}
+          <span className={s.small}>{t('smp_sumNote')}</span>
         </section>
       </div>
     </main>

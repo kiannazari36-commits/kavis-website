@@ -154,6 +154,26 @@ export default function CourseFolder() {
         </div>
       )}
 
+      {course.summary && (
+        <>
+          <div className={s.listHead}>
+            <h2>{t('smp_sumFolder')}</h2>
+          </div>
+          <div className={s.list}>
+            <Link to={`/reader?course=${course.id}&pdf=${course.summary.id}`} className={s.pdf}>
+              <span className={s.recIcon}>
+                <Icon name="file" size={22} />
+              </span>
+              <span className={s.pdfBody}>
+                <b>{course.summary.title}</b>
+                <span className={s.status}>{pdfStatus(course.summary, lang, t)}</span>
+              </span>
+              <Icon name="chevron" size={18} className={`flip-rtl ${s.chev}`} />
+            </Link>
+          </div>
+        </>
+      )}
+
       {recordings.length > 0 && (
         <>
           <div className={s.listHead}>

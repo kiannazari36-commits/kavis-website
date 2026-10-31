@@ -53,7 +53,7 @@ export async function latestThread(courseId: string | null, materialId?: string)
     listCourses(),
   ]);
   if (e2) console.error('assistant_messages', e2);
-  const lessons = new Map(courses.flatMap((c) => c.pdfs.map((p) => [p.id, p.title] as const)));
+  const lessons = new Map(courses.flatMap((c) => [...c.pdfs, ...(c.summary ? [c.summary] : [])].map((p) => [p.id, p.title] as const)));
   type Row = {
     id: string;
     role: 'user' | 'assistant';
