@@ -269,6 +269,10 @@ Technical notes and decisions:
 - [x] Test deploy on Vercel (free): https://kavis-website.vercel.app — no custom domain, search engines blocked; every push to `main` updates it
 - [x] Split the JavaScript per page (27 Oct 2026): pages load when opened (`React.lazy` in `web/src/App.tsx`); first download 340 KB → 264 KB gzip, style file 28 KB → 6 KB. The rest is shared code (translations, Supabase); could be cut further later
 
+## Before launch: AI budget and pricing (1 Nov 2026) — talk with Kian
+- Every account has a monthly AI budget of $3 (`MONTHLY_BUDGET_USD` in the Edge Functions, counted in `usage_monthly.cost_usd`, UTC month). Kian's own test account reached $3.03 in October (55 generations, 54 assistant questions) and the exam summary was refused ("Bu ayki yapay zekâ kullanım sınırına ulaştın"). Kian's October counter was reset to 0 by hand on 1 Nov 2026 (it was 3.0283).
+- Decide before launch: is $3 per student per month enough, what does one exam summary ($0.10-0.15 for 8 topics) / quiz / assistant question cost, and how the Premium price covers it. Pricing probably has to be redone.
+
 ## Public launch checklist (do all of these before opening the site to everyone)
 - [x] Real accounts and a real server (login, email verification, data per account) — replace `web/src/api/` mock functions (checked 27 Oct 2026: done)
 - [x] PDF processing and AI (reading page, questions, cards, summaries, assistant) with a cost limit per user and per month (checked 27 Oct 2026: done)
