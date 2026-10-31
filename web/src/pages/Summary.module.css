@@ -265,3 +265,36 @@
   font-weight: 600;
   vertical-align: 2px;
 }
+
+.term {
+  border: 0;
+  border-bottom: 1.5px dotted var(--term);
+  background: transparent;
+  border-radius: 4px;
+  padding: 0 2px;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.term:hover {
+  background: var(--term-bg);
+}
+
+.termOn {
+  background: rgba(242, 179, 61, 0.45);
+}
+
+.termNote {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  font-family: Poppins, Vazirmatn, sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+}

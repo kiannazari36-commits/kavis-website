@@ -5,7 +5,8 @@ import { num } from '../i18n/format';
 import Icon from '../components/Icon';
 import { useAsync } from '../hooks/useAsync';
 import { dirOf } from '../settings/SettingsProvider';
-import { lessonRecap, lessonSummaryData, type RecapPoint } from '../api/summary';
+import { lessonRecap, lessonSummaryData, lessonTerms, splitTerms, type RecapPoint } from '../api/summary';
+import { tapTerm } from '../api/reader';
 import s from './Summary.module.css';
 
 // Design: design/ScrReview.dc.html, tab "Bu ders" (Ders özeti), opened after the last section of a lesson:
@@ -18,6 +19,9 @@ export default function Summary() {
   const pdfId = params.get('pdf') ?? '';
   const courseId = params.get('course') ?? '';
   const data = useAsync(() => lessonSummaryData(pdfId, lang), [pdfId, lang]);
+  const terms = useAsync(() => lessonTerms(pdfId, lang), [pdfId, lang]) ?? [];
+  // The open explanation: the point's number and the word.
+  const [open, setOpen] = useState<{ i: number; id: string } | null>(null);
   const [recap, setRecap] = useState<{ points: RecapPoint[]; lang: string } | { error: string } | null>(null);
   useEffect(() => {
     if (pdfId) lessonRecap(pdfId).then(setRecap);
@@ -95,10 +99,33 @@ export default function Summary() {
               {recap.points.map((p, i) => (
                 <li key={i} className={p.weak ? s.weakPoint : undefined}>
                   {p.weak && <span className={s.weakMark}>{t('lsWeakMark')}</span>}
-                  {p.text}{' '}
+                  {splitTerms(p.text, terms).map((x, k) =>
+                    typeof x === 'string' ? (
+                      <span key={k}>{x}</span>
+                    ) : (
+                      <button
+                        key={k}
+                        className={open?.i === i && open.id === x.term.id ? `${s.term} ${s.termOn}` : s.term}
+                        aria-expanded={open?.i === i && open.id === x.term.id}
+                        onClick={() => {
+                          const on = open?.i === i && open.id === x.term.id;
+                          if (!on) tapTerm(x.term.id);
+                          setOpen(on ? null : { i, id: x.term.id });
+                        }}
+                      >
+                        {x.text}
+                      </button>
+                    ),
+                  )}{' '}
                   <button className={`mono ${s.pageLink}`} onClick={() => reader(p.page_from)}>
                     {pg(p.page_from, p.page_to)}
                   </button>
+                  {open?.i === i && terms.find((x) => x.id === open.id) && (
+                    <span className={s.termNote} role="note">
+                      <b>{terms.find((x) => x.id === open.id)!.name}</b>
+                      {terms.find((x) => x.id === open.id)!.text}
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>

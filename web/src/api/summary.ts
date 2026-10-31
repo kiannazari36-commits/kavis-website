@@ -60,3 +60,37 @@ export async function lessonRecap(materialId: string): Promise<{ points: RecapPo
   }
   return data as { points: RecapPoint[]; lang: Lang };
 }
+
+export type LessonTerm = { id: string; surface: string; name: string; text: string };
+
+/** The lesson's hard words with their explanation in the app language (the same words the reading page underlines). */
+export async function lessonTerms(materialId: string, lang: Lang): Promise<LessonTerm[]> {
+  type Row = { id: string; surface: string; explanation: Record<string, { name: string; text: string }> };
+  const { data, error } = await supabase.from('material_terms').select('id, surface, explanation').eq('material_id', materialId).returns<Row[]>();
+  if (error) console.error('lessonTerms', error);
+  return (data ?? [])
+    .map((r) => {
+      const ex = r.explanation[lang] ?? r.explanation.tr ?? Object.values(r.explanation)[0];
+      return { id: r.id, surface: r.surface, name: ex?.name ?? r.surface, text: ex?.text ?? '' };
+    })
+    .filter((t) => t.surface.trim() && t.text);
+}
+
+/** Splits a text at the hard words it contains (whole words, any letter case, longest word first). */
+export function splitTerms(text: string, terms: LessonTerm[]): (string | { term: LessonTerm; text: string })[] {
+  if (!terms.length) return [text];
+  const sorted = [...terms].sort((a, b) => b.surface.length - a.surface.length);
+  const esc = (x: string) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp(`(?<![\\p{L}\\p{N}])(${sorted.map((t) => esc(t.surface)).join('|')})(?![\\p{L}\\p{N}])`, 'giu');
+  const out: (string | { term: LessonTerm; text: string })[] = [];
+  let last = 0;
+  for (const m of text.matchAll(re)) {
+    const term = sorted.find((t) => t.surface.toLocaleLowerCase() === m[0].toLocaleLowerCase());
+    if (!term) continue;
+    if (m.index > last) out.push(text.slice(last, m.index));
+    out.push({ term, text: m[0] });
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) out.push(text.slice(last));
+  return out;
+}
