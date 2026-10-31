@@ -134,7 +134,8 @@
   "onlyFromAi": "Önce bu ders, gerekirse internet: {lesson}",
   "pageFind": "Sayfa no",
   "pageNotFound": "Bu derste böyle bir sayfa yok.",
-  "resumeAt": "Kaldığın yerden devam: sayfa {p}"
+  "resumeAt": "Kaldığın yerden devam: sayfa {p}",
+  "saveAsPdf": "PDF olarak kaydet"
  },
  "en": {
   "molDrugPage": "MOLECULAR STRUCTURE · DRUG ON PAGE {n}",
@@ -271,7 +272,8 @@
   "onlyFromAi": "This lesson first, the web if needed: {lesson}",
   "pageFind": "Page no.",
   "pageNotFound": "This lesson has no such page.",
-  "resumeAt": "Back where you stopped: page {p}"
+  "resumeAt": "Back where you stopped: page {p}",
+  "saveAsPdf": "Save as PDF"
  },
  "fa": {
   "molDrugPage": "ساختار مولکولی · دارویی که در صفحهٔ {n} آمده",
@@ -408,7 +410,8 @@
   "onlyFromAi": "اول این درس، در صورت نیاز اینترنت: {lesson}",
   "pageFind": "شماره صفحه",
   "pageNotFound": "این درس چنین صفحه‌ای ندارد.",
-  "resumeAt": "ادامه از جایی که ماندی: صفحه {p}"
+  "resumeAt": "ادامه از جایی که ماندی: صفحه {p}",
+  "saveAsPdf": "ذخیره به‌صورت PDF"
  },
  "ar": {
   "molDrugPage": "البنية الجزيئية · الدواء المذكور في الصفحة {n}",
@@ -545,6 +548,7 @@
   "onlyFromAi": "هذا الدرس أولًا، ثم الإنترنت عند الحاجة: {lesson}",
   "pageFind": "رقم الصفحة",
   "pageNotFound": "لا توجد صفحة كهذه في هذا الدرس.",
-  "resumeAt": "نكمل من حيث توقفت: الصفحة {p}"
+  "resumeAt": "نكمل من حيث توقفت: الصفحة {p}",
+  "saveAsPdf": "حفظ بصيغة PDF"
  }
 }

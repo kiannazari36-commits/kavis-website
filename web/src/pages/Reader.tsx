@@ -28,6 +28,7 @@ import { enterFullscreen, exitFullscreen, fullscreenElement, onFullscreenChange 
 import type { ShellContext } from '../components/AppShell';
 import { dirOf, useSettings } from '../settings/SettingsProvider';
 import ShareDialog from '../components/ShareDialog';
+import { printDoc } from '../api/printDoc';
 import type { ReaderBlock, ReaderDoc, ReaderTag, ReaderTerm, Segment } from '../api/types';
 import { useTrial } from '../trial/TrialProvider';
 import s from './Reader.module.css';
@@ -327,6 +328,8 @@ export default function Reader() {
   }
 
   const title = pdfInfo?.pdf.title ?? '';
+  // The exam summary has no share, recording or lesson-summary step; it can be saved as a PDF instead.
+  const isSummary = !!pdfInfo && pdfInfo.course.summary?.id === pdfId;
   const sec_ = Math.min(sec, doc.sections.length - 1);
   const section = doc.sections[sec_];
   const lastPage = atPage ?? lesson.lastPage;
@@ -364,6 +367,7 @@ export default function Reader() {
   const nextSection = () => {
     // After the last section: this lesson's summary ("Ders özeti").
     if (sec >= doc.sections.length - 1) {
+      if (isSummary) return navigate(`/courses/${courseId}`);
       navigate(`/summary?course=${courseId}&pdf=${pdfId}`);
       return;
     }
@@ -411,17 +415,25 @@ export default function Reader() {
               </button>
             ))}
           </div>
-          <button
-            className={s.round}
-            aria-label={t(recording ? 'recAudio' : 'rec_title')}
-            title={t(recording ? 'recAudio' : 'rec_title')}
-            onClick={() => navigate(recording ? `/recording?id=${recording.id}` : `/record?pdf=${pdfId}`)}
-          >
-            <Icon name="mic" size={20} />
-          </button>
-          <button className={s.round} aria-label={t('share')} onClick={() => guard('share', () => setShareOpen(true))}>
-            <Icon name="share" size={19} />
-          </button>
+          {!isSummary && (
+            <button
+              className={s.round}
+              aria-label={t(recording ? 'recAudio' : 'rec_title')}
+              title={t(recording ? 'recAudio' : 'rec_title')}
+              onClick={() => navigate(recording ? `/recording?id=${recording.id}` : `/record?pdf=${pdfId}`)}
+            >
+              <Icon name="mic" size={20} />
+            </button>
+          )}
+          {isSummary ? (
+            <button className={s.round} aria-label={t('saveAsPdf')} title={t('saveAsPdf')} onClick={() => printDoc(title, doc)}>
+              <Icon name="file" size={19} />
+            </button>
+          ) : (
+            <button className={s.round} aria-label={t('share')} onClick={() => guard('share', () => setShareOpen(true))}>
+              <Icon name="share" size={19} />
+            </button>
+          )}
           <button className={`${s.round} ${s.aa}`} aria-label={t('textSize')} onClick={cycleFont}>
             Aa
           </button>

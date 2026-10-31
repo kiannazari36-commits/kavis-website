@@ -84,7 +84,7 @@ Everything that is not finished yet. Updated after every step.
 ## Exam summary "Sınav özeti" (1 Nov 2026) — live on web since 1 Nov 2026 (tested locally with fake data)
 - Migration `20261101120000_exam_summary_kind.sql` (new `material_kind` value `exam_summary`): applied live by Kian in the SQL editor (no history row, so the file name is not a live version).
 - Edge Function `exam-summary` (`supabase/functions/exam-summary/`, `verify_jwt = true`): POST `{ course_id }` → `{ material_id, topics }`. Step 1 reads the sample questions → topics + lesson pages; step 2 explains each topic from those pages (PDF text only). Saved as a lesson of kind `exam_summary` (reader page: overview first, then one page per topic; chunks for the assistant). Costs about $0.04 per 3 topics (local test). `exam-summary` deployed live by Kian.
-- Web: Samples page has the new button (make / redo / open); course folder shows the summary under the PDFs (not counted in the "read" average). To do: check with a real PDF + real samples on the live site, same on iPhone/iPad, PDF download button.
+- Web: Samples page has the new button (make / redo / open); course folder shows the summary under the PDFs (not counted in the "read" average). To do: check with a real PDF + real samples on the live site, same on iPhone/iPad.
 
 ## Prompt caching (28 Oct 2026) — live since 28 Oct 2026
 - [x] `usage_monthly.cache_read_tokens` / `cache_write_tokens` (migration `20261028133745_usage_cache_tokens.sql`); `assistant`, `more-questions`, `lesson-summary`, `generate-quiz` fill them and price cache reads/writes. Lesson text is the first (cached) block in the last three; `assistant` also caches tools + instructions when only excerpts are sent (excerpts change every question, so they are not cached).
