@@ -777,7 +777,29 @@ function Block({ doc, block, terms, fontSize, term, onTerm, selected, highlights
           {block.heading}
         </h2>
       )}
-      <div className={`reading ${s.text}`} style={{ fontSize }} lang={doc.language} dir="auto">
+      {block.table && (
+        <div className={s.tableWrap} lang={doc.language} dir="auto">
+          <table className={s.table}>
+            <thead>
+              <tr>
+                {block.table.head.map((h) => (
+                  <th key={h}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {block.table.rows.map((r, i) => (
+                <tr key={i}>
+                  {r.map((c, k) => (
+                    <td key={k}>{c}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      <div className={`reading ${s.text}`} style={{ fontSize }} lang={doc.language} dir="auto" hidden={!!block.table}>
         {block.paragraphs.map((p, i) =>
           Array.isArray(p) ? (
             <p key={i}>{p.map(seg)}</p>

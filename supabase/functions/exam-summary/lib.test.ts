@@ -13,6 +13,7 @@ const topics: Topic[] = [
 const doc = buildDoc('tr', topics);
 check('overview first, one section per topic', doc.sections.length === 3 && doc.sections[0].blocks[0].pageFrom === 1);
 check('overview line names pdf, pages, style and count', doc.sections[0].blocks[0].paragraphs[0].text === 'Antitüberküloz ilaçlar — PDF: Tüberküloz ve Lepra, s. 3-11 — Bilgi, Yan etki — 7 soru');
+check('overview table has a header and one row per topic', doc.sections[0].blocks[0].table?.head.length === 4 && doc.sections[0].blocks[0].table?.rows[1].join('|') === 'Anemi|vitaminler · s. 22-25|Bilgi|6');
 check('topic page numbers follow the overview', doc.sections[1].blocks.every((b) => b.pageFrom === 2) && doc.sections[2].blocks.every((b) => b.pageFrom === 3));
 check('empty points and examples are left out', doc.sections[2].blocks.length === 1);
 check('first part heading carries the explanation label', doc.sections[1].blocks[0].heading === 'Konu anlatımı · Birinci basamak');

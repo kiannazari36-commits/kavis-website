@@ -52,6 +52,8 @@ export type ReaderBlock = {
   heading?: string;
   /** A paragraph is a list of segments, or one sentence the student can select. */
   paragraphs: (Segment[] | { selectable: true; text: string })[];
+  /** A table drawn under the heading (the exam summary's overview); the paragraphs hold the same rows as text for reading aloud and translating. */
+  table?: { head: string[]; rows: string[][] };
   /** true: the server marked a molecule; the viewer finds which one from the text (components/molecules.ts). */
   molecule?: boolean;
 };

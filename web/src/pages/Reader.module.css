@@ -1309,3 +1309,28 @@
   color: var(--text3);
   text-align: center;
 }
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.table th {
+  text-align: start;
+  padding: 8px 10px;
+  font-weight: 600;
+  color: var(--text2);
+  border-bottom: 1px solid var(--line);
+}
+
+.table td {
+  padding: 10px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
