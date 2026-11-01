@@ -14,6 +14,8 @@ import {
   generateExamPack,
   getStyle,
   listSamples,
+  type ExamFormat,
+  type StyleFormat,
   makeExamSummary,
   setStyleUse,
   type QuestionType,
@@ -26,6 +28,9 @@ import s from './Samples.module.css';
 // optional), then the server finds their style (question types, topics asked most, patterns); a switch decides
 // whether exam questions follow it; "Bu tarzda yeni sorular" makes the course's exam pack in that style.
 
+const FORMATS: StyleFormat[] = ['multiple_choice', 'fill_blank', 'true_false', 'calculation', 'other'];
+// Formats the student can ask for; none chosen = the lecturer's own formats.
+const CHOICES: ExamFormat[] = ['multiple_choice', 'fill_blank', 'true_false', 'calculation'];
 const TYPES: QuestionType[] = ['case', 'side_effects', 'dose', 'knowledge', 'structure'];
 // The style is used only for exam questions (cards and summaries stay as the lesson text says).
 const USES = [['use_in_quizzes', 'useInQuizzes', 'smp_useQuiz']] as const;
@@ -48,6 +53,7 @@ export default function Samples() {
   const pdfIn = useRef<HTMLInputElement>(null);
   const [writing, setWriting] = useState(false);
   const [text, setText] = useState('');
+  const [wanted, setWanted] = useState<ExamFormat[]>([]);
   const [busy, setBusy] = useState<'add' | 'analyze' | 'make' | 'summary' | null>(null);
 
   const addFiles = async (list: FileList | null) => {
@@ -84,7 +90,7 @@ export default function Samples() {
   const make = () =>
     guard('generate', async () => {
       setBusy('make');
-      const r = await generateExamPack(courseId);
+      const r = await generateExamPack(courseId, [], wanted);
       setBusy(null);
       if ('error' in r) return toast(t(r.error === 'locked' ? 'trialQFull' : r.error === 'budget' ? 'askBudget' : 'smp_failed'));
       toast(t('smp_made').replace('{n}', num(r.questions, lang)));
@@ -206,6 +212,20 @@ export default function Samples() {
                     </span>
                   </div>
                 ))}
+              {FORMATS.some((k) => (current.formats[k] ?? 0) > 0) && <span className={s.label}>{t('smp_formats')}</span>}
+              {FORMATS.filter((k) => (current.formats[k] ?? 0) > 0)
+                .sort((a, b) => (current.formats[b] ?? 0) - (current.formats[a] ?? 0))
+                .map((k) => (
+                  <div key={k} className={s.type}>
+                    <span className={s.typeText}>
+                      <b>{t(`fmt_${k}`)}</b>
+                      <span className="mono">%{num(current.formats[k] ?? 0, lang)}</span>
+                    </span>
+                    <span className={s.barBg}>
+                      <span className={s.bar} style={{ width: `${current.formats[k] ?? 0}%` }} />
+                    </span>
+                  </div>
+                ))}
               {current.topTopics.length > 0 && (
                 <>
                   <span className={s.label}>{t('smp_topics')}</span>
@@ -236,6 +256,20 @@ export default function Samples() {
               </div>
             </>
           )}
+          <span className={s.label}>{t('smp_formatLabel')}</span>
+          <div className={s.chips} role="group" aria-label={t('smp_formatLabel')}>
+            {CHOICES.map((k) => (
+              <button
+                key={k}
+                aria-pressed={wanted.includes(k)}
+                className={wanted.includes(k) ? s.chipOn : ''}
+                onClick={() => setWanted(wanted.includes(k) ? wanted.filter((x) => x !== k) : [...wanted, k])}
+              >
+                {t(`fmt_${k}`)}
+              </button>
+            ))}
+          </div>
+          <span className={s.small}>{t(wanted.length ? 'smp_formatChosen' : 'smp_formatAuto')}</span>
           <button className={s.make} aria-busy={busy === 'make'} onClick={make} disabled={!courseId || busy === 'make'}>
             <Icon name="spark" size={16} />
             {busy === 'make' ? t('smp_making') : t('smp_makeBtn')}

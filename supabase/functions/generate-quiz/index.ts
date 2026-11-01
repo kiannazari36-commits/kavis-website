@@ -60,7 +60,7 @@ type Out = {
 };
 
 const SYSTEM = `You write an exam-prep pack for one university course in a study app: exam questions and a short exam summary, from the lecturer's own lesson text.
-Question formats (kind): multiple_choice = 5 options, answer_index 0-based, model_answer ""; fill_blank = a sentence from the lesson with ONE key term replaced by "____" in text, options [], answer_index -1, model_answer = the missing term only (1-3 words); written = an open question answered in 1-3 sentences, options [], answer_index -1, model_answer = the key facts a right answer must contain. For fill_blank and written, explanation = a short pointer to where it is in the lesson. Use only the formats asked for. Rules for questions: only facts from the given pages; prefer what the lecturer said will be in the exam, the student's weak topics and central topics. For multiple choice exactly 5 options unless the lecturer's style says otherwise, answer_index 0-based, explanation = why the answer is right (1-2 sentences), lesson and page = where the answer is. 3 hints that help the student THINK: 1 = the key concept to recall, 2 = something that rules out some options (for fill_blank / written: a first letter or related concept), 3 = narrows it to about two options (for fill_blank / written: the nearest hint short of the answer); hints never mention pages and never contain the answer. If a lecturer style is given, follow its share of question types and its patterns.
+Question formats (kind): multiple_choice = 5 options, answer_index 0-based, model_answer ""; fill_blank = a sentence from the lesson with exactly ONE key term replaced by "____" (four underscores, no number) in text, even when the lecturer's samples use several numbered blanks, options [], answer_index -1, model_answer = the missing term only (1-3 words); written = an open question answered in 1-3 sentences, options [], answer_index -1, model_answer = the key facts a right answer must contain. For fill_blank and written, explanation = a short pointer to where it is in the lesson. Use only the formats asked for. Extra shapes (always kind written): true_false = text is ONE statement from the lesson, true or deliberately false; model_answer = the word for true or for false in the CONTENT LANGUAGE, and for a false statement a colon and the corrected statement. calculation = text gives the data of a short calculation from the lesson (formulation amounts, dilution, isotonicity, dose), model_answer = the final result with units rounded to 3 decimals (decimal comma in Turkish, no thousands separator) plus the formula in one short line. Rules for questions: only facts from the given pages; prefer what the lecturer said will be in the exam, the student's weak topics and central topics. For multiple choice exactly 5 options unless the lecturer's style says otherwise, answer_index 0-based, explanation = why the answer is right (1-2 sentences), lesson and page = where the answer is. 3 hints that help the student THINK: 1 = the key concept to recall, 2 = something that rules out some options (for fill_blank / written: a first letter or related concept), 3 = narrows it to about two options (for fill_blank / written: the nearest hint short of the answer); hints never mention pages and never contain the answer. If a lecturer style is given, follow its share of question types and its patterns.
 topics: 4-6 topics to revise most for this exam, most important first: lesson, pages, 3-4 short points each, reason ("teacher" = the lecturer stressed it or said it will be in the exam, "weak" = the student's weak topic, "samples" = asked often in the lecturer's old questions (only when a lecturer style is given), "base" = central to the course), teacher = the lecturer's words about it if given, else "".
 Write everything in the CONTENT LANGUAGE given.`;
 
@@ -79,9 +79,10 @@ Deno.serve(async (req) => {
   const count = Math.min(20, Math.max(5, Number(body.count) || 10));
   const TYPES = ['case', 'side_effects', 'dose', 'knowledge', 'structure'];
   const wanted = (Array.isArray(body.styles) ? body.styles : []).filter((x: unknown) => TYPES.includes(String(x))) as string[];
-  const KINDS = ['multiple_choice', 'fill_blank', 'written'] as const;
-  const kinds = (Array.isArray(body.types) ? body.types : []).filter((x: unknown) => (KINDS as readonly string[]).includes(String(x))) as (typeof KINDS)[number][];
-  if (!kinds.length) kinds.push('multiple_choice');
+  // Formats the student can ask for: true_false and calculation are written questions with a special shape.
+  const FORMATS = ['multiple_choice', 'fill_blank', 'written', 'true_false', 'calculation'] as const;
+  type Format = (typeof FORMATS)[number];
+  const asked = (Array.isArray(body.types) ? body.types : []).filter((x: unknown) => (FORMATS as readonly string[]).includes(String(x))) as Format[];
   if (typeof courseId !== 'string') return json({ error: 'course_id' }, 400);
   const { data: course } = await db.from('courses').select('user_id, name, language, content_lang_override').eq('id', courseId).maybeSingle();
   if (!course || course.user_id !== uid) return json({ error: 'not found' }, 404);
@@ -147,9 +148,15 @@ Deno.serve(async (req) => {
   const styleText = useStyle
     ? `Lecturer's question style (from their old questions): types in percent ${JSON.stringify((useStyle.distribution as { types?: unknown }).types)}, options per question ${(useStyle.distribution as { options?: number }).options ?? 5}, patterns: ${((useStyle.distribution as { patterns?: string[] }).patterns ?? []).join(' | ')}; topics asked most: ${(useStyle.top_topics as { title: string }[]).map((x) => x.title).join(', ')}`
     : 'Lecturer style unknown: mix short patient cases with knowledge questions.';
+  // No format chosen: follow the lecturer's formats (at least 10 percent each); without them multiple choice.
+  const shares = ((useStyle?.distribution as { formats?: Record<string, number> } | undefined)?.formats ?? {}) as Record<string, number>;
+  const auto = (Object.entries(shares).filter(([k, v]) => k !== 'other' && (FORMATS as readonly string[]).includes(k) && v >= 10) as [Format, number][]).sort((a, b) => b[1] - a[1]);
+  const formats: Format[] = asked.length ? asked : auto.length ? auto.map(([k]) => k) : ['multiple_choice'];
+  const kinds = [...new Set(formats.map((f) => (f === 'true_false' || f === 'calculation' ? 'written' : f)))] as ('multiple_choice' | 'fill_blank' | 'written')[];
   const wantedText = wanted.length ? `\nThe student asked for these question types only: ${wanted.join(', ')} (share them about equally).` : '';
 
-  const kindsText = `\nQuestion formats asked for (kind): ${kinds.join(', ')} — share them about equally.`;
+  const formatsText = asked.length || !auto.length ? `share them about equally` : `follow the lecturer's shares: ${auto.map(([k, v]) => `${k} ${v}%`).join(', ')}`;
+  const kindsText = `\nQuestion formats asked for: ${formats.join(', ')} — ${formatsText}. kind written is used for written, true_false and calculation questions (true_false and calculation have the shapes described in the rules).`;
   const user = `Course: ${course.name}\nCONTENT LANGUAGE: ${LANG_NAMES[lang] ?? 'Turkish'}\nWrite ${count} questions.\n\n${styleText}${wantedText}${kindsText}\n\nLessons:\n${lessons.map((l, i) => `L${i + 1}: ${l.title}`).join('\n')}\n\nTopics:\n${topicText || '-'}\n\nWhat the lecturer said in recorded classes:\n${quotes || '-'}`;
   // The chosen pages come first and are cached: a second quiz on the same pages reads them from the cache.
   const pagesText = `Pages:\n${chosen.map((p) => `[L${p.lesson} p.${p.page}] ${p.text}`).join('\n')}`;
@@ -175,13 +182,15 @@ Deno.serve(async (req) => {
 
     const { data: quiz, error } = await db
       .from('quizzes')
-      .insert({ user_id: uid, course_id: courseId, kind: 'exam_prep', lang, teacher_style: !!useStyle, options: { count, styles: wanted, types: kinds } })
+      .insert({ user_id: uid, course_id: courseId, kind: 'exam_prep', lang, teacher_style: !!useStyle, options: { count, styles: wanted, types: kinds, formats } })
       .select('id')
       .single();
     if (error) throw error;
+    // A lecturer's numbered blank like ___1___ is written as one plain blank; a fill_blank needs exactly one.
+    for (const q of out.questions) if (q.kind === 'fill_blank') q.text = q.text.replace(/_{3,}\d*_*/g, '____');
     const questions = out.questions.filter((q) =>
       kinds.includes(q.kind) &&
-      (q.kind === 'multiple_choice' ? q.options.length >= 2 && q.answer_index >= 0 && q.answer_index < q.options.length : q.model_answer.trim().length > 0 && (q.kind !== 'fill_blank' || q.text.includes('____'))),
+      (q.kind === 'multiple_choice' ? q.options.length >= 2 && q.answer_index >= 0 && q.answer_index < q.options.length : q.model_answer.trim().length > 0 && (q.kind !== 'fill_blank' || q.text.split('____').length === 2)),
     );
     if (questions.length) {
       const { error: e2 } = await db.from('quiz_questions').insert(

@@ -8,8 +8,13 @@ import type { QuestionKind } from './types';
 
 export type Sample = { id: string; kind: 'photo' | 'pdf' | 'text'; title: string; questions: number | null; added: string };
 export type QuestionType = 'case' | 'side_effects' | 'dose' | 'knowledge' | 'structure';
+/** How a question is asked: the three stored kinds plus true/false (with correction) and calculation, which are written questions. */
+export type ExamFormat = QuestionKind | 'true_false' | 'calculation';
+export type StyleFormat = 'multiple_choice' | 'fill_blank' | 'true_false' | 'calculation' | 'other';
 export type TeacherStyle = {
   types: Record<QuestionType, number>;
+  /** Share (percent) of each question format; empty for styles found before formats were learned. */
+  formats: Partial<Record<StyleFormat, number>>;
   options: number;
   patterns: string[];
   questions: number;
@@ -67,7 +72,7 @@ export async function deleteSample(id: string) {
 }
 
 type StyleRow = {
-  distribution: { types?: Record<QuestionType, number>; options?: number; patterns?: string[]; questions?: number };
+  distribution: { types?: Record<QuestionType, number>; formats?: Partial<Record<StyleFormat, number>>; options?: number; patterns?: string[]; questions?: number };
   top_topics: { title: string; count: number }[];
   use_in_quizzes: boolean;
   use_in_cards: boolean;
@@ -76,6 +81,7 @@ type StyleRow = {
 };
 const toStyle = (r: StyleRow): TeacherStyle => ({
   types: { case: 0, side_effects: 0, dose: 0, knowledge: 0, structure: 0, ...(r.distribution.types ?? {}) },
+  formats: r.distribution.formats ?? {},
   options: r.distribution.options ?? 5,
   patterns: r.distribution.patterns ?? [],
   questions: r.distribution.questions ?? 0,
@@ -128,10 +134,11 @@ export async function makeExamSummary(courseId: string): Promise<{ materialId: s
 
 /**
  * A new exam pack for the course (Edge generate-quiz, AI): in the question styles the student chose (none = a mix) and
- * the question kinds (multiple choice / fill in the blank / written),
+ * the question formats (multiple choice / fill in the blank / written / true-false / calculation; none = the lecturer's),
  * and like the lecturer's sample questions when the student added some.
  */
-export async function generateExamPack(courseId: string, styles: QuestionType[] = [], types: QuestionKind[] = ['multiple_choice'], count = 10): Promise<{ questions: number } | Fail> {
+export async function generateExamPack(courseId: string, styles: QuestionType[] = [], types: ExamFormat[] = [], count = 10): Promise<{ questions: number } | Fail> {
+  // No format chosen: the server follows the lecturer's formats (multiple choice when it does not know them).
   const { data, error } = await supabase.functions.invoke('generate-quiz', { body: { course_id: courseId, count, styles, types } });
   if (error) return fail(error);
   return { questions: (data as { questions: number }).questions };

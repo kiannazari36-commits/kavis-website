@@ -269,6 +269,10 @@ Technical notes and decisions:
 - [x] Test deploy on Vercel (free): https://kavis-website.vercel.app — no custom domain, search engines blocked; every push to `main` updates it
 - [x] Split the JavaScript per page (27 Oct 2026): pages load when opened (`React.lazy` in `web/src/App.tsx`); first download 340 KB → 264 KB gzip, style file 28 KB → 6 KB. The rest is shared code (translations, Supabase); could be cut further later
 
+## Question formats follow the lecturer (2 Nov 2026) — code done, tested locally, NOT live
+- `analyze-style` now also learns the question FORMATS (`distribution.formats`: multiple_choice, fill_blank, true_false, calculation, other, in percent). `generate-quiz` takes `types` = multiple_choice / fill_blank / written / true_false / calculation; none chosen = the lecturer's formats (those at 10% or more), else multiple choice. true_false and calculation are stored as `written` questions (model_answer "Yanlış: doğrusu ..." / result + formula). Numbered blanks (___1___) become one plain blank.
+- Web: Samples page shows the style's formats and a "Soru biçimi" choice. Live needs: deploy `analyze-style` and `generate-quiz` (Kian), then press "Tarzı yeniden çıkar" once so old styles learn the formats. Quiz page and Exam centre still send their own kinds. To do: same choice on iPhone/iPad; figure/table questions cannot be written as text.
+
 ## Before launch: AI budget and pricing (1 Nov 2026) — talk with Kian
 - Every account has a monthly AI budget of $3 (`MONTHLY_BUDGET_USD` in the Edge Functions, counted in `usage_monthly.cost_usd`, UTC month). Kian's own test account reached $3.03 in October (55 generations, 54 assistant questions) and the exam summary was refused ("Bu ayki yapay zekâ kullanım sınırına ulaştın"). Kian's October counter was reset to 0 by hand on 1 Nov 2026 (it was 3.0283).
 - Decide before launch: is $3 per student per month enough, what does one exam summary ($0.10-0.15 for 8 topics) / quiz / assistant question cost, and how the Premium price covers it. Pricing probably has to be redone.

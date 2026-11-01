@@ -339,7 +339,16 @@
   "smp_sumOpen": "Hazır sınav özetini aç",
   "smp_sumMaking": "Özet hazırlanıyor, bir iki dakika sürebilir…",
   "smp_sumNote": "Sadece örnek sorularda çıkan konular, senin PDF’lerinden tam anlatılır ve okuma sayfasında açılır. Kalemle işaretleyebilir, asistana sorabilirsin.",
-  "smp_sumFolder": "Sınav özeti"
+  "smp_sumFolder": "Sınav özeti",
+  "smp_formats": "Soru biçimleri",
+  "fmt_multiple_choice": "Çoktan seçmeli",
+  "fmt_fill_blank": "Boşluk doldurma",
+  "fmt_true_false": "Doğru / yanlış",
+  "fmt_calculation": "Hesaplama",
+  "fmt_other": "Tablo, şekil, eşleştirme",
+  "smp_formatLabel": "Soru biçimi",
+  "smp_formatAuto": "Seçmezsen, hocanın sorularındaki biçim oranlarına göre hazırlanır.",
+  "smp_formatChosen": "Sadece seçtiğin biçimlerde sorular hazırlanır."
  },
  "en": {
   "pdfs": "PDFs",
@@ -681,7 +690,16 @@
   "smp_sumOpen": "Open the ready exam summary",
   "smp_sumMaking": "Preparing the summary, this can take a minute or two…",
   "smp_sumNote": "Only the topics asked in the sample questions, explained fully from your PDFs and opened on the reading page. You can highlight it and ask the assistant.",
-  "smp_sumFolder": "Exam summary"
+  "smp_sumFolder": "Exam summary",
+  "smp_formats": "Question formats",
+  "fmt_multiple_choice": "Multiple choice",
+  "fmt_fill_blank": "Fill in the blank",
+  "fmt_true_false": "True / false",
+  "fmt_calculation": "Calculation",
+  "fmt_other": "Tables, figures, matching",
+  "smp_formatLabel": "Question format",
+  "smp_formatAuto": "If you choose none, questions follow the formats in your lecturer’s questions.",
+  "smp_formatChosen": "Questions are made only in the formats you chose."
  },
  "fa": {
   "pdfs": "PDFها",
@@ -1023,7 +1041,16 @@
   "smp_sumOpen": "باز کردن خلاصهٔ آمادهٔ امتحان",
   "smp_sumMaking": "خلاصه آماده می‌شود، شاید یکی دو دقیقه طول بکشد…",
   "smp_sumNote": "فقط مباحثی که در سؤال‌های نمونه آمده، از PDFهای خودت کامل توضیح داده می‌شود و در صفحهٔ مطالعه باز می‌شود. می‌توانی با مداد علامت بزنی و از دستیار بپرسی.",
-  "smp_sumFolder": "خلاصهٔ امتحان"
+  "smp_sumFolder": "خلاصهٔ امتحان",
+  "smp_formats": "قالب سؤال‌ها",
+  "fmt_multiple_choice": "چندگزینه‌ای",
+  "fmt_fill_blank": "جای‌خالی",
+  "fmt_true_false": "درست / نادرست",
+  "fmt_calculation": "محاسبه",
+  "fmt_other": "جدول، شکل، تطبیق",
+  "smp_formatLabel": "قالب سؤال",
+  "smp_formatAuto": "اگر چیزی انتخاب نکنی، سؤال‌ها طبق قالب سؤال‌های استادت ساخته می‌شوند.",
+  "smp_formatChosen": "سؤال‌ها فقط در قالب‌هایی که انتخاب کردی ساخته می‌شوند."
  },
  "ar": {
   "pdfs": "ملفات PDF",
@@ -1365,6 +1392,15 @@
   "smp_sumOpen": "افتح ملخص الامتحان الجاهز",
   "smp_sumMaking": "يجري تجهيز الملخص، وقد يستغرق دقيقة أو دقيقتين…",
   "smp_sumNote": "المواضيع التي وردت في الأسئلة النموذجية فقط، تُشرح كاملة من ملفاتك وتُفتح في صفحة القراءة. يمكنك التظليل وسؤال المساعد.",
-  "smp_sumFolder": "ملخص الامتحان"
+  "smp_sumFolder": "ملخص الامتحان",
+  "smp_formats": "أشكال الأسئلة",
+  "fmt_multiple_choice": "اختيار من متعدد",
+  "fmt_fill_blank": "ملء الفراغ",
+  "fmt_true_false": "صح / خطأ",
+  "fmt_calculation": "حساب",
+  "fmt_other": "جداول وأشكال وتوصيل",
+  "smp_formatLabel": "شكل السؤال",
+  "smp_formatAuto": "إن لم تختر شيئًا، تُصاغ الأسئلة وفق أشكال أسئلة أستاذك.",
+  "smp_formatChosen": "تُصاغ الأسئلة بالأشكال التي اخترتها فقط."
  }
 }

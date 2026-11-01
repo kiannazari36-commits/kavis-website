@@ -37,6 +37,7 @@ const str = { type: 'string' };
 const SCHEMA = obj({
   samples: { type: 'array', items: obj({ sample: int, questions: int }) },
   types: obj({ case: int, side_effects: int, dose: int, knowledge: int, structure: int }),
+  formats: obj({ multiple_choice: int, fill_blank: int, true_false: int, calculation: int, other: int }),
   options: int,
   top_topics: { type: 'array', items: obj({ title: str, count: int }) },
   patterns: { type: 'array', items: str },
@@ -44,6 +45,7 @@ const SCHEMA = obj({
 type Out = {
   samples: { sample: number; questions: number }[];
   types: Record<'case' | 'side_effects' | 'dose' | 'knowledge' | 'structure', number>;
+  formats: Record<'multiple_choice' | 'fill_blank' | 'true_false' | 'calculation' | 'other', number>;
   options: number;
   top_topics: { title: string; count: number }[];
   patterns: string[];
@@ -53,6 +55,7 @@ const SYSTEM = (lang: string) => `You study a university lecturer's exam questio
 You get several samples (numbered S1, S2, …): photos, PDFs or pasted text. Return JSON:
 - samples: for each sample its number and how many questions it holds.
 - types: the share of each question type in percent (all five add up to 100): case = patient case ("which drug?"), side_effects = side effects / interactions / contraindications, dose = mechanism, dose and calculations, knowledge = plain facts and definitions, structure = chemical structure / formulation / technology.
+- formats: the share of each question FORMAT in percent (all five add up to 100): multiple_choice = pick from options, fill_blank = fill in the blanks / complete the sentence, true_false = mark statements true or false (often correcting the false ones), calculation = a numeric task (formulation amounts, dilution, isotonicity, dose), other = tables to fill, figures to name, matching, short open answers.
 - options: the usual number of options in multiple-choice questions (0 if they are not multiple choice).
 - top_topics: the topics asked most (at most 6), with how many questions were about each; use the course's topic names when one fits.
 - patterns: 2-5 short notes on how the lecturer asks (e.g. "Cases are 2-3 sentences and start with age and sex", "Often asks which drug must NOT be given"). Write them in ${lang}.`;
@@ -113,7 +116,7 @@ Deno.serve(async (req) => {
     const style = {
       course_id: courseId,
       user_id: uid,
-      distribution: { types: out.types, options: out.options, patterns: out.patterns.slice(0, 5), questions: out.samples.reduce((a, s) => a + s.questions, 0) },
+      distribution: { types: out.types, formats: out.formats, options: out.options, patterns: out.patterns.slice(0, 5), questions: out.samples.reduce((a, s) => a + s.questions, 0) },
       top_topics: out.top_topics.slice(0, 6),
       analyzed_at: new Date().toISOString(),
     };
