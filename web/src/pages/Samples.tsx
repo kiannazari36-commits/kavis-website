@@ -44,7 +44,9 @@ export default function Samples({ courseId: fixed }: { courseId?: string } = {})
   const [params] = useSearchParams();
   const courses = useAsync(listCourses, []) ?? [];
   const [picked, setPicked] = useState<string | null>(params.get('course'));
-  const courseId = fixed ?? picked ?? courses[0]?.id ?? '';
+  // Opened without a course (e.g. from the home page): the student picks it first, so samples never land in a
+  // course by chance (only one course: that one).
+  const courseId = fixed ?? picked ?? (courses.length === 1 ? courses[0].id : '');
   const [reload, setReload] = useState(0);
   const samples = useAsync(() => (courseId ? listSamples(courseId) : Promise.resolve([])), [courseId, reload]) ?? [];
   const saved = useAsync(() => (courseId ? getStyle(courseId) : Promise.resolve(null)), [courseId, reload]);
@@ -346,22 +348,26 @@ export default function Samples({ courseId: fixed }: { courseId?: string } = {})
                 </button>
               ))}
             </div>
-            {addBlock}
+            {courseId ? addBlock : <span className={s.muted}>{t('smp_pickFirst')}</span>}
           </section>
 
-          <section className={s.card}>
-            <span className={s.label}>{t('smp_list')}</span>
-            {listBlock}
-            {analyzeBtn}
-          </section>
+          {courseId && (
+            <section className={s.card}>
+              <span className={s.label}>{t('smp_list')}</span>
+              {listBlock}
+              {analyzeBtn}
+            </section>
+          )}
         </div>
 
-        <section className={`${s.card} ${s.style}`}>
-          <h2>{t('smp_style')}</h2>
-          {styleBlock}
-          {makeBlock}
-          {summaryBlock}
-        </section>
+        {courseId && (
+          <section className={`${s.card} ${s.style}`}>
+            <h2>{t('smp_style')}</h2>
+            {styleBlock}
+            {makeBlock}
+            {summaryBlock}
+          </section>
+        )}
       </div>
     </main>
   );

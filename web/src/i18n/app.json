@@ -366,7 +366,8 @@
   "cf_cardsNone": "Şu an tekrar bekleyen kart yok. Kartlar her PDF hazırlanınca oluşur.",
   "cf_cardsByPdf": "PDF’e göre kartlar",
   "cf_recNew": "Ders ses kaydı ekle",
-  "cf_recEmpty": "Bu derste henüz ses kaydı yok."
+  "cf_recEmpty": "Bu derste henüz ses kaydı yok.",
+  "smp_pickFirst": "Soru örneklerinin doğru derse gitmesi için önce yukarıdan dersi seç."
  },
  "en": {
   "pdfs": "PDFs",
@@ -735,7 +736,8 @@
   "cf_cardsNone": "No cards waiting right now. Cards are made when each PDF is prepared.",
   "cf_cardsByPdf": "Cards by PDF",
   "cf_recNew": "Add a lecture recording",
-  "cf_recEmpty": "No recordings in this course yet."
+  "cf_recEmpty": "No recordings in this course yet.",
+  "smp_pickFirst": "Pick the course above first, so the samples go to the right course."
  },
  "fa": {
   "pdfs": "PDFها",
@@ -1104,7 +1106,8 @@
   "cf_cardsNone": "الان کارتی منتظر مرور نیست. کارت‌ها وقتی هر PDF آماده شد ساخته می‌شوند.",
   "cf_cardsByPdf": "کارت‌ها بر اساس PDF",
   "cf_recNew": "افزودن صدای کلاس",
-  "cf_recEmpty": "هنوز صدای کلاسی در این درس نیست."
+  "cf_recEmpty": "هنوز صدای کلاسی در این درس نیست.",
+  "smp_pickFirst": "اول درس را از بالا انتخاب کن تا نمونه‌سؤال‌ها به درس درست بروند."
  },
  "ar": {
   "pdfs": "ملفات PDF",
@@ -1473,6 +1476,7 @@
   "cf_cardsNone": "لا توجد بطاقات بانتظار المراجعة الآن. تُصنع البطاقات عند تجهيز كل ملف PDF.",
   "cf_cardsByPdf": "البطاقات حسب PDF",
   "cf_recNew": "إضافة تسجيل محاضرة",
-  "cf_recEmpty": "لا توجد تسجيلات في هذه المادة بعد."
+  "cf_recEmpty": "لا توجد تسجيلات في هذه المادة بعد.",
+  "smp_pickFirst": "اختر المادة من الأعلى أولًا حتى تذهب نماذج الأسئلة إلى المادة الصحيحة."
  }
 }

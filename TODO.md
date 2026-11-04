@@ -319,3 +319,8 @@ Technical notes and decisions:
 - [x] Tried locally (summary1): every tab, "Soruları çöz" and back, phone width (tabs scroll sideways, no page overflow), light/dark, Persian RTL. No AI buttons pressed (paid)
 - [ ] The local database is behind the live one (missing `20261029225801_mistake_cards_material` and others), so `dueCards` fails locally and the Kartlar tab shows "no cards" there. Bring the local copy up to date when no other session uses it
 - [ ] iPhone / iPad: same tabs on the course page
+
+## Samples went to the wrong course (4 Nov 2026) — web code done, tried locally, NOT live
+- [x] Kian's "Tekno teori 3 sorular" landed in Farmakoterapi: `/samples` opened from the home page picked the first course by itself, so the exam summary mixed tekno questions with Farmakoterapi PDFs. Now `/samples` without a course asks "pick the course first" (only one course: that one); the course page's "Sınava hazırlık" tab always uses its own course
+- [ ] Exam summary refuses when the samples do not match the course's PDFs (`{ error: 'mismatch' }` + warning) — asked of the exam-summary session
+- [ ] Kian: delete "Sınav özeti · Farmakoterapi" and the wrong sample, upload it again under tekno
