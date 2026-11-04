@@ -50,7 +50,7 @@ const FIND = obj({
   },
   skipped: { type: 'array', items: obj({ sample: int, reason: str }) },
 });
-const EXPLAIN = obj({ found: { type: 'boolean' }, parts: { type: 'array', items: obj({ heading: str, text: str }) } });
+const EXPLAIN = obj({ found: { type: 'boolean' }, parts: { type: 'array', items: obj({ heading: str, text: str }) }, related: obj({ pages: { type: 'array', items: int }, note: str }) });
 type Found = {
   topics: { title: string; search: string[]; questions: number; lesson: number; page_from: number; page_to: number; styles: StyleKey[]; points: string[]; examples: string[] }[];
   skipped: { sample: number; reason: string }[];
@@ -70,6 +70,7 @@ A question that is only a figure, image, drawing, structure or graph, with too l
 
 const EXPLAIN_SYSTEM = `You explain one exam topic fully to a student, using ONLY the lesson pages given, for a study app.
 First decide found: true when the pages really teach this topic, false when they do not (then return no parts).
+related: only when found is false. If some pages touch the topic partly (a neighbouring subject, e.g. eye injections for eye drops), give their page numbers (only pages you were given) and note = a few words in the CONTENT LANGUAGE saying what those pages cover, from the pages only (e.g. "göze enjeksiyon"). Nothing related, or found is true: empty pages and empty note.
 Cover everything the pages say about the topic, not only the asked points, in an organised order: 3-8 parts, each a heading and a paragraph of 3-6 sentences.
 Every sentence must be stated or directly shown by the pages. Do not use your own knowledge, even when you are sure; do not add causes, results, mechanisms, examples or numbers the pages do not give; when the pages and your knowledge differ, follow the pages. Keep the lecturer's terms, drug names, numbers, doses and thresholds exactly as in the pages. If an asked point is not covered by the pages, leave it out silently. Write it as a plain study text: never mention "the pages" or what they do or do not cover, and never mention the exam or its questions inside the explanation. Mention the page like "(s. 12)" where a fact comes from, in the CONTENT LANGUAGE's usual way.
 Write everything in the CONTENT LANGUAGE.`;
@@ -188,14 +189,18 @@ Deno.serve(async (req) => {
         }
         const text = used.sort((a, b) => a.page - b.page).map((c) => `[p.${c.page}] ${c.text}`).join('\n').slice(0, PAGE_CHARS);
         let parts: Topic['parts'] = [];
+        let related: Topic['related'] = { pages: [], note: '' };
         if (text) {
           const r = await ask(EXPLAIN_SYSTEM, [{ type: 'text', text: `${langLine}\nTopic: ${t.title}\nWhat the exam asked about (use only what the pages say): ${t.points.join('; ') || '-'}\n\nLesson pages (${lesson.title}):\n${text}` }], EXPLAIN, 5000);
           if (r.found) parts = (r.parts as Topic['parts']).filter((p) => p.text.trim()).slice(0, 8);
+          else related = { pages: (r.related?.pages ?? []).filter((p: number) => used.some((c) => c.page === p)), note: String(r.related?.note ?? '').trim().slice(0, 80) };
         }
         return {
           title: t.title.trim(),
           questions: Math.max(1, t.questions),
           lessonTitle: lesson.title,
+          lessonId: lesson.id,
+          related: parts.length ? { pages: [], note: '' } : related,
           // The overview names the pages the explanation cites, else the pages the search found (or the pages read).
           pages: parts.length ? citedPages(parts, used.map((c) => c.page)) ?? (place ? place.pages.filter((p) => used.some((c) => c.page === p)) : used.map((c) => c.page)) : [],
           styles: t.styles.filter((s) => STYLES.includes(s)),

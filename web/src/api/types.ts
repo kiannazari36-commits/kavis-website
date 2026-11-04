@@ -54,6 +54,8 @@ export type ReaderBlock = {
   paragraphs: (Segment[] | { selectable: true; text: string })[];
   /** A table drawn under the heading (the exam summary's overview); the paragraphs hold the same rows as text for reading aloud and translating. */
   table?: { head: string[]; rows: string[][] };
+  /** Links to pages of another lesson (the exam summary: where the PDFs touch a topic they do not explain). */
+  links?: { pdf: string; page: number; label: string }[];
   /** true: the server marked a molecule; the viewer finds which one from the text (components/molecules.ts). */
   molecule?: boolean;
 };

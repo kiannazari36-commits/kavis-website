@@ -13,6 +13,7 @@ Bu dosya Kian için: ne bitti, ne bekliyor, kim ne yapacak. Ayrıntı için `TOD
 - **Web gezinme (yayında, 4 Kasım):** dar kenar çubuğunda her simgenin altında kısa adı yazıyor. Ders sayfasında 4 sekme var: PDF'ler, Sınava hazırlık (soru örnekleri, hocanın tarzı, sınav özeti, sınav soruları), Kartlar, Ses kayıtları. Kalan: iPhone/iPad'e de aynı sekmeler.
 
 - **Yanlış dersteki sorular (kodda, yayında değil, 4 Kasım):** örnek soruların konularının çoğu dersin PDF'lerinde yoksa sınav özeti yazılmıyor; ekranda "Bu sorular bu dersin PDF'leriyle uyuşmuyor. Doğru dersi seçtin mi?" çıkıyor. Sadece ilk okuma sayılıyor (~0,01 $).
+- **Kısmen anlatılan konu (kodda, yayında değil, 4 Kasım):** konu PDF'te tam yoksa ama yakın sayfalar varsa "PDF'te tam anlatılmıyor. İlgili kısım: …, s. 27-28 (göze enjeksiyon)" yazıyor; sayfaya giden düğme var. Hiç yoksa yine "PDF'te bulunamadı".
 - **Sınav özeti düzeltmeleri (canlı, 4 Kasım: `exam-summary` v3, `process-material` v11, web):** konunun sayfası artık ders metninde aranarak bulunuyor (birden çok PDF'te doğru ders ve sayfa); PDF'te olmayan konu "PDF'te bulunamadı" diyor; sadece şekil olan sorular ayrı bir listede ("Konusu çıkarılamayan sorular"); açıklama yalnızca PDF'te yazanı kullanıyor. Zor kelimeler Türkçe eklerle de altı çiziliyor ("kaptoprilin", "anjiyoödemi", "ilacı"). Yerel ücretli iki deneme yapıldı (0,036 $ + 0,041 $): konuların dersi ve sayfası doğru, PDF'te olmayan soru "PDF'te bulunamadı" diyor, şekil sorusu ayrı listede.
 
 ## Senin yapacakların

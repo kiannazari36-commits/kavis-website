@@ -988,6 +988,8 @@ const blockPlain = (b: ReaderBlock) =>
 
 function Block({ doc, block, terms, fontSize, term, onTerm, selected, highlights, onSelect, selActs, onTranslate, marks, ink, pen, onInk }: BlockProps) {
   const { t, lang } = useI18n();
+  const [params] = useSearchParams();
+  const courseId = params.get('course') ?? '';
   const [molOpen, setMolOpen] = useState<Molecule | null>(null);
   // Chip only when we have the structure of a drug named in this block.
   const mols = findMolecules(blockPlain(block));
@@ -1092,6 +1094,15 @@ function Block({ doc, block, terms, fontSize, term, onTerm, selected, highlights
           ),
         )}
       </div>
+      {block.links?.map((l) => (
+        // A full page load, so the reader opens the other lesson at that page.
+        <Link key={`${l.pdf}-${l.page}`} reloadDocument to={`/reader?course=${courseId}&pdf=${l.pdf}&page=${l.page}`} className={s.chipBtn}>
+          <span className={s.chipIcon}>
+            <Icon name="file" size={16} />
+          </span>
+          {l.label}
+        </Link>
+      ))}
       {mols.map((m) => (
         <button key={m.id} className={s.chipBtn} onClick={() => setMolOpen(m)}>
           <span className={s.chipIcon}>

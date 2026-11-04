@@ -446,6 +446,7 @@
 
 .chipBtn {
   align-self: flex-start;
+  text-decoration: none;
   height: 38px;
   padding-inline: 6px 14px;
   border-radius: 19px;

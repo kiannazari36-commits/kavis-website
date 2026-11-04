@@ -4,17 +4,21 @@
 export type Lang = 'tr' | 'en' | 'fa' | 'ar';
 export type StyleKey = 'case' | 'side_effects' | 'dose' | 'knowledge' | 'structure';
 
-export const WORDS: Record<Lang, { title: string; overview: string; explain: string; asked: string; shape: string; times: string; cols: [string, string, string, string]; pdf: string; page: string; notFound: string; skipped: string; sample: string; style: Record<StyleKey, string> }> = {
-  tr: { title: 'Sınav özeti', overview: 'Bir bakışta: hangi PDF’ten, hangi konu, hangi tarz', explain: 'Konu anlatımı', asked: 'Sınavda sorulan noktalar', shape: 'Sorulan şekil', times: 'soru', cols: ['Konu', 'PDF · sayfa', 'Soru tarzı', 'Soru'], pdf: 'PDF', page: 's.', notFound: 'PDF’te bulunamadı', skipped: 'Konusu çıkarılamayan sorular', sample: 'Örnek', style: { case: 'Hasta vakası', side_effects: 'Yan etki', dose: 'Mekanizma / doz', knowledge: 'Bilgi', structure: 'Yapı' } },
-  en: { title: 'Exam summary', overview: 'At a glance: which PDF, which topic, which style', explain: 'Topic explained', asked: 'Points asked in the exam', shape: 'How it was asked', times: 'questions', cols: ['Topic', 'PDF · page', 'Question style', 'Questions'], pdf: 'PDF', page: 'p.', notFound: 'Not found in the PDFs', skipped: 'Questions whose topic could not be read', sample: 'Sample', style: { case: 'Patient case', side_effects: 'Side effect', dose: 'Mechanism / dose', knowledge: 'Knowledge', structure: 'Structure' } },
-  fa: { title: 'خلاصهٔ امتحان', overview: 'در یک نگاه: کدام PDF، کدام مبحث، کدام سبک', explain: 'شرح مبحث', asked: 'نکته‌های پرسیده‌شده در امتحان', shape: 'شکل پرسش', times: 'سؤال', cols: ['مبحث', 'PDF · صفحه', 'سبک سؤال', 'سؤال'], pdf: 'PDF', page: 'ص.', notFound: 'در PDFها پیدا نشد', skipped: 'سؤال‌هایی که مبحثشان خوانده نشد', sample: 'نمونه', style: { case: 'مورد بیمار', side_effects: 'عارضهٔ جانبی', dose: 'مکانیسم / دوز', knowledge: 'دانش', structure: 'ساختار' } },
-  ar: { title: 'ملخص الامتحان', overview: 'نظرة سريعة: أي ملف وأي موضوع وأي أسلوب', explain: 'شرح الموضوع', asked: 'النقاط المسؤول عنها في الامتحان', shape: 'شكل السؤال', times: 'أسئلة', cols: ['الموضوع', 'PDF · الصفحة', 'أسلوب السؤال', 'الأسئلة'], pdf: 'PDF', page: 'ص.', notFound: 'لم يُعثر عليه في ملفات PDF', skipped: 'أسئلة تعذّر معرفة موضوعها', sample: 'نموذج', style: { case: 'حالة مريض', side_effects: 'أثر جانبي', dose: 'آلية / جرعة', knowledge: 'معلومة', structure: 'بنية' } },
+export const WORDS: Record<Lang, { title: string; overview: string; explain: string; asked: string; shape: string; times: string; cols: [string, string, string, string]; pdf: string; page: string; notFound: string; partial: string; related: string; skipped: string; sample: string; style: Record<StyleKey, string> }> = {
+  tr: { title: 'Sınav özeti', overview: 'Bir bakışta: hangi PDF’ten, hangi konu, hangi tarz', explain: 'Konu anlatımı', asked: 'Sınavda sorulan noktalar', shape: 'Sorulan şekil', times: 'soru', cols: ['Konu', 'PDF · sayfa', 'Soru tarzı', 'Soru'], pdf: 'PDF', page: 's.', notFound: 'PDF’te bulunamadı', partial: 'PDF’te tam anlatılmıyor. İlgili kısım:', related: 'İlgili', skipped: 'Konusu çıkarılamayan sorular', sample: 'Örnek', style: { case: 'Hasta vakası', side_effects: 'Yan etki', dose: 'Mekanizma / doz', knowledge: 'Bilgi', structure: 'Yapı' } },
+  en: { title: 'Exam summary', overview: 'At a glance: which PDF, which topic, which style', explain: 'Topic explained', asked: 'Points asked in the exam', shape: 'How it was asked', times: 'questions', cols: ['Topic', 'PDF · page', 'Question style', 'Questions'], pdf: 'PDF', page: 'p.', notFound: 'Not found in the PDFs', partial: 'Not fully explained in the PDFs. Related part:', related: 'Related', skipped: 'Questions whose topic could not be read', sample: 'Sample', style: { case: 'Patient case', side_effects: 'Side effect', dose: 'Mechanism / dose', knowledge: 'Knowledge', structure: 'Structure' } },
+  fa: { title: 'خلاصهٔ امتحان', overview: 'در یک نگاه: کدام PDF، کدام مبحث، کدام سبک', explain: 'شرح مبحث', asked: 'نکته‌های پرسیده‌شده در امتحان', shape: 'شکل پرسش', times: 'سؤال', cols: ['مبحث', 'PDF · صفحه', 'سبک سؤال', 'سؤال'], pdf: 'PDF', page: 'ص.', notFound: 'در PDFها پیدا نشد', partial: 'در PDFها کامل توضیح داده نشده. بخش مرتبط:', related: 'مرتبط', skipped: 'سؤال‌هایی که مبحثشان خوانده نشد', sample: 'نمونه', style: { case: 'مورد بیمار', side_effects: 'عارضهٔ جانبی', dose: 'مکانیسم / دوز', knowledge: 'دانش', structure: 'ساختار' } },
+  ar: { title: 'ملخص الامتحان', overview: 'نظرة سريعة: أي ملف وأي موضوع وأي أسلوب', explain: 'شرح الموضوع', asked: 'النقاط المسؤول عنها في الامتحان', shape: 'شكل السؤال', times: 'أسئلة', cols: ['الموضوع', 'PDF · الصفحة', 'أسلوب السؤال', 'الأسئلة'], pdf: 'PDF', page: 'ص.', notFound: 'لم يُعثر عليه في ملفات PDF', partial: 'غير مشروح بالكامل في ملفات PDF. الجزء المرتبط:', related: 'مرتبط', skipped: 'أسئلة تعذّر معرفة موضوعها', sample: 'نموذج', style: { case: 'حالة مريض', side_effects: 'أثر جانبي', dose: 'آلية / جرعة', knowledge: 'معلومة', structure: 'بنية' } },
 };
 
 export type Topic = {
   title: string;
   questions: number;
   lessonTitle: string;
+  /** The lesson (materials.id) the pages belong to, for the page links. */
+  lessonId: string;
+  /** Not explained (no parts): pages of that lesson that touch the topic partly, and what they cover; else empty. */
+  related: { pages: number[]; note: string };
   /** Lesson pages the explanation comes from; empty when the PDFs do not explain the topic. */
   pages: number[];
   styles: StyleKey[];
@@ -26,7 +30,16 @@ export type Topic = {
 /** The reading page: page 1 is the overview, every topic is the next page. Sentences are selectable so the student can highlight them. */
 export function buildDoc(lang: Lang, topics: Topic[], skipped: string[] = []) {
   const w = WORDS[lang];
-  const where = (t: Topic) => (t.pages.length ? `${t.lessonTitle} · ${w.page} ${pageList(t.pages)}` : w.notFound);
+  const where = (t: Topic) =>
+    t.pages.length ? `${t.lessonTitle} · ${w.page} ${pageList(t.pages)}` : t.related.pages.length ? `${w.related}: ${t.lessonTitle} · ${w.page} ${pageList(t.related.pages)}` : w.notFound;
+  // A topic the PDFs do not explain: where they touch it, with links to those pages, or "not found".
+  const missing = (t: Topic, page: number) =>
+    t.related.pages.length
+      ? {
+          ...block(page, w.explain, [missingText(w, t)]),
+          links: ranges(t.related.pages).map(([a, b]) => ({ pdf: t.lessonId, page: a, label: `${t.lessonTitle} · ${w.page} ${a === b ? a : `${a}-${b}`}` })),
+        }
+      : block(page, w.explain, [w.notFound]);
   const sel = (text: string) => ({ selectable: true as const, text });
   const block = (page: number, heading: string, lines: string[]) => ({ pageFrom: page, pageTo: page, tag: 'general' as const, heading, paragraphs: lines.map(sel) });
   const sections = [
@@ -37,7 +50,7 @@ export function buildDoc(lang: Lang, topics: Topic[], skipped: string[] = []) {
           ...block(
             1,
             w.overview,
-            topics.map((t) => `${t.title} — ${t.pages.length ? `${w.pdf}: ${t.lessonTitle}, ${w.page} ${pageList(t.pages)}` : w.notFound} — ${t.styles.map((s) => w.style[s]).join(', ')} — ${t.questions} ${w.times}`),
+            topics.map((t) => `${t.title} — ${t.pages.length ? `${w.pdf}: ${t.lessonTitle}, ${w.page} ${pageList(t.pages)}` : where(t)} — ${t.styles.map((s) => w.style[s]).join(', ')} — ${t.questions} ${w.times}`),
           ),
           table: { head: [...w.cols], rows: topics.map((t) => [t.title, where(t), t.styles.map((s) => w.style[s]).join(', '), String(t.questions)]) },
         },
@@ -47,7 +60,7 @@ export function buildDoc(lang: Lang, topics: Topic[], skipped: string[] = []) {
     ...topics.map((t, i) => ({
       title: t.title,
       blocks: [
-        ...(t.parts.length ? t.parts.map((p, k) => block(i + 2, k === 0 ? `${w.explain} · ${p.heading}` : p.heading, [p.text])) : [block(i + 2, w.explain, [w.notFound])]),
+        ...(t.parts.length ? t.parts.map((p, k) => block(i + 2, k === 0 ? `${w.explain} · ${p.heading}` : p.heading, [p.text])) : [missing(t, i + 2)]),
         ...(t.points.length ? [block(i + 2, w.asked, t.points)] : []),
         ...(t.examples.length ? [block(i + 2, w.shape, t.examples)] : []),
       ],
@@ -59,28 +72,34 @@ export function buildDoc(lang: Lang, topics: Topic[], skipped: string[] = []) {
 /** Plain text per page, for the assistant's search (material_chunks). */
 export function pageTexts(lang: Lang, topics: Topic[]) {
   const w = WORDS[lang];
-  const overview = topics.map((t) => `${t.title} — ${t.pages.length ? `${t.lessonTitle}, ${w.page} ${pageList(t.pages)}` : w.notFound}`).join('\n');
+  const overview = topics.map((t) => `${t.title} — ${t.pages.length ? `${t.lessonTitle}, ${w.page} ${pageList(t.pages)}` : missingText(w, t)}`).join('\n');
   return [
     { page: 1, text: `${w.overview}\n${overview}` },
     ...topics.map((t, i) => ({
       page: i + 2,
-      text: [t.title, ...(t.parts.length ? t.parts.map((p) => `${p.heading}\n${p.text}`) : [w.notFound]), t.points.length ? `${w.asked}\n${t.points.join('\n')}` : '', t.examples.length ? `${w.shape}\n${t.examples.join('\n')}` : ''].filter(Boolean).join('\n\n'),
+      text: [t.title, ...(t.parts.length ? t.parts.map((p) => `${p.heading}\n${p.text}`) : [missingText(w, t)]), t.points.length ? `${w.asked}\n${t.points.join('\n')}` : '', t.examples.length ? `${w.shape}\n${t.examples.join('\n')}` : ''].filter(Boolean).join('\n\n'),
     })),
   ];
 }
 
-/** Pages as a short list: [3, 4, 5, 12] → "3-5, 12". */
-export function pageList(pages: number[]): string {
+const missingText = (w: (typeof WORDS)[Lang], t: Topic) =>
+  t.related.pages.length ? `${w.partial} ${t.lessonTitle}, ${w.page} ${pageList(t.related.pages)}${t.related.note ? ` (${t.related.note})` : ''}` : w.notFound;
+
+/** Pages as runs of following pages: [3, 4, 5, 12] → [[3, 5], [12, 12]]. */
+export function ranges(pages: number[]): [number, number][] {
   const p = [...new Set(pages)].sort((a, b) => a - b);
-  const out: string[] = [];
+  const out: [number, number][] = [];
   for (let i = 0; i < p.length; i++) {
     let j = i;
     while (p[j + 1] === p[j] + 1) j++;
-    out.push(j > i ? `${p[i]}-${p[j]}` : String(p[i]));
+    out.push([p[i], p[j]]);
     i = j;
   }
-  return out.join(', ');
+  return out;
 }
+
+/** Pages as a short list: [3, 4, 5, 12] → "3-5, 12". */
+export const pageList = (pages: number[]) => ranges(pages).map(([a, b]) => (a === b ? String(a) : `${a}-${b}`)).join(', ');
 
 // Very common words that do not help finding the right page (Turkish and English), as in the assistant.
 const STOP = new Set(
