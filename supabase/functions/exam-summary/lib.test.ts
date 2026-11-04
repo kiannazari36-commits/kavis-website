@@ -1,5 +1,5 @@
 // Run: node --experimental-strip-types supabase/functions/exam-summary/lib.test.ts
-import { buildDoc, citedPages, pageList, pageTexts, pickPages, searchTerms, tsQuery, type Topic } from './lib.ts';
+import { buildDoc, citedPages, mismatch, pageList, pageTexts, pickPages, searchTerms, tsQuery, type Topic } from './lib.ts';
 
 let fails = 0;
 const check = (name: string, ok: boolean) => {
@@ -47,4 +47,5 @@ check('the guess breaks a tie', pickPages([{ material_id: 'A', page: 1, text: 'i
 check('cited pages, only those given', citedPages([{ text: 'Dapson (s. 6). Klofazimin (s. 5), ayrıca (s. 40).' }], [4, 5, 6])?.join() === '5,6');
 check('no citation: null', citedPages([{ text: 'Metin.' }], [1]) === null);
 check('English and Persian citations', citedPages([{ text: 'Dose (p. 3).' }, { text: 'دوز (ص. 4)' }], [3, 4])?.join() === '3,4');
+check('mismatch: most topics not found', mismatch([null, null, { pages: [1] }]) && !mismatch([null, { pages: [1] }]) && !mismatch([]));
 if (fails) process.exit(1);

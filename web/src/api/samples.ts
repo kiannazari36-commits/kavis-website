@@ -125,9 +125,14 @@ export async function setStyleUse(courseId: string, field: 'use_in_quizzes' | 'u
  * "Sınav özeti" (Edge exam-summary, AI): the topics asked in the lecturer's sample questions, each explained fully from
  * the student's PDFs, as a reading page of its own. Returns its lesson id; the older summary of the course is replaced.
  */
-export async function makeExamSummary(courseId: string): Promise<{ materialId: string; topics: number } | Fail> {
+export async function makeExamSummary(courseId: string): Promise<{ materialId: string; topics: number } | Fail | { error: 'mismatch' }> {
   const { data, error } = await supabase.functions.invoke('exam-summary', { body: { course_id: courseId } });
-  if (error) return fail(error);
+  if (error) {
+    // The samples do not fit this course's PDFs (most of their topics are not in them): no summary was made.
+    const body = await ((error as { context?: Response }).context?.clone().json().catch(() => null) ?? null);
+    if ((body as { error?: string } | null)?.error === 'mismatch') return { error: 'mismatch' };
+    return fail(error);
+  }
   const r = data as { material_id: string; topics: number };
   return { materialId: r.material_id, topics: r.topics };
 }

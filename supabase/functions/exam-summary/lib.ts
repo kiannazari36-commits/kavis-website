@@ -139,3 +139,6 @@ export function citedPages(parts: { text: string }[], given: number[]): number[]
   for (const p of parts) for (const m of p.text.matchAll(/(?<!\p{L})(?:s|p|ص)\.\s*(\d+)/gu)) if (given.includes(Number(m[1]))) found.add(Number(m[1]));
   return found.size ? [...found].sort((a, b) => a - b) : null;
 }
+
+/** The samples do not belong to this course: more than half of their topics have no pages in the course's PDFs. */
+export const mismatch = (places: unknown[]) => places.length > 0 && places.filter((p) => !p).length * 2 > places.length;

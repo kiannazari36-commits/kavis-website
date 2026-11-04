@@ -9,7 +9,7 @@
 // Writes (service role): materials, material_content, material_chunks, material_topics, usage_monthly.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
-import { buildDoc, citedPages, pageTexts, pickPages, searchTerms, tsQuery, WORDS, type Lang, type StyleKey, type Topic } from './lib.ts';
+import { buildDoc, citedPages, mismatch, pageTexts, pickPages, searchTerms, tsQuery, WORDS, type Lang, type StyleKey, type Topic } from './lib.ts';
 
 const MODEL = 'claude-sonnet-5-5';
 const MONTHLY_BUDGET_USD = 3;
@@ -150,8 +150,8 @@ Deno.serve(async (req) => {
       .filter((x) => samples[x.sample - 1])
       .map((x) => `${samples[x.sample - 1].title || `${WORDS[lang].sample} ${x.sample}`}: ${x.reason}`);
 
-    // Step 2: every topic's pages found in the lesson text, then explained from those pages only, in parallel.
-    const topics: Topic[] = await Promise.all(
+    // Step 2: every topic's pages found in the lesson text (no AI).
+    const located = await Promise.all(
       wanted.map(async (t) => {
         const guessed = lessons[t.lesson - 1] ?? lessons[0];
         const terms = searchTerms([t.title, ...(t.search ?? [])]);
@@ -159,7 +159,19 @@ Deno.serve(async (req) => {
           ? await db.from('material_chunks').select('material_id, page, text').in('material_id', ids).textSearch('search', tsQuery(terms), { config: 'simple' }).limit(300)
           : { data: [] };
         const guess = { materialId: guessed.id, from: Math.min(t.page_from, t.page_to), to: Math.max(t.page_from, t.page_to) };
-        const place = pickPages(hits ?? [], terms, guess);
+        return { t, guessed, guess, place: pickPages(hits ?? [], terms, guess) };
+      }),
+    );
+    // Most topics not in the course's PDFs: the samples belong to another course. Stop before the explanations;
+    // only step 1 is counted (about a cent), no summary is written.
+    if (mismatch(located.map((x) => x.place))) {
+      await count(db, uid, month, use, input, output, false);
+      return json({ error: 'mismatch' }, 422);
+    }
+
+    // Step 3: every topic explained from its pages only, in parallel.
+    const topics: Topic[] = await Promise.all(
+      located.map(async ({ t, guessed, guess, place }) => {
         // Nothing found by search: the AI's guess, which the explanation step may still refuse (found = false).
         const lesson = lessons.find((l) => l.id === place?.materialId) ?? guessed;
         const near = place ? [...new Set(place.pages.flatMap((p) => [p - 1, p, p + 1]))] : [];
@@ -214,20 +226,25 @@ Deno.serve(async (req) => {
     }
     await db.from('materials').delete().eq('course_id', courseId).eq('kind', 'exam_summary').neq('id', mat.id);
 
-    await db.from('usage_monthly').upsert({
-      user_id: uid,
-      month,
-      input_tokens: Number(use?.input_tokens ?? 0) + input,
-      output_tokens: Number(use?.output_tokens ?? 0) + output,
-      cost_usd: Number(use?.cost_usd ?? 0) + costUsd(input, output),
-      generations: Number(use?.generations ?? 0) + 1,
-    });
+    await count(db, uid, month, use, input, output, true);
     return json({ material_id: mat.id, topics: topics.length });
   } catch (e) {
     console.error('exam-summary', e);
     return json({ error: 'ai' }, 502);
   }
 });
+
+/** Adds this call's AI use to the month (a stopped call is not counted as a generation). */
+async function count(db: SupabaseClient, uid: string, month: string, use: { input_tokens: unknown; output_tokens: unknown; cost_usd: unknown; generations: unknown } | null, input: number, output: number, made: boolean) {
+  await db.from('usage_monthly').upsert({
+    user_id: uid,
+    month,
+    input_tokens: Number(use?.input_tokens ?? 0) + input,
+    output_tokens: Number(use?.output_tokens ?? 0) + output,
+    cost_usd: Number(use?.cost_usd ?? 0) + costUsd(input, output),
+    generations: Number(use?.generations ?? 0) + (made ? 1 : 0),
+  });
+}
 
 /** Each sample as a numbered block: text as it is, a photo as an image, a PDF as a document (same as analyze-style). */
 async function sampleBlocks(db: SupabaseClient, samples: { kind: string; title: string | null; storage_path: string | null; text: string | null }[]) {

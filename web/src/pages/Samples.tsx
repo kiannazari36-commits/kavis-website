@@ -104,7 +104,7 @@ export default function Samples({ courseId: fixed }: { courseId?: string } = {})
       setBusy('summary');
       const r = await makeExamSummary(courseId);
       setBusy(null);
-      if ('error' in r) return toast(t(r.error === 'locked' ? 'trialQFull' : r.error === 'budget' ? 'askBudget' : 'smp_failed'));
+      if ('error' in r) return toast(t(r.error === 'mismatch' ? 'smp_sumMismatch' : r.error === 'locked' ? 'trialQFull' : r.error === 'budget' ? 'askBudget' : 'smp_failed'));
       navigate(`/reader?course=${courseId}&pdf=${r.materialId}`);
     });
   const toggle = (field: (typeof USES)[number][0], key: (typeof USES)[number][1]) => {
