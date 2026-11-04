@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useI18n, type Lang } from '../i18n/I18nProvider';
 import { duration, examLabel, num, percent } from '../i18n/format';
 import Icon from '../components/Icon';
@@ -8,13 +8,24 @@ import { courseStats, getCourse } from '../api/courses';
 import { useAsync } from '../hooks/useAsync';
 import { deleteLesson } from '../api/upload';
 import { recordingsOfCourse } from '../api/recording';
+import { dueCards } from '../api/cards';
 import { clock } from '../speech/transcribe';
 import { useToast } from '../components/Toast';
 import type { Pdf } from '../api/types';
 import { useTrial } from '../trial/TrialProvider';
+import Samples from './Samples';
 import s from './CourseFolder.module.css';
 
 // Design: design/NewCourses.dc.html, variant "detail" (one course folder with its PDFs), laid out for the web.
+// Tabs (Kian's feedback, 4 Nov 2026): the exam tools of /samples live here too, so students find them.
+const TABS = [
+  ['pdfs', 'pdfs'],
+  ['prep', 'cfTabPrep'],
+  ['cards', 'cfTabCards'],
+  ['rec', 'cfTabRec'],
+] as const;
+type Tab = (typeof TABS)[number][0];
+
 function pdfStatus(p: Pdf, lang: Lang, t: (k: string) => string) {
   const pages = num(p.pages, lang) + t('pagesSep');
   if (p.read === 100) return pages + t('done');
@@ -33,6 +44,11 @@ export default function CourseFolder() {
   const [reload, setReload] = useState(0);
   const course = useAsync(() => getCourse(courseId), [courseId, reload]);
   const recordings = useAsync(() => recordingsOfCourse(courseId), [courseId]) ?? [];
+  const due = useAsync(() => dueCards({ courseId }), [courseId]);
+  // The open tab is in the address (?tab=prep), so "back" from a quiz or the reader returns to it.
+  const [params, setParams] = useSearchParams();
+  const tab: Tab = TABS.some(([id]) => id === params.get('tab')) ? (params.get('tab') as Tab) : 'pdfs';
+  const pickTab = (id: Tab) => setParams(id === 'pdfs' ? {} : { tab: id }, { replace: true });
   const remove = async (p: Pdf) => {
     setAsking(null);
     const ok = await deleteLesson(p.id);
@@ -95,90 +111,150 @@ export default function CourseFolder() {
         </div>
       </section>
 
-      {course.pdfs.length > 0 ? (
+      <div role="tablist" aria-label={t('cfTabs')} className={s.tabs}>
+        {TABS.map(([id, key]) => (
+          <button key={id} role="tab" aria-selected={tab === id} className={tab === id ? s.tabOn : ''} onClick={() => pickTab(id)}>
+            {t(key)}
+            {id === 'pdfs' && <span className="mono">{num(course.pdfs.length, lang)}</span>}
+            {id === 'rec' && recordings.length > 0 && <span className="mono">{num(recordings.length, lang)}</span>}
+          </button>
+        ))}
+      </div>
+
+      {tab === 'pdfs' && (
         <>
-          <div className={s.listHead}>
-            <h2>{t('pdfs')}</h2>
-            <span>{t('ringHint')}</span>
-          </div>
-          <div className={s.list}>
-            {course.pdfs.map((p) => (
-              <div key={p.id} className={s.pdfRow}>
-                <Link to={`/reader?course=${course.id}&pdf=${p.id}`} className={s.pdf}>
-                  <span
-                    className={s.ring}
-                    role="img"
-                    aria-label={`${percent(p.read, lang)} ${t('read')}`}
-                    style={{ background: `conic-gradient(${col.fg} ${Math.round(p.read * 3.6)}deg, var(--sub) 0)` }}
-                  >
-                    <span className="mono">{num(p.read, lang)}</span>
-                  </span>
-                  <span className={s.pdfBody}>
-                    <b>{p.title}</b>
-                    <span className={s.timeRow}>
-                      <span className={s.timeBar}>
-                        <span style={{ width: `${Math.round((p.minutes / maxMin) * 100)}%` }} />
+        {course.pdfs.length > 0 ? (
+          <>
+            <div className={s.listHead}>
+              <h2>{t('pdfs')}</h2>
+              <span>{t('ringHint')}</span>
+            </div>
+            <div className={s.list}>
+              {course.pdfs.map((p) => (
+                <div key={p.id} className={s.pdfRow}>
+                  <Link to={`/reader?course=${course.id}&pdf=${p.id}`} className={s.pdf}>
+                    <span
+                      className={s.ring}
+                      role="img"
+                      aria-label={`${percent(p.read, lang)} ${t('read')}`}
+                      style={{ background: `conic-gradient(${col.fg} ${Math.round(p.read * 3.6)}deg, var(--sub) 0)` }}
+                    >
+                      <span className="mono">{num(p.read, lang)}</span>
+                    </span>
+                    <span className={s.pdfBody}>
+                      <b>{p.title}</b>
+                      <span className={s.timeRow}>
+                        <span className={s.timeBar}>
+                          <span style={{ width: `${Math.round((p.minutes / maxMin) * 100)}%` }} />
+                        </span>
+                        <span className="mono">{duration(p.minutes, lang)}</span>
                       </span>
-                      <span className="mono">{duration(p.minutes, lang)}</span>
+                      <span className={s.status}>
+                        {pdfStatus(p, lang, t)}
+                        {p.read > 0 && <span className={`mono ${s.device}`}>{t('onDevice')}</span>}
+                      </span>
                     </span>
-                    <span className={s.status}>
-                      {pdfStatus(p, lang, t)}
-                      {p.read > 0 && <span className={`mono ${s.device}`}>{t('onDevice')}</span>}
-                    </span>
-                  </span>
-                  <Icon name="chevron" size={18} className={`flip-rtl ${s.chev}`} />
-                </Link>
-                {asking === p.id ? (
-                  <div className={s.ask} role="group" aria-label={t('lessonDeleteAsk')}>
-                    <span>{t('lessonDeleteAsk')}</span>
-                    <button className={s.askYes} onClick={() => remove(p)}>
-                      {t('lessonDeleteYes')}
+                    <Icon name="chevron" size={18} className={`flip-rtl ${s.chev}`} />
+                  </Link>
+                  {asking === p.id ? (
+                    <div className={s.ask} role="group" aria-label={t('lessonDeleteAsk')}>
+                      <span>{t('lessonDeleteAsk')}</span>
+                      <button className={s.askYes} onClick={() => remove(p)}>
+                        {t('lessonDeleteYes')}
+                      </button>
+                      <button className={s.askNo} onClick={() => setAsking(null)}>
+                        {t('lessonDeleteNo')}
+                      </button>
+                    </div>
+                  ) : (
+                    <button className={s.del} aria-label={t('lessonDelete')} title={t('lessonDelete')} onClick={() => setAsking(p.id)}>
+                      <Icon name="trash" size={16} />
                     </button>
-                    <button className={s.askNo} onClick={() => setAsking(null)}>
-                      {t('lessonDeleteNo')}
-                    </button>
-                  </div>
-                ) : (
-                  <button className={s.del} aria-label={t('lessonDelete')} title={t('lessonDelete')} onClick={() => setAsking(p.id)}>
-                    <Icon name="trash" size={16} />
-                  </button>
-                )}
-              </div>
-            ))}
+                  )}
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className={s.emptyBox}>
+            <b>{t('emptyFolder')}</b>
+            <span>{t('emptyHint')}</span>
           </div>
+        )}
+
+        {course.summary && (
+          <>
+            <div className={s.listHead}>
+              <h2>{t('smp_sumFolder')}</h2>
+            </div>
+            <div className={s.list}>
+              <Link to={`/reader?course=${course.id}&pdf=${course.summary.id}`} className={s.pdf}>
+                <span className={s.recIcon}>
+                  <Icon name="file" size={22} />
+                </span>
+                <span className={s.pdfBody}>
+                  <b>{course.summary.title}</b>
+                  <span className={s.status}>{pdfStatus(course.summary, lang, t)}</span>
+                </span>
+                <Icon name="chevron" size={18} className={`flip-rtl ${s.chev}`} />
+              </Link>
+            </div>
+          </>
+        )}
+
+        <button className={s.addBottom} onClick={addPdf}>
+          <Icon name="plus" size={18} />
+          {t('addPdf')}
+        </button>
         </>
-      ) : (
-        <div className={s.emptyBox}>
-          <b>{t('emptyFolder')}</b>
-          <span>{t('emptyHint')}</span>
-        </div>
       )}
 
-      {course.summary && (
+      {tab === 'cards' && (
         <>
-          <div className={s.listHead}>
-            <h2>{t('smp_sumFolder')}</h2>
+          <div className={s.emptyBox}>
+            <b>{due === undefined ? '…' : due.length ? t('cf_cardsDue').replace('{n}', due.length >= 30 ? num(30, lang) + '+' : num(due.length, lang)) : t('cf_cardsNone')}</b>
           </div>
-          <div className={s.list}>
-            <Link to={`/reader?course=${course.id}&pdf=${course.summary.id}`} className={s.pdf}>
-              <span className={s.recIcon}>
-                <Icon name="file" size={22} />
-              </span>
-              <span className={s.pdfBody}>
-                <b>{course.summary.title}</b>
-                <span className={s.status}>{pdfStatus(course.summary, lang, t)}</span>
-              </span>
-              <Icon name="chevron" size={18} className={`flip-rtl ${s.chev}`} />
-            </Link>
-          </div>
+          {due && due.length > 0 && (
+            <button className={s.addBottom} onClick={() => navigate(`/cards?course=${course.id}`)}>
+              <Icon name="cards" size={18} />
+              {t('cf_cardsAll')}
+            </button>
+          )}
+          {course.pdfs.length > 0 && (
+            <>
+              <div className={s.listHead}>
+                <h2>{t('cf_cardsByPdf')}</h2>
+              </div>
+              <div className={s.list}>
+                {course.pdfs.map((p) => (
+                  <Link key={p.id} to={`/cards?course=${course.id}&pdf=${p.id}`} className={s.pdf}>
+                    <span className={s.recIcon}>
+                      <Icon name="cards" size={22} />
+                    </span>
+                    <span className={s.pdfBody}>
+                      <b>{p.title}</b>
+                    </span>
+                    <Icon name="chevron" size={18} className={`flip-rtl ${s.chev}`} />
+                  </Link>
+                ))}
+              </div>
+            </>
+          )}
         </>
       )}
 
-      {recordings.length > 0 && (
+      {tab === 'prep' && <Samples courseId={course.id} />}
+
+      {tab === 'rec' && (
         <>
           <div className={s.listHead}>
             <h2>{t('recList')}</h2>
           </div>
+          {recordings.length === 0 && (
+            <div className={s.emptyBox}>
+              <span>{t('cf_recEmpty')}</span>
+            </div>
+          )}
           <div className={s.list}>
             {recordings.map((r) => (
               <Link key={r.id} to={`/recording?id=${r.id}`} className={s.pdf}>
@@ -195,13 +271,13 @@ export default function CourseFolder() {
               </Link>
             ))}
           </div>
+          <button className={s.addBottom} onClick={() => navigate('/record')}>
+            <Icon name="mic" size={18} />
+            {t('cf_recNew')}
+          </button>
         </>
       )}
 
-      <button className={s.addBottom} onClick={addPdf}>
-        <Icon name="plus" size={18} />
-        {t('addPdf')}
-      </button>
     </main>
   );
 }

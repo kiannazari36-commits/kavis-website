@@ -131,8 +131,10 @@ export default function AppShell() {
         </div>
         {NAV.map(([to, icon, key]) => (
           <NavLink key={to} to={to} title={t(key)} className={({ isActive }) => (isActive ? `${s.nav} ${s.navOn}` : s.nav)}>
-            <Icon name={icon} size={19} />
-            <span className={s.label}>{t(key)}</span>
+            <span className={s.navIcon}>
+              <Icon name={icon} size={19} />
+            </span>
+            <span className={`${s.label} ${s.navLabel}`}>{t(key)}</span>
           </NavLink>
         ))}
         <div className={`mono ${s.section} ${s.wideOnly}`}>{t('k52')}</div>

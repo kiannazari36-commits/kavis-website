@@ -110,6 +110,11 @@
   color: var(--pri-t);
 }
 
+/* Wide menu: icon and name in one row (the wrapper only matters in the rail). */
+.navIcon {
+  display: contents;
+}
+
 .section {
   margin-top: 18px;
   padding: 0 14px;
@@ -403,18 +408,48 @@
     color: #2a2420;
     box-shadow: 0 8px 20px rgba(242, 179, 61, 0.3);
   }
+  /* Each icon with its short name under it, so students know what it is (Kian's feedback, 4 Nov 2026). */
   .rail .nav {
-    width: 56px;
-    height: 56px;
-    border-radius: 28px;
+    width: 84px;
+    height: auto;
     padding: 0;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: transparent;
+    box-shadow: none;
+  }
+  .rail .nav:hover {
+    background: transparent;
+  }
+  .rail .navIcon {
+    width: 56px;
+    height: 40px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
     justify-content: center;
     border: 1px solid var(--line);
     background: var(--card);
-    box-shadow: none;
   }
-  .rail .navOn,
-  .rail .navOn:hover {
+  .rail .nav:hover .navIcon {
+    background: var(--sub);
+  }
+  .rail .navLabel {
+    display: block;
+    max-width: 84px;
+    padding: 0 2px;
+    font-size: 11px;
+    line-height: 1.25;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .rail .navOn {
+    color: var(--pri-t);
+  }
+  .rail .navOn .navIcon {
     border: 0;
     background: var(--pri);
     color: #fffcf6;
