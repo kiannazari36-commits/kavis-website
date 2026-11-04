@@ -57,4 +57,9 @@ const links = (doc3.sections[1].blocks[0] as { links?: { pdf: string; page: numb
 check('partly: one link per run of pages', links?.length === 2 && links[0].pdf === 'P1' && links[0].page === 27 && links[1].label === 'Parenteral Preparatlar I · s. 79');
 check('not found has no links', !('links' in doc2.sections[1].blocks[0]));
 check('runs of pages', JSON.stringify(ranges([5, 3, 4, 9])) === '[[3,5],[9,9]]');
+// The short exam-night version: only the condensed parts.
+const brief = buildDoc('tr', topics, [], true);
+check('brief: no asked points or example questions', brief.sections[1].blocks.length === 2 && brief.sections[1].blocks.every((b) => b.heading !== 'Sınavda sorulan noktalar'));
+check('brief: first part has no explanation label', brief.sections[1].blocks[0].heading === 'Birinci basamak');
+check('brief: assistant text without asked points', !pageTexts('tr', topics, true)[1].text.includes('Rifampisin idrarı boyar'));
 if (fails) process.exit(1);

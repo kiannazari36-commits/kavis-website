@@ -44,7 +44,9 @@ export default function Samples({ courseId: fixed }: { courseId?: string } = {})
   const [params] = useSearchParams();
   const courses = useAsync(listCourses, []) ?? [];
   const [picked, setPicked] = useState<string | null>(params.get('course'));
-  const courseId = fixed ?? picked ?? courses[0]?.id ?? '';
+  // Opened without a course (e.g. from the home page): the student picks it first, so samples never land in a
+  // course by chance (only one course: that one).
+  const courseId = fixed ?? picked ?? (courses.length === 1 ? courses[0].id : '');
   const [reload, setReload] = useState(0);
   const samples = useAsync(() => (courseId ? listSamples(courseId) : Promise.resolve([])), [courseId, reload]) ?? [];
   const saved = useAsync(() => (courseId ? getStyle(courseId) : Promise.resolve(null)), [courseId, reload]);
@@ -55,7 +57,7 @@ export default function Samples({ courseId: fixed }: { courseId?: string } = {})
   const [writing, setWriting] = useState(false);
   const [text, setText] = useState('');
   const [wanted, setWanted] = useState<ExamFormat[]>([]);
-  const [busy, setBusy] = useState<'add' | 'analyze' | 'make' | 'summary' | null>(null);
+  const [busy, setBusy] = useState<'add' | 'analyze' | 'make' | 'summary' | 'brief' | null>(null);
 
   const addFiles = async (list: FileList | null) => {
     const files = [...(list ?? [])].filter((f) => f.size <= 15 * 1048576);
@@ -98,11 +100,12 @@ export default function Samples({ courseId: fixed }: { courseId?: string } = {})
       navigate(`/quiz?course=${courseId}&tab=quiz`);
     });
   const summary = courses.find((c) => c.id === courseId)?.summary;
-  const makeSummary = () =>
+  const brief = courses.find((c) => c.id === courseId)?.brief;
+  const makeSummary = (mode: 'full' | 'brief' = 'full') =>
     guard('generate', async () => {
       if (!samples.length) return toast(t('smp_needSample'));
-      setBusy('summary');
-      const r = await makeExamSummary(courseId);
+      setBusy(mode === 'brief' ? 'brief' : 'summary');
+      const r = await makeExamSummary(courseId, mode);
       setBusy(null);
       if ('error' in r) return toast(t(r.error === 'mismatch' ? 'smp_sumMismatch' : r.error === 'locked' ? 'trialQFull' : r.error === 'budget' ? 'askBudget' : 'smp_failed'));
       navigate(`/reader?course=${courseId}&pdf=${r.materialId}`);
@@ -265,7 +268,7 @@ export default function Samples({ courseId: fixed }: { courseId?: string } = {})
 
   const summaryBlock = (
     <>
-      <button className={s.makeAlt} aria-busy={busy === 'summary'} onClick={makeSummary} disabled={!courseId || busy === 'summary'}>
+      <button className={s.makeAlt} aria-busy={busy === 'summary'} onClick={() => makeSummary()} disabled={!courseId || !!busy}>
         <Icon name="file" size={16} />
         {busy === 'summary' ? t('smp_sumMaking') : t(summary ? 'smp_sumRedo' : 'smp_sumBtn')}
       </button>
@@ -275,6 +278,16 @@ export default function Samples({ courseId: fixed }: { courseId?: string } = {})
         </button>
       )}
       <span className={s.small}>{t('smp_sumNote')}</span>
+      <button className={s.makeAlt} aria-busy={busy === 'brief'} onClick={() => makeSummary('brief')} disabled={!courseId || !!busy}>
+        <Icon name="file" size={16} />
+        {busy === 'brief' ? t('smp_briefMaking') : t(brief ? 'smp_briefRedo' : 'smp_briefBtn')}
+      </button>
+      {brief && (
+        <button className={s.openSum} onClick={() => navigate(`/reader?course=${courseId}&pdf=${brief.id}`)}>
+          {t('smp_briefOpen')}
+        </button>
+      )}
+      <span className={s.small}>{t('smp_briefNote')}</span>
     </>
   );
 
@@ -301,11 +314,22 @@ export default function Samples({ courseId: fixed }: { courseId?: string } = {})
                 {t('smp_sumOpen')}
               </button>
             ) : null}
-            <button className={s.makeAlt} aria-busy={busy === 'summary'} onClick={makeSummary} disabled={busy === 'summary'}>
+            <button className={s.makeAlt} aria-busy={busy === 'summary'} onClick={() => makeSummary()} disabled={!!busy}>
               <Icon name="file" size={16} />
               {busy === 'summary' ? t('smp_sumMaking') : t(summary ? 'smp_sumRedo' : 'smp_sumBtn')}
             </button>
             <span className={s.small}>{t('smp_sumNote')}</span>
+            <span className={s.step}>{t('smp_briefFolder')}</span>
+            {brief ? (
+              <button className={s.pri} onClick={() => navigate(`/reader?course=${courseId}&pdf=${brief.id}`)}>
+                {t('smp_briefOpen')}
+              </button>
+            ) : null}
+            <button className={s.makeAlt} aria-busy={busy === 'brief'} onClick={() => makeSummary('brief')} disabled={!!busy}>
+              <Icon name="file" size={16} />
+              {busy === 'brief' ? t('smp_briefMaking') : t(brief ? 'smp_briefRedo' : 'smp_briefBtn')}
+            </button>
+            <span className={s.small}>{t('smp_briefNote')}</span>
           </section>
           <section className={s.card}>
             <span className={s.step}>4 · {t('prep_questions')}</span>
@@ -346,22 +370,26 @@ export default function Samples({ courseId: fixed }: { courseId?: string } = {})
                 </button>
               ))}
             </div>
-            {addBlock}
+            {courseId ? addBlock : <span className={s.muted}>{t('smp_pickFirst')}</span>}
           </section>
 
-          <section className={s.card}>
-            <span className={s.label}>{t('smp_list')}</span>
-            {listBlock}
-            {analyzeBtn}
-          </section>
+          {courseId && (
+            <section className={s.card}>
+              <span className={s.label}>{t('smp_list')}</span>
+              {listBlock}
+              {analyzeBtn}
+            </section>
+          )}
         </div>
 
-        <section className={`${s.card} ${s.style}`}>
-          <h2>{t('smp_style')}</h2>
-          {styleBlock}
-          {makeBlock}
-          {summaryBlock}
-        </section>
+        {courseId && (
+          <section className={`${s.card} ${s.style}`}>
+            <h2>{t('smp_style')}</h2>
+            {styleBlock}
+            {makeBlock}
+            {summaryBlock}
+          </section>
+        )}
       </div>
     </main>
   );

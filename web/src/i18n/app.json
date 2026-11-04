@@ -341,6 +341,12 @@
   "smp_sumMaking": "Özet hazırlanıyor, bir iki dakika sürebilir…",
   "smp_sumNote": "Sadece örnek sorularda çıkan konular, senin PDF’lerinden tam anlatılır ve okuma sayfasında açılır. Kalemle işaretleyebilir, asistana sorabilirsin.",
   "smp_sumFolder": "Sınav özeti",
+  "smp_briefFolder": "Sınav gecesi özeti",
+  "smp_briefBtn": "Aynı konuların kısa özetini üret",
+  "smp_briefRedo": "Kısa özeti yeniden üret",
+  "smp_briefOpen": "Hazır kısa özeti aç",
+  "smp_briefMaking": "Kısa özet hazırlanıyor, bir iki dakika sürebilir…",
+  "smp_briefNote": "Aynı konuların, sınav gecesi hızlıca okuyabileceğin kısa hali. Önemli terim, doz ve sayılar kalır; uzun anlatım çıkar.",
   "smp_formats": "Soru biçimleri",
   "fmt_multiple_choice": "Çoktan seçmeli",
   "fmt_fill_blank": "Boşluk doldurma",
@@ -367,7 +373,8 @@
   "cf_cardsNone": "Şu an tekrar bekleyen kart yok. Kartlar her PDF hazırlanınca oluşur.",
   "cf_cardsByPdf": "PDF’e göre kartlar",
   "cf_recNew": "Ders ses kaydı ekle",
-  "cf_recEmpty": "Bu derste henüz ses kaydı yok."
+  "cf_recEmpty": "Bu derste henüz ses kaydı yok.",
+  "smp_pickFirst": "Soru örneklerinin doğru derse gitmesi için önce yukarıdan dersi seç."
  },
  "en": {
   "pdfs": "PDFs",
@@ -711,6 +718,12 @@
   "smp_sumMaking": "Preparing the summary, this can take a minute or two…",
   "smp_sumNote": "Only the topics asked in the sample questions, explained fully from your PDFs and opened on the reading page. You can highlight it and ask the assistant.",
   "smp_sumFolder": "Exam summary",
+  "smp_briefFolder": "Exam-night summary",
+  "smp_briefBtn": "Make a short summary of the same topics",
+  "smp_briefRedo": "Make the short summary again",
+  "smp_briefOpen": "Open the ready short summary",
+  "smp_briefMaking": "Preparing the short summary, it can take a minute or two…",
+  "smp_briefNote": "The same topics in a short form you can read quickly the night before. Key terms, doses and numbers stay; long explanations go.",
   "smp_formats": "Question formats",
   "fmt_multiple_choice": "Multiple choice",
   "fmt_fill_blank": "Fill in the blank",
@@ -737,7 +750,8 @@
   "cf_cardsNone": "No cards waiting right now. Cards are made when each PDF is prepared.",
   "cf_cardsByPdf": "Cards by PDF",
   "cf_recNew": "Add a lecture recording",
-  "cf_recEmpty": "No recordings in this course yet."
+  "cf_recEmpty": "No recordings in this course yet.",
+  "smp_pickFirst": "Pick the course above first, so the samples go to the right course."
  },
  "fa": {
   "pdfs": "PDFها",
@@ -1081,6 +1095,12 @@
   "smp_sumMaking": "خلاصه آماده می‌شود، شاید یکی دو دقیقه طول بکشد…",
   "smp_sumNote": "فقط مباحثی که در سؤال‌های نمونه آمده، از PDFهای خودت کامل توضیح داده می‌شود و در صفحهٔ مطالعه باز می‌شود. می‌توانی با مداد علامت بزنی و از دستیار بپرسی.",
   "smp_sumFolder": "خلاصهٔ امتحان",
+  "smp_briefFolder": "خلاصهٔ شب امتحان",
+  "smp_briefBtn": "خلاصهٔ کوتاه همین مباحث را بساز",
+  "smp_briefRedo": "خلاصهٔ کوتاه را دوباره بساز",
+  "smp_briefOpen": "خلاصهٔ کوتاه آماده را باز کن",
+  "smp_briefMaking": "خلاصهٔ کوتاه در حال آماده‌شدن است، ممکن است یکی دو دقیقه طول بکشد…",
+  "smp_briefNote": "همین مباحث به شکل کوتاه که شب امتحان سریع می‌خوانی. اصطلاح‌ها، دوزها و عددهای مهم می‌مانند؛ توضیح‌های طولانی حذف می‌شوند.",
   "smp_formats": "قالب سؤال‌ها",
   "fmt_multiple_choice": "چندگزینه‌ای",
   "fmt_fill_blank": "جای‌خالی",
@@ -1107,7 +1127,8 @@
   "cf_cardsNone": "الان کارتی منتظر مرور نیست. کارت‌ها وقتی هر PDF آماده شد ساخته می‌شوند.",
   "cf_cardsByPdf": "کارت‌ها بر اساس PDF",
   "cf_recNew": "افزودن صدای کلاس",
-  "cf_recEmpty": "هنوز صدای کلاسی در این درس نیست."
+  "cf_recEmpty": "هنوز صدای کلاسی در این درس نیست.",
+  "smp_pickFirst": "اول درس را از بالا انتخاب کن تا نمونه‌سؤال‌ها به درس درست بروند."
  },
  "ar": {
   "pdfs": "ملفات PDF",
@@ -1451,6 +1472,12 @@
   "smp_sumMaking": "يجري تجهيز الملخص، وقد يستغرق دقيقة أو دقيقتين…",
   "smp_sumNote": "المواضيع التي وردت في الأسئلة النموذجية فقط، تُشرح كاملة من ملفاتك وتُفتح في صفحة القراءة. يمكنك التظليل وسؤال المساعد.",
   "smp_sumFolder": "ملخص الامتحان",
+  "smp_briefFolder": "ملخص ليلة الامتحان",
+  "smp_briefBtn": "أنشئ ملخصًا قصيرًا للمواضيع نفسها",
+  "smp_briefRedo": "أعد إنشاء الملخص القصير",
+  "smp_briefOpen": "افتح الملخص القصير الجاهز",
+  "smp_briefMaking": "يجري إعداد الملخص القصير، وقد يستغرق دقيقة أو دقيقتين…",
+  "smp_briefNote": "المواضيع نفسها بشكل قصير تقرؤه بسرعة في ليلة الامتحان. تبقى المصطلحات والجرعات والأرقام المهمة ويُحذف الشرح الطويل.",
   "smp_formats": "أشكال الأسئلة",
   "fmt_multiple_choice": "اختيار من متعدد",
   "fmt_fill_blank": "ملء الفراغ",
@@ -1477,6 +1504,7 @@
   "cf_cardsNone": "لا توجد بطاقات بانتظار المراجعة الآن. تُصنع البطاقات عند تجهيز كل ملف PDF.",
   "cf_cardsByPdf": "البطاقات حسب PDF",
   "cf_recNew": "إضافة تسجيل محاضرة",
-  "cf_recEmpty": "لا توجد تسجيلات في هذه المادة بعد."
+  "cf_recEmpty": "لا توجد تسجيلات في هذه المادة بعد.",
+  "smp_pickFirst": "اختر المادة من الأعلى أولًا حتى تذهب نماذج الأسئلة إلى المادة الصحيحة."
  }
 }

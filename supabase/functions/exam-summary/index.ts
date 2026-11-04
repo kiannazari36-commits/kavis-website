@@ -4,7 +4,8 @@
 // POST { course_id } → { material_id, topics }. Step 1 reads the samples (photos, PDFs, text) and finds the topics with
 // search words (figure-only questions are listed apart); the pages of each topic are then found by searching the
 // lesson text (material_chunks), not guessed; step 2 explains each topic from those pages only (in parallel), or says
-// "not found in the PDFs". The result is a lesson row of kind
+// "not found in the PDFs". With mode "brief" step 2 writes a short exam-night version instead (kind exam_brief).
+// The result is a lesson row of kind
 // exam_summary (+ material_content, material_chunks for the assistant, material_topics), replacing an older one.
 // Writes (service role): materials, material_content, material_chunks, material_topics, usage_monthly.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
@@ -75,6 +76,14 @@ Cover everything the pages say about the topic, not only the asked points, in an
 Every sentence must be stated or directly shown by the pages. Do not use your own knowledge, even when you are sure; do not add causes, results, mechanisms, examples or numbers the pages do not give; when the pages and your knowledge differ, follow the pages. Keep the lecturer's terms, drug names, numbers, doses and thresholds exactly as in the pages. If an asked point is not covered by the pages, leave it out silently. Write it as a plain study text: never mention "the pages" or what they do or do not cover, and never mention the exam or its questions inside the explanation. Mention the page like "(s. 12)" where a fact comes from, in the CONTENT LANGUAGE's usual way.
 Write everything in the CONTENT LANGUAGE.`;
 
+// The short exam-night version of the same topics: everything that matters, but as brief as possible.
+const BRIEF_SYSTEM = `You write the exam-night revision sheet of one exam topic, using ONLY the lesson pages given, for a study app. The student reads it the night before the exam, so it must be SHORT but must not lose anything that can be asked.
+First decide found: true when the pages really teach this topic, false when they do not (then return no parts).
+related: only when found is false. If some pages touch the topic partly (a neighbouring subject), give their page numbers (only pages you were given) and note = a few words in the CONTENT LANGUAGE saying what those pages cover, from the pages only. Nothing related, or found is true: empty pages and empty note.
+Return 2-5 parts, each a heading and a compact text of 2-4 short sentences or "term: fact" lines separated by "; ". Keep EVERY key term, drug name, number, dose, threshold, list, mechanism and side effect the pages give for this topic, but drop explanations, examples, repetition and filler. Give the asked points first.
+Every statement must be stated or directly shown by the pages. Do not use your own knowledge, even when you are sure; do not add causes, results, mechanisms, examples or numbers the pages do not give; when the pages and your knowledge differ, follow the pages. Keep the lecturer's terms exactly as in the pages. If something is not covered by the pages, leave it out silently: never write what the pages do not say or lack. Write it as a plain study text: never mention "the pages" or the exam or its questions. Mention the page like "(s. 12)" where a fact comes from, in the CONTENT LANGUAGE's usual way.
+Write everything in the CONTENT LANGUAGE.`;
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'method' }, 405);
@@ -87,6 +96,9 @@ Deno.serve(async (req) => {
 
   const body = await req.json().catch(() => ({}));
   const courseId = body.course_id;
+  // mode "brief": the short exam-night summary, saved as its own lesson kind next to the full exam summary.
+  const brief = body.mode === 'brief';
+  const kind = brief ? 'exam_brief' : 'exam_summary';
   if (typeof courseId !== 'string') return json({ error: 'course_id' }, 400);
   const { data: course } = await db.from('courses').select('user_id, name, language, content_lang_override').eq('id', courseId).maybeSingle();
   if (!course || course.user_id !== uid) return json({ error: 'not found' }, 404);
@@ -191,8 +203,8 @@ Deno.serve(async (req) => {
         let parts: Topic['parts'] = [];
         let related: Topic['related'] = { pages: [], note: '' };
         if (text) {
-          const r = await ask(EXPLAIN_SYSTEM, [{ type: 'text', text: `${langLine}\nTopic: ${t.title}\nWhat the exam asked about (use only what the pages say): ${t.points.join('; ') || '-'}\n\nLesson pages (${lesson.title}):\n${text}` }], EXPLAIN, 5000);
-          if (r.found) parts = (r.parts as Topic['parts']).filter((p) => p.text.trim()).slice(0, 8);
+          const r = await ask(brief ? BRIEF_SYSTEM : EXPLAIN_SYSTEM, [{ type: 'text', text: `${langLine}\nTopic: ${t.title}\nWhat the exam asked about (use only what the pages say): ${t.points.join('; ') || '-'}\n\nLesson pages (${lesson.title}):\n${text}` }], EXPLAIN, brief ? 2500 : 5000);
+          if (r.found) parts = (r.parts as Topic['parts']).filter((p) => p.text.trim()).slice(0, brief ? 5 : 8);
           else related = { pages: (r.related?.pages ?? []).filter((p: number) => used.some((c) => c.page === p)), note: String(r.related?.note ?? '').trim().slice(0, 80) };
         }
         return {
@@ -212,15 +224,15 @@ Deno.serve(async (req) => {
     );
 
     // Save it as a lesson of its own kind; the older summary goes only after the new one is saved.
-    const pages = pageTexts(lang, topics);
+    const pages = pageTexts(lang, topics, brief);
     const { data: mat, error } = await db
       .from('materials')
-      .insert({ user_id: uid, course_id: courseId, kind: 'exam_summary', title: `${WORDS[lang].title} · ${course.name}`, language: lang, page_count: pages.length, status: 'ready', processed_at: new Date().toISOString() })
+      .insert({ user_id: uid, course_id: courseId, kind, title: `${brief ? WORDS[lang].briefTitle : WORDS[lang].title} · ${course.name}`, language: lang, page_count: pages.length, status: 'ready', processed_at: new Date().toISOString() })
       .select('id')
       .single();
     if (error) throw error;
     const saved = await Promise.all([
-      db.from('material_content').insert({ material_id: mat.id, user_id: uid, reader_doc: buildDoc(lang, topics, skipped), stats: { pages: pages.length, topics: topics.length } }),
+      db.from('material_content').insert({ material_id: mat.id, user_id: uid, reader_doc: buildDoc(lang, topics, skipped, brief), stats: { pages: pages.length, topics: topics.length } }),
       db.from('material_chunks').insert(pages.map((p) => ({ material_id: mat.id, user_id: uid, page: p.page, text: p.text }))),
       db.from('material_topics').insert(topics.map((t, i) => ({ material_id: mat.id, user_id: uid, title: t.title, page_from: i + 2, page_to: i + 2, importance: 3, sort_order: i }))),
     ]);
@@ -229,7 +241,7 @@ Deno.serve(async (req) => {
       await db.from('materials').delete().eq('id', mat.id);
       throw failed.error;
     }
-    await db.from('materials').delete().eq('course_id', courseId).eq('kind', 'exam_summary').neq('id', mat.id);
+    await db.from('materials').delete().eq('course_id', courseId).eq('kind', kind).neq('id', mat.id);
 
     await count(db, uid, month, use, input, output, true);
     return json({ material_id: mat.id, topics: topics.length });
