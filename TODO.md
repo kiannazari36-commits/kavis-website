@@ -310,3 +310,10 @@ Technical notes and decisions:
 - [x] Web: a failed lesson no longer spins; the upload screen and the reader's "not ready" page say why (monthly AI limit → "renews on the 1st") and have "Tekrar dene" (calls `process-material` again; it accepts a failed lesson). Old text "we will try again shortly" removed (nothing retried by itself)
 - [ ] iPhone / iPad: same message and "Tekrar dene" for failed lessons
 - [ ] Decide with Kian (launch): is $3/month per student enough for big PDFs (a 93-page PDF ≈ $0.5)? See "AI budget and pricing"
+
+## Web navigation (4 Nov 2026, Kian's feedback) — web code done, tried locally, NOT live
+- [x] Sidebar: the narrow icon rail (default under 1280px) shows each item's short name under its icon (Ana sayfa, Derslerim, Takvim, İlerleme, Ayarlar; 4 languages, RTL). The wide menu is unchanged
+- [x] Course page (`CourseFolder.tsx`): tabs "PDF'ler" · "Sınava hazırlık" · "Kartlar" · "Ses kayıtları", the open tab in the address (`?tab=prep|cards|rec`, so "back" returns to it). "Sınava hazırlık" is the `/samples` page for this course (`<Samples courseId>`) in 4 steps: question samples, lecturer's style ("Tarzı çıkar"), exam summary (open / make), exam questions (formats, make, "Soruları çöz" → quiz, "Sınav merkezi"). `/samples` itself stays (Home and Quiz link to it). "Kartlar": due-card count, "study this course's cards", one row per PDF → `/cards?course&pdf`. "Ses kayıtları": the course's recordings + "Ders ses kaydı ekle"
+- [x] Tried locally (summary1): every tab, "Soruları çöz" and back, phone width (tabs scroll sideways, no page overflow), light/dark, Persian RTL. No AI buttons pressed (paid)
+- [ ] The local database is behind the live one (missing `20261029225801_mistake_cards_material` and others), so `dueCards` fails locally and the Kartlar tab shows "no cards" there. Bring the local copy up to date when no other session uses it
+- [ ] iPhone / iPad: same tabs on the course page

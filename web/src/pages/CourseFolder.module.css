@@ -432,3 +432,45 @@
   align-items: center;
   justify-content: center;
 }
+
+/* Tabs: PDF'ler · Sınava hazırlık · Kartlar · Ses kayıtları (pill buttons; scroll sideways on a phone) */
+.tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 2px 0 -2px;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tabs button {
+  flex: none;
+  height: 42px;
+  padding: 0 18px;
+  border-radius: 21px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tabs button span {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.tabs .tabOn {
+  border-color: var(--pri);
+  background: var(--pri);
+  color: #fffcf6;
+}

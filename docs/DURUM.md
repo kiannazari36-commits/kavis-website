@@ -10,6 +10,7 @@ Bu dosya Kian için: ne bitti, ne bekliyor, kim ne yapacak. Ayrıntı için `TOD
 - **Sunucu (canlı):** gece planlayıcısı, cihazdan anında çıkış, sınav sonucu bildirimi, yardım sohbeti, soru türleri (migration `20261027125135` + fonksiyonlar), günlük yapay zekâ puanlama sınırı.
 
 - **Web okuyucu (kodda, yayında değil, 4 Kasım):** "Orijinal PDF | Okuma modu" anahtarı. Orijinal PDF hocanın sayfasını şekil ve tablolarıyla gösterir; zor kelimeler, vurgu, kalem, sesli okuma ve asistan orada da çalışır. Kian iPad simülatöründe denedi ve onayladı. Kalan: iPhone'a da aynı anahtar (iPad'de "tam ekran PDF" zaten var).
+- **Web gezinme (kodda, yayında değil, 4 Kasım):** dar kenar çubuğunda her simgenin altında kısa adı yazıyor. Ders sayfasında 4 sekme var: PDF'ler, Sınava hazırlık (soru örnekleri, hocanın tarzı, sınav özeti, sınav soruları), Kartlar, Ses kayıtları. Kalan: iPhone/iPad'e de aynı sekmeler.
 
 ## Senin yapacakların
 **Yarın alacağın hesaplar**
