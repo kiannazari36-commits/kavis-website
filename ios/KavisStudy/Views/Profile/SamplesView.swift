@@ -13,8 +13,10 @@ struct SamplesView: View {
     @Environment(TrialModel.self) private var trial
 
     var courseId: String?
+    /// Inside the course page's "Sınava hazırlık" tab: this course only, four numbered steps, no header or course choice.
+    var embedded = false
 
-    private enum Busy { case add, analyze, make }
+    private enum Busy { case add, analyze, make, summary, brief }
 
     @State private var courses: [Course] = CoursesAPI.lastCourses
     @State private var picked: String?
@@ -28,6 +30,9 @@ struct SamplesView: View {
     @State private var showLibrary = false
     @State private var libraryItems: [PhotosPickerItem] = []
     @State private var showPdf = false
+    @State private var examSummary: String?
+    @State private var examBrief: String?
+    @State private var wanted: Set<String> = []
 
     private var lang: Lang { prefs.lang }
     private func t(_ key: String) -> String { prefs.t(key) }
@@ -52,27 +57,8 @@ struct SamplesView: View {
     }
 
     var body: some View {
-        ZStack {
-            C.bg.ignoresSafeArea()
-            VStack(spacing: 0) {
-                header
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
-                        (Text(t("smp_titleA") + " ") + Text(t("smp_titleB")).foregroundColor(C.text3).fontWeight(.regular))
-                            .font(KFont.ui(30, .medium, lang: lang)).kTracking(-0.03, size: 30, lang: lang).foregroundStyle(KPhone.text)
-                        Text(t("smp_lead")).font(KFont.ui(14, lang: lang)).kLineHeight(1.55, size: 14, lang: lang).foregroundStyle(C.text2)
-                        coursePicker
-                        methods
-                        if writing { writeBox }
-                        sampleList
-                        primary(busy == .analyze ? t("smp_analyzing") : t(style == nil ? "smp_analyze" : "smp_reanalyze"), dim: samples.isEmpty, action: analyze)
-                        styleCard
-                    }
-                    .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 36)
-                }
-                .scrollDismissesKeyboard(.interactively)
-            }
-            .padColumn()
+        Group {
+            if embedded { steps } else { screen }
         }
         .task {
             if courses.isEmpty { courses = await CoursesAPI.listCourses() }
@@ -100,12 +86,135 @@ struct SamplesView: View {
         }
     }
 
+    private var screen: some View {
+        ZStack {
+            C.bg.ignoresSafeArea()
+            VStack(spacing: 0) {
+                header
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        (Text(t("smp_titleA") + " ") + Text(t("smp_titleB")).foregroundColor(C.text3).fontWeight(.regular))
+                            .font(KFont.ui(30, .medium, lang: lang)).kTracking(-0.03, size: 30, lang: lang).foregroundStyle(KPhone.text)
+                        Text(t("smp_lead")).font(KFont.ui(14, lang: lang)).kLineHeight(1.55, size: 14, lang: lang).foregroundStyle(C.text2)
+                        coursePicker
+                        methods
+                        if writing { writeBox }
+                        sampleList
+                        primary(busy == .analyze ? t("smp_analyzing") : t(style == nil ? "smp_analyze" : "smp_reanalyze"), dim: samples.isEmpty, action: analyze)
+                        styleCard
+                    }
+                    .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 36)
+                }
+                .scrollDismissesKeyboard(.interactively)
+            }
+            .padColumn()
+        }
+    }
+
+    /// The course page tab: the same parts as four numbered steps (as the web's `<Samples courseId>`).
+    private var steps: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text(t("smp_lead")).font(KFont.ui(14, lang: lang)).kLineHeight(1.55, size: 14, lang: lang).foregroundStyle(C.text2)
+            card {
+                stepTitle("1 · " + t("prep_samples"))
+                methods
+                if writing { writeBox }
+                sampleList
+            }
+            card {
+                stepTitle("2 · " + t("prep_style"))
+                styleBody
+                primary(busy == .analyze ? t("smp_analyzing") : t(style == nil ? "smp_analyze" : "smp_reanalyze"), dim: samples.isEmpty, action: analyze)
+            }
+            card {
+                stepTitle("3 · " + t("smp_sumFolder"))
+                summaryButtons(brief: false)
+                stepTitle(t("smp_briefFolder"))
+                summaryButtons(brief: true)
+            }
+            card {
+                stepTitle("4 · " + t("prep_questions"))
+                makeBlock
+                outline(t("prep_solve")) { Task { await solve() } }
+                outline(t("prep_examCenter")) { app.go(.examCenter) }
+            }
+        }
+    }
+
+    private func card<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 12, content: content)
+            .padding(18)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(C.card, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 26, style: .continuous).stroke(C.line, lineWidth: 1))
+    }
+
+    private func stepTitle(_ text: String) -> some View {
+        Text(text).font(KFont.ui(16, .semibold, lang: lang)).foregroundStyle(KPhone.text)
+    }
+
+    private func outline(_ title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title).font(KFont.ui(15, .medium, lang: lang)).foregroundStyle(KPhone.text)
+                .frame(maxWidth: .infinity, minHeight: 50).overlay(Capsule().stroke(C.line, lineWidth: 1))
+        }
+        .disabled(busy != nil)
+    }
+
+    private func summaryButtons(brief: Bool) -> some View {
+        let id = brief ? examBrief : examSummary
+        let mine: Busy = brief ? .brief : .summary
+        return VStack(alignment: .leading, spacing: 10) {
+            if let id { primary(t(brief ? "smp_briefOpen" : "smp_sumOpen"), dim: false) { app.go(.reader(id)) } }
+            Button { makeSummary(brief: brief) } label: {
+                HStack(spacing: 8) {
+                    KIcon(name: .file, size: 16, width: 1.8)
+                    Text(busy == mine ? t(brief ? "smp_briefMaking" : "smp_sumMaking") : t(brief ? (id == nil ? "smp_briefBtn" : "smp_briefRedo") : (id == nil ? "smp_sumBtn" : "smp_sumRedo")))
+                        .font(KFont.ui(15, .medium, lang: lang))
+                }
+                .foregroundStyle(KPhone.text).frame(maxWidth: .infinity, minHeight: 50).overlay(Capsule().stroke(C.line, lineWidth: 1))
+            }
+            .disabled(busy != nil)
+            Text(t(brief ? "smp_briefNote" : "smp_sumNote")).font(KFont.ui(12, lang: lang)).kLineHeight(1.45, size: 12, lang: lang).foregroundStyle(C.text3)
+        }
+    }
+
+    /// Question formats to make (none = the lecturer's), the make button and its note.
+    private var makeBlock: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(t("smp_formatLabel")).font(KFont.ui(13, lang: lang)).foregroundStyle(C.text2)
+            FlowLayout(spacing: 8, rowSpacing: 8) {
+                ForEach(["multiple_choice", "fill_blank", "true_false", "calculation"], id: \.self) { k in
+                    let on = wanted.contains(k)
+                    Button { if on { wanted.remove(k) } else { wanted.insert(k) } } label: {
+                        Text(t("fmt_\(k)")).font(KFont.ui(14, lang: lang)).foregroundStyle(on ? Color(hex: 0xFFFCF6) : KPhone.text)
+                            .padding(.horizontal, 14).frame(height: 38).background(on ? C.pri : C.sub, in: Capsule())
+                    }
+                    .accessibilityAddTraits(on ? .isSelected : [])
+                }
+            }
+            Text(t(wanted.isEmpty ? "smp_formatAuto" : "smp_formatChosen")).font(KFont.ui(12, lang: lang)).foregroundStyle(C.text3)
+            Button(action: make) {
+                HStack(spacing: 8) {
+                    KIcon(name: .spark, size: 16, width: 1.8)
+                    Text(busy == .make ? t("smp_making") : t("smp_makeBtn")).font(KFont.ui(15, .medium, lang: lang))
+                }
+                .foregroundStyle(KPhone.text)
+                .frame(maxWidth: .infinity, minHeight: 50)
+                .overlay(Capsule().stroke(C.line, lineWidth: 1))
+            }
+            .disabled(current == nil || busy == .make)
+            Text(t("smp_makeNote")).font(KFont.ui(12, lang: lang)).kLineHeight(1.45, size: 12, lang: lang).foregroundStyle(C.text3)
+        }
+    }
+
     private func load() async {
         guard let id = current else { return }
         async let s = SamplesAPI.list(courseId: id)
         async let st = SamplesAPI.style(courseId: id)
         samples = await s
         style = await st
+        (examSummary, examBrief) = await SamplesAPI.examMaterials(courseId: id)
     }
 
     // MARK: Parts
@@ -213,9 +322,8 @@ struct SamplesView: View {
         }
     }
 
-    private var styleCard: some View {
+    private var styleBody: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(t("smp_style")).font(KFont.ui(17, .semibold, lang: lang)).foregroundStyle(KPhone.text)
             if let style {
                 Text(t("smp_from").replacingOccurrences(of: "{n}", with: Format.num(style.questions, lang))).font(KFont.ui(13, lang: lang)).foregroundStyle(C.text2)
                 ForEach(SamplesAPI.Style.types.filter { (style.types[$0] ?? 0) > 0 }.sorted { (style.types[$0] ?? 0) > (style.types[$1] ?? 0) }, id: \.self) { k in
@@ -233,6 +341,26 @@ struct SamplesView: View {
                             }
                         }
                         .frame(height: 8)
+                    }
+                }
+                if SamplesAPI.Style.formatKeys.contains(where: { (style.formats[$0] ?? 0) > 0 }) {
+                    Text(t("smp_formats")).font(KFont.ui(13, lang: lang)).foregroundStyle(C.text2)
+                    ForEach(SamplesAPI.Style.formatKeys.filter { (style.formats[$0] ?? 0) > 0 }.sorted { (style.formats[$0] ?? 0) > (style.formats[$1] ?? 0) }, id: \.self) { k in
+                        let v = style.formats[k] ?? 0
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack {
+                                Text(t("fmt_\(k)")).font(KFont.ui(14, .semibold, lang: lang)).foregroundStyle(KPhone.text)
+                                Spacer()
+                                Text(Format.percent(v, lang)).font(KFont.mono(12, .regular)).foregroundStyle(C.text2)
+                            }
+                            GeometryReader { g in
+                                ZStack(alignment: .leading) {
+                                    Capsule().fill(C.sub)
+                                    Capsule().fill(C.pri).frame(width: g.size.width * CGFloat(min(v, 100)) / 100)
+                                }
+                            }
+                            .frame(height: 8)
+                        }
                     }
                 }
                 if !style.topTopics.isEmpty {
@@ -257,17 +385,14 @@ struct SamplesView: View {
             } else {
                 Text(t("smp_noStyle")).font(KFont.ui(13, lang: lang)).kLineHeight(1.5, size: 13, lang: lang).foregroundStyle(C.text2)
             }
-            Button(action: make) {
-                HStack(spacing: 8) {
-                    KIcon(name: .spark, size: 16, width: 1.8)
-                    Text(busy == .make ? t("smp_making") : t("smp_makeBtn")).font(KFont.ui(15, .medium, lang: lang))
-                }
-                .foregroundStyle(KPhone.text)
-                .frame(maxWidth: .infinity, minHeight: 50)
-                .overlay(Capsule().stroke(C.line, lineWidth: 1))
-            }
-            .disabled(current == nil || busy == .make)
-            Text(t("smp_makeNote")).font(KFont.ui(12, lang: lang)).kLineHeight(1.45, size: 12, lang: lang).foregroundStyle(C.text3)
+        }
+    }
+
+    private var styleCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(t("smp_style")).font(KFont.ui(17, .semibold, lang: lang)).foregroundStyle(KPhone.text)
+            styleBody
+            makeBlock
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -367,7 +492,7 @@ struct SamplesView: View {
         trial.perform(.generate) {
             busy = .make
             Task {
-                let r = await SamplesAPI.makeExamPack(courseId: id)
+                let r = await SamplesAPI.makeExamPack(courseId: id, types: Array(wanted))
                 busy = nil
                 switch r {
                 case .success(let made):
@@ -376,6 +501,34 @@ struct SamplesView: View {
                 case .failure(let f): toast.show(failText(f))
                 }
             }
+        }
+    }
+
+    /// "Sınav özeti" / "Sınav gecesi özeti" (AI): needs samples, and the trial or Premium. Opens the new reading page.
+    private func makeSummary(brief: Bool) {
+        guard let id = current, busy == nil else { return }
+        guard !samples.isEmpty else { return toast.show(t("smp_needSample")) }
+        trial.perform(.generate) {
+            busy = brief ? .brief : .summary
+            Task {
+                let r = await SamplesAPI.makeExamSummary(courseId: id, brief: brief)
+                busy = nil
+                switch r {
+                case .made(let materialId): await load(); app.go(.reader(materialId))
+                case .mismatch: toast.show(t("smp_sumMismatch"))
+                case .failed(let f): toast.show(failText(f))
+                }
+            }
+        }
+    }
+
+    /// "Soruları çöz": the course's newest exam pack.
+    private func solve() async {
+        guard let id = current else { return }
+        if let quizId = await SamplesAPI.latestExamPackId(courseId: id) {
+            app.go(.quiz(QuizTarget(materialId: "", kind: .exam, quizId: quizId)))
+        } else {
+            toast.show(t("smp_noPack"))
         }
     }
 }

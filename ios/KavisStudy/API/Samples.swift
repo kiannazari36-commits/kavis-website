@@ -15,14 +15,17 @@ enum SamplesAPI {
 
     struct Style: Equatable {
         static let types = ["case", "side_effects", "dose", "knowledge", "structure"]
+        static let formatKeys = ["multiple_choice", "fill_blank", "true_false", "calculation", "other"]
         var types: [String: Int]
+        /// Share (percent) of each question format; empty for styles found before formats were learned.
+        var formats: [String: Int] = [:]
         var patterns: [String]
         var questions: Int
         var topTopics: [(title: String, count: Int)]
         var useInQuizzes: Bool
 
         static func == (a: Style, b: Style) -> Bool {
-            a.types == b.types && a.patterns == b.patterns && a.questions == b.questions && a.useInQuizzes == b.useInQuizzes
+            a.types == b.types && a.formats == b.formats && a.patterns == b.patterns && a.questions == b.questions && a.useInQuizzes == b.useInQuizzes
                 && a.topTopics.map(\.title) == b.topTopics.map(\.title)
         }
     }
@@ -74,14 +77,14 @@ enum SamplesAPI {
     }
 
     private struct StyleRow: Decodable {
-        struct Dist: Decodable { let types: [String: Int]?; let patterns: [String]?; let questions: Int? }
+        struct Dist: Decodable { let types: [String: Int]?; let formats: [String: Int]?; let patterns: [String]?; let questions: Int? }
         struct Topic: Decodable { let title: String; let count: Int }
         let distribution: Dist
         let top_topics: [Topic]?
         let use_in_quizzes: Bool?
 
         var style: Style {
-            Style(types: distribution.types ?? [:], patterns: distribution.patterns ?? [], questions: distribution.questions ?? 0,
+            Style(types: distribution.types ?? [:], formats: distribution.formats ?? [:], patterns: distribution.patterns ?? [], questions: distribution.questions ?? 0,
                   topTopics: (top_topics ?? []).map { ($0.title, $0.count) }, useInQuizzes: use_in_quizzes ?? true)
         }
     }
@@ -114,14 +117,44 @@ enum SamplesAPI {
     }
 
     /// "Bu tarzda yeni sorular üret": a new exam pack for the course (Edge generate-quiz, AI). Returns the quiz.
-    static func makeExamPack(courseId: String) async -> Result<(quizId: String, questions: Int), Failure> {
-        struct Body: Encodable { let course_id: String; let count: Int; let styles: [String] }
+    static func makeExamPack(courseId: String, types: [String] = []) async -> Result<(quizId: String, questions: Int), Failure> {
+        struct Body: Encodable { let course_id: String; let count: Int; let styles: [String]; let types: [String] }
         struct Made: Decodable { let quiz_id: String; let questions: Int }
         do {
-            let r: Made = try await supabase.functions.invoke("generate-quiz", options: FunctionInvokeOptions(body: Body(course_id: courseId, count: 10, styles: [])))
+            let r: Made = try await supabase.functions.invoke("generate-quiz", options: FunctionInvokeOptions(body: Body(course_id: courseId, count: 10, styles: [], types: types)))
             return .success((r.quiz_id, r.questions))
         } catch {
             return .failure(failure(error))
+        }
+    }
+
+    /// The course's exam summaries (full "Sınav özeti" and short "Sınav gecesi özeti"), as lesson ids.
+    static func examMaterials(courseId: String) async -> (summary: String?, brief: String?) {
+        struct Row: Decodable { let id, kind: String }
+        let rows: [Row] = (try? await supabase.from("materials").select("id, kind").eq("course_id", value: courseId)
+            .in("kind", values: ["exam_summary", "exam_brief"]).order("created_at", ascending: false).execute().value) ?? []
+        return (rows.first { $0.kind == "exam_summary" }?.id, rows.first { $0.kind == "exam_brief" }?.id)
+    }
+
+    /// The newest exam pack of the course ("Soruları çöz"), nil when none is made yet.
+    static func latestExamPackId(courseId: String) async -> String? {
+        struct Row: Decodable { let id: String }
+        return (try? await supabase.from("quizzes").select("id").eq("kind", value: "exam_prep").eq("course_id", value: courseId)
+            .order("created_at", ascending: false).limit(1).execute().value as [Row])?.first?.id
+    }
+
+    enum SummaryResult { case made(String), mismatch, failed(Failure) }
+
+    /// "Sınav özeti" (AI): the asked topics explained from the student's PDFs, as a reading page; `brief` = the short exam-night one.
+    static func makeExamSummary(courseId: String, brief: Bool) async -> SummaryResult {
+        struct Body: Encodable { let course_id: String; let mode: String }
+        struct Made: Decodable { let material_id: String }
+        do {
+            let r: Made = try await supabase.functions.invoke("exam-summary", options: FunctionInvokeOptions(body: Body(course_id: courseId, mode: brief ? "brief" : "full")))
+            return .made(r.material_id)
+        } catch {
+            if case let FunctionsError.httpError(_, data) = error, String(data: data, encoding: .utf8)?.contains("mismatch") == true { return .mismatch }
+            return .failed(failure(error))
         }
     }
 }

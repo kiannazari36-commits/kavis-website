@@ -135,10 +135,13 @@
   "pageFind": "Sayfa no",
   "pageNotFound": "Bu derste böyle bir sayfa yok.",
   "resumeAt": "Kaldığın yerden devam: sayfa {p}",
-  "pdfFull": "Tam ekran PDF",
-  "pdfPage": "Sayfa {a} / {b}",
-  "pdfClose": "PDF'ten çık",
-  "pdfLoadFail": "PDF açılamadı. İnternet bağlantını kontrol et."
+  "saveAsPdf": "PDF olarak kaydet",
+  "readerView": "Görünüm",
+  "modePdf": "Orijinal PDF",
+  "modeText": "Okuma modu",
+  "pdfLoading": "PDF açılıyor…",
+  "pdfFailed": "PDF şu an açılamadı.",
+  "toReadingMode": "Okuma moduna geç"
  },
  "en": {
   "molDrugPage": "MOLECULAR STRUCTURE · DRUG ON PAGE {n}",
@@ -276,10 +279,13 @@
   "pageFind": "Page no.",
   "pageNotFound": "This lesson has no such page.",
   "resumeAt": "Back where you stopped: page {p}",
-  "pdfFull": "Full-screen PDF",
-  "pdfPage": "Page {a} / {b}",
-  "pdfClose": "Leave PDF",
-  "pdfLoadFail": "Could not open the PDF. Check your connection."
+  "saveAsPdf": "Save as PDF",
+  "readerView": "View",
+  "modePdf": "Original PDF",
+  "modeText": "Reading mode",
+  "pdfLoading": "Opening the PDF…",
+  "pdfFailed": "The PDF could not be opened right now.",
+  "toReadingMode": "Switch to reading mode"
  },
  "fa": {
   "molDrugPage": "ساختار مولکولی · دارویی که در صفحهٔ {n} آمده",
@@ -417,10 +423,13 @@
   "pageFind": "شماره صفحه",
   "pageNotFound": "این درس چنین صفحه‌ای ندارد.",
   "resumeAt": "ادامه از جایی که ماندی: صفحه {p}",
-  "pdfFull": "PDF تمام‌صفحه",
-  "pdfPage": "صفحه {a} / {b}",
-  "pdfClose": "خروج از PDF",
-  "pdfLoadFail": "PDF باز نشد. اتصال اینترنت را بررسی کن."
+  "saveAsPdf": "ذخیره به‌صورت PDF",
+  "readerView": "نمایش",
+  "modePdf": "PDF اصلی",
+  "modeText": "حالت مطالعه",
+  "pdfLoading": "در حال باز کردن PDF…",
+  "pdfFailed": "PDF الان باز نشد.",
+  "toReadingMode": "رفتن به حالت مطالعه"
  },
  "ar": {
   "molDrugPage": "البنية الجزيئية · الدواء المذكور في الصفحة {n}",
@@ -558,9 +567,12 @@
   "pageFind": "رقم الصفحة",
   "pageNotFound": "لا توجد صفحة كهذه في هذا الدرس.",
   "resumeAt": "نكمل من حيث توقفت: الصفحة {p}",
-  "pdfFull": "ملف PDF بملء الشاشة",
-  "pdfPage": "صفحة {a} / {b}",
-  "pdfClose": "إغلاق PDF",
-  "pdfLoadFail": "تعذّر فتح الملف. تحقق من اتصالك."
+  "saveAsPdf": "حفظ بصيغة PDF",
+  "readerView": "العرض",
+  "modePdf": "PDF الأصلي",
+  "modeText": "وضع القراءة",
+  "pdfLoading": "جارٍ فتح PDF…",
+  "pdfFailed": "تعذّر فتح PDF الآن.",
+  "toReadingMode": "الانتقال إلى وضع القراءة"
  }
 }
