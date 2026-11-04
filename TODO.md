@@ -323,4 +323,5 @@ Technical notes and decisions:
 ## Samples went to the wrong course (4 Nov 2026) — web code done, tried locally, NOT live
 - [x] Kian's "Tekno teori 3 sorular" landed in Farmakoterapi: `/samples` opened from the home page picked the first course by itself, so the exam summary mixed tekno questions with Farmakoterapi PDFs. Now `/samples` without a course asks "pick the course first" (only one course: that one); the course page's "Sınava hazırlık" tab always uses its own course
 - [ ] Exam summary refuses when the samples do not match the course's PDFs (`{ error: 'mismatch' }` + warning) — asked of the exam-summary session
+- [x] The exam summary row on the course page has a trash button too (it had none)
 - [ ] Kian: delete "Sınav özeti · Farmakoterapi" and the wrong sample, upload it again under tekno

@@ -56,6 +56,24 @@ export default function CourseFolder() {
     if (ok) setReload((n) => n + 1);
   };
 
+  // The trash button with its "sure?" question (a lesson PDF or the exam summary).
+  const deleteBtn = (p: Pdf) =>
+    asking === p.id ? (
+      <div className={s.ask} role="group" aria-label={t('lessonDeleteAsk')}>
+        <span>{t('lessonDeleteAsk')}</span>
+        <button className={s.askYes} onClick={() => remove(p)}>
+          {t('lessonDeleteYes')}
+        </button>
+        <button className={s.askNo} onClick={() => setAsking(null)}>
+          {t('lessonDeleteNo')}
+        </button>
+      </div>
+    ) : (
+      <button className={s.del} aria-label={t('lessonDelete')} title={t('lessonDelete')} onClick={() => setAsking(p.id)}>
+        <Icon name="trash" size={16} />
+      </button>
+    );
+
   if (course === undefined) return <main className={s.main} />;
   if (course === null)
     return (
@@ -156,21 +174,7 @@ export default function CourseFolder() {
                     </span>
                     <Icon name="chevron" size={18} className={`flip-rtl ${s.chev}`} />
                   </Link>
-                  {asking === p.id ? (
-                    <div className={s.ask} role="group" aria-label={t('lessonDeleteAsk')}>
-                      <span>{t('lessonDeleteAsk')}</span>
-                      <button className={s.askYes} onClick={() => remove(p)}>
-                        {t('lessonDeleteYes')}
-                      </button>
-                      <button className={s.askNo} onClick={() => setAsking(null)}>
-                        {t('lessonDeleteNo')}
-                      </button>
-                    </div>
-                  ) : (
-                    <button className={s.del} aria-label={t('lessonDelete')} title={t('lessonDelete')} onClick={() => setAsking(p.id)}>
-                      <Icon name="trash" size={16} />
-                    </button>
-                  )}
+                  {deleteBtn(p)}
                 </div>
               ))}
             </div>
@@ -188,16 +192,19 @@ export default function CourseFolder() {
               <h2>{t('smp_sumFolder')}</h2>
             </div>
             <div className={s.list}>
-              <Link to={`/reader?course=${course.id}&pdf=${course.summary.id}`} className={s.pdf}>
-                <span className={s.recIcon}>
-                  <Icon name="file" size={22} />
-                </span>
-                <span className={s.pdfBody}>
-                  <b>{course.summary.title}</b>
-                  <span className={s.status}>{pdfStatus(course.summary, lang, t)}</span>
-                </span>
-                <Icon name="chevron" size={18} className={`flip-rtl ${s.chev}`} />
-              </Link>
+              <div className={s.pdfRow}>
+                <Link to={`/reader?course=${course.id}&pdf=${course.summary.id}`} className={s.pdf}>
+                  <span className={s.recIcon}>
+                    <Icon name="file" size={22} />
+                  </span>
+                  <span className={s.pdfBody}>
+                    <b>{course.summary.title}</b>
+                    <span className={s.status}>{pdfStatus(course.summary, lang, t)}</span>
+                  </span>
+                  <Icon name="chevron" size={18} className={`flip-rtl ${s.chev}`} />
+                </Link>
+                {deleteBtn(course.summary)}
+              </div>
             </div>
           </>
         )}
