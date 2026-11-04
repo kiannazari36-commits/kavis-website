@@ -19,6 +19,8 @@ struct AssistantChatTarget: Equatable {
     /// Asked from the reader: the server reads this lesson's whole text and talks only about it.
     var materialId: String? = nil
     var lessonTitle: String? = nil
+    /// The reader's page on screen, so "this page" in a question means it.
+    var page: Int? = nil
 }
 
 /// What the student uploads (the three start buttons on home).

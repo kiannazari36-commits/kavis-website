@@ -445,7 +445,7 @@ struct AssistantChatView: View {
         messages.append(ChatMessage(role: .user, text: shown.isEmpty ? prefs.t("solveLabel") : shown, photo: photo))
         waiting = true
         streaming = ""
-        let result = await AssistantAPI.ask(question, courseId: isAll ? nil : target.topicId, materialId: target.materialId, threadId: threadId,
+        let result = await AssistantAPI.ask(question, courseId: isAll ? nil : target.topicId, materialId: target.materialId, page: target.page, threadId: threadId,
                                             mode: target.ai ? .ai : .pdf, lang: lang, photo: photo) { soFar in streaming = soFar }
         waiting = false
         streaming = nil

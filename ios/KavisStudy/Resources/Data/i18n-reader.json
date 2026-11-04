@@ -138,7 +138,14 @@
   "pdfFull": "Tam ekran PDF",
   "pdfPage": "Sayfa {a} / {b}",
   "pdfClose": "PDF'ten çık",
-  "pdfLoadFail": "PDF açılamadı. İnternet bağlantını kontrol et."
+  "pdfLoadFail": "PDF açılamadı. İnternet bağlantını kontrol et.",
+  "readerView": "Görünüm",
+  "modePdf": "Orijinal PDF",
+  "modeText": "Okuma modu",
+  "pdfLoading": "PDF açılıyor…",
+  "pdfFailed": "PDF şu an açılamadı.",
+  "toReadingMode": "Okuma moduna geç",
+  "pageGo": "Git"
  },
  "en": {
   "molDrugPage": "MOLECULAR STRUCTURE · DRUG ON PAGE {n}",
@@ -279,7 +286,14 @@
   "pdfFull": "Full-screen PDF",
   "pdfPage": "Page {a} / {b}",
   "pdfClose": "Leave PDF",
-  "pdfLoadFail": "Could not open the PDF. Check your connection."
+  "pdfLoadFail": "Could not open the PDF. Check your connection.",
+  "readerView": "View",
+  "modePdf": "Original PDF",
+  "modeText": "Reading mode",
+  "pdfLoading": "Opening the PDF…",
+  "pdfFailed": "The PDF could not be opened right now.",
+  "toReadingMode": "Switch to reading mode",
+  "pageGo": "Go"
  },
  "fa": {
   "molDrugPage": "ساختار مولکولی · دارویی که در صفحهٔ {n} آمده",
@@ -420,7 +434,14 @@
   "pdfFull": "PDF تمام‌صفحه",
   "pdfPage": "صفحه {a} / {b}",
   "pdfClose": "خروج از PDF",
-  "pdfLoadFail": "PDF باز نشد. اتصال اینترنت را بررسی کن."
+  "pdfLoadFail": "PDF باز نشد. اتصال اینترنت را بررسی کن.",
+  "readerView": "نمایش",
+  "modePdf": "PDF اصلی",
+  "modeText": "حالت مطالعه",
+  "pdfLoading": "در حال باز کردن PDF…",
+  "pdfFailed": "PDF الان باز نشد.",
+  "toReadingMode": "رفتن به حالت مطالعه",
+  "pageGo": "برو"
  },
  "ar": {
   "molDrugPage": "البنية الجزيئية · الدواء المذكور في الصفحة {n}",
@@ -561,6 +582,13 @@
   "pdfFull": "ملف PDF بملء الشاشة",
   "pdfPage": "صفحة {a} / {b}",
   "pdfClose": "إغلاق PDF",
-  "pdfLoadFail": "تعذّر فتح الملف. تحقق من اتصالك."
+  "pdfLoadFail": "تعذّر فتح الملف. تحقق من اتصالك.",
+  "readerView": "العرض",
+  "modePdf": "PDF الأصلي",
+  "modeText": "وضع القراءة",
+  "pdfLoading": "جارٍ فتح PDF…",
+  "pdfFailed": "تعذّر فتح PDF الآن.",
+  "toReadingMode": "الانتقال إلى وضع القراءة",
+  "pageGo": "اذهب"
  }
 }

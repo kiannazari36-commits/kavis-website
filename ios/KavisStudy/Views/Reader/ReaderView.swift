@@ -1,4 +1,5 @@
 import AVFoundation
+import PDFKit
 import SwiftUI
 import PencilKit
 
@@ -6,6 +7,8 @@ import PencilKit
 /// (`web/src/pages/Reader.tsx`). The teacher's text is shown exactly as it is. Hard words open an explanation; the
 /// text is read aloud with the phone's own voice; a paragraph can be translated. Pages seen on screen are saved as
 /// read, and the lesson opens at the page where the student stopped.
+/// "Orijinal PDF | Okuma modu" (as the web, 4 Nov 2026): the teacher's own pages (PDFKit, with hard words,
+/// highlights, the selection menu and the pen) or the reading page; lessons without a PDF file have only the second.
 struct ReaderView: View {
     @Environment(AppPrefs.self) private var prefs
     @Environment(AppModel.self) private var app
@@ -45,6 +48,31 @@ struct ReaderView: View {
     }
     @State private var showPdf = false
     @State private var shareOpen = false
+    /// "pdf" (default) or "text"; kept on this device, as the web keeps it per browser.
+    @AppStorage("kavis.readerMode") private var modePref = "pdf"
+    /// The lesson has an original PDF (a copy on the phone or a PDF file on the server).
+    @State private var hasPdf = false
+    @State private var pdfDoc: PDFDocument?
+    @State private var pdfFailed = false
+    /// The PDF page in the middle of the screen, the page it opens at and a jump asked by the section menu.
+    @State private var pdfPage = 1
+    @State private var startAt = 1
+    @State private var pdfJump: PdfJump?
+    /// Handwriting on the PDF pages (its own surface: other coordinates than the page cards).
+    @State private var pdfInk: [Int: PKDrawing] = [:]
+    @State private var pdfInkSaving: [Int: Task<Void, Never>] = [:]
+    @State private var pdfSel: PdfSelection?
+    @State private var clearSel = 0
+    /// What the student highlighted ("Vurgula"), marked on the PDF and in reading mode.
+    @State private var highlights: [String] = []
+    @State private var pageAsk = false
+    @State private var pageQuery = ""
+    /// iPad: a question for the assistant panel (selected text); `panelKey` makes the panel ask it.
+    @State private var panelQuestion = ""
+    @State private var panelKey = 0
+    private var pdfMode: Bool { hasPdf && modePref == "pdf" }
+    /// The page the student is on (the assistant is told it).
+    private var currentPage: Int { pdfMode ? pdfPage : (atPage ?? lesson?.lastPage ?? 1) }
 
     private static let fontSizes = [18, 20, 22, 24]
 
@@ -80,26 +108,22 @@ struct ReaderView: View {
             HStack(spacing: 0) {
                 ZStack {
                     readingColumn
-                    if section != nil {
+                    if let pdfSel, pdfMode, openTerm == nil { selectionBar(pdfSel) }
+                    else if pdfMode, pdfDoc != nil, !noteMode, let doc { pdfSectionEnd(doc) }
+                    if section != nil || pdfMode {
                         toolbar.fixedSize(horizontal: wide, vertical: false)
                             .frame(maxHeight: .infinity, alignment: .bottom).padding(.bottom, wide ? 24 : 8)
                     }
                 }
                 if wide, !portrait, panelOpen, let lesson {
-                    AssistantChatView(
-                        target: AssistantChatTarget(topicId: lesson.courseId ?? "all", materialId: docID, lessonTitle: lesson.title),
-                        onClose: { withAnimation(.easeOut(duration: 0.2)) { panelOpen = false } }
-                    )
+                    panel(lesson)
                     .frame(width: 380)
                     .padding(.vertical, 16).padding(.trailing, 16)
                     .transition(.move(edge: .trailing).combined(with: .opacity))
                 }
             }
             if wide, portrait, panelOpen, let lesson {
-                AssistantChatView(
-                    target: AssistantChatTarget(topicId: lesson.courseId ?? "all", materialId: docID, lessonTitle: lesson.title),
-                    onClose: { withAnimation(.easeOut(duration: 0.2)) { panelOpen = false } }
-                )
+                panel(lesson)
                 .frame(maxWidth: 760)
                 .frame(height: size.height * 0.62)
                 .shadow(color: .black.opacity(0.18), radius: 24, y: 6)
@@ -108,17 +132,21 @@ struct ReaderView: View {
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
             if let lesson, let id = openTerm, let term = lesson.terms[id] { termPopover(term) }
-            if let text = translateText, let lesson, let doc { translationSheet(text, lesson: lesson, doc: doc) }
+            if let text = translateText, let lesson { translationSheet(text, lesson: lesson) }
             if shareOpen, let lesson { ShareDialog(materialId: docID, lessonTitle: lesson.title, onClose: { shareOpen = false }) }
         }
         .fullScreenCover(isPresented: $showPdf) {
-            PdfFullView(materialId: docID, startPage: atPage ?? lesson?.lastPage ?? 1, terms: lesson?.terms ?? [:], onAsk: { showPdf = false; withAnimation { panelOpen = true } }, onClose: { showPdf = false })
+            PdfFullView(materialId: docID, startPage: currentPage, terms: lesson?.terms ?? [:], highlights: highlights,
+                        docLang: doc?.docLang ?? .tr, onHighlight: addHighlight,
+                        onAsk: { q in showPdf = false; askPanel(q) }, onClose: { showPdf = false })
         }
         .task {
             guard !loaded else { return }
             lesson = await ReaderAPI.getLesson(id: docID)
             loaded = true
             restorePlace()
+            hasPdf = await ReaderAPI.hasPdf(materialId: docID)
+            highlights = await ReaderAPI.highlights(materialId: docID)
             ink = await InkAPI.load(materialId: docID)
             let recs = await RecordingAPI.recordingsOf(docID)
             recordingId = (recs.first { $0.status == "ready" } ?? recs.first)?.id
@@ -133,7 +161,18 @@ struct ReaderView: View {
                 if !paused { seconds += 1 }
             }
         }
-        .task(id: "\(sectionIndex)-\(topBlock ?? -1)") { await savePlace() }
+        .task(id: "\(sectionIndex)-\(topBlock ?? -1)-\(pdfMode ? pdfPage : -1)") { await savePlace() }
+        .task(id: pdfMode) { await loadPdf() }
+        .onChange(of: pdfPage) { _, p in
+            seen.insert(p)
+            // In the original PDF all pages stand one under the other: the open section is the one on screen.
+            if pdfMode, let s = sectionOf(p) { sectionIndex = s }
+        }
+        .alert(t("pageFind"), isPresented: $pageAsk) {
+            TextField(t("pageFind"), text: $pageQuery).keyboardType(.numberPad)
+            Button(t("pageGo")) { jumpToPage() }
+            Button(t("close"), role: .cancel) { pageQuery = "" }
+        }
         .onDisappear {
             speaker.stop()
             if let lesson, let course = lesson.courseId {
@@ -149,6 +188,254 @@ struct ReaderView: View {
         .animation(.easeOut(duration: 0.2), value: openTerm)
         .animation(.easeOut(duration: 0.2), value: translateText)
         .animation(.easeOut(duration: 0.2), value: shareOpen)
+        .animation(.easeOut(duration: 0.15), value: pdfSel)
+    }
+
+    // MARK: Original PDF
+
+    /// The PDF (the phone's copy, else downloaded once) and its handwriting, the first time the PDF view opens.
+    private func loadPdf() async {
+        guard pdfMode, pdfDoc == nil, !pdfFailed else { return }
+        guard let data = await ReaderAPI.pdfData(materialId: docID), let d = PDFDocument(data: data) else { pdfFailed = true; return }
+        pdfDoc = d
+        pdfPage = min(max(1, startAt), d.pageCount)
+        seen.insert(pdfPage)
+        pdfInk = await InkAPI.load(materialId: docID, surface: .pdf)
+    }
+
+    private func sectionOf(_ page: Int) -> Int? {
+        guard let doc else { return nil }
+        return doc.sections.firstIndex { page >= $0.pageFrom && page <= $0.pageTo }
+            ?? doc.sections.lastIndex { $0.pageFrom <= page }
+    }
+
+    /// Switching the view keeps the page: the reading mode opens the section of the page on screen, the PDF the
+    /// page of the card on screen.
+    private func setMode(_ m: String) {
+        guard m != (pdfMode ? "pdf" : "text") else { return }
+        let page = currentPage
+        pdfSel = nil
+        openTerm = nil
+        speaker.stop()
+        noteMode = false
+        modePref = m
+        if m == "text" {
+            guard let doc, let s = sectionOf(page) else { return }
+            sectionIndex = s
+            let b = doc.sections[s].blocks.firstIndex { page >= $0.pageFrom && page <= $0.pageTo } ?? 0
+            Task {
+                try? await Task.sleep(for: .milliseconds(150))
+                topBlock = b
+            }
+        } else {
+            startAt = page
+            pdfPage = page
+        }
+    }
+
+    /// Section menu and page search in the PDF: show that page.
+    private func showPage(_ page: Int) {
+        pdfSel = nil
+        openTerm = nil
+        pdfJump = PdfJump(page: page, n: (pdfJump?.n ?? 0) + 1)
+    }
+
+    private func jumpToPage() {
+        let p = Int(pageQuery.trimmingCharacters(in: .whitespaces)) ?? 0
+        pageQuery = ""
+        guard let pdfDoc, p >= 1, p <= pdfDoc.pageCount else { toast.show(t("pageNotFound")); return }
+        showPage(p)
+    }
+
+    /// "Orijinal PDF | Okuma modu" (web: modeSeg).
+    private var modeSwitch: some View {
+        HStack(spacing: 0) {
+            ForEach([("pdf", "modePdf"), ("text", "modeText")], id: \.0) { m, key in
+                let on = (pdfMode ? "pdf" : "text") == m
+                Button { setMode(m) } label: {
+                    Text(t(key)).font(KFont.ui(13, on ? .semibold : .medium, lang: lang))
+                        .foregroundStyle(on ? Color.white : KRead.text2)
+                        .lineLimit(1)
+                        .padding(.horizontal, 14).frame(height: 32)
+                        .background(on ? Color(hex: 0x9C2F3A) : .clear, in: Capsule())
+                }
+                .accessibilityAddTraits(on ? .isSelected : [])
+            }
+        }
+        .padding(3)
+        .background(KRead.chrome, in: Capsule())
+        .overlay(Capsule().stroke(KRead.line, lineWidth: 1))
+        .fixedSize()
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(t("readerView"))
+    }
+
+    /// The phone's row under the header in the PDF: the switch, the page (tap: page search) and the section menu.
+    private func pdfBar(_ doc: ReaderDoc?) -> some View {
+        HStack(spacing: 8) {
+            modeSwitch
+            Spacer(minLength: 0)
+            if let pdfDoc {
+                Button { pageAsk = true } label: {
+                    Text("\(Format.num(pdfPage, lang))/\(Format.num(pdfDoc.pageCount, lang))")
+                        .font(KFont.mono(12, .medium)).foregroundStyle(KRead.text)
+                        .padding(.horizontal, 12).frame(height: 38)
+                        .background(KRead.chrome, in: Capsule())
+                        .overlay(Capsule().stroke(KRead.line, lineWidth: 1))
+                }
+                .accessibilityLabel(t("pageFind"))
+            }
+            if let doc, !doc.sections.isEmpty {
+                Menu {
+                    ForEach(Array(doc.sections.enumerated()), id: \.offset) { i, s in
+                        Button("\(Format.num(i + 1, lang)) · \(s.title)") { goSection(i) }
+                    }
+                } label: {
+                    KIcon(name: .chevronDown, size: 14, width: 2).foregroundStyle(KRead.text)
+                        .frame(width: 38, height: 38)
+                        .background(KRead.chrome, in: Circle())
+                        .overlay(Circle().stroke(KRead.line, lineWidth: 1))
+                }
+                .accessibilityLabel(t("sections"))
+            }
+        }
+    }
+
+    private var pdfPane: some View {
+        Group {
+            if let pdfDoc {
+                PdfPagesView(
+                    document: pdfDoc, page: $pdfPage, startPage: startAt, jump: pdfJump, writing: noteMode, ink: $pdfInk,
+                    terms: lesson?.terms ?? [:], selectedTerm: openTerm, highlights: highlights, bottomInset: 120,
+                    onInk: { pg, drawing in savePdfInk(page: pg, drawing: drawing) },
+                    onTerm: { key in
+                        guard let key, lesson?.terms[key] != nil else { openTerm = nil; return }
+                        if openTerm != key, let id = lesson?.terms[key]?.id { ReaderAPI.tapTerm(id) }
+                        pdfSel = nil
+                        openTerm = key
+                    },
+                    onSelect: { pdfSel = $0 },
+                    clearSelection: clearSel
+                )
+                .padding(.top, 8)
+            } else if pdfFailed {
+                VStack(spacing: 14) {
+                    Spacer()
+                    Text(t("pdfFailed")).font(KFont.ui(15, lang: lang)).foregroundStyle(KRead.text2)
+                    Button { modePref = "text" } label: {
+                        Text(t("toReadingMode")).font(KFont.ui(14, .semibold, lang: lang)).foregroundStyle(KPhone.ctaText)
+                            .padding(.horizontal, 22).frame(height: 44).background(KPhone.cta, in: Capsule())
+                    }
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity)
+            } else {
+                VStack(spacing: 10) {
+                    Spacer()
+                    ProgressView()
+                    Text(t("pdfLoading")).font(KFont.ui(14, lang: lang)).foregroundStyle(KRead.text2)
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity)
+            }
+        }
+    }
+
+    /// Saves a PDF page's handwriting a moment after the last stroke (the same surface as the iPad's full-screen PDF).
+    private func savePdfInk(page: Int, drawing: PKDrawing) {
+        pdfInkSaving[page]?.cancel()
+        let id = docID
+        pdfInkSaving[page] = Task {
+            try? await Task.sleep(for: .seconds(1.5))
+            guard !Task.isCancelled else { return }
+            await InkAPI.save(materialId: id, page: page, drawing: drawing, surface: .pdf)
+        }
+    }
+
+    private func addHighlight(_ sel: PdfSelection) {
+        if !highlights.contains(sel.text) {
+            highlights.append(sel.text)
+            Task { await ReaderAPI.addHighlight(materialId: docID, page: sel.page, text: sel.text) }
+        }
+        toast.show(t("highlighted"))
+    }
+
+    /// After a menu action the selection goes (so the new highlight shows).
+    private func done() {
+        pdfSel = nil
+        clearSel += 1
+    }
+
+    /// The menu over selected PDF text, just above the bottom bar.
+    private func selectionBar(_ sel: PdfSelection) -> some View {
+        PdfSelectionBar(
+            onTranslate: { done(); translateText = sel.text },
+            onCopy: { done(); UIPasteboard.general.string = sel.text; toast.show(t("copied")) },
+            onHighlight: { done(); addHighlight(sel) },
+            onAsk: { done(); askPanel(t("askSentence") + sel.text) }
+        )
+        .padding(.horizontal, 16)
+        .frame(maxHeight: .infinity, alignment: .bottom).padding(.bottom, wide ? 100 : 82)
+    }
+
+    /// On the last page of a section (as the web, under that page): its check, and after the last one the summary.
+    @ViewBuilder private func pdfSectionEnd(_ doc: ReaderDoc) -> some View {
+        if let s = sectionOf(pdfPage), pdfPage == doc.sections[s].pageTo, let lesson {
+            let last = s >= doc.sections.count - 1
+            HStack(spacing: 8) {
+                Text(last ? t("s4end") : t("secEnd", ["n": Format.num(s + 1, lang)]))
+                    .font(KFont.ui(13, .medium, lang: lang)).foregroundStyle(KRead.text).lineLimit(2)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Button {
+                    let sec = doc.sections[s]
+                    app.go(.quiz(QuizTarget(materialId: lesson.id, kind: last ? .final : .check, pageFrom: sec.pageFrom, pageTo: sec.pageTo, nextSection: last ? nil : s + 1)))
+                } label: {
+                    Text(t("start")).font(KFont.ui(13, .semibold, lang: lang)).foregroundStyle(KPhone.ctaText)
+                        .padding(.horizontal, 16).frame(height: 36).background(KPhone.cta, in: Capsule())
+                }
+                if last {
+                    Button { app.go(.lessonSummary(lesson.id)) } label: {
+                        Text(t("lessonSummary")).font(KFont.ui(13, .medium, lang: lang)).foregroundStyle(KRead.text)
+                            .padding(.horizontal, 14).frame(height: 36)
+                            .overlay(Capsule().stroke(KRead.line, lineWidth: 1))
+                    }
+                }
+            }
+            .padding(.leading, 16).padding(.trailing, 6).padding(.vertical, 6)
+            .background(KRead.chip, in: Capsule())
+            .frame(maxWidth: wide ? 620 : .infinity)
+            .padding(.horizontal, 16)
+            .frame(maxHeight: .infinity, alignment: .bottom).padding(.bottom, wide ? 100 : 82)
+            .transition(.opacity)
+        }
+    }
+
+    /// Asks the assistant about this lesson (and its open page). iPad: the panel; phone: the assistant's chat.
+    private func askPanel(_ question: String?) {
+        guard let lesson else { return }
+        if wide {
+            withAnimation(.easeOut(duration: 0.2)) { panelOpen = true }
+            guard let question else { return }
+            panelQuestion = question
+            panelKey += 1
+            // Asked once: a panel made again later (turning the iPad) must not ask it a second time.
+            Task {
+                try? await Task.sleep(for: .seconds(1))
+                panelQuestion = ""
+            }
+        } else {
+            app.go(.assistantChat(AssistantChatTarget(topicId: lesson.courseId ?? "all", question: question ?? "",
+                                                      materialId: docID, lessonTitle: lesson.title, page: currentPage)))
+        }
+    }
+
+    private func panel(_ lesson: Lesson) -> some View {
+        AssistantChatView(
+            target: AssistantChatTarget(topicId: lesson.courseId ?? "all", question: panelQuestion, materialId: docID,
+                                        lessonTitle: lesson.title, page: currentPage),
+            onClose: { withAnimation(.easeOut(duration: 0.2)) { panelOpen = false } }
+        )
+        .id(panelKey)
     }
 
     // MARK: Progress
@@ -161,8 +448,10 @@ struct ReaderView: View {
         // After a section check: the next section, from its top (as on the web).
         if let next = app.readerSection {
             app.readerSection = nil
-            if let doc, next < doc.sections.count { goSection(next); return }
+            if let doc, next < doc.sections.count { startAt = doc.sections[next].pageFrom; pdfPage = startAt; goSection(next); return }
         }
+        startAt = max(1, asked ?? lesson?.lastPage ?? 1)
+        pdfPage = startAt
         guard let lesson, let doc = lesson.doc, (asked ?? lesson.lastPage) > 1 else { return }
         let last = asked ?? lesson.lastPage
         guard let s = doc.sections.firstIndex(where: { $0.blocks.contains { last >= $0.pageFrom && last <= $0.pageTo } }) else { return }
@@ -179,8 +468,9 @@ struct ReaderView: View {
     /// open next time.
     private func savePlace() async {
         try? await Task.sleep(for: .milliseconds(1500))
-        guard !Task.isCancelled, let lesson, let section, !seen.isEmpty else { return }
-        let at = section.blocks[min(topBlock ?? 0, section.blocks.count - 1)].pageFrom
+        guard !Task.isCancelled, let lesson, !seen.isEmpty else { return }
+        let at: Int
+        if pdfMode { at = pdfPage } else if let section { at = section.blocks[min(topBlock ?? 0, section.blocks.count - 1)].pageFrom } else { return }
         atPage = at
         if let r = await ReaderAPI.markRead(lesson, pages: seen, at: at) {
             self.lesson?.pagesRead = r.pagesRead
@@ -209,9 +499,9 @@ struct ReaderView: View {
 
     /// "FARMAKOLOJİ · SAYFA 12/48 · %25" like the web.
     private var pageLabel: String {
-        guard let lesson, lesson.doc != nil else { return "" }
-        let page = atPage ?? lesson.lastPage
-        let info = "\(t("pageOf", ["p": Format.num(page, lang), "n": Format.num(lesson.pageCount, lang)])) · \(Format.percent(lesson.percent, lang))"
+        guard let lesson, lesson.doc != nil || pdfMode else { return "" }
+        let n = pdfMode ? (pdfDoc?.pageCount ?? lesson.pageCount) : lesson.pageCount
+        let info = "\(t("pageOf", ["p": Format.num(currentPage, lang), "n": Format.num(n, lang)])) · \(Format.percent(lesson.percent, lang))"
         return lesson.courseName.isEmpty ? info : "\(lesson.courseName.uppercased(with: lang.locale)) · \(info)"
     }
 
@@ -219,8 +509,17 @@ struct ReaderView: View {
     private var readingColumn: some View {
         VStack(spacing: 0) {
             if wide { wideTopBar } else { topBar }
-            if wide { if let doc { sectionTabs(doc) } } else { themePicker }
-            if let doc, let section {
+            if wide {
+                if let doc { sectionTabs(doc) } else if hasPdf { HStack { modeSwitch; Spacer() }.padding(.horizontal, 28).padding(.top, 14) }
+            } else if pdfMode {
+                pdfBar(doc).padding(.horizontal, 16).padding(.top, 10)
+            } else {
+                if hasPdf { HStack { modeSwitch; Spacer() }.padding(.horizontal, 16).padding(.top, 10) }
+                themePicker
+            }
+            if pdfMode {
+                pdfPane
+            } else if let doc, let section {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
                         if !wide { sectionHeader(doc) }
@@ -287,6 +586,8 @@ struct ReaderView: View {
     /// The lesson's sections as tabs ("1 · Tanım"), scrolling sideways when there are many.
     private func sectionTabs(_ doc: ReaderDoc) -> some View {
         ScrollViewReader { proxy in
+            HStack(spacing: 10) {
+            if hasPdf { modeSwitch.padding(.leading, 28) }
             ScrollView(.horizontal) {
                 HStack(spacing: 8) {
                     ForEach(Array(doc.sections.enumerated()), id: \.offset) { i, s in
@@ -303,9 +604,10 @@ struct ReaderView: View {
                         .accessibilityAddTraits(on ? .isSelected : [])
                     }
                 }
-                .padding(.horizontal, 28).padding(.vertical, 2)
+                .padding(.leading, hasPdf ? 0 : 28).padding(.trailing, 28).padding(.vertical, 2)
             }
             .scrollIndicators(.hidden)
+            }
             .padding(.top, 14).padding(.bottom, 4)
             .onChange(of: sectionIndex) { _, i in withAnimation { proxy.scrollTo(i, anchor: .center) } }
             .accessibilityLabel(t("sections"))
@@ -412,6 +714,12 @@ struct ReaderView: View {
     // MARK: Sections and page cards
 
     private func goSection(_ i: Int) {
+        if pdfMode, let doc, i < doc.sections.count {
+            sectionIndex = i
+            speaker.stop()
+            showPage(doc.sections[i].pageFrom)
+            return
+        }
         sectionIndex = i
         openTerm = nil
         speaker.stop()
@@ -557,7 +865,7 @@ struct ReaderView: View {
     private func attributed(_ paragraph: Paragraph, paper: KPaper) -> AttributedString {
         switch paragraph {
         case .selectable(let sentence):
-            return AttributedString(sentence)
+            return marked(AttributedString(sentence))
         case .segments(let segments):
             var out = AttributedString()
             for segment in segments {
@@ -575,8 +883,27 @@ struct ReaderView: View {
                     out += a
                 }
             }
-            return out
+            return marked(out)
         }
+    }
+
+    /// The parts the student highlighted (on the PDF or here) marked like a marker pen; a highlight over a line
+    /// break of the PDF matches the same words here.
+    private func marked(_ text: AttributedString) -> AttributedString {
+        guard !highlights.isEmpty else { return text }
+        var out = text
+        let plain = String(text.characters)
+        for h in highlights {
+            let words = h.split(whereSeparator: \.isWhitespace).map { NSRegularExpression.escapedPattern(for: String($0)) }
+            guard !words.isEmpty, let re = try? NSRegularExpression(pattern: words.joined(separator: "\\s*"), options: [.caseInsensitive]) else { continue }
+            for m in re.matches(in: plain, range: NSRange(plain.startIndex..., in: plain)) {
+                guard let r = Range(m.range, in: plain),
+                      let lo = AttributedString.Index(r.lowerBound, within: out),
+                      let hi = AttributedString.Index(r.upperBound, within: out) else { continue }
+                out[lo..<hi].backgroundColor = KRead.marker
+            }
+        }
+        return out
     }
 
     private func termURL(_ key: String) -> URL? {
@@ -667,10 +994,16 @@ struct ReaderView: View {
         .accessibilityAddTraits(on ? .isSelected : [])
     }
 
-    /// Reads the open section aloud with the phone's voice, in the language of the PDF.
+    /// Reads the open section aloud with the phone's voice, in the language of the PDF. In the PDF: the page on screen.
     private func readAloud() {
-        guard let doc, let section else { return }
         if speaker.speaking { speaker.stop(); return }
+        if pdfMode {
+            guard let text = pdfDoc?.page(at: pdfPage - 1)?.string, !text.isEmpty else { return }
+            speaker.speak(text, language: doc?.language ?? "tr", rate: Float(settings.ttsRate), female: settings.ttsVoice == .female)
+            toast.show(t("pageAloud"))
+            return
+        }
+        guard let doc, let section else { return }
         let text = section.blocks.flatMap { block in
             [block.heading].compactMap { $0 } + block.paragraphs.map(\.plain)
         }.joined(separator: " ")
@@ -742,8 +1075,8 @@ struct ReaderView: View {
 
     // MARK: Translation
 
-    private func translationSheet(_ text: String, lesson: Lesson, doc: ReaderDoc) -> some View {
-        TranslationSheet(sentence: text, materialId: lesson.id, docLang: doc.docLang, style: settings.translationStyle, onClose: { translateText = nil })
+    private func translationSheet(_ text: String, lesson: Lesson) -> some View {
+        TranslationSheet(sentence: text, materialId: lesson.id, docLang: doc?.docLang ?? .tr, style: settings.translationStyle, onClose: { translateText = nil })
             .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 }
@@ -752,7 +1085,7 @@ struct ReaderView: View {
 
 /// Source text of the lecturer and its translation (language chips, literal / natural wording). A saved translation
 /// comes at once; a new one is made by the server's AI (Edge Function translate) and kept.
-private struct TranslationSheet: View {
+struct TranslationSheet: View {
     @Environment(AppPrefs.self) private var prefs
 
     let sentence: String
@@ -909,6 +1242,8 @@ enum KRead {
     static let chip = Color.pair(0xFBEBC8, 0x3A2E18)
     static let chipFg = Color.pair(0x7A5208, 0xF2C46E)
     static let term = Color.pair(0x9C2F3A, 0xE8925A)
+    /// A highlight ("Vurgula"), as the web's marker colour.
+    static let marker = Color(hex: 0xF2B33D, opacity: 0.45)
     static let termBg = Color(light: Color(hex: 0xF2B33D, opacity: 0.28), dark: Color(hex: 0xF2B33D, opacity: 0.16))
     static let tagVio = Color.pair(0xE8E6F6, 0x2C2A3A)
     static let tagVioFg = Color.pair(0x4A3F9A, 0xB9B4F0)
