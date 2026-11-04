@@ -136,8 +136,13 @@ export async function uploadPhotos(photos: Blob[], title: string, courseId: stri
 }
 
 /** "Metin tanıma ile dene" for a lesson the server found scanned; 'trial' = no trial lesson left. */
-export async function retryWithOcr(id: string): Promise<'ok' | 'trial' | 'failed'> {
-  const { error } = await supabase.functions.invoke('process-material', { body: { material_id: id, ocr: true } });
+export function retryWithOcr(id: string) {
+  return retryLesson(id, true);
+}
+
+/** Asks the server to prepare a lesson again (after it failed, e.g. the monthly AI budget was full). */
+export async function retryLesson(id: string, ocr = false): Promise<'ok' | 'trial' | 'failed'> {
+  const { error } = await supabase.functions.invoke('process-material', { body: { material_id: id, ocr } });
   if (!error) return 'ok';
   const status = (error as { context?: { status?: number } }).context?.status;
   return status === 403 ? 'trial' : 'failed';
@@ -150,15 +155,18 @@ export type LessonStatus = {
   stats: Record<string, number>;
   /** Last change on the server (a "processing" lesson unchanged for long was stopped). */
   updatedAt: string | null;
+  /** Why a "failed" lesson stopped ('budget' = the student's monthly AI budget is used up). */
+  failure: 'budget' | 'other' | null;
 };
 
 /** Where the server is with a lesson (polled by the processing screen). */
 export async function lessonStatus(id: string): Promise<LessonStatus | null> {
-  const { data } = await supabase.from('materials').select('status, page_count, course_id, updated_at, material_content(stats)').eq('id', id).maybeSingle();
+  const { data } = await supabase.from('materials').select('status, page_count, course_id, updated_at, error, material_content(stats)').eq('id', id).maybeSingle();
   if (!data) return null;
   const content = data.material_content as unknown as { stats: Record<string, number> } | { stats: Record<string, number> }[] | null;
   const stats = (Array.isArray(content) ? content[0]?.stats : content?.stats) ?? {};
-  return { status: data.status, pages: data.page_count, courseId: data.course_id, stats, updatedAt: data.updated_at };
+  const failure = data.status !== 'failed' ? null : /budget/i.test(data.error ?? '') ? 'budget' : 'other';
+  return { status: data.status, pages: data.page_count, courseId: data.course_id, stats, updatedAt: data.updated_at, failure };
 }
 
 /**

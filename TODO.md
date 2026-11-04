@@ -304,3 +304,9 @@ Technical notes and decisions:
 - [ ] Not on the PDF yet: lecture-recording notes ("sınavda çıkar") and the molecule chip (reading mode only)
 - [ ] iPhone: the same switch in the reader (PDFKit; the iPad already has "tam ekran PDF" in `PdfFullView.swift`, give it the same switch and highlights)
 - [ ] Ink formats differ: the iPad's PDF drawings are PencilKit files (`ink` bucket), the web's are strokes in `anchor` → neither shows the other's. Also check: `InkAPI.Row.anchor` is decoded as `[String: String]`, a web ink row (`anchor.strokes` array) may make the iOS ink load fail for a student who draws on both
+
+## Failed lessons (4 Nov 2026) — web code done, tried locally, NOT live
+- [x] Kian's 93-page upload stood on "hazırlanıyor" forever: the server had stopped it with `monthly AI budget reached` (his November cost $3.32 ≥ $3). His November `usage_monthly.cost_usd` was set to 0 on live with his yes (4 Nov 2026)
+- [x] Web: a failed lesson no longer spins; the upload screen and the reader's "not ready" page say why (monthly AI limit → "renews on the 1st") and have "Tekrar dene" (calls `process-material` again; it accepts a failed lesson). Old text "we will try again shortly" removed (nothing retried by itself)
+- [ ] iPhone / iPad: same message and "Tekrar dene" for failed lessons
+- [ ] Decide with Kian (launch): is $3/month per student enough for big PDFs (a 93-page PDF ≈ $0.5)? See "AI budget and pricing"

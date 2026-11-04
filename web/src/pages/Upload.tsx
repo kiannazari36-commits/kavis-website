@@ -14,7 +14,7 @@ import {
   splitPdf,
   MAX_PHOTOS,
   resumeStuckLessons,
-  retryWithOcr,
+  retryLesson, retryWithOcr,
   shrinkPhoto,
   uploadLesson,
   uploadPhotos,
@@ -253,9 +253,19 @@ export default function Upload() {
   if (stage === 'processing') {
     const st = status?.status ?? 'uploaded';
     const ready = st === 'ready';
-    // Steps follow the server: uploaded = waiting, processing = working through, ready = all done.
+    const failed = st === 'failed';
+    // Steps follow the server: uploaded = waiting, processing = working through, ready = all done; a failed lesson
+    // stands still (no step is working) until the student asks again.
     const done = ready ? STEPS.length : st === 'processing' ? 1 : 0;
-    const pct = ready ? 100 : st === 'processing' ? 45 : 8;
+    const pct = ready ? 100 : failed ? 0 : st === 'processing' ? 45 : 8;
+    const retry = async () => {
+      if (!lessonId) return;
+      setBusy(true);
+      const r = await retryLesson(lessonId);
+      setBusy(false);
+      if (r !== 'ok') return toast(t(r === 'trial' ? 'trialPdfFull' : 'up_failed'));
+      setStatus(null);
+    };
     const detail = (i: number) => {
       const x = status?.stats ?? {};
       if (i === 0 && mode === 'photo') return t('up_photoPages').replace('{n}', num(photos.length, lang));
@@ -276,12 +286,12 @@ export default function Upload() {
               <span>{courses.find((c) => c.id === courseId)?.name ?? ''}</span>
             </span>
           </div>
-          <h2>{ready ? t('up_ready') : t('up_procT')}</h2>
-          {st === 'failed' ? <p className={s.warn}>{t('up_processFailed')}</p> : !ready && <p>{t('up_procS')}</p>}
+          <h2>{ready ? t('up_ready') : failed ? t('up_failedT') : t('up_procT')}</h2>
+          {failed ? <p className={s.warn}>{t(status?.failure === 'budget' ? 'up_budget' : 'up_processFailed')}</p> : !ready && <p>{t('up_procS')}</p>}
           {partCount > 1 && <p>{t('up_partsNote').replace('{k}', num(partCount, lang))}</p>}
           <ol className={s.steps} aria-live="polite">
             {STEPS.map((k, i) => {
-              const state = i < done ? 'done' : i === done && !ready ? 'active' : 'wait';
+              const state = i < done ? 'done' : i === done && !ready && !failed ? 'active' : 'wait';
               return (
                 <li key={k} className={s[state]}>
                   <span className={s.dot}>{state === 'done' && <Icon name="check" size={13} width={2.6} />}</span>
@@ -296,6 +306,11 @@ export default function Upload() {
           <div className={s.bar}>
             <span style={{ width: `${pct}%` }} />
           </div>
+          {failed && lessonId && (
+            <button className={s.pri} aria-busy={busy} onClick={retry}>
+              {t('up_retry')}
+            </button>
+          )}
           {ready && lessonId && (
             <button className={s.pri} onClick={() => navigate(`/reader?course=${status?.courseId ?? ''}&pdf=${lessonId}`)}>
               {t('up_open')}
