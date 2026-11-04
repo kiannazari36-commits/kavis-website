@@ -410,8 +410,8 @@
 }
 
 .selOn {
-  background: rgba(242, 179, 61, 0.38);
-  box-shadow: 0 0 0 3px rgba(242, 179, 61, 0.38);
+  background: rgba(242, 179, 61, 0.2);
+  box-shadow: 0 0 0 3px rgba(242, 179, 61, 0.2);
 }
 
 .highlight {
