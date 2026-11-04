@@ -101,6 +101,12 @@ export async function addHighlight(materialId: string, page: number, text: strin
   if (error) console.error('addHighlight', error);
 }
 
+/** Removes a highlighted sentence of the lesson (every saved copy of the same text). */
+export async function removeHighlight(materialId: string, text: string) {
+  const { error } = await supabase.from('annotations').delete().eq('material_id', materialId).eq('kind', 'highlight').eq('anchor->>text', text);
+  if (error) console.error('removeHighlight', error);
+}
+
 /** Counts a tap on a hard word (for "most tapped words" in the exam center). */
 export function tapTerm(termId: string) {
   supabase.rpc('tap_term', { p_term_id: termId }).then(({ error }) => error && console.error('tap_term', error));

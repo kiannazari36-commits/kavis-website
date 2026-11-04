@@ -410,8 +410,9 @@
 }
 
 .selOn {
-  background: rgba(242, 179, 61, 0.2);
-  box-shadow: 0 0 0 3px rgba(242, 179, 61, 0.2);
+  /* A tapped sentence: a light grey mark only (yellow is kept for saved highlights). */
+  background: rgba(128, 128, 128, 0.14);
+  box-shadow: 0 0 0 3px rgba(128, 128, 128, 0.14);
 }
 
 .highlight {

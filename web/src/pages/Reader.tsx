@@ -6,7 +6,7 @@ import { useToast } from '../components/Toast';
 import Icon from '../components/Icon';
 import Wordmark from '../components/Wordmark';
 import { getPdf, recentPdfs } from '../api/courses';
-import { addHighlight, getLesson, markRead, saveStudyTime, tapTerm, translate, type TranslationStyle } from '../api/reader';
+import { addHighlight, getLesson, removeHighlight, markRead, saveStudyTime, tapTerm, translate, type TranslationStyle } from '../api/reader';
 import { askAssistant, latestThread, type ChatMessage, type SourceMode } from '../api/assistant';
 import { findMolecules, type Molecule } from '../components/molecules';
 import WebLinks from '../components/WebLinks';
@@ -756,18 +756,30 @@ export default function Reader() {
                       toast(t('copied'));
                     },
                   ],
-                  [
-                    t('actHighlight'),
-                    () => {
-                      setSelected(null);
-                      const text = sentenceAt(b, p);
-                      if (text && !highlights.includes(text)) {
-                        setHighlights([...highlights, text]);
-                        addHighlight(pdfId, b.pageFrom, text);
-                      }
-                      toast(t('highlighted'));
-                    },
-                  ],
+                  // A highlighted sentence can be un-highlighted (otherwise it would stay yellow for good).
+                  highlights.includes(sentenceAt(b, p))
+                    ? [
+                        t('actUnhighlight'),
+                        () => {
+                          setSelected(null);
+                          const text = sentenceAt(b, p);
+                          setHighlights(highlights.filter((h) => h !== text));
+                          removeHighlight(pdfId, text);
+                          toast(t('unhighlighted'));
+                        },
+                      ]
+                    : [
+                        t('actHighlight'),
+                        () => {
+                          setSelected(null);
+                          const text = sentenceAt(b, p);
+                          if (text && !highlights.includes(text)) {
+                            setHighlights([...highlights, text]);
+                            addHighlight(pdfId, b.pageFrom, text);
+                          }
+                          toast(t('highlighted'));
+                        },
+                      ],
                   [t('actAsk'), () => (setSelected(null), askAssistant(t('askSentence') + sentenceAt(b, p)))],
                 ]}
                 onTranslate={() => setTrSource({ text: blockText(b), page: b.pageFrom })}
