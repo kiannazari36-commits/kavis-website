@@ -16,6 +16,8 @@ Bu dosya Kian için: ne bitti, ne bekliyor, kim ne yapacak. Ayrıntı için `TOD
 - **Kısmen anlatılan konu (canlı, 5 Kasım, `exam-summary` v5; sınav gecesi özetinde de):** konu PDF'te tam yoksa ama yakın sayfalar varsa "PDF'te tam anlatılmıyor. İlgili kısım: …, s. 27-28 (göze enjeksiyon)" yazıyor; sayfaya giden düğme var. Hiç yoksa yine "PDF'te bulunamadı".
 - **Sınav özeti düzeltmeleri (canlı, 4 Kasım: `exam-summary` v3, `process-material` v11, web):** konunun sayfası artık ders metninde aranarak bulunuyor (birden çok PDF'te doğru ders ve sayfa); PDF'te olmayan konu "PDF'te bulunamadı" diyor; sadece şekil olan sorular ayrı bir listede ("Konusu çıkarılamayan sorular"); açıklama yalnızca PDF'te yazanı kullanıyor. Zor kelimeler Türkçe eklerle de altı çiziliyor ("kaptoprilin", "anjiyoödemi", "ilacı"). Yerel ücretli iki deneme yapıldı (0,036 $ + 0,041 $): konuların dersi ve sayfası doğru, PDF'te olmayan soru "PDF'te bulunamadı" diyor, şekil sorusu ayrı listede.
 
+- **Okuyucu düzeltmeleri (kodda, yayında değil, 5 Kasım):** (1) Bir cümleye dokununca bölümdeki bütün paragraflar sarıya boyanıyordu; artık sadece dokunduğun paragraf seçiliyor (sarı da daha açık). (2) Kalemle bir karta çizdiğin çizgi aynı sayfadaki bütün kartlarda görünüyordu (sınav özetinde bir konunun kartları aynı sayfa sayılıyor); artık çizgi sadece çizdiğin kartta. Eski çizgiler o sayfanın ilk kartında görünür. Orijinal PDF ve iPad çizimleri değişmedi.
+
 ## Senin yapacakların
 **Yarın alacağın hesaplar**
 1. Apple Developer hesabı (99 $/yıl): Apple ile giriş, App Store Premium ürünleri, TestFlight, bildirim anahtarı (APNs).
