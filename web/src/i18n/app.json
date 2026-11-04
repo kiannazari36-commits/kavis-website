@@ -212,7 +212,7 @@
   "up_ready": "Dersin hazır",
   "up_open": "Derse git",
   "up_notPdf": "Bu dosya PDF değil.",
-  "up_processFailed": "Ders hazırlanırken bir sorun oldu. Biraz sonra tekrar deneriz.",
+  "up_processFailed": "Ders hazırlanırken bir sorun oldu. \"Tekrar dene\"ye bas.",
   "up_done": "tamam",
   "up_working": "hazırlanıyor",
   "up_tooBig": "Bu PDF {mb} MB. Şimdilik en fazla 50 MB yüklenebiliyor; PDF'i küçültüp (sıkıştırıp) tekrar dene.",
@@ -348,7 +348,10 @@
   "fmt_other": "Tablo, şekil, eşleştirme",
   "smp_formatLabel": "Soru biçimi",
   "smp_formatAuto": "Seçmezsen, hocanın sorularındaki biçim oranlarına göre hazırlanır.",
-  "smp_formatChosen": "Sadece seçtiğin biçimlerde sorular hazırlanır."
+  "smp_formatChosen": "Sadece seçtiğin biçimlerde sorular hazırlanır.",
+  "up_failedT": "Ders hazırlanamadı",
+  "up_budget": "Bu ayki yapay zekâ kullanım sınırına ulaştın, bu yüzden ders hazırlanamadı. Sınır her ayın 1'inde yenilenir; o zaman \"Tekrar dene\"ye bas.",
+  "up_retry": "Tekrar dene"
  },
  "en": {
   "pdfs": "PDFs",
@@ -563,7 +566,7 @@
   "up_ready": "Your lesson is ready",
   "up_open": "Open the lesson",
   "up_notPdf": "This file is not a PDF.",
-  "up_processFailed": "Something went wrong while preparing the lesson. We will try again shortly.",
+  "up_processFailed": "Something went wrong while preparing the lesson. Tap \"Try again\".",
   "up_done": "done",
   "up_working": "in progress",
   "up_tooBig": "This PDF is {mb} MB. For now up to 50 MB can be uploaded; compress the PDF and try again.",
@@ -699,7 +702,10 @@
   "fmt_other": "Tables, figures, matching",
   "smp_formatLabel": "Question format",
   "smp_formatAuto": "If you choose none, questions follow the formats in your lecturer’s questions.",
-  "smp_formatChosen": "Questions are made only in the formats you chose."
+  "smp_formatChosen": "Questions are made only in the formats you chose.",
+  "up_failedT": "The lesson could not be prepared",
+  "up_budget": "You reached this month's AI limit, so the lesson could not be prepared. The limit renews on the 1st of each month; then tap \"Try again\".",
+  "up_retry": "Try again"
  },
  "fa": {
   "pdfs": "PDFها",
@@ -914,7 +920,7 @@
   "up_ready": "درست آماده است",
   "up_open": "رفتن به درس",
   "up_notPdf": "این فایل PDF نیست.",
-  "up_processFailed": "هنگام آماده‌سازی درس مشکلی پیش آمد. کمی بعد دوباره تلاش می‌کنیم.",
+  "up_processFailed": "هنگام آماده‌سازی درس مشکلی پیش آمد. «دوباره امتحان کن» را بزن.",
   "up_done": "انجام شد",
   "up_working": "در حال انجام",
   "up_tooBig": "این PDF {mb} مگابایت است. فعلاً حداکثر ۵۰ مگابایت؛ PDF را فشرده کن و دوباره امتحان کن.",
@@ -1050,7 +1056,10 @@
   "fmt_other": "جدول، شکل، تطبیق",
   "smp_formatLabel": "قالب سؤال",
   "smp_formatAuto": "اگر چیزی انتخاب نکنی، سؤال‌ها طبق قالب سؤال‌های استادت ساخته می‌شوند.",
-  "smp_formatChosen": "سؤال‌ها فقط در قالب‌هایی که انتخاب کردی ساخته می‌شوند."
+  "smp_formatChosen": "سؤال‌ها فقط در قالب‌هایی که انتخاب کردی ساخته می‌شوند.",
+  "up_failedT": "درس آماده نشد",
+  "up_budget": "به سقف استفادهٔ هوش مصنوعی این ماه رسیدی، برای همین درس آماده نشد. سقف هر ماه روز اول تازه می‌شود؛ آن وقت «دوباره امتحان کن» را بزن.",
+  "up_retry": "دوباره امتحان کن"
  },
  "ar": {
   "pdfs": "ملفات PDF",
@@ -1265,7 +1274,7 @@
   "up_ready": "درسك جاهز",
   "up_open": "افتح الدرس",
   "up_notPdf": "هذا الملف ليس PDF.",
-  "up_processFailed": "حدث خطأ أثناء تجهيز الدرس. سنحاول مجددًا بعد قليل.",
+  "up_processFailed": "حدث خطأ أثناء تجهيز الدرس. اضغط «أعد المحاولة».",
   "up_done": "تم",
   "up_working": "قيد التنفيذ",
   "up_tooBig": "هذا الملف {mb} ميغابايت. حاليًا الحد 50 ميغابايت؛ اضغط الملف وحاول مجددًا.",
@@ -1401,6 +1410,9 @@
   "fmt_other": "جداول وأشكال وتوصيل",
   "smp_formatLabel": "شكل السؤال",
   "smp_formatAuto": "إن لم تختر شيئًا، تُصاغ الأسئلة وفق أشكال أسئلة أستاذك.",
-  "smp_formatChosen": "تُصاغ الأسئلة بالأشكال التي اخترتها فقط."
+  "smp_formatChosen": "تُصاغ الأسئلة بالأشكال التي اخترتها فقط.",
+  "up_failedT": "تعذّر تجهيز الدرس",
+  "up_budget": "وصلت إلى حدّ استخدام الذكاء الاصطناعي لهذا الشهر، لذلك لم يُجهَّز الدرس. يتجدد الحد في اليوم الأول من كل شهر؛ عندها اضغط «أعد المحاولة».",
+  "up_retry": "أعد المحاولة"
  }
 }

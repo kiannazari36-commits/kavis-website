@@ -20,6 +20,7 @@ import { addTermCard } from '../api/cards';
 import { lectureMarks, recordingsOf, type LectureMark } from '../api/recording';
 import { loadInk, saveInk, type InkSurface, type PageInk, type Stroke } from '../api/ink';
 import { pdfBytes, pdfPath } from '../api/pdfFile';
+import { lessonStatus, retryLesson } from '../api/upload';
 import type { PdfSelection } from '../components/PdfPages';
 import { clock } from '../speech/transcribe';
 import { canSpeak, speak, speakAll, stopSpeaking } from '../hooks/speak';
@@ -83,6 +84,9 @@ export default function Reader() {
   const marks = useAsync(() => (pdfId ? lectureMarks(pdfId) : Promise.resolve([])), [pdfId]) ?? [];
   const checkCount = useAsync(() => (pdfId ? sectionCheckCounter(pdfId) : Promise.resolve({ count: () => 0 })), [pdfId]);
   const doc = lesson?.doc;
+  // A lesson without a reading page: why (a failed one can be asked again, e.g. after the monthly AI limit).
+  const [retried, setRetried] = useState(0);
+  const state = useAsync(() => (pdfId && lesson && !lesson.doc ? lessonStatus(pdfId) : Promise.resolve(null)), [pdfId, lesson, retried]);
   const [pagesRead, setPagesRead] = useState<number[] | null>(null);
   const [pct, setPct] = useState<number | null>(null);
   const [highlights, setHighlights] = useState<string[]>([]);
@@ -356,7 +360,19 @@ export default function Reader() {
       <main className={s.loading}>
         <div className={s.empty}>
           <b>{pdfInfo?.pdf.title}</b>
-          <span>{t('noReaderDoc')}</span>
+          <span>{state?.status === 'failed' ? t(state.failure === 'budget' ? 'up_budget' : 'up_processFailed') : t('noReaderDoc')}</span>
+          {state?.status === 'failed' && (
+            <button
+              className={s.checkNext}
+              onClick={async () => {
+                const r = await retryLesson(pdfId);
+                toast(t(r === 'ok' ? 'up_procT' : r === 'trial' ? 'trialPdfFull' : 'up_failed'));
+                setRetried((n) => n + 1);
+              }}
+            >
+              {t('up_retry')}
+            </button>
+          )}
           <button className={s.checkNext} onClick={() => navigate(courseId ? `/courses/${courseId}` : '/courses')}>
             {t('back')}
           </button>

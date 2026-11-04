@@ -306,3 +306,9 @@ Technical notes and decisions:
 - [x] Tried locally (fake account, copied 3-page fake PDF, no AI): iPhone 18 Pro (switch, word card, selection + highlight saved, highlight in reading mode, pen saved, section menu), iPad Pro 13 (switch + section tabs, tab jump, full-screen selection menu). Not tried: the assistant from a selection (costs), speaker sound, Apple Pencil on a real iPad
 - [x] iOS ink loading no longer breaks on web ink rows: `InkAPI.Row` reads only `anchor.surface` and takes only its own rows (with a PencilKit file); web rows are skipped and never changed (tried locally with a web card row and a `web_pdf` row). Also fixed: iOS loaded the card and PDF drawings together (no surface filter)
 - [ ] Ink formats still differ: the iPad/iPhone PDF drawings are PencilKit files (`ink` bucket), the web's are strokes in `anchor` → neither shows the other's
+
+## Failed lessons (4 Nov 2026) — web code done, tried locally, NOT live
+- [x] Kian's 93-page upload stood on "hazırlanıyor" forever: the server had stopped it with `monthly AI budget reached` (his November cost $3.32 ≥ $3). His November `usage_monthly.cost_usd` was set to 0 on live with his yes (4 Nov 2026)
+- [x] Web: a failed lesson no longer spins; the upload screen and the reader's "not ready" page say why (monthly AI limit → "renews on the 1st") and have "Tekrar dene" (calls `process-material` again; it accepts a failed lesson). Old text "we will try again shortly" removed (nothing retried by itself)
+- [ ] iPhone / iPad: same message and "Tekrar dene" for failed lessons
+- [ ] Decide with Kian (launch): is $3/month per student enough for big PDFs (a 93-page PDF ≈ $0.5)? See "AI budget and pricing"
