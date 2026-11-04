@@ -9,7 +9,7 @@
 // Writes (service role): materials, material_content, material_chunks, material_topics, usage_monthly.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
-import { buildDoc, pageTexts, pickPages, searchTerms, tsQuery, WORDS, type Lang, type StyleKey, type Topic } from './lib.ts';
+import { buildDoc, citedPages, pageTexts, pickPages, searchTerms, tsQuery, WORDS, type Lang, type StyleKey, type Topic } from './lib.ts';
 
 const MODEL = 'claude-sonnet-5-5';
 const MONTHLY_BUDGET_USD = 3;
@@ -66,7 +66,7 @@ Find the topics the sample questions are about: at most 8, the most asked first,
 - points: what the questions ask about, at most 5, each short, worded from the question texts only. Never answer the questions and never add facts of your own (no "X causes Y" unless the question says it).
 - examples: up to 2 question texts from the samples, copied as written, without answers.
 Only topics the samples really ask about.
-A question that is only a figure, image, drawing, structure or graph, with too little readable text to know its topic: make no topic from it; list it in skipped (sample = its S number, reason = a short note like "figure question, topic not readable", in the CONTENT LANGUAGE). A question whose figure is labelled clearly enough to know the topic counts normally. Write title, points and reasons in the CONTENT LANGUAGE; copy examples as they are.`;
+A question that is only a figure, image, drawing, structure or graph, with too little readable text to know its topic: make no topic from it; list it in skipped (sample = its S number, reason = a short note like "figure question, topic not readable", in the CONTENT LANGUAGE). A question whose figure is labelled clearly enough to know the topic counts normally. skipped is ONLY for such figure questions: a readable question on a topic the outline does not have is still a topic (the app searches the lessons and says when they do not explain it). Write title, points and reasons in the CONTENT LANGUAGE; copy examples as they are.`;
 
 const EXPLAIN_SYSTEM = `You explain one exam topic fully to a student, using ONLY the lesson pages given, for a study app.
 First decide found: true when the pages really teach this topic, false when they do not (then return no parts).
@@ -184,8 +184,8 @@ Deno.serve(async (req) => {
           title: t.title.trim(),
           questions: Math.max(1, t.questions),
           lessonTitle: lesson.title,
-          // The overview names the pages the search found (or, without a search hit, the pages read).
-          pages: !parts.length ? [] : place ? place.pages.filter((p) => used.some((c) => c.page === p)) : [...new Set(used.map((c) => c.page as number))],
+          // The overview names the pages the explanation cites, else the pages the search found (or the pages read).
+          pages: parts.length ? citedPages(parts, used.map((c) => c.page)) ?? (place ? place.pages.filter((p) => used.some((c) => c.page === p)) : used.map((c) => c.page)) : [],
           styles: t.styles.filter((s) => STYLES.includes(s)),
           points: t.points.filter(Boolean).slice(0, 5),
           examples: t.examples.filter(Boolean).slice(0, 2),

@@ -1,5 +1,5 @@
 // Run: node --experimental-strip-types supabase/functions/exam-summary/lib.test.ts
-import { buildDoc, pageList, pageTexts, pickPages, searchTerms, tsQuery, type Topic } from './lib.ts';
+import { buildDoc, citedPages, pageList, pageTexts, pickPages, searchTerms, tsQuery, type Topic } from './lib.ts';
 
 let fails = 0;
 const check = (name: string, ok: boolean) => {
@@ -44,4 +44,7 @@ check('the lesson whose text has the words wins over the guess', place?.material
 check('only the pages with enough of the words', place?.pages.join() === '10,11');
 check('no page with enough words: null', pickPages(chunks, ['farmakokinetik', 'klirens'], null) === null);
 check('the guess breaks a tie', pickPages([{ material_id: 'A', page: 1, text: 'izoniyazid rifampisin' }, { material_id: 'B', page: 1, text: 'izoniyazid rifampisin' }], ['izoniyazid', 'rifampisin'], { materialId: 'B', from: 1, to: 1 })?.materialId === 'B');
+check('cited pages, only those given', citedPages([{ text: 'Dapson (s. 6). Klofazimin (s. 5), ayrıca (s. 40).' }], [4, 5, 6])?.join() === '5,6');
+check('no citation: null', citedPages([{ text: 'Metin.' }], [1]) === null);
+check('English and Persian citations', citedPages([{ text: 'Dose (p. 3).' }, { text: 'دوز (ص. 4)' }], [3, 4])?.join() === '3,4');
 if (fails) process.exit(1);

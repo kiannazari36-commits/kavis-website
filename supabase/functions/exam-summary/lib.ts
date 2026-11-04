@@ -132,3 +132,10 @@ export function pickPages(chunks: Chunk[], terms: string[], guess: { materialId:
     pages: mine.filter((p) => p.score >= Math.max(need, top * 0.6)).slice(0, max).map((p) => p.page).sort((a, b) => a - b),
   };
 }
+
+/** The lesson pages an explanation cites, like "(s. 12)" / "(p. 12)" / "(ص. 12)", among the pages it was given; null when none. */
+export function citedPages(parts: { text: string }[], given: number[]): number[] | null {
+  const found = new Set<number>();
+  for (const p of parts) for (const m of p.text.matchAll(/(?<!\p{L})(?:s|p|ص)\.\s*(\d+)/gu)) if (given.includes(Number(m[1]))) found.add(Number(m[1]));
+  return found.size ? [...found].sort((a, b) => a - b) : null;
+}
