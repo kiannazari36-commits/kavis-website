@@ -37,6 +37,8 @@ export type Course = {
   pdfs: Pdf[];
   /** The exam summary made from the lecturer's sample questions (a lesson of its own kind; not counted in the PDFs). */
   summary?: Pdf;
+  /** The short exam-night version of the same topics (own lesson kind, like the summary). */
+  brief?: Pdf;
 };
 
 /** Part of a paragraph: plain text, or a hard word (term key) that opens an explanation. */

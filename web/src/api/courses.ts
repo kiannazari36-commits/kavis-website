@@ -56,6 +56,7 @@ async function load(): Promise<{ courses: Course[]; overrides: Record<string, Co
     });
     const pdfs = c.materials.filter((m) => m.parent_id === null && (m.kind === 'pdf' || m.kind === 'photo')).map(toPdf);
     const summary = c.materials.find((m) => m.kind === 'exam_summary');
+    const brief = c.materials.find((m) => m.kind === 'exam_brief');
     return {
       id: c.id,
       name: c.name,
@@ -66,6 +67,7 @@ async function load(): Promise<{ courses: Course[]; overrides: Record<string, Co
       examKind: next?.kind,
       pdfs,
       summary: summary && toPdf(summary),
+      brief: brief && toPdf(brief),
     };
   });
   return { courses: list, overrides };
@@ -96,7 +98,7 @@ export async function getCourse(id: string): Promise<Course | null> {
 
 export async function getPdf(courseId: string, pdfId: string): Promise<{ course: Course; pdf: Pdf } | null> {
   const course = await getCourse(courseId);
-  const pdf = course?.pdfs.find((p) => p.id === pdfId) ?? (course?.summary?.id === pdfId ? course.summary : undefined);
+  const pdf = course?.pdfs.find((p) => p.id === pdfId) ?? (course?.summary?.id === pdfId ? course.summary : course?.brief?.id === pdfId ? course.brief : undefined);
   return course && pdf ? { course, pdf } : null;
 }
 

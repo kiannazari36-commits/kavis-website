@@ -383,7 +383,7 @@ export default function Reader() {
 
   const title = pdfInfo?.pdf.title ?? '';
   // The exam summary has no share, recording or lesson-summary step; it can be saved as a PDF instead.
-  const isSummary = !!pdfInfo && pdfInfo.course.summary?.id === pdfId;
+  const isSummary = !!pdfInfo && (pdfInfo.course.summary?.id === pdfId || pdfInfo.course.brief?.id === pdfId);
   const sectionFrom = (i: number) => Math.min(...doc.sections[i].blocks.map((b) => b.pageFrom));
   const sectionTo = (i: number) => Math.max(...doc.sections[i].blocks.map((b) => b.pageTo));
   // The section a page belongs to (a page with only a figure: the section before it).

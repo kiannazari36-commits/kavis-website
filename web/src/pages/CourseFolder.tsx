@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useI18n, type Lang } from '../i18n/I18nProvider';
 import { duration, examLabel, num, percent } from '../i18n/format';
@@ -186,27 +186,30 @@ export default function CourseFolder() {
           </div>
         )}
 
-        {course.summary && (
-          <>
-            <div className={s.listHead}>
-              <h2>{t('smp_sumFolder')}</h2>
-            </div>
-            <div className={s.list}>
-              <div className={s.pdfRow}>
-                <Link to={`/reader?course=${course.id}&pdf=${course.summary.id}`} className={s.pdf}>
-                  <span className={s.recIcon}>
-                    <Icon name="file" size={22} />
-                  </span>
-                  <span className={s.pdfBody}>
-                    <b>{course.summary.title}</b>
-                    <span className={s.status}>{pdfStatus(course.summary, lang, t)}</span>
-                  </span>
-                  <Icon name="chevron" size={18} className={`flip-rtl ${s.chev}`} />
-                </Link>
-                {deleteBtn(course.summary)}
-              </div>
-            </div>
-          </>
+        {[course.summary, course.brief].map(
+          (m, i) =>
+            m && (
+              <Fragment key={m.id}>
+                <div className={s.listHead}>
+                  <h2>{t(i ? 'smp_briefFolder' : 'smp_sumFolder')}</h2>
+                </div>
+                <div className={s.list}>
+                  <div className={s.pdfRow}>
+                    <Link to={`/reader?course=${course.id}&pdf=${m.id}`} className={s.pdf}>
+                      <span className={s.recIcon}>
+                        <Icon name="file" size={22} />
+                      </span>
+                      <span className={s.pdfBody}>
+                        <b>{m.title}</b>
+                        <span className={s.status}>{pdfStatus(m, lang, t)}</span>
+                      </span>
+                      <Icon name="chevron" size={18} className={`flip-rtl ${s.chev}`} />
+                    </Link>
+                    {deleteBtn(m)}
+                  </div>
+                </div>
+              </Fragment>
+            ),
         )}
 
         <button className={s.addBottom} onClick={addPdf}>

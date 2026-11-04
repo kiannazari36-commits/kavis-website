@@ -47,4 +47,9 @@ check('the guess breaks a tie', pickPages([{ material_id: 'A', page: 1, text: 'i
 check('cited pages, only those given', citedPages([{ text: 'Dapson (s. 6). Klofazimin (s. 5), ayrıca (s. 40).' }], [4, 5, 6])?.join() === '5,6');
 check('no citation: null', citedPages([{ text: 'Metin.' }], [1]) === null);
 check('English and Persian citations', citedPages([{ text: 'Dose (p. 3).' }, { text: 'دوز (ص. 4)' }], [3, 4])?.join() === '3,4');
+// The short exam-night version: only the condensed parts.
+const brief = buildDoc('tr', topics, [], true);
+check('brief: no asked points or example questions', brief.sections[1].blocks.length === 2 && brief.sections[1].blocks.every((b) => b.heading !== 'Sınavda sorulan noktalar'));
+check('brief: first part has no explanation label', brief.sections[1].blocks[0].heading === 'Birinci basamak');
+check('brief: assistant text without asked points', !pageTexts('tr', topics, true)[1].text.includes('Rifampisin idrarı boyar'));
 if (fails) process.exit(1);
