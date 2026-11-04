@@ -1,0 +1,114 @@
+/* The reader's "Orijinal PDF": the teacher's pages one under the other. */
+.pages {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: safe center;
+  gap: 6px;
+  overflow-x: auto;
+}
+
+.slot {
+  display: flex;
+  flex-direction: column;
+  align-items: safe center;
+  gap: 8px;
+  width: 100%;
+}
+
+/* A page stays white like the paper it was printed on, on every reading theme. */
+.page {
+  position: relative;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 14px rgba(42, 36, 32, 0.14);
+  overflow: hidden;
+  flex: none;
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.no {
+  font-size: 11px;
+  color: var(--text2);
+  margin-bottom: 14px;
+}
+
+/* pdf.js's text layer (from pdfjs-dist/web/pdf_viewer.css): invisible text over the drawing, for selecting. */
+.text {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  line-height: 1;
+  text-align: initial;
+  transform-origin: 0 0;
+  z-index: 1;
+  --scale-round-x: 1px;
+  --scale-round-y: 1px;
+  --min-font-size: 1;
+  --text-scale-factor: calc(var(--total-scale-factor) * var(--min-font-size));
+  --min-font-size-inv: calc(1 / var(--min-font-size));
+}
+
+.text :is(span, br) {
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
+  user-select: text;
+}
+
+.text > :not(:global(.markedContent)),
+.text :global(.markedContent) span:not(:global(.markedContent)) {
+  --font-height: 0;
+  font-size: calc(var(--text-scale-factor) * var(--font-height));
+  --scale-x: 1;
+  --rotate: 0deg;
+  transform: rotate(var(--rotate)) scaleX(var(--scale-x)) scale(var(--min-font-size-inv));
+}
+
+.text :global(.markedContent) {
+  display: contents;
+}
+
+.text ::selection {
+  background: rgba(156, 47, 58, 0.25);
+}
+
+.text :global(.endOfContent) {
+  display: block;
+  position: absolute;
+  inset: 100% 0 0;
+  z-index: 0;
+  cursor: default;
+  user-select: none;
+}
+
+/* Marks on the text layer: a highlight like a marker pen, a hard word underlined in amber (tap: its meaning). */
+.hl {
+  color: transparent;
+  background: rgba(242, 179, 61, 0.45);
+  mix-blend-mode: multiply;
+}
+
+.term {
+  color: transparent;
+  background: transparent;
+  border-bottom: 2px dashed #f2b33d;
+  cursor: pointer;
+}
+
+.term.hl {
+  background: rgba(242, 179, 61, 0.45);
+}
+
+/* While the pen is on, the drawing gets the touches, not the text. */
+.penOn .text {
+  pointer-events: none;
+}

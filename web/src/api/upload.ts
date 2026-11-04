@@ -1,6 +1,7 @@
 import { normalizeImage } from './heic';
 import { supabase } from './supabase';
 import { currentUser } from './auth';
+import { forgetPdf } from './pdfFile';
 
 // Uploading a lecture PDF: the browser checks it, the file goes to the private "materials" bucket
 // (<user id>/<lesson id>/original.pdf), the lesson row is created (only while the trial or Premium allows it,
@@ -179,6 +180,7 @@ export async function deleteLesson(materialId: string) {
     const { error: e2 } = await supabase.storage.from('materials').remove(files.map((f) => `${folder}/${f.name}`));
     if (e2) console.error('deleteLesson files', e2);
   }
+  forgetPdf(materialId);
   return true;
 }
 

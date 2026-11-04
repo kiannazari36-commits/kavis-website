@@ -9,6 +9,8 @@ Bu dosya Kian için: ne bitti, ne bekliyor, kim ne yapacak. Ayrıntı için `TOD
 - **Web (kodda, yayında değil):** sahip sayfasında "Bu ayın harcaması" tablosu (en çok harcayanlar, bütçe çizgisi, önbellek payı); iPhone fotoğrafları (HEIC) tarayıcıda JPEG'e çevriliyor.
 - **Sunucu (canlı):** gece planlayıcısı, cihazdan anında çıkış, sınav sonucu bildirimi, yardım sohbeti, soru türleri (migration `20261027125135` + fonksiyonlar), günlük yapay zekâ puanlama sınırı.
 
+- **Web okuyucu (kodda, yayında değil, 4 Kasım):** "Orijinal PDF | Okuma modu" anahtarı. Orijinal PDF hocanın sayfasını şekil ve tablolarıyla gösterir; zor kelimeler, vurgu, kalem, sesli okuma ve asistan orada da çalışır. Kian iPad simülatöründe denedi ve onayladı. Kalan: iPhone'a da aynı anahtar (iPad'de "tam ekran PDF" zaten var).
+
 ## Senin yapacakların
 **Yarın alacağın hesaplar**
 1. Apple Developer hesabı (99 $/yıl): Apple ile giriş, App Store Premium ürünleri, TestFlight, bildirim anahtarı (APNs).

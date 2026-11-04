@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState, type FormEvent } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { Link, useNavigate, useOutletContext, useSearchParams } from 'react-router-dom';
 import { LANG_NAMES, LANGS, useI18n, type Lang } from '../i18n/I18nProvider';
 import { useTheme } from '../theme/ThemeProvider';
@@ -18,7 +18,9 @@ import MicButton from '../components/MicButton';
 import { sectionCheckCounter } from '../api/quiz';
 import { addTermCard } from '../api/cards';
 import { lectureMarks, recordingsOf, type LectureMark } from '../api/recording';
-import { loadInk, saveInk, type PageInk, type Stroke } from '../api/ink';
+import { loadInk, saveInk, type InkSurface, type PageInk, type Stroke } from '../api/ink';
+import { pdfBytes, pdfPath } from '../api/pdfFile';
+import type { PdfSelection } from '../components/PdfPages';
 import { clock } from '../speech/transcribe';
 import { canSpeak, speak, speakAll, stopSpeaking } from '../hooks/speak';
 import { num, percent } from '../i18n/format';
@@ -52,6 +54,12 @@ const TAGS: Record<ReaderTag, [string, 'vio' | 'red']> = {
   emergency: ['s4tag', 'red'],
   general: ['tagGeneral', 'vio'],
 };
+/** "Orijinal PDF": the teacher's pages drawn by pdf.js (big, so loaded only when used). */
+const PdfPages = lazy(() => import('../components/PdfPages'));
+type ViewMode = 'pdf' | 'text';
+const MODE_KEY = 'kavis.readerMode';
+/** Page width in the original PDF for each "Aa" step (normal, bigger, smaller). */
+const PDF_ZOOM = [1, 1.3, 0.8];
 /** Pen colors: bordo, amber, green, blue. */
 const PEN_COLORS = ['#9C2F3A', '#E0A12A', '#2F7D5B', '#2F5D9C'];
 
@@ -110,17 +118,47 @@ export default function Reader() {
   // The pen: drawing over the pages, saved per page (annotations, kind 'ink').
   const [pen, setPen] = useState(false);
   const [penColor, setPenColor] = useState(PEN_COLORS[0]);
+  // The reading mode's cards and the original PDF's pages have different shapes, so their drawings are kept apart.
   const savedInk = useAsync(() => (pdfId ? loadInk(pdfId) : Promise.resolve({} as Record<number, PageInk>)), [pdfId]);
-  const [inkEdits, setInkEdits] = useState<Record<number, PageInk>>({});
-  const [lastInkPage, setLastInkPage] = useState<number | null>(null);
-  const inkOf = (page: number): PageInk => inkEdits[page] ?? savedInk?.[page] ?? { id: null, strokes: [] };
-  const setInk = async (page: number, strokes: Stroke[]) => {
-    const now = { id: inkOf(page).id, strokes };
-    setInkEdits((x) => ({ ...x, [page]: now }));
-    setLastInkPage(page);
-    const id = await saveInk(pdfId, page, now);
-    setInkEdits((x) => ({ ...x, [page]: { ...x[page], id } }));
+  const savedPdfInk = useAsync(() => (pdfId ? loadInk(pdfId, 'web_pdf') : Promise.resolve({} as Record<number, PageInk>)), [pdfId]);
+  const [inkEdits, setInkEdits] = useState<Record<string, PageInk>>({});
+  const [lastInk, setLastInk] = useState<[number, InkSurface] | null>(null);
+  const inkOf = (page: number, on: InkSurface = 'card'): PageInk =>
+    inkEdits[`${on}:${page}`] ?? (on === 'card' ? savedInk : savedPdfInk)?.[page] ?? { id: null, strokes: [] };
+  const setInk = async (page: number, strokes: Stroke[], on: InkSurface = 'card') => {
+    const key = `${on}:${page}`;
+    const now = { id: inkOf(page, on).id, strokes };
+    setInkEdits((x) => ({ ...x, [key]: now }));
+    setLastInk([page, on]);
+    const id = await saveInk(pdfId, page, now, on);
+    setInkEdits((x) => ({ ...x, [key]: { ...x[key], id } }));
   };
+
+  // "Orijinal PDF | Okuma modu": the teacher's own pages, or the reading page made from them. Only lessons with a PDF
+  // file have the first one (not photo lessons or the exam summary). The choice is kept in this browser.
+  const pdfFile = useAsync(() => (pdfId ? pdfPath(pdfId) : Promise.resolve(null)), [pdfId]);
+  const [modePref, setModePref] = useState<ViewMode>(() => {
+    try {
+      return localStorage.getItem(MODE_KEY) === 'text' ? 'text' : 'pdf';
+    } catch {
+      return 'pdf';
+    }
+  });
+  const pdfMode = !!pdfFile && modePref === 'pdf';
+  const [pdfData, setPdfData] = useState<{ id: string; bytes: ArrayBuffer | null }>();
+  const pdfBytesNow = pdfData?.id === pdfId ? pdfData.bytes : undefined;
+  useEffect(() => {
+    if (!pdfMode || !pdfFile || pdfData?.id === pdfId) return;
+    let alive = true;
+    pdfBytes(pdfId, pdfFile).then((bytes) => alive && setPdfData({ id: pdfId, bytes }));
+    return () => {
+      alive = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pdfMode, pdfFile, pdfId]);
+  // Text selected on a PDF page (its menu: highlight, translate, copy, ask).
+  const [pdfSel, setPdfSel] = useState<PdfSelection | null>(null);
+  const pdfTerms = useMemo(() => Object.entries(lesson?.terms ?? {}).map(([key, x]) => ({ key, surface: x.surface })), [lesson]);
   // The speaker in the dock reads the open section aloud (the browser's voice, free).
   const [reading, setReading] = useState(false);
   // Another section or leaving the page stops the reading.
@@ -330,9 +368,21 @@ export default function Reader() {
   const title = pdfInfo?.pdf.title ?? '';
   // The exam summary has no share, recording or lesson-summary step; it can be saved as a PDF instead.
   const isSummary = !!pdfInfo && pdfInfo.course.summary?.id === pdfId;
-  const sec_ = Math.min(sec, doc.sections.length - 1);
+  const sectionFrom = (i: number) => Math.min(...doc.sections[i].blocks.map((b) => b.pageFrom));
+  const sectionTo = (i: number) => Math.max(...doc.sections[i].blocks.map((b) => b.pageTo));
+  // The section a page belongs to (a page with only a figure: the section before it).
+  const sectionOf = (p: number) => {
+    let i = 0;
+    doc.sections.forEach((_, k) => sectionFrom(k) <= p && (i = k));
+    return i;
+  };
+  // Where the original PDF opens: ?page, ?sec (back from a section check), else where the student stopped.
+  const asked_ = Number(params.get('page')) || 0;
+  const askedSec = Number(params.get('sec')) || 0;
+  const lastPage = atPage ?? (asked_ || (askedSec && askedSec < doc.sections.length ? sectionFrom(askedSec) : lesson.lastPage));
+  // In the original PDF all pages stand one under the other: the open section is the one on screen.
+  const sec_ = pdfMode ? sectionOf(lastPage) : Math.min(sec, doc.sections.length - 1);
   const section = doc.sections[sec_];
-  const lastPage = atPage ?? lesson.lastPage;
   const pageInfo = pdfInfo
     ? `${pdfInfo.course.name.toLocaleUpperCase(lang)} · ${t('pageOf').replace('{p}', num(lastPage, lang)).replace('{n}', num(pdfInfo.pdf.pages, lang))} · ${percent(pct ?? lesson.percent, lang)}`
     : '';
@@ -344,7 +394,19 @@ export default function Reader() {
   const fontSize = fontI === 0 ? settings.readerFontSize : FONT_SIZES[fontI];
   const clock = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
 
+  const scrollToPage = (p: number, smooth = true) => {
+    const pages = scroller.current?.querySelectorAll<HTMLElement>('[data-from]') ?? [];
+    const el = [...pages].find((x) => p >= Number(x.dataset.from) && p <= Number(x.dataset.to));
+    el?.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+    return !!el;
+  };
   const goSection = (i: number) => {
+    if (pdfMode) {
+      setTerm(null);
+      setPdfSel(null);
+      scrollToPage(sectionFrom(i));
+      return;
+    }
     setSec(i);
     setTerm(null);
     setSelected(false);
@@ -354,6 +416,10 @@ export default function Reader() {
   const jumpToPage = (e: FormEvent) => {
     e.preventDefault();
     const p = Number(pageQuery);
+    if (pdfMode) {
+      if (!Number.isInteger(p) || !scrollToPage(p)) return toast(t('pageNotFound'));
+      return setPageQuery('');
+    }
     const i = doc.sections.findIndex((x) => x.blocks.some((b) => p >= b.pageFrom && p <= b.pageTo));
     if (!Number.isInteger(p) || i < 0) return toast(t('pageNotFound'));
     setPageQuery('');
@@ -366,17 +432,18 @@ export default function Reader() {
   };
   const nextSection = () => {
     // After the last section: this lesson's summary ("Ders özeti").
-    if (sec >= doc.sections.length - 1) {
+    if (sec_ >= doc.sections.length - 1) {
       if (isSummary) return navigate(`/courses/${courseId}`);
       navigate(`/summary?course=${courseId}&pdf=${pdfId}`);
       return;
     }
-    goSection(sec + 1);
-    toast(t('sectionWord') + (sec + 2) + t('sectionOpened'));
+    goSection(sec_ + 1);
+    toast(t('sectionWord') + (sec_ + 2) + t('sectionOpened'));
   };
   const cycleFont = () => {
     const n = (fontI + 1) % FONT_SIZES.length;
     setFontI(n);
+    setPdfSel(null);
     toast(t('fontSizePrefix') + ['Normal', t('fontBig'), t('fontSmall')][n]);
   };
   // A question from the reader (a hard word, a sentence): the panel opens and sends it.
@@ -384,6 +451,117 @@ export default function Reader() {
     setPanel(true);
     setAsked({ text: q, n: Date.now() });
   };
+  // Switching the view keeps the page: the reading mode opens the section of the page on screen.
+  const setMode = (m: ViewMode) => {
+    if (m === modePref) return;
+    setModePref(m);
+    try {
+      localStorage.setItem(MODE_KEY, m);
+    } catch {
+      /* private window: not kept */
+    }
+    setPdfSel(null);
+    setTerm(null);
+    setSelected(false);
+    stopSpeaking();
+    setReading(false);
+    if (m === 'text') {
+      setSec(sec_);
+      setTimeout(() => scrollToPage(lastPage, false), 120);
+    }
+  };
+  const pdfSelActs: [string, () => void][] = pdfSel
+    ? [
+        [t('actTranslate'), () => setTrSource({ text: pdfSel.text, page: pdfSel.page })],
+        [t('actCopy'), () => (navigator.clipboard?.writeText(pdfSel.text).catch(() => {}), toast(t('copied')))],
+        [
+          t('actHighlight'),
+          () => {
+            if (!highlights.includes(pdfSel.text)) {
+              setHighlights([...highlights, pdfSel.text]);
+              addHighlight(pdfId, pdfSel.page, pdfSel.text);
+            }
+            toast(t('highlighted'));
+          },
+        ],
+        [t('actAsk'), () => askAssistant(t('askSentence') + pdfSel.text)],
+      ]
+    : [];
+  // Under a PDF page: the section check where a section ends, and the lesson summary after the last page.
+  const afterPdfPage = (page: number, last: boolean) => {
+    const ends = doc.sections.map((_, i) => i).filter((i) => sectionTo(i) === page || (last && sectionTo(i) > page));
+    return (
+      <>
+        {ends.map((i) => {
+          const n = checkCount ? checkCount.count(sectionFrom(i), sectionTo(i)) : 0;
+          if (!n) return null;
+          return (
+            <section key={i} className={`${s.check} ${s.pdfCheck}`}>
+              <span className={s.checkIcon}>
+                <Icon name="check" size={22} width={2} />
+              </span>
+              <span className={s.checkText}>
+                <b>{t('checkTitle').replace('{n}', num(n, lang))}</b>
+                <span>{i === doc.sections.length - 1 ? t('s4end') : t('secEnd').replace('{n}', num(i + 1, lang))}</span>
+              </span>
+              <button
+                className={s.checkGo}
+                onClick={() => navigate(`/quiz?from=reader&course=${courseId}&pdf=${pdfId}&pf=${sectionFrom(i)}&pt=${sectionTo(i)}&next=${i + 1}`)}
+              >
+                {t('start')}
+              </button>
+            </section>
+          );
+        })}
+        {last && (
+          <div className={s.nextOnly}>
+            <button className={s.checkNext} onClick={() => navigate(isSummary ? `/courses/${courseId}` : `/summary?course=${courseId}&pdf=${pdfId}`)}>
+              {t('lessonSummary')}
+            </button>
+          </div>
+        )}
+      </>
+    );
+  };
+  const pdfFailed = (
+    <div className={s.pdfWait}>
+      <span>{t('pdfFailed')}</span>
+      <button className={s.checkNext} onClick={() => setMode('text')}>
+        {t('toReadingMode')}
+      </button>
+    </div>
+  );
+  // pdf.js could not read the file: same as no file.
+  const setPdfBroken = () => setPdfData({ id: pdfId, bytes: null });
+  const pdfView: ReactNode =
+    pdfBytesNow === undefined ? (
+      <div className={s.pdfWait}>{t('pdfLoading')}</div>
+    ) : !pdfBytesNow ? (
+      pdfFailed
+    ) : (
+      <Suspense fallback={<div className={s.pdfWait}>{t('pdfLoading')}</div>}>
+        <PdfPages
+          data={pdfBytesNow}
+          zoom={PDF_ZOOM[fontI]}
+          terms={pdfTerms}
+          highlights={highlights}
+          startPage={lastPage}
+          pen={pen}
+          overlay={(page) => (
+            <InkLayer strokes={inkOf(page, 'web_pdf').strokes} pen={pen ? penColor : null} onDone={(st) => setInk(page, [...inkOf(page, 'web_pdf').strokes, st], 'web_pdf')} />
+          )}
+          after={afterPdfPage}
+          onTerm={(key) => {
+            if (!lesson.terms[key]) return;
+            if (term !== key) tapTerm(lesson.terms[key].id);
+            setPdfSel(null);
+            setTerm(term === key ? null : key);
+          }}
+          onSelect={setPdfSel}
+          onFail={setPdfBroken}
+        />
+      </Suspense>
+    );
   const toggleFocus = () => {
     if (focus) {
       setFocus(false);
@@ -451,6 +629,15 @@ export default function Reader() {
         {/* One button with the open section (tap: the list of all sections) and a small page search; in full
             screen (no header) also the page and the assistant star, top right. */}
         <div className={s.tabsRow}>
+          {pdfFile && (
+            <div role="radiogroup" aria-label={t('readerView')} className={s.modeSeg}>
+              {(['pdf', 'text'] as const).map((m) => (
+                <button key={m} role="radio" aria-checked={modePref === m} className={modePref === m ? s.modeOn : undefined} onClick={() => setMode(m)}>
+                  {t(m === 'pdf' ? 'modePdf' : 'modeText')}
+                </button>
+              ))}
+            </div>
+          )}
           <div className={s.secPick} lang={doc.language}>
             <button className={s.secBtn} aria-haspopup="listbox" aria-expanded={secMenu} aria-label={t('sections')} onClick={() => setSecMenu(!secMenu)}>
               <span className="mono">
@@ -508,7 +695,8 @@ export default function Reader() {
         </div>
 
         <div className={s.scroll} ref={scroller} onScroll={trackPage}>
-          <div className={s.column}>
+          <div className={pdfMode ? `${s.column} ${s.pdfColumn}` : s.column}>
+            {pdfMode ? pdfView : <>
             {section.blocks.map((b, i) => (
               <Block
                 marks={marks.filter((m) => m.page >= b.pageFrom && m.page <= b.pageTo)}
@@ -583,8 +771,27 @@ export default function Reader() {
                 </button>
               </div>
             )}
+            </>}
           </div>
         </div>
+
+        {pdfMode && pdfSel && !pen && (
+          <div role="toolbar" aria-label={t('selectedSentence')} className={`${s.selBar} ${s.pdfSelBar}`}>
+            {pdfSelActs.map(([label, fn]) => (
+              <button
+                key={label}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => {
+                  fn();
+                  window.getSelection()?.removeAllRanges();
+                  setPdfSel(null);
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {pen && (
           <div className={s.penBar} role="toolbar" aria-label={t('pen')}>
@@ -601,8 +808,8 @@ export default function Reader() {
             <button
               className={s.penText}
               onClick={() => {
-                if (lastInkPage === null || !inkOf(lastInkPage).strokes.length) return toast(t('penNothing'));
-                setInk(lastInkPage, inkOf(lastInkPage).strokes.slice(0, -1));
+                if (lastInk === null || !inkOf(...lastInk).strokes.length) return toast(t('penNothing'));
+                setInk(lastInk[0], inkOf(...lastInk).strokes.slice(0, -1), lastInk[1]);
               }}
             >
               {t('penUndo')}
@@ -644,7 +851,9 @@ export default function Reader() {
             onClick={() => {
               if (reading) return (stopSpeaking(), setReading(false));
               if (!canSpeak()) return toast(t('noVoice'));
-              const ok = speakAll(section.blocks.map(blockText).join('\n'), doc.language, () => setReading(false));
+              // In the original PDF: from the page on screen to the end of its section.
+              const blocks = pdfMode ? section.blocks.filter((b) => b.pageTo >= lastPage) : section.blocks;
+              const ok = speakAll((blocks.length ? blocks : section.blocks).map(blockText).join('\n'), doc.language, () => setReading(false));
               setReading(ok);
               if (ok) toast(t('pageAloud'));
             }}
@@ -691,6 +900,32 @@ export default function Reader() {
       {trSource && <TranslateDialog doc={doc} materialId={pdfId} source={trSource.text} page={trSource.page} onClose={() => setTrSource(null)} />}
     </div>
   );
+}
+
+/** Text with the parts the student highlighted on the original PDF marked (a whole sentence is marked by its row). */
+function marked(text: string, highlights: string[]): ReactNode {
+  const found = highlights.filter((h) => h.length > 1 && h !== text && text.includes(h));
+  if (!found.length) return text;
+  const out: ReactNode[] = [];
+  let at = 0;
+  while (at < text.length) {
+    let next = -1;
+    let hit = '';
+    for (const h of found) {
+      const i = text.indexOf(h, at);
+      if (i >= 0 && (next < 0 || i < next)) [next, hit] = [i, h];
+    }
+    if (next < 0) break;
+    if (next > at) out.push(text.slice(at, next));
+    out.push(
+      <mark key={next} className={s.highlight}>
+        {hit}
+      </mark>,
+    );
+    at = next + hit.length;
+  }
+  out.push(text.slice(at));
+  return out;
 }
 
 /** The selectable sentence of a block, if it has one. */
@@ -748,7 +983,7 @@ function Block({ doc, block, terms, fontSize, term, onTerm, selected, highlights
 
   const seg = (x: Segment, i: number) =>
     typeof x === 'string' ? (
-      <span key={i}>{x}</span>
+      <span key={i}>{marked(x, highlights)}</span>
     ) : (
       <button
         key={i}
@@ -826,7 +1061,7 @@ function Block({ doc, block, terms, fontSize, term, onTerm, selected, highlights
                 onClick={onSelect}
                 onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), onSelect())}
               >
-                {p.text}
+                {highlights.includes(p.text) ? p.text : marked(p.text, highlights)}
               </p>
               {selected && (
                 <div role="toolbar" aria-label={t('selectedSentence')} className={s.selBar}>

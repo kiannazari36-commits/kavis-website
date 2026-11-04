@@ -1334,3 +1334,64 @@
   border-bottom: 1px solid var(--line);
   vertical-align: top;
 }
+
+/* "Orijinal PDF | Okuma modu" */
+.modeSeg {
+  flex: none;
+  display: flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  font-family: var(--font-ui);
+}
+
+.modeSeg button {
+  height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.modeSeg .modeOn {
+  background: var(--pri);
+  color: #fff;
+}
+
+/* The original PDF uses the whole width (the page decides its own size). */
+.pdfColumn {
+  max-width: none;
+}
+
+.pdfWait {
+  align-self: center;
+  margin-top: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  color: var(--text2);
+  font-size: 14px;
+  font-family: var(--font-ui);
+}
+
+.pdfCheck {
+  width: 100%;
+  max-width: 620px;
+  margin-bottom: 18px;
+}
+
+.pdfSelBar {
+  position: absolute;
+  bottom: 92px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  box-shadow: 0 8px 24px rgba(42, 36, 32, 0.22);
+}
