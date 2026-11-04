@@ -29,6 +29,11 @@ check('both terms are marked', segs.filter((x) => typeof x !== 'string').length 
 check('a term is marked only once in the lesson', markTerms(paras[1], [{ key: 't1', surface: 'primer hipertansiyon' }], used).length === 1);
 check('case-insensitive match keeps the original spelling', (markTerms('ACE İnhibitörleri etkili', [{ key: 'x', surface: 'ace inhibitörleri' }], new Set())[0] as { text: string }).text === 'ACE İnhibitörleri');
 check('no match inside another word', markTerms('antihipertansif', [{ key: 'y', surface: 'hipertansif' }], new Set()).length === 1);
+check('Turkish ending is marked with the word', (markTerms('Kaptoprilin yan etkisi', [{ key: 'k', surface: 'kaptopril' }], new Set())[0] as { text: string }).text === 'Kaptoprilin');
+check('ending after ö is marked', plain(markTerms('anjiyoödemi yapar', [{ key: 'a', surface: 'Anjiyoödem' }], new Set())) === 'anjiyoödemi yapar' && markTerms('anjiyoödemi yapar', [{ key: 'a', surface: 'Anjiyoödem' }], new Set()).length === 2);
+check('short word not inside another word', markTerms('acele et', [{ key: 'c', surface: 'ACE' }], new Set()).length === 1);
+check('softened last letter', (markTerms('Bu ilacı al', [{ key: 'i', surface: 'ilaç' }], new Set())[1] as { text: string }).text === 'ilacı');
+check('two-letter word still marked exactly', markTerms('Hb düşük', [{ key: 'h', surface: 'Hb' }], new Set()).length === 2);
 check('batches of 8: 20 pages → 3', JSON.stringify(batches(20, 8)) === '[[1,8],[9,16],[17,20]]');
 check('cost: 100k in + 10k out = $0.30', costUsd(100_000, 10_000) === 0.3);
 const opts = ['Dışkıyla atılırlar', 'B grubu depolanmaz', 'Provitaminleri vardır'];

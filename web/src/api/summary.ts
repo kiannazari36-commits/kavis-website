@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { termHits } from './terms';
 import type { Lang } from '../i18n/I18nProvider';
 
 // "Ders özeti" (design ScrReview, tab "Bu ders"): one lesson's weak topics (from quiz results), the hard words the
@@ -76,20 +77,20 @@ export async function lessonTerms(materialId: string, lang: Lang): Promise<Lesso
     .filter((t) => t.surface.trim() && t.text);
 }
 
-/** Splits a text at the hard words it contains (whole words, any letter case, longest word first). */
+/** Splits a text at the hard words it contains (whole words with their Turkish endings, any letter case, longest word first). */
 export function splitTerms(text: string, terms: LessonTerm[]): (string | { term: LessonTerm; text: string })[] {
   if (!terms.length) return [text];
   const sorted = [...terms].sort((a, b) => b.surface.length - a.surface.length);
-  const esc = (x: string) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const re = new RegExp(`(?<![\\p{L}\\p{N}])(${sorted.map((t) => esc(t.surface)).join('|')})(?![\\p{L}\\p{N}])`, 'giu');
+  const hits: { a: number; b: number; term: LessonTerm }[] = [];
+  for (const term of sorted)
+    for (const [a, b] of termHits(text, term.surface)) if (hits.every((h) => b <= h.a || a >= h.b)) hits.push({ a, b, term });
+  hits.sort((x, y) => x.a - y.a);
   const out: (string | { term: LessonTerm; text: string })[] = [];
   let last = 0;
-  for (const m of text.matchAll(re)) {
-    const term = sorted.find((t) => t.surface.toLocaleLowerCase() === m[0].toLocaleLowerCase());
-    if (!term) continue;
-    if (m.index > last) out.push(text.slice(last, m.index));
-    out.push({ term, text: m[0] });
-    last = m.index + m[0].length;
+  for (const h of hits) {
+    if (h.a > last) out.push(text.slice(last, h.a));
+    out.push({ term: h.term, text: text.slice(h.a, h.b) });
+    last = h.b;
   }
   if (last < text.length) out.push(text.slice(last));
   return out;

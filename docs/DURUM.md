@@ -11,6 +11,8 @@ Bu dosya Kian için: ne bitti, ne bekliyor, kim ne yapacak. Ayrıntı için `TOD
 
 - **Web okuyucu (kodda, yayında değil, 4 Kasım):** "Orijinal PDF | Okuma modu" anahtarı. Orijinal PDF hocanın sayfasını şekil ve tablolarıyla gösterir; zor kelimeler, vurgu, kalem, sesli okuma ve asistan orada da çalışır. Kian iPad simülatöründe denedi ve onayladı. Kalan: iPhone'a da aynı anahtar (iPad'de "tam ekran PDF" zaten var).
 
+- **Sınav özeti düzeltmeleri (kodda, yayında değil, 4 Kasım):** konunun sayfası artık ders metninde aranarak bulunuyor (birden çok PDF'te doğru ders ve sayfa); PDF'te olmayan konu "PDF'te bulunamadı" diyor; sadece şekil olan sorular ayrı bir listede ("Konusu çıkarılamayan sorular"); açıklama yalnızca PDF'te yazanı kullanıyor. Zor kelimeler Türkçe eklerle de altı çiziliyor ("kaptoprilin", "anjiyoödemi", "ilacı"). Kalan: Kian'ın onayıyla ücretli yerel deneme (~0,05 $), sonra `exam-summary` ve `process-material` yayına + web push.
+
 ## Senin yapacakların
 **Yarın alacağın hesaplar**
 1. Apple Developer hesabı (99 $/yıl): Apple ile giriş, App Store Premium ürünleri, TestFlight, bildirim anahtarı (APNs).

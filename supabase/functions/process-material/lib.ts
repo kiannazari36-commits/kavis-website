@@ -38,30 +38,50 @@ export function paragraphsOf(pageText: string): string[] {
 
 export type TermRef = { key: string; surface: string };
 
+// Finding a hard word with its Turkish endings ("kaptoprilin", "anjiyoödemi", "ilacı").
+// The same rule is in web/src/api/terms.ts; keep both alike.
+
+/** Lower case with Turkish rules, one character for one character (so places stay the same); ı counts as i. */
+export function fold(text: string): string {
+  let out = '';
+  for (const ch of text) {
+    const l = ch.toLocaleLowerCase('tr');
+    out += (l.length === ch.length ? l : ch).replace('ı', 'i');
+  }
+  return out;
+}
+
+const esc = (x: string) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const SOFT: Record<string, string> = { p: 'b', ç: 'c', t: 'd', k: 'ğ', g: 'ğ' };
+
 /**
- * Marks the first place each hard word appears (case-insensitive, whole word) in a paragraph.
+ * Every place a hard word stands in the text, as [start, end): whole word at the start, then (for words of 4+
+ * letters) a Turkish ending of up to 8 letters, or an ending after an apostrophe ("ACE'nin"). A last p/ç/t/k may
+ * soften before a vowel ("kalbi", "ilacı"). The place covers the whole written word.
+ */
+export function termHits(text: string, surface: string): [number, number][] {
+  const s = fold(surface.trim()).replace(/\s+/g, ' ');
+  if (s.length < 2) return [];
+  const parts = [esc(s).replace(/ /g, '\\s+')];
+  const last = s[s.length - 1];
+  if (s.length >= 4 && SOFT[last]) parts.push(`${esc(s.slice(0, -1)).replace(/ /g, '\\s+')}${SOFT[last]}(?=[aeioöuü])`);
+  const ending = s.length >= 4 ? `(?:['’]\\p{L}{1,10}|\\p{L}{0,8})` : `(?:['’]\\p{L}{1,10})?`;
+  const re = new RegExp(`(?<![\\p{L}\\p{N}])(?:${parts.join('|')})${ending}(?![\\p{L}\\p{N}])`, 'gu');
+  return [...fold(text).matchAll(re)].map((m) => [m.index!, m.index! + m[0].length]);
+}
+
+/**
+ * Marks the first place each hard word appears (any letter case, whole word with its Turkish endings) in a paragraph.
  * `used` holds the term keys already marked in the lesson, so each word is marked once.
  */
 export function markTerms(paragraph: string, terms: TermRef[], used: Set<string>): Segment[] {
   const hits: { start: number; end: number; key: string }[] = [];
-  const lower = paragraph.toLocaleLowerCase('tr');
   for (const t of terms) {
     if (used.has(t.key) || !t.surface.trim()) continue;
-    const needle = t.surface.toLocaleLowerCase('tr');
-    let from = 0;
-    while (from < lower.length) {
-      const at = lower.indexOf(needle, from);
-      if (at < 0) break;
-      const before = at === 0 ? ' ' : lower[at - 1];
-      const after = lower[at + needle.length] ?? ' ';
-      const whole = !/[\p{L}\p{N}]/u.test(before) && !/[\p{L}\p{N}]/u.test(after);
-      const free = hits.every((h) => at >= h.end || at + needle.length <= h.start);
-      if (whole && free) {
-        hits.push({ start: at, end: at + needle.length, key: t.key });
-        used.add(t.key);
-        break;
-      }
-      from = at + 1;
+    const at = termHits(paragraph, t.surface).find(([a, b]) => hits.every((h) => a >= h.end || b <= h.start));
+    if (at) {
+      hits.push({ start: at[0], end: at[1], key: t.key });
+      used.add(t.key);
     }
   }
   if (!hits.length) return [paragraph];
