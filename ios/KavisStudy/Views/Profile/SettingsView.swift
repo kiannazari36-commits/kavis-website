@@ -21,6 +21,7 @@ struct SettingsView: View {
     @State private var pdfCount = 0
     @State private var offline: [(id: String, bytes: Int)] = []
     @State private var manageOffline = false
+    private var sync: OfflineSync { OfflineSync.shared }
     @State private var deleteOpen = false
     @State private var exportFile: ExportFile?
     @State private var timeOpen = false
@@ -160,6 +161,7 @@ struct SettingsView: View {
         .sheet(item: $exportFile) { ShareSheet(items: [$0.url]) }
         .sheet(isPresented: $manageOffline) { OfflineLessonsView { offline = OfflineStore.lessons() }.presentationDetents([.large]) }
         .task { await load() }
+        .onChange(of: sync.revision) { offline = OfflineStore.lessons() }
     }
 
     private static var version: String {
@@ -619,6 +621,17 @@ struct SettingsView: View {
 
     // MARK: Offline (every plan, CLAUDE.md)
 
+    /// Download ahead (OfflineSync): progress, or why it waits.
+    private var syncStatus: String? {
+        if sync.running, sync.total > 0 { return prefs.t("ofSyncing", ["done": Format.num(sync.done, lang), "total": Format.num(sync.total, lang)]) }
+        switch sync.paused {
+        case .full: return prefs.t("ofFull")
+        case .offline: return prefs.t("ofWaitNet")
+        case .metered: return prefs.t("ofWaitWifi")
+        case nil: return sync.total > 0 && sync.done == sync.total ? prefs.t("ofAllDone") : nil
+        }
+    }
+
     private var offlineCard: some View {
         card {
             switchRow(d("Çevrimdışı mod"), d("İnternet olmadan kayıtlı derslerinle çalış"), on: settings.offlineMode, minHeight: 60) {
@@ -628,17 +641,25 @@ struct SettingsView: View {
             switchRow(d("Çalıştığım PDF'leri indir"), d("Açtığın her PDF cihazına kaydedilir"), on: settings.autoDownload, minHeight: 60) {
                 update { $0.autoDownload.toggle() }
                 toast.show(d(settings.autoDownload ? "Açtığın PDF'ler cihazına kaydedilecek" : "Otomatik indirme kapatıldı"))
+                if settings.autoDownload { sync.start() }
+            }
+            if settings.autoDownload {
+                switchRow(prefs.t("ofCell"), prefs.t("ofCellSub"), on: sync.cellular, minHeight: 60) { sync.cellular.toggle() }
             }
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .firstTextBaseline) {
                     Text(d("Cihazdaki dersler")).font(KFont.ui(15, lang: lang)).foregroundStyle(C.text)
                     Spacer()
-                    Text("\(Format.num(offline.count, lang)) / \(Format.num(pdfCount, lang)) PDF").font(KFont.mono(12, .regular)).foregroundStyle(C.text2)
+                    Text("\(Format.num(offline.count, lang)) / \(Format.num(pdfCount, lang)) PDF · \(ByteCountFormatter.string(fromByteCount: Int64(offline.reduce(0) { $0 + $1.bytes }), countStyle: .file))")
+                        .font(KFont.mono(12, .regular)).foregroundStyle(C.text2)
                 }
                 Capsule().fill(C.sub).frame(height: 6)
                     .overlay(alignment: .leading) {
                         GeometryReader { g in Capsule().fill(C.pri).frame(width: g.size.width * (pdfCount > 0 ? min(1, CGFloat(offline.count) / CGFloat(pdfCount)) : 0)) }
                     }
+                if settings.autoDownload, let status = syncStatus {
+                    Text(status).font(KFont.ui(12, lang: lang)).foregroundStyle(C.text2)
+                }
                 HStack(alignment: .top, spacing: 10) {
                     KIcon(name: .lock, size: 16, width: 1.8).foregroundStyle(C.ok).padding(.top, 1)
                     Text(d("PDF'lerin yalnızca uygulamanın içinde, şifreli saklanır. Telefonunun dosyalarında görünmez, başka uygulamalarla paylaşılamaz."))

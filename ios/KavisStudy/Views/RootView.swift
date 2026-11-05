@@ -93,6 +93,7 @@ private struct RootTasks: ViewModifier {
     @Environment(AppPrefs.self) private var prefs
     @Environment(AppModel.self) private var app
     @Environment(ToastCenter.self) private var toast
+    @Environment(\.scenePhase) private var scenePhase
 
     func body(content: Content) -> some View {
         content
@@ -106,6 +107,11 @@ private struct RootTasks: ViewModifier {
                 prefs.theme = s.appTheme
                 await ReminderService.refresh(s, lang: prefs.lang)
             }
+            OfflineSync.shared.start()
+        }
+        // Lessons studied come to the phone ahead (Settings "Çalıştığım PDF'leri indir").
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { OfflineSync.shared.start() }
         }
         // A share link opened from outside (universal link or `kavis://s/<slug>`).
         .onOpenURL { url in

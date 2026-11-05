@@ -15,7 +15,7 @@ struct LessonSummary: Equatable {
     var scoredOn: Date?
 }
 
-struct RecapPoint: Decodable, Equatable {
+struct RecapPoint: Codable, Equatable {
     let text: String
     let page_from: Int
     let page_to: Int
@@ -83,17 +83,35 @@ enum SummaryAPI {
     }
 
     /// The short review summary: a saved one at once, else the server makes it with the AI (once per lesson).
+    /// Without internet: the copy on the phone (kept when it was shown online or downloaded ahead).
     static func recap(materialId: String) async -> Result<(points: [RecapPoint], lang: Lang), RecapFailure> {
         struct Body: Encodable { let material_id: String }
-        struct Made: Decodable { let points: [RecapPoint]; let lang: String? }
         do {
-            let made: Made = try await supabase.functions.invoke("lesson-summary", options: FunctionInvokeOptions(body: Body(material_id: materialId)))
+            let data: Data = try await supabase.functions.invoke("lesson-summary", options: FunctionInvokeOptions(body: Body(material_id: materialId))) { data, _ in data }
+            let made = try JSONDecoder().decode(Kept.self, from: data)
+            OfflineStore.write(data, keptFile(materialId))
             return .success((made.points, Lang(rawValue: made.lang ?? "") ?? .tr))
         } catch FunctionsError.httpError(let code, _) {
             return .failure(code == 403 ? .locked : code == 429 ? .budget : .failed)
         } catch {
-            return .failure(.failed)
+            guard let data = OfflineStore.read(keptFile(materialId)), let kept = try? JSONDecoder().decode(Kept.self, from: data) else { return .failure(.failed) }
+            return .success((kept.points, Lang(rawValue: kept.lang ?? "") ?? .tr))
         }
+    }
+
+    private struct Kept: Codable { let points: [RecapPoint]; let lang: String? }
+    private static func keptFile(_ materialId: String) -> String { "summary-\(materialId).json" }
+
+    /// Keeps the lesson's summary already made on the server (download ahead): read from `summaries`, never made by the
+    /// AI here, so it costs nothing. Nothing is kept when the lesson has no summary yet.
+    static func keepSaved(materialId: String) async {
+        struct Row: Decodable { let content: Content; let lang: String? }
+        struct Content: Decodable { let points: [RecapPoint]? }
+        guard let rows: [Row] = try? await supabase.from("summaries").select("content, lang").eq("material_id", value: materialId)
+            .eq("kind", value: "lesson").order("created_at", ascending: false).limit(1).execute().value,
+              let row = rows.first, let points = row.content.points, !points.isEmpty,
+              let data = try? JSONEncoder().encode(Kept(points: points, lang: row.lang)) else { return }
+        OfflineStore.write(data, keptFile(materialId))
     }
 }
 

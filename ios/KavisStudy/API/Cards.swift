@@ -27,7 +27,7 @@ enum CardRating: String { case again, hard, good }
 enum CardsAPI {
     /// Cards due now, cards on the student's weak topics first, then oldest first; optionally only one course's or one lesson's deck.
     static func dueCards(courseId: String? = nil, materialId: String? = nil, limit: Int = 30) async -> [FlashCard] {
-        struct Deck: Decodable { let title: String?; let lang: String?; let material_id: String? }
+        struct Deck: Decodable { let title: String?; let lang: String?; let material_id: String?; let course_id: String? }
         struct Topic: Decodable { let material_id: String; let page_from: Int?; let page_to: Int? }
         struct Weak: Decodable { let material_topics: Topic }
         struct Row: Decodable {
@@ -39,13 +39,24 @@ enum CardsAPI {
             let reps, again_count: Int
             let material_id: String?
             let card_decks: Deck
+            /// Only in the phone's copy (keepDeck), to pick the due cards without internet.
+            let due_at: String?
         }
         var q = supabase.from("flashcards")
             .select("id, question, answer, note, page, interval_days, ease, reps, again_count, material_id, card_decks!inner(title, lang, course_id, material_id)")
             .lte("due_at", value: ISO8601DateFormatter().string(from: Date()))
         if let materialId { q = q.eq("card_decks.material_id", value: materialId) } else if let courseId { q = q.eq("card_decks.course_id", value: courseId) }
         // Take more than needed, so weak-topic cards can move to the front before the cut.
-        let rows: [Row] = (try? await q.order("due_at").limit(max(limit * 5, 150)).execute().value) ?? []
+        let rows: [Row]
+        do {
+            rows = try await q.order("due_at").limit(max(limit * 5, 150)).execute().value
+        } catch {
+            // Without internet: the decks kept on the phone (OfflineStore), this lesson's, this course's or all, due now.
+            let files = materialId.map { OfflineStore.read(keptFile($0)).map { [$0] } ?? [] } ?? OfflineStore.readAll(prefix: "cards-")
+            rows = files.flatMap { (try? JSONDecoder().decode([Row].self, from: $0)) ?? [] }
+                .filter { isDue($0.due_at) && (courseId == nil || materialId != nil || $0.card_decks.course_id == courseId) }
+                .sorted { ($0.due_at ?? "") < ($1.due_at ?? "") }
+        }
         // A card is on a weak topic when its page lies in the page range of a weak topic of the same lesson (mistake cards
         // carry their lesson in `material_id`, lesson cards in their deck). Same rule as the web.
         let weakRows: [Weak] = (try? await supabase.from("topic_progress").select("material_topics!inner(material_id, page_from, page_to)")
@@ -68,6 +79,27 @@ enum CardsAPI {
                       lang: Lang(rawValue: $0.card_decks.lang ?? "") ?? .tr, intervalDays: $0.interval_days, ease: $0.ease,
                       reps: $0.reps, againCount: $0.again_count)
         }
+    }
+
+    private static func keptFile(_ materialId: String) -> String { "cards-\(materialId).json" }
+
+    /// Keeps every card of one lesson on the phone with its due time (download ahead, OfflineSync). False: no answer.
+    @discardableResult
+    static func keepDeck(materialId: String) async -> Bool {
+        guard let data = try? await supabase.from("flashcards")
+            .select("id, question, answer, note, page, interval_days, ease, reps, again_count, material_id, due_at, card_decks!inner(title, lang, course_id, material_id)")
+            .eq("card_decks.material_id", value: materialId).order("due_at").execute().data else { return false }
+        OfflineStore.write(data, keptFile(materialId))
+        return true
+    }
+
+    /// A card is due when its time has come ("2026-11-05T10:00:00.123+00:00" as Postgres sends it); unknown → due.
+    static func isDue(_ dueAt: String?, now: Date = Date()) -> Bool {
+        guard let dueAt else { return true }
+        let f = ISO8601DateFormatter()
+        f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let date = f.date(from: dueAt) ?? ISO8601DateFormatter().date(from: dueAt)
+        return date.map { $0 <= now } ?? true
     }
 
     /// Days until the card comes back when the student knew it (first time 4 days, as in the design).

@@ -3,9 +3,14 @@ import Supabase
 
 /// The phone's own copy of what a lesson needs without internet (CLAUDE.md: offline use in every plan): the original
 /// PDF, the reader's lesson data and the handwritten notes. Kept per account in Application Support
-/// (`offline/<user id>/`, not in the iCloud backup); written when a lesson is opened online, read when the server
-/// cannot be reached, and removed at sign-out.
+/// (`offline/<user id>/`, not in the iCloud backup); written when a lesson is opened online or downloaded ahead
+/// (`OfflineSync`, Settings "Çalıştığım PDF'leri indir"), read when the server cannot be reached, and removed at sign-out.
+/// With that switch off no new lesson is kept; the lessons already on the phone stay and keep their copy up to date.
 enum OfflineStore {
+    /// At most this much for all kept lessons together (decided 5 Nov 2026), and never when the phone has less free space.
+    static let limitBytes = 1_000_000_000
+    static let reserveBytes: Int64 = 1_000_000_000
+
     private static var folder: URL? {
         guard let uid = supabase.auth.currentUser?.id.uuidString.lowercased() else { return nil }
         return root.appendingPathComponent(uid, isDirectory: true)
@@ -23,8 +28,16 @@ enum OfflineStore {
         return try? Data(contentsOf: url)
     }
 
+    /// Every kept file whose name starts with `prefix` ("cards-": the card decks of all kept lessons).
+    static func readAll(prefix: String) -> [Data] {
+        guard let folder, let files = try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil) else { return [] }
+        return files.filter { $0.lastPathComponent.hasPrefix(prefix) }.compactMap { try? Data(contentsOf: $0) }
+    }
+
     static func write(_ data: Data, _ name: String) {
         guard let folder, let url = url(name) else { return }
+        if let id = lessonId(name), !has(id),
+           !mayAddLesson(enabled: SettingsAPI.loadNow().autoDownload, usedBytes: totalBytes(), freeBytes: freeBytes()) { return }
         do {
             if !FileManager.default.fileExists(atPath: folder.path) {
                 try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
@@ -43,21 +56,52 @@ enum OfflineStore {
     static func pdf(_ materialId: String) -> Data? { read("pdf-\(materialId).pdf") }
     static func savePdf(_ data: Data, _ materialId: String) { write(data, "pdf-\(materialId).pdf") }
 
-    /// The lessons with a copy on this phone (a lesson counts once it was opened online), and what each takes in bytes.
+    /// The lessons that open on this phone without internet (their reading page is kept), and what each takes in bytes.
     static func lessons() -> [(id: String, bytes: Int)] {
+        let all = sizes()
+        return all.keys.filter { read("lesson-\($0).json") != nil }.sorted().map { ($0, all[$0] ?? 0) }
+    }
+
+    /// Bytes per lesson id of every kept file (a summary or note may be kept before the reading page).
+    private static func sizes() -> [String: Int] {
         guard let folder,
-              let files = try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: [.fileSizeKey]) else { return [] }
+              let files = try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: [.fileSizeKey]) else { return [:] }
         var sizes: [String: Int] = [:]
         for f in files {
             guard let id = lessonId(f.lastPathComponent) else { continue }
             sizes[id, default: 0] += (try? f.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
         }
-        return sizes.keys.sorted().map { ($0, sizes[$0] ?? 0) }
+        return sizes
     }
 
-    /// "pdf-<id>.pdf", "lesson-<id>.json", "ink-<id>.json", "ink-<id>-pdf.json" → the lesson id.
-    private static func lessonId(_ name: String) -> String? {
-        for prefix in ["pdf-", "lesson-", "ink-"] where name.hasPrefix(prefix) {
+    /// A new lesson may be kept only with the switch on, under the 1 GB limit and with enough free space on the phone.
+    static func mayAddLesson(enabled: Bool, usedBytes: Int, freeBytes: Int64?) -> Bool {
+        enabled && usedBytes < limitBytes && (freeBytes ?? .max) >= reserveBytes
+    }
+
+    /// Some copy of this lesson is on the phone.
+    static func has(_ materialId: String) -> Bool {
+        sizes()[materialId.lowercased()] != nil
+    }
+
+    /// The lesson is fully downloaded ahead: reading page and cards (the PDF and notes come in the same step).
+    static func isComplete(_ materialId: String) -> Bool {
+        read("lesson-\(materialId).json") != nil && read("cards-\(materialId).json") != nil
+    }
+
+    /// Bytes of every kept lesson of this account.
+    static func totalBytes() -> Int { sizes().values.reduce(0, +) }
+
+    /// Free space on the phone for important data (nil when unknown).
+    static func freeBytes() -> Int64? {
+        try? root.deletingLastPathComponent().resourceValues(forKeys: [.volumeAvailableCapacityForImportantUsageKey])
+            .volumeAvailableCapacityForImportantUsage
+    }
+
+    /// "pdf-<id>.pdf", "lesson-<id>.json", "ink-<id>.json", "ink-<id>-pdf.json", "cards-<id>.json", "summary-<id>.json"
+    /// → the lesson id.
+    static func lessonId(_ name: String) -> String? {
+        for prefix in ["pdf-", "lesson-", "ink-", "cards-", "summary-"] where name.hasPrefix(prefix) {
             let rest = name.dropFirst(prefix.count)
             guard rest.count >= 36 else { return nil }
             return String(rest.prefix(36)).lowercased()

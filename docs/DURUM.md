@@ -18,6 +18,7 @@ Bu dosya Kian için: ne bitti, ne bekliyor, kim ne yapacak. Ayrıntı için `TOD
 - **Sınav özeti düzeltmeleri (canlı, 4 Kasım: `exam-summary` v3, `process-material` v11, web):** konunun sayfası artık ders metninde aranarak bulunuyor (birden çok PDF'te doğru ders ve sayfa); PDF'te olmayan konu "PDF'te bulunamadı" diyor; sadece şekil olan sorular ayrı bir listede ("Konusu çıkarılamayan sorular"); açıklama yalnızca PDF'te yazanı kullanıyor. Zor kelimeler Türkçe eklerle de altı çiziliyor ("kaptoprilin", "anjiyoödemi", "ilacı"). Yerel ücretli iki deneme yapıldı (0,036 $ + 0,041 $): konuların dersi ve sayfası doğru, PDF'te olmayan soru "PDF'te bulunamadı" diyor, şekil sorusu ayrı listede.
 
 - **Okuyucu düzeltmeleri (canlı, 5 Kasım):** (1) Bir cümleye dokununca bölümdeki bütün paragraflar sarıya boyanıyordu; artık sadece dokunduğun paragraf seçiliyor (sarı da daha açık). (2) Kalemle bir karta çizdiğin çizgi aynı sayfadaki bütün kartlarda görünüyordu (sınav özetinde bir konunun kartları aynı sayfa sayılıyor); artık çizgi sadece çizdiğin kartta. Eski çizgiler o sayfanın ilk kartında görünür. Orijinal PDF ve iPad çizimleri değişmedi.
+- **iPhone / iPad önceden indirme (kodda, simülatörde yerel sunucuyla denendi, 5 Kasım; `main`'e henüz gönderilmedi):** Ayarlar'daki "Çalıştığım PDF'leri indir" artık gerçek. Açıkken, uygulama açıldığında açtığın dersler (web dahil herhangi bir cihazda) ve son 14 günde yüklediklerin, en yenisi önce, cihaza iner: okuma sayfası, zor kelimeler, orijinal PDF, kalem notları, kartlar ve daha önce yapılmış özet (yeni özet yapılmaz, para harcanmaz). Varsayılan: yalnızca Wi-Fi'de; yeni "Mobil veriyle de indir" anahtarı açılırsa her ağda (bu ayar sadece o cihazda). En fazla 1 GB; telefonda 1 GB'tan az yer kalırsa durur. Ayarlar'da "İndiriliyor 1/2", "2 / 3 PDF · 140 KB" ve "Çalıştığın dersler cihazında" görünür; ders klasöründe "2/3 CİHAZDA". Anahtar kapalıyken yeni ders kaydedilmez, eski kopyalar kalır. İnternet kesikken indirilen ders, kartları ve özeti açıldı.
 - **Vurgu kaldırma (canlı, 5 Kasım):** bir kez "Vurgula" denen cümle hep sarı kalıyordu; artık vurgulu cümleye dokununca "Vurguyu kaldır" var. Dokunulan cümle sarı değil açık gri görünüyor.
 
 ## Senin yapacakların
@@ -47,7 +48,7 @@ Bu dosya Kian için: ne bitti, ne bekliyor, kim ne yapacak. Ayrıntı için `TOD
 - Takılı kalan iki ders: ben başlatamam, ders sahibi öğrencinin kendi girişi gerekir. `8479526d…` sahibi siteyi açınca kendiliğinden devam eder (~0,2–0,3 $), `48aef5e6…` sahibi "OCR ile oku" düğmesine basınca yeniden okunur (~0,3–0,5 $). Sahiplerine haber vermek yeterli: `48aef5e6…` (durum `needs_ocr`, yeni sürümle OCR ile okunabilir) ve `8479526d…` (66 sayfa, 25 Ekim'den beri "işleniyor").
 
 ## Benim yapacaklarım
-**Hesaplar gelmeden:** hepsi bitti (iPhone arayüz testleri yeniden yazıldı, çevrimdışı kopya yapıldı). Kalan: önceden indirme ("Çalıştığım PDF'leri indir").
+**Hesaplar gelmeden:** hepsi bitti (iPhone arayüz testleri yeniden yazıldı, çevrimdışı kopya yapıldı). Önceden indirme de yapıldı (5 Kasım).
 **Hesaplar gelince:** Apple ve Google ile giriş, App Store ürünleri ve satın alma denemesi, bildirimleri açmak (anahtar + iki fonksiyon), e-posta kodu, TestFlight.
 **Yayın günü:** test anahtarlarını ve örnek veriyi silmek, sitenin Google'da görünmesini açmak, App Store linklerini koymak.
 **Sonra:** iPad'in kalan küçük işleri, Android.
