@@ -78,7 +78,9 @@
   "codeErr_promo_active": "Zaten aktif bir davet kodun var. Bitince yenisini girebilirsin.",
   "codeErr_already_premium": "Zaten daha uzun süreli Premium'un var, bu kod gerekmiyor.",
   "codeErr_rate_limited": "Çok fazla yanlış deneme. Bir saat sonra tekrar dene.",
-  "codeErr_failed": "Kod şu an kullanılamadı. Biraz sonra tekrar dene."
+  "codeErr_failed": "Kod şu an kullanılamadı. Biraz sonra tekrar dene.",
+  "padStepDept": "Bölüm",
+  "padSideDept": "Bölümünü"
  },
  "en": {
   "remindTitle": "Study time",
@@ -159,7 +161,9 @@
   "codeErr_promo_active": "You already have an active invite code. Enter a new one when it ends.",
   "codeErr_already_premium": "You already have a longer Premium, so this code is not needed.",
   "codeErr_rate_limited": "Too many wrong tries. Try again in an hour.",
-  "codeErr_failed": "The code could not be used right now. Try again soon."
+  "codeErr_failed": "The code could not be used right now. Try again soon.",
+  "padStepDept": "Department",
+  "padSideDept": "Your department,"
  },
  "fa": {
   "remindTitle": "وقت مطالعه",
@@ -240,7 +244,9 @@
   "codeErr_promo_active": "از قبل یک کد دعوت فعال داری. وقتی تمام شد، کد تازه وارد کن.",
   "codeErr_already_premium": "از قبل Premium طولانی‌تری داری، به این کد نیازی نیست.",
   "codeErr_rate_limited": "تلاش اشتباه زیاد بود. یک ساعت دیگر دوباره امتحان کن.",
-  "codeErr_failed": "فعلاً نمی‌شود کد را استفاده کرد. کمی بعد دوباره امتحان کن."
+  "codeErr_failed": "فعلاً نمی‌شود کد را استفاده کرد. کمی بعد دوباره امتحان کن.",
+  "padStepDept": "رشته",
+  "padSideDept": "رشته‌ات را"
  },
  "ar": {
   "remindTitle": "وقت الدراسة",
@@ -321,6 +327,8 @@
   "codeErr_promo_active": "لديك رمز دعوة فعّال بالفعل. أدخل رمزاً جديداً عندما ينتهي.",
   "codeErr_already_premium": "لديك Premium أطول بالفعل، فلا حاجة لهذا الرمز.",
   "codeErr_rate_limited": "محاولات خاطئة كثيرة. حاول مرة أخرى بعد ساعة.",
-  "codeErr_failed": "تعذر استخدام الرمز الآن. حاول بعد قليل."
+  "codeErr_failed": "تعذر استخدام الرمز الآن. حاول بعد قليل.",
+  "padStepDept": "التخصص",
+  "padSideDept": "تخصصك،"
  }
 }

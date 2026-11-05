@@ -19,6 +19,7 @@ struct OnboardingView: View {
     @State private var school = ""
     @State private var year: Int?
 
+    @Environment(\.padFlow) private var inPadFlow
     private var lang: Lang { prefs.lang }
     private func d(_ turkish: String) -> String { prefs.d(turkish) }
     private var isIntro: Bool { step.rawValue >= Step.intro1.rawValue }
@@ -38,6 +39,8 @@ struct OnboardingView: View {
             footer
         }
         .background(KPhone.homeBg.ignoresSafeArea())
+        // iPad side panel: Dil (1), Çalışma planı (2), Bölüm (3), Tanıtım (4).
+        .preference(key: PadFlowStepKey.self, value: step == .lang ? 1 : step == .plan ? 2 : step == .dept ? 3 : 4)
         .animation(.easeInOut(duration: 0.2), value: step)
         .task {
             let saved = SettingsAPI.loadNow()
@@ -50,7 +53,8 @@ struct OnboardingView: View {
 
     private var topBar: some View {
         HStack {
-            Wordmark(size: 19)
+            // iPad: the brand panel on the left already shows the logotype.
+            if !inPadFlow { Wordmark(size: 19) }
             Spacer()
             if isIntro {
                 Button(action: skip) {

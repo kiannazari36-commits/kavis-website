@@ -3,12 +3,57 @@ import SwiftUI
 /// Design: design/NewWelcome.dc.html. "Başlayalım" opens sign up, "Giriş yap" opens log in.
 struct WelcomeView: View {
     @Environment(AppPrefs.self) private var prefs
+    @Environment(\.horizontalSizeClass) private var sizeClass
     var onStart: () -> Void
     var onLogin: () -> Void
 
     var body: some View {
+        if sizeClass == .regular { wideBody } else { phoneBody }
+    }
+
+    /// iPad (design NewIPad "welcome"): the 320 pt star on the left, the text and buttons in a 440 pt column.
+    private var wideBody: some View {
         let lang = prefs.lang
-        VStack(spacing: 0) {
+        return HStack(spacing: 80) {
+            Image("BrandIcon").resizable().frame(width: 320, height: 320)
+                .shadow(color: Color(hex: 0x7A5208, opacity: 0.35), radius: 25, y: 30)
+                .accessibilityLabel(prefs.t("welcome.k1280"))
+            VStack(alignment: .leading, spacing: 0) {
+                Wordmark(size: 22).environment(\.layoutDirection, .leftToRight)
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("\(prefs.t("welcome.k2322"))\n\(prefs.t("welcome.k1486"))").foregroundStyle(KPhone.text)
+                    Text(prefs.t("welcome.k388")).foregroundStyle(KPhone.brand)
+                }
+                .font(KFont.ui(38, .medium, lang: lang)).kTracking(-0.02, size: 38, lang: lang).kLineHeight(1.18, size: 38, lang: lang)
+                .padding(.top, 22)
+                Text(prefs.t("welcome.k1593"))
+                    .font(KFont.ui(17, lang: lang)).kLineHeight(1.55, size: 17, lang: lang).foregroundStyle(KPhone.text2)
+                    .padding(.top, 16)
+                Button(action: onStart) {
+                    Text(prefs.t("welcome.k482")).font(KFont.ui(18, .medium, lang: lang)).foregroundStyle(KPhone.ctaText)
+                        .frame(maxWidth: .infinity, minHeight: 60)
+                        .background(KPhone.cta, in: Capsule())
+                        .shadow(color: Color(hex: 0x9C2F3A, opacity: 0.28), radius: 15, y: 12)
+                }
+                .padding(.top, 40)
+                Button(action: onLogin) {
+                    (Text("\(prefs.t("welcome.k2326")) ").foregroundStyle(KPhone.text2)
+                        + Text(prefs.t("welcome.k1061")).fontWeight(.semibold).foregroundStyle(KPhone.text))
+                        .font(KFont.ui(14, lang: lang))
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.top, 14)
+            }
+            .frame(width: 440)
+        }
+        .padding(.horizontal, 100)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(KPhone.welcomeBg.ignoresSafeArea())
+    }
+
+    private var phoneBody: some View {
+        let lang = prefs.lang
+        return VStack(spacing: 0) {
             Wordmark(size: 20)
                 .padding(.top, KLayout.top(70))
             Image("BrandIcon")

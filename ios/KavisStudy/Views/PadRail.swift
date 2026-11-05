@@ -3,7 +3,15 @@ import SwiftUI
 /// True inside the iPad shell: the left rail replaces the phone's floating tab bar.
 private struct PadRailKey: EnvironmentKey { static let defaultValue = false }
 
+private struct PadFlowKey: EnvironmentKey { static let defaultValue = false }
+
 extension EnvironmentValues {
+    /// True inside the iPad first-steps frame (PadFlowFrame).
+    var padFlow: Bool {
+        get { self[PadFlowKey.self] }
+        set { self[PadFlowKey.self] = newValue }
+    }
+
     var padRail: Bool {
         get { self[PadRailKey.self] }
         set { self[PadRailKey.self] = newValue }
@@ -180,4 +188,92 @@ extension View {
     }
 
     func padColumn(_ width: CGFloat = 760) -> some View { modifier(PadColumn(width: width)) }
+}
+
+/// Which first-steps step a screen shows (for the iPad side panel): 0 account … 5 courses.
+struct PadFlowStepKey: PreferenceKey {
+    static let defaultValue = 0
+    static func reduce(value: inout Int, nextValue: () -> Int) { value = max(value, nextValue()) }
+}
+
+/// Design NewIPad "flow": sign up, first steps and course setup on the iPad. A 400 pt brand panel on the left with
+/// the step list, the screen itself in a 600 pt column on the right.
+struct PadFlowFrame<Content: View>: View {
+    @Environment(AppPrefs.self) private var prefs
+    @Environment(\.colorScheme) private var scheme
+    @State private var step = 0
+    @ViewBuilder var content: () -> Content
+
+    private static var titles: [(String, String)] { [("Hesabını", "oluşturalım."), ("Dilini", "seçelim."), ("Planını", "kuralım."),
+                                 ("Bölümünü", "tanıyalım."), ("Nasıl", "çalışır?"), ("Derslerini", "ekleyelim.")] }
+    private static var steps: [String] { ["Hesap", "Dil", "Çalışma planı", "Bölüm", "Tanıtım", "Derslerin"] }
+
+    var body: some View {
+        let lang = prefs.lang
+        let i = min(max(step, 0), 5)
+        HStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 0) {
+                Wordmark(size: 19).environment(\.layoutDirection, .leftToRight)
+                Image("BrandIcon").resizable().frame(width: 150, height: 150)
+                    .shadow(color: Color(hex: 0x7A5208, opacity: 0.32), radius: 17, y: 20)
+                    .padding(.top, 40)
+                    .accessibilityHidden(true)
+                (Text(i == 3 ? prefs.t("padSideDept") : prefs.d(Self.titles[i].0)) + Text("\n") + Text(prefs.d(Self.titles[i].1)).foregroundColor(KPhone.brand).fontWeight(.regular))
+                    .font(KFont.ui(30, .medium, lang: lang)).kTracking(-0.03, size: 30, lang: lang)
+                    .foregroundStyle(KPhone.text)
+                    .padding(.top, 28)
+                VStack(alignment: .leading, spacing: 10) {
+                    ForEach(Array(Self.steps.enumerated()), id: \.offset) { n, label in
+                        let done = n < i, cur = n == i
+                        HStack(spacing: 12) {
+                            ZStack {
+                                Circle().fill(done ? KPhone.brand : cur ? KPhone.card : .clear)
+                                Circle().stroke(done ? .clear : cur ? KPhone.brand : KPhone.line, lineWidth: 1.5)
+                                if done { KIcon(name: .check, size: 13, width: 2.4).foregroundStyle(Color(hex: 0xFFFCF6)) }
+                                else { Text(Format.num(n + 1, lang)).font(KFont.mono(12, .semibold)).foregroundStyle(cur ? KPhone.brand : KPhone.text2) }
+                            }
+                            .frame(width: 30, height: 30)
+                            Text(n == 3 ? prefs.t("padStepDept") : prefs.d(label)).font(KFont.ui(15, cur ? .semibold : .regular, lang: lang))
+                                .foregroundStyle(cur ? KPhone.text : KPhone.text2)
+                        }
+                        .accessibilityElement(children: .combine)
+                        .accessibilityAddTraits(cur ? .isSelected : [])
+                    }
+                }
+                .padding(.top, 30)
+                Spacer()
+                Text(prefs.d("PDF'lerin ve soruların yalnızca senin hesabında saklanır."))
+                    .font(KFont.ui(12, lang: lang)).kLineHeight(1.5, size: 12, lang: lang).foregroundStyle(KPhone.text2)
+            }
+            .padding(.horizontal, 40).padding(.top, 44).padding(.bottom, 36)
+            .frame(width: 400, alignment: .leading)
+            .frame(maxHeight: .infinity, alignment: .top)
+            .background(KPhone.welcomeBg.ignoresSafeArea())
+            content()
+                .frame(maxWidth: 600)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(KPhone.authBg.ignoresSafeArea())
+        }
+        .onPreferenceChange(PadFlowStepKey.self) { step = $0 }
+    }
+}
+
+/// Design NewIPad: Premium opens as a 620 pt window over the dimmed app on the iPad, not as a full page.
+struct PadDialog<Content: View>: View {
+    var onClose: () -> Void
+    @ViewBuilder var content: () -> Content
+
+    var body: some View {
+        ZStack {
+            KPhone.authBg.ignoresSafeArea()
+            Color(hex: 0x2A2420).opacity(0.35).ignoresSafeArea().onTapGesture(perform: onClose)
+            content()
+                .frame(width: 620)
+                .frame(maxHeight: 880)
+                .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: 30, style: .continuous).stroke(KPhone.line, lineWidth: 1))
+                .shadow(color: Color(hex: 0x2A2420, opacity: 0.3), radius: 35, y: 30)
+                .padding(.vertical, 40)
+        }
+    }
 }

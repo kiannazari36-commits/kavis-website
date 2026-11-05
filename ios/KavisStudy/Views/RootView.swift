@@ -20,6 +20,19 @@ struct RootView: View {
         .modifier(RootTasks())
     }
 
+    /// iPad (full width): the first steps sit next to the design's brand panel; the phone shows them as they are.
+    /// `step` nil: the screen tells its own step (OnboardingView).
+    @ViewBuilder private func padFlow<Content: View>(_ step: Int?, @ViewBuilder _ content: @escaping () -> Content) -> some View {
+        if sizeClass == .regular {
+            PadFlowFrame {
+                if let step { content().preference(key: PadFlowStepKey.self, value: step) } else { content() }
+            }
+            .environment(\.padFlow, true)
+        } else {
+            content()
+        }
+    }
+
     private var screen: some View {
         Group {
             switch app.route {
@@ -31,11 +44,11 @@ struct RootView: View {
                     onLogin: { app.go(.auth(.login)) }
                 )
             case .auth(let start):
-                AuthView(start: start, onBack: { app.back(fallback: .welcome) })
+                padFlow(0) { AuthView(start: start, onBack: { app.back(fallback: .welcome) }) }
             case .onboarding:
-                OnboardingView()
+                padFlow(nil) { OnboardingView() }
             case .courseSetup:
-                CourseSetupView()
+                padFlow(5) { CourseSetupView() }
             case .home:
                 HomeView()
             case .notifications:
@@ -47,7 +60,11 @@ struct RootView: View {
             case .settings:
                 SettingsView()
             case .paywall(let reason):
-                PaywallView(reason: reason)
+                if sizeClass == .regular {
+                    PadDialog(onClose: { app.back() }) { PaywallView(reason: reason) }
+                } else {
+                    PaywallView(reason: reason)
+                }
             case .examCenter:
                 ExamCenterView()
             case .deviceLimit:
