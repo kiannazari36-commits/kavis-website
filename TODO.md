@@ -336,12 +336,13 @@ Technical notes and decisions:
 - [x] The exam summary row on the course page has a trash button too (it had none)
 - [ ] Kian: delete "Sınav özeti · Farmakoterapi" and the wrong sample, upload it again under tekno
 
-## Placement test "Seviye tespiti" (5 Nov 2026) — web + server code done, tested locally, NOT live
+## Placement test "Seviye tespiti" (5 Nov 2026) — live on web and server since 5 Nov 2026 (Kian's yes)
 - [x] Web `/placement?course=&pdf=` (design `NewPlacement.dc.html`): opened from the upload screen's "ready" button. "Hayır" opens the PDF; "Evet" = short test; "Bir kısmını çalıştım" = pick topics. Max 8 questions, max 2 per topic, "Bilmiyorum" button, "Sonra devam et" keeps the test on this device. Result: topic map (known / weak / to study), "Planımı güncelle" (build-plan), "Kırmızı konulardan başla" (reader at the first red topic's page), "Sınavı tekrarla"
 - [x] Edge `placement-test` (new, no AI, free): copies the lesson's own multiple-choice questions (quiz kind lesson_end) into a quiz kind placement; a new test replaces the old one. Works during and after the trial (nothing new is generated)
 - [x] `grade-quiz`: a placement quiz sets each topic from its own answers: all right = known (review in 5 days), some = weak (tomorrow), none = todo
 - [x] `build-plan`: pages of known topics count as read, so no reading task for them; weak topics already get repeat tasks, cards already show weak-topic cards first
 - [x] Tested locally (fake account placement1@kavis.test, fake lesson with 4 topics / 8 questions): test, resume, topic map, topic_progress rows, plan without the known pages
-- [ ] Go live (needs Kian's yes): deploy `placement-test` (new), `grade-quiz`, `build-plan`; no migration needed; then push the web
+- [x] Live 5 Nov 2026: `placement-test` v1 (new), `grade-quiz` v10, `build-plan` v3; no migration; web pushed to `main`
+- [ ] `daily-planner` (nightly plan) imports `build-plan/build.ts` but still runs the old copy (v1): redeploy it so the nightly plan also skips known pages (needs Kian's yes)
 - [ ] Design line "PDF'te çalışman gereken sayfalar işaretlendi" is left out: the reader does not mark to-study pages yet
 - [ ] iOS / iPad screen (see the iOS list)
