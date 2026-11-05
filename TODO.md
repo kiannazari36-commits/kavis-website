@@ -343,6 +343,6 @@ Technical notes and decisions:
 - [x] `build-plan`: pages of known topics count as read, so no reading task for them; weak topics already get repeat tasks, cards already show weak-topic cards first
 - [x] Tested locally (fake account placement1@kavis.test, fake lesson with 4 topics / 8 questions): test, resume, topic map, topic_progress rows, plan without the known pages
 - [x] Live 5 Nov 2026: `placement-test` v1 (new), `grade-quiz` v10, `build-plan` v3; no migration; web pushed to `main`
-- [ ] `daily-planner` (nightly plan) imports `build-plan/build.ts` but still runs the old copy (v1): redeploy it so the nightly plan also skips known pages (needs Kian's yes)
+- [x] `daily-planner` v2 live 5 Nov 2026 (Kian's yes): the nightly plan also skips the pages of known topics
 - [ ] Design line "PDF'te çalışman gereken sayfalar işaretlendi" is left out: the reader does not mark to-study pages yet
 - [ ] iOS / iPad screen (see the iOS list)
