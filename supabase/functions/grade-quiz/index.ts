@@ -5,9 +5,11 @@
 // Writes (service role, never the apps): quiz_answers.correct, quiz_attempts.score/level,
 // quiz_answers.ai_feedback (written answers are judged by Claude Haiku against `quiz_questions.model_answer`), topic_progress (mastery, weak/known, next review), "Hatalarım" cards for wrong answers given with "sure",
 // and an 'exam_result' notification for real exams (lesson end, exam prep, combined; not section checks).
+// A placement test (kind placement, Edge placement-test) sets each topic from its own answers only: known / weak / todo.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 import { grade, resultNotice, sameAnswer, topicState, type AnswerRow, type QuestionRow } from './grade.ts';
+import { topicResult } from '../placement-test/pick.ts';
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -159,9 +161,18 @@ Deno.serve(async (req) => {
     await admin.from('notifications').insert({ user_id: uid, kind: 'exam_result', ...n, data: { to: '/progress', attempt_id }, send_at: now, sent_at: now });
   }
 
-  // Topic mastery from all of the student's graded answers on these topics (view topic_mastery).
+  // Placement test: each topic from this test only (all right = known, some = weak, none = to study).
   const topics = [...new Set((questions ?? []).map((q) => q.topic_id).filter(Boolean))] as string[];
-  if (topics.length) {
+  if (quiz.kind === 'placement') {
+    const today = Date.now();
+    for (const t of topics) {
+      const rs = g.results.filter((r) => r.correct !== null && (questions ?? []).find((q) => q.id === r.question_id)?.topic_id === t);
+      const r = topicResult(rs.filter((x) => x.correct).length, rs.length);
+      const next = r.nextReview === null ? null : new Date(today + r.nextReview * 86_400_000).toISOString().slice(0, 10);
+      await admin.from('topic_progress').upsert({ user_id: uid, topic_id: t, state: r.state, mastery: r.mastery, next_review_at: next }, { onConflict: 'user_id,topic_id' });
+    }
+  } else if (topics.length) {
+    // Topic mastery from all of the student's graded answers on these topics (view topic_mastery).
     const { data: mastery } = await admin.from('topic_mastery').select('topic_id, mastery').eq('user_id', uid).in('topic_id', topics);
     const today = new Date();
     for (const m of mastery ?? []) {

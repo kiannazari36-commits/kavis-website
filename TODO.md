@@ -237,7 +237,7 @@ Step 4 of the app plan (26 Oct 2026): assistant, cards, quiz, plan (progress scr
 Still to build (screens):
 - [x] Notifications screen (28 Oct 2026, design `ScrNotifications.dc.html`, same as the web: Today / Yesterday / This week / Earlier, tap opens the target, opening marks read; the home bell shows the real unread dot; `API/Notifications.swift`, `Views/Home/NotificationsView.swift`, `-kavis.route notifications`). Tried locally with test3
 - [x] Share sheet (28 Oct 2026, reader header, see iPad step 13)
-- [ ] Placement test after upload
+- [ ] Placement test after upload (iPhone / iPad). The web and the server are done (5 Nov 2026, see "Placement test" below); iOS: same screen from `design/NewPlacement.dc.html` after an upload is ready, calling Edge `placement-test` and `grade-quiz` like the web's `/placement`
 - [x] Reader extras done on the iPhone 27 Oct 2026: molecule viewer (SceneKit 3D, turns with a finger, groups light up; library copied from the web with `node ios/scripts/export-molecules.mjs`, run it again when the web adds molecules), "Dinle" reads the open section with the Settings voice and speed, handwritten notes on every page card (PencilKit; `annotations` kind `ink` + file in bucket `ink`, tried locally). Still open: section check quiz "Başla" from the reader; the web does not show the iPhone's ink notes; iPad layout
 - [x] Assistant quick menu (28 Oct 2026, the sparkle button in the chat): "Kolay dille anlat" (new texts `quickEasy` / `quickEasyAsk` in `i18n-ios.json`, need a native-speaker check in fa / ar), "Hoca derste neyi vurguladı?", "Bana soru sor", "Kart yap" (as the web reader). Menu tried; the questions themselves not sent (AI cost)
 - [ ] Assistant extras still open: a hands-free loop (listen → answer → listen again) was not built, only dictation + read-aloud
@@ -330,3 +330,13 @@ Technical notes and decisions:
 - [ ] Exam summary refuses when the samples do not match the course's PDFs (`{ error: 'mismatch' }` + warning) — asked of the exam-summary session
 - [x] The exam summary row on the course page has a trash button too (it had none)
 - [ ] Kian: delete "Sınav özeti · Farmakoterapi" and the wrong sample, upload it again under tekno
+
+## Placement test "Seviye tespiti" (5 Nov 2026) — web + server code done, tested locally, NOT live
+- [x] Web `/placement?course=&pdf=` (design `NewPlacement.dc.html`): opened from the upload screen's "ready" button. "Hayır" opens the PDF; "Evet" = short test; "Bir kısmını çalıştım" = pick topics. Max 8 questions, max 2 per topic, "Bilmiyorum" button, "Sonra devam et" keeps the test on this device. Result: topic map (known / weak / to study), "Planımı güncelle" (build-plan), "Kırmızı konulardan başla" (reader at the first red topic's page), "Sınavı tekrarla"
+- [x] Edge `placement-test` (new, no AI, free): copies the lesson's own multiple-choice questions (quiz kind lesson_end) into a quiz kind placement; a new test replaces the old one. Works during and after the trial (nothing new is generated)
+- [x] `grade-quiz`: a placement quiz sets each topic from its own answers: all right = known (review in 5 days), some = weak (tomorrow), none = todo
+- [x] `build-plan`: pages of known topics count as read, so no reading task for them; weak topics already get repeat tasks, cards already show weak-topic cards first
+- [x] Tested locally (fake account placement1@kavis.test, fake lesson with 4 topics / 8 questions): test, resume, topic map, topic_progress rows, plan without the known pages
+- [ ] Go live (needs Kian's yes): deploy `placement-test` (new), `grade-quiz`, `build-plan`; no migration needed; then push the web
+- [ ] Design line "PDF'te çalışman gereken sayfalar işaretlendi" is left out: the reader does not mark to-study pages yet
+- [ ] iOS / iPad screen (see the iOS list)

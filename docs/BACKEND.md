@@ -104,7 +104,7 @@ The app never writes AI output, scores, usage counters, subscriptions or shares 
 
 | Screen | API |
 |---|---|
-| Section check, lesson-end exam, exam prep, combined exam, placement test | Edge `generate-quiz` (kind, course or all courses, count, weak focus, teacher style) → `quizzes` + `quiz_questions` in `content_lang_for(course)` |
+| Section check, lesson-end exam, exam prep, combined exam | Edge `generate-quiz` (kind, course or all courses, count, weak focus, teacher style) → `quizzes` + `quiz_questions` in `content_lang_for(course)` |
 | Answering | app inserts `quiz_attempts`, `quiz_answers` (choice, "Bilmiyorum", hints used, confidence); Edge `grade-quiz` sets `correct`, written-answer `ai_feedback`, score, level, updates `topic_progress.mastery`, adds confident mistakes to cards |
 | Result: level, dangerous mistakes, pages to review | `quiz_attempts`, view `topic_mastery` |
 | Cards (Bildim / Bilmedim) | `flashcards` (app updates the spaced-repetition columns only) |
@@ -113,7 +113,8 @@ The app never writes AI output, scores, usage counters, subscriptions or shares 
 | Web `/exam` (Sınav merkezi) | `course_exams` (read upcoming, insert / update the exam days), Edge `build-exam` (`overview`, `build`), then `/quiz?quiz=<id>` plays the built `quizzes` row and `grade-quiz` grades it |
 | Ders özeti, genel özet, sınav merkezi | `summaries` (kind lesson / overall / exam_prep / weak), view `topic_mastery`, `term_lookups` (most-tapped words) |
 | Soru örneklerim → "Hocanın soru tarzı" | insert `question_samples` (+ `question-samples` bucket) → Edge `analyze-style` → `teacher_styles`; switches "Sınavlarda / Kartlarda / Özetlerde" are app-editable |
-| Placement test result (known / weak / todo) | `topic_progress.state` |
+| Placement test (web `/placement`, design `NewPlacement.dc.html`) | Edge `placement-test` (no AI, free; POST `{ material_id, topic_ids? }` → `{ quiz_id, count }`: max 8 of the lesson's own multiple-choice questions, max 2 per topic, copied into `quizzes` kind placement; the old placement quiz of the lesson is replaced; 404 `no questions`), played like any quiz ("Bilmiyorum" = `quiz_answers.dont_know`) |
+| Placement test result (known / weak / todo) | `grade-quiz` writes `topic_progress` per topic from the test's answers only: all right = known (+5 days), some = weak (+1 day), none = todo; `build-plan` counts the pages of known topics as read |
 
 ## Study plan, progress, notifications
 

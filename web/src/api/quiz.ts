@@ -151,7 +151,8 @@ export async function sectionCheckCounter(materialId: string): Promise<{ count: 
   return { count: () => n };
 }
 
-export type GivenAnswer = { questionId: string; chosen: number | null; written?: string; hints: number; confidence?: 'sure' | 'unsure' | 'guess' };
+/** dontKnow: "Bilmiyorum" (placement test), graded as wrong. */
+export type GivenAnswer = { questionId: string; chosen: number | null; written?: string; hints: number; confidence?: 'sure' | 'unsure' | 'guess'; dontKnow?: boolean };
 
 /**
  * Saves a finished try, then asks the server to grade it (Edge Function grade-quiz): it sets right/wrong,
@@ -172,6 +173,7 @@ export async function saveAttempt(quizId: string, answers: GivenAnswer[]) {
     written_answer: a.written ?? null,
     hints_used: a.hints,
     confidence: a.confidence ?? null,
+    dont_know: a.dontKnow ?? false,
   }));
   const saved = await supabase.from('quiz_answers').insert(rows);
   if (saved.error) return console.error('quiz_answers', saved.error);

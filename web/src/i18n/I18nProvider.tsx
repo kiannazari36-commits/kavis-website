@@ -6,6 +6,7 @@ import reader from './reader.json';
 import study from './study.json';
 import pages from './pages.json';
 import help from './help.json';
+import placement from './placement.json';
 
 export type Lang = 'tr' | 'en' | 'fa' | 'ar';
 export const LANGS: Lang[] = ['tr', 'en', 'fa', 'ar'];
@@ -17,9 +18,10 @@ export const LANG_NAMES: Record<Lang, string> = { tr: 'Türkçe', en: 'English',
 // study.json: assistant, quiz and cards texts from design/NewIPad.dc.html.
 // pages.json: plan, progress, settings and Premium texts from design/NewIPad.dc.html.
 // help.json: the web Help page (AI help chat).
+// placement.json: placement test texts from design/NewPlacement.dc.html.
 // app.json: course folder texts from design/NewCourses.dc.html, plus a few added for the web.
 type Dict = Record<string, string>;
-const SOURCES = { desk, auth, app, reader, study, pages, help } as Record<string, Record<Lang, Dict>>;
+const SOURCES = { desk, auth, app, reader, study, pages, help, placement } as Record<string, Record<Lang, Dict>>;
 if (import.meta.env.DEV) {
   const seen = new Map<string, string>();
   for (const [file, d] of Object.entries(SOURCES))
@@ -29,7 +31,7 @@ if (import.meta.env.DEV) {
     }
 }
 const dicts = Object.fromEntries(
-  LANGS.map((l) => [l, { ...(desk as Record<Lang, Dict>)[l], ...(auth as Record<Lang, Dict>)[l], ...(app as Record<Lang, Dict>)[l], ...(reader as Record<Lang, Dict>)[l], ...(study as Record<Lang, Dict>)[l], ...(pages as Record<Lang, Dict>)[l], ...(help as Record<Lang, Dict>)[l] }]),
+  LANGS.map((l) => [l, { ...(desk as Record<Lang, Dict>)[l], ...(auth as Record<Lang, Dict>)[l], ...(app as Record<Lang, Dict>)[l], ...(reader as Record<Lang, Dict>)[l], ...(study as Record<Lang, Dict>)[l], ...(pages as Record<Lang, Dict>)[l], ...(help as Record<Lang, Dict>)[l], ...(placement as Record<Lang, Dict>)[l] }]),
 ) as Record<Lang, Dict>;
 
 type I18n = {
