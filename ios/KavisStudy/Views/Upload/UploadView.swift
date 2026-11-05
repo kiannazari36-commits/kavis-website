@@ -14,6 +14,7 @@ struct UploadView: View {
     @Environment(AppModel.self) private var app
     @Environment(ToastCenter.self) private var toast
     @Environment(TrialModel.self) private var trial
+    @Environment(\.padRail) private var wide
     @State private var fairOpen = false
 
     enum Mode { case pick, photo, audio, processing, error, recording }
@@ -73,18 +74,12 @@ struct UploadView: View {
     var body: some View {
         ZStack {
             KPhone.authBg.ignoresSafeArea()
-            VStack(spacing: 0) {
-                header
-                switch mode {
-                case .pick: pickContent
-                case .photo: photoContent
-                case .audio: audioContent
-                case .processing: processingContent
-                case .error: errorContent
-                case .recording: recordingWork
+            if wide { wideBody } else {
+                VStack(spacing: 0) {
+                    header
+                    modeContent
                 }
             }
-            .padColumn()
             if longSheet { longPdfSheet }
             if let key = trial.lockedKey {
                 if key == "trialPdfFull" {
@@ -116,6 +111,96 @@ struct UploadView: View {
             if MockFlag.value("sheet") == "trial" { trial.lockedKey = "trialPdfFull" }
             if MockFlag.value("sheet") == "fair" { fairOpen = true }
         }
+    }
+
+    @ViewBuilder private var modeContent: some View {
+        switch mode {
+        case .pick: pickContent
+        case .photo: photoContent
+        case .audio: audioContent
+        case .processing: processingContent
+        case .error: errorContent
+        case .recording: recordingWork
+        }
+    }
+
+    // MARK: iPad (design NewIPad "upload": "Ders ekle", PDF / Fotoğraf / Ses kaydı tabs, two columns)
+
+    private var wideBody: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            PadHeader(title: d("Ders ekle"), onBack: { _ = live.stop(); app.back() })
+            if [.pick, .photo, .audio].contains(mode) { wideTabs }
+            Group {
+                if mode == .pick { widePick } else { modeContent.frame(maxWidth: mode == .processing || mode == .error ? 640 : 760) }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        }
+        .padPage()
+    }
+
+    private var wideTabs: some View {
+        let tabs: [(Mode, KIconName, String)] = [(.pick, .file, "PDF"), (.photo, .camera, d("Fotoğraf")), (.audio, .mic, d("Ses kaydı"))]
+        return HStack(spacing: 4) {
+            ForEach(tabs, id: \.2) { m, icon, label in
+                let on = mode == m
+                Button { mode = m } label: {
+                    HStack(spacing: 8) {
+                        KIcon(name: icon, size: 16, width: 1.8)
+                        Text(label).font(KFont.ui(14, on ? .semibold : .regular, lang: lang))
+                    }
+                    .foregroundStyle(on ? KPhone.text : KPhone.text2)
+                    .padding(.horizontal, 18).frame(height: 40)
+                    .background(on ? KPhone.card : .clear, in: Capsule())
+                    .shadow(color: on ? .black.opacity(0.08) : .clear, radius: 2, y: 1)
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(on ? .isSelected : [])
+            }
+        }
+        .padding(4)
+        .background(KPhone.sub, in: Capsule())
+    }
+
+    private var widePick: some View {
+        ScrollView {
+            HStack(alignment: .top, spacing: 18) {
+                VStack(spacing: 14) {
+                    dropZone
+                    recentFiles
+                    fields
+                    optionRow(.help, chip: KPhone.sub, fg: KPhone.text, d("Elinde soru var mı?"), d("Eski sınav ya da örnek sorular: o tarzda soru hazırlarız")) { app.go(.samples(courseId)) }
+                }
+                .padding(22)
+                .background(KPhone.card.opacity(0.6), in: RoundedRectangle(cornerRadius: 28, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: 28, style: .continuous).stroke(KPhone.line, lineWidth: 1))
+                .frame(maxWidth: .infinity)
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(d("Hazırlayacaklarımız")).font(KFont.ui(18, .medium, lang: lang)).foregroundStyle(KPhone.text)
+                    ForEach([("Tam metin", d("aynen korunur")), ("Terim açıklamaları", ""), ("Çeviri", "EN · FA · AR"), ("Sınav soruları", ""), ("Kartlar", "")], id: \.0) { t, sub in
+                        HStack(spacing: 10) {
+                            KIcon(name: .check, size: 14, width: 2.2).foregroundStyle(Color.pair(0x2E7D4F, 0x8FD3A8))
+                                .frame(width: 28, height: 28).background(Color.pair(0xE3F1E7, 0x1F3328), in: Circle())
+                            Text(d(t)).font(KFont.ui(14, lang: lang)).foregroundStyle(KPhone.text).frame(maxWidth: .infinity, alignment: .leading)
+                            if !sub.isEmpty { Text(sub).font(KFont.ui(12, lang: lang)).foregroundStyle(KPhone.text2) }
+                        }
+                    }
+                    Text(d("Hocanın metni hiç değiştirilmez. Asistan istersen sadece senin yüklediğin materyalle, istersen yapay zekâ araştırmasıyla da cevap verir."))
+                        .font(KFont.ui(12, lang: lang)).kLineHeight(1.5, size: 12, lang: lang).foregroundStyle(KPhone.text2).padding(.top, 4)
+                    Button { prepare() } label: {
+                        Text(d("Dersi hazırla")).font(KFont.ui(15, .medium, lang: lang)).foregroundStyle(Color(hex: 0xFFFCF6))
+                            .frame(maxWidth: .infinity, minHeight: 52).background(Color(hex: 0x9C2F3A), in: Capsule())
+                    }
+                    .padding(.top, 4)
+                    if !trial.status.premium { quota.frame(maxWidth: .infinity) }
+                }
+                .padding(22)
+                .background(KPhone.card, in: RoundedRectangle(cornerRadius: 28, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: 28, style: .continuous).stroke(KPhone.line, lineWidth: 1))
+                .frame(width: 400)
+            }
+        }
+        .scrollIndicators(.hidden)
+        .scrollDismissesKeyboard(.interactively)
     }
 
     // MARK: Header and footer
@@ -333,12 +418,14 @@ struct UploadView: View {
         VStack(spacing: 0) {
             ScrollView {
                 VStack(spacing: 12) {
-                    HStack(spacing: 4) {
-                        tab("PDF", on: false) { mode = .pick }
-                        tab(d("Fotoğraf"), on: true) {}
+                    if !wide {
+                        HStack(spacing: 4) {
+                            tab("PDF", on: false) { mode = .pick }
+                            tab(d("Fotoğraf"), on: true) {}
+                        }
+                        .padding(4)
+                        .background(KPhone.sub, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                     }
-                    .padding(4)
-                    .background(KPhone.sub, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                     viewfinder
                     HStack {
                         PhotosPicker(selection: $galleryItems, maxSelectionCount: max(1, UploadAPI.maxPhotos - photos.count), matching: .images) {

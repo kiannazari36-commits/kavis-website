@@ -6,6 +6,7 @@ import SwiftUI
 struct CardsView: View {
     @Environment(AppPrefs.self) private var prefs
     @Environment(AppModel.self) private var app
+    @Environment(\.padRail) private var wide
 
     var courseId: String?
     var materialId: String?
@@ -37,15 +38,18 @@ struct CardsView: View {
     private var card: FlashCard? { queue?.first }
 
     var body: some View {
-        VStack(spacing: 0) {
-            header
-            if queue != nil {
-                if let card { stage(card) } else { finished }
-            } else {
-                Spacer()
+        Group {
+            if wide { wideBody } else {
+                VStack(spacing: 0) {
+                    header
+                    if queue != nil {
+                        if let card { stage(card) } else { finished }
+                    } else {
+                        Spacer()
+                    }
+                }
             }
         }
-        .padColumn()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(C.bg.ignoresSafeArea())
         .task {
@@ -55,6 +59,63 @@ struct CardsView: View {
             total = cards.count
         }
         .animation(.easeInOut(duration: 0.2), value: back)
+    }
+
+    // MARK: iPad (design NewIPad "cards": one big 640 x 340 card in the middle, rate buttons under it)
+
+    private var wideBody: some View {
+        VStack(spacing: 16) {
+            PadHeader(title: t("cardsTitle"), sub: card?.deck.isEmpty == false ? card?.deck : nil, onBack: { app.back() }) {
+                HStack(spacing: 4) {
+                    KIcon(name: .star, size: 10, width: 0).foregroundStyle(Color(hex: 0xE39A26))
+                    Text(prefs.d("Hocanın tarzında")).font(KFont.ui(10, .semibold, lang: lang)).foregroundStyle(KPhone.text2)
+                }
+                .padding(.horizontal, 8).padding(.vertical, 4)
+                .background(Color(hex: 0xF2B33D, opacity: 0.2), in: Capsule())
+                Text("\(Format.num(min(done + 1, total), lang)) / \(Format.num(total, lang))")
+                    .font(KFont.mono(13, .regular)).foregroundStyle(KPhone.text2)
+            }
+            GeometryReader { g in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(C.line)
+                    Capsule().fill(Color(hex: 0x9C2F3A)).frame(width: g.size.width * (total > 0 ? CGFloat(done) / CGFloat(total) : 1))
+                }
+            }
+            .frame(height: 6)
+            .accessibilityLabel("\(done)/\(total)")
+            VStack(spacing: 18) {
+                if queue != nil {
+                    if let card {
+                        Button { back.toggle() } label: { face(card) }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel(prefs.d("Kartı çevir"))
+                        if back {
+                            HStack(spacing: 12) {
+                                rateButton(.again, label: t("rateNo"), next: t("rateNoT"), bg: C.badSoft, fg: C.bad).frame(width: 180)
+                                rateButton(.hard, label: t("rateHard"), next: t("rateHardT"), bg: C.ambSoft, fg: C.amb).frame(width: 180)
+                                rateButton(.good, label: t("rateYes"), next: t("daysN", ["n": Format.num(CardsAPI.goodInterval(card), lang)]), bg: C.okSoft, fg: C.ok).frame(width: 180)
+                            }
+                        } else {
+                            Button { back = true } label: {
+                                Text(t("showAnswer")).font(KFont.ui(15, .medium, lang: lang)).foregroundStyle(KPhone.ctaText)
+                                    .padding(.horizontal, 28).frame(height: 52)
+                                    .background(Color(hex: 0x9C2F3A), in: Capsule())
+                            }
+                        }
+                        HStack(spacing: 12) {
+                            Text("● \(t("rateNo")) \(Format.num(stats[0], lang))").foregroundStyle(C.bad)
+                            Text("● \(t("rateHard")) \(Format.num(stats[1], lang))").foregroundStyle(C.amb)
+                            Text("● \(t("rateYes")) \(Format.num(stats[2], lang))").foregroundStyle(C.ok)
+                        }
+                        .font(KFont.mono(12, .regular))
+                    } else {
+                        finished.frame(maxWidth: 640)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .padPage()
     }
 
     // MARK: Header
@@ -178,10 +239,11 @@ struct CardsView: View {
                 .foregroundStyle(C.text3)
             }
         }
-        .padding(24)
-        .frame(maxWidth: 330, maxHeight: 440)
-        .background(C.card, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 26, style: .continuous).stroke(C.line, lineWidth: 1))
+        .padding(.horizontal, wide ? 36 : 24).padding(.vertical, wide ? 30 : 24)
+        .frame(maxWidth: wide ? 640 : 330, maxHeight: wide ? 340 : 440)
+        .frame(height: wide ? 340 : nil)
+        .background(C.card, in: RoundedRectangle(cornerRadius: wide ? 32 : 26, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: wide ? 32 : 26, style: .continuous).stroke(C.line, lineWidth: 1))
         .shadow(color: Color(hex: 0x1B2430, opacity: 0.12), radius: 20, y: 18)
     }
 
