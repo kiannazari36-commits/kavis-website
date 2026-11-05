@@ -2,7 +2,7 @@ import Foundation
 import Supabase
 
 /// The phone's own copy of what a lesson needs without internet (CLAUDE.md: offline use in every plan): the original
-/// PDF, the reader's lesson data and the handwritten notes. Kept per account in Application Support
+/// PDF, the reader's lesson data, the handwritten notes and the highlights. Kept per account in Application Support
 /// (`offline/<user id>/`, not in the iCloud backup); written when a lesson is opened online, read when the server
 /// cannot be reached, and removed at sign-out.
 enum OfflineStore {
@@ -57,7 +57,7 @@ enum OfflineStore {
 
     /// "pdf-<id>.pdf", "lesson-<id>.json", "ink-<id>.json", "ink-<id>-pdf.json" → the lesson id.
     private static func lessonId(_ name: String) -> String? {
-        for prefix in ["pdf-", "lesson-", "ink-"] where name.hasPrefix(prefix) {
+        for prefix in ["pdf-", "lesson-", "ink-", "marks-"] where name.hasPrefix(prefix) {
             let rest = name.dropFirst(prefix.count)
             guard rest.count >= 36 else { return nil }
             return String(rest.prefix(36)).lowercased()
