@@ -28,7 +28,7 @@ final class FlowTests: XCTestCase {
     }
 
     /// Opens the app on the login screen, signs in with the fake account and waits for the home screen.
-    private func signedInApp(route: String? = nil) throws -> XCUIApplication {
+    private func signedInApp(route: String? = nil, extra: [String] = []) throws -> XCUIApplication {
         guard let email, let password, !email.isEmpty else { throw XCTSkip("Set TEST_RUNNER_KAVIS_EMAIL and TEST_RUNNER_KAVIS_PASSWORD (local fake account)") }
         let app = launch("login")
         let emailField = app.textFields.firstMatch
@@ -43,7 +43,7 @@ final class FlowTests: XCTestCase {
         // Taps right after typing the password were lost (the login sheet is still going away), so open the app again:
         // the session is kept on the simulator and the home route starts clean.
         app.terminate()
-        let home = launch("home")
+        let home = launch("home", extra: extra)
         XCTAssertTrue(home.staticTexts.containing(NSPredicate(format: "label CONTAINS 'çalışalım'")).firstMatch.waitForExistence(timeout: 20), "home after relaunch")
         sleep(2)
         return home
@@ -171,6 +171,17 @@ final class FlowTests: XCTestCase {
         app.buttons["Ayarlar"].tap()
         XCTAssertTrue(app.staticTexts["ÇALIŞMA PLANI"].waitForExistence(timeout: 10), "settings")
         XCTAssertTrue(app.staticTexts["Uygulama dili"].exists)
+    }
+
+    /// "Çalıştığım PDF'leri indir" (on by default): after login the lessons the account has opened come to the phone
+    /// ahead, and the offline card in Settings says so. The account needs at least one opened lesson. Mobile data is
+    /// allowed for the test, so it also runs when the Mac's Wi-Fi is a hotspot or in Low Data Mode.
+    func testStudiedLessonsComeToThePhoneAhead() throws {
+        let app = try signedInApp(extra: ["-kavis.offlineCellular", "YES"])
+        app.buttons["Ayarlar"].tap()
+        let done = app.staticTexts["Çalıştığın dersler cihazında"]
+        for _ in 0..<12 where !done.exists { app.swipeUp(); sleep(2) }
+        XCTAssertTrue(done.waitForExistence(timeout: 30), "all studied lessons downloaded")
     }
 
     // MARK: Onboarding (first steps only: nothing is saved before the last step)

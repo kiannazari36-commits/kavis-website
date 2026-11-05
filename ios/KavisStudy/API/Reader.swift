@@ -123,7 +123,8 @@ struct Lesson {
 }
 
 enum ReaderAPI {
-    static func getLesson(id: String) async -> Lesson? {
+    /// `group: false` (download ahead): only keep the server's answers, without asking the server to group sections.
+    static func getLesson(id: String, group: Bool = true) async -> Lesson? {
         struct Course: Decodable { let name: String }
         struct Material: Decodable { let title: String; let page_count: Int?; let course_id: String?; let courses: Course? }
         struct Content: Decodable { let reader_doc: ReaderDoc? }
@@ -149,7 +150,8 @@ enum ReaderAPI {
         }
         let decoder = JSONDecoder()
         guard let material = (try? decoder.decode([Material].self, from: saved.material))?.first else { return nil }
-        let doc = await grouped(id, (try? decoder.decode([Content].self, from: saved.content))?.first?.reader_doc)
+        let stored = (try? decoder.decode([Content].self, from: saved.content))?.first?.reader_doc
+        let doc = group ? await grouped(id, stored) : stored
         let terms = (try? decoder.decode([Term].self, from: saved.terms)) ?? []
         let progress = (try? decoder.decode([Progress].self, from: saved.progress))?.first
         return Lesson(

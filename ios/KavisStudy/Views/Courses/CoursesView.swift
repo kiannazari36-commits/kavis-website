@@ -2,7 +2,7 @@ import SwiftUI
 
 /// Design: design/NewCourses.dc.html, variants "list" ("Derslerim") and "detail" ("Ders klasörü").
 /// Real data: the student's courses, lessons, reading progress and study minutes (CoursesAPI, the same as the web).
-/// The design's "Cihazımdakiler" filter and "CİHAZDA" tags come with offline downloads (not built yet).
+/// The design's "Cihazımdakiler" filter and "CİHAZDA" tags count the lessons kept on this phone (OfflineStore, OfflineSync).
 
 /// The design's folder colours: card, text and tab per course colour.
 private enum FolderPalette {
@@ -94,6 +94,7 @@ struct CoursesListView: View {
             courses = await CoursesAPI.listCourses()
             onDevice = Set(OfflineStore.lessons().map(\.id))
         }
+        .onChange(of: OfflineSync.shared.revision) { onDevice = Set(OfflineStore.lessons().map(\.id)) }
         .alert(d("Ders ekle"), isPresented: $adding) {
             TextField(prefs.t("wel_coursePh"), text: $newName)
             Button(prefs.t("wel_addShort")) { Task { await add() } }
