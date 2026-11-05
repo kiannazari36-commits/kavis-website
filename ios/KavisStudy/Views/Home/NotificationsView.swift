@@ -5,6 +5,7 @@ import SwiftUI
 struct NotificationsView: View {
     @Environment(AppPrefs.self) private var prefs
     @Environment(AppModel.self) private var app
+    @Environment(\.padRail) private var wide
 
     @State private var list: [Notice]?
     private let notifyTime = SettingsAPI.loadNow().notifyTime
@@ -72,6 +73,11 @@ struct NotificationsView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            if wide {
+                // Design NewIPad "notifs": big title, every notification its own card.
+                PadHeader(title: prefs.d("Bildirimler"), onBack: { app.back() }) { timeButton }
+                    .padPage().padding(.bottom, -24)
+            } else {
             HStack(spacing: 4) {
                 Button { app.back() } label: {
                     KIcon(name: .back, size: 22, width: 1.8, flipsInRTL: true).foregroundStyle(KPhone.text).frame(width: 44, height: 44)
@@ -79,19 +85,11 @@ struct NotificationsView: View {
                 .accessibilityLabel(prefs.d("Geri"))
                 Text(prefs.d("Bildirimler")).font(KFont.ui(20, .bold, lang: lang)).foregroundStyle(KPhone.text)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                Button { app.go(.settings) } label: {
-                    HStack(spacing: 6) {
-                        KIcon(name: .clock, size: 14, width: 1.8)
-                        Text(Format.num(notifyTime, lang)).font(KFont.mono(12, .regular))
-                    }
-                    .foregroundStyle(KStudy.text2)
-                    .padding(.horizontal, 12).frame(height: 36)
-                    .background(KStudy.card, in: Capsule())
-                    .overlay(Capsule().stroke(KStudy.line, lineWidth: 1))
-                }
+                timeButton
             }
             .padding(.leading, 6).padding(.trailing, 12).frame(height: 48)
             .padding(.top, KLayout.top(54, minimum: 6))
+            }
             ScrollView {
                 VStack(alignment: .leading, spacing: 10) {
                     if let list, list.isEmpty {
@@ -100,26 +98,47 @@ struct NotificationsView: View {
                     }
                     ForEach(groups, id: \.0) { label, items in
                         Text(label).font(KFont.ui(14, .bold, lang: lang)).foregroundStyle(KStudy.text2).padding(.top, 14)
-                        VStack(spacing: 0) {
-                            ForEach(Array(items.enumerated()), id: \.element.id) { i, n in
-                                row(n, last: i == items.count - 1)
+                        if wide {
+                            ForEach(items) { n in
+                                row(n, last: true)
+                                    .background(KStudy.card, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+                                    .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).stroke(KStudy.line, lineWidth: 1))
                             }
+                        } else {
+                            VStack(spacing: 0) {
+                                ForEach(Array(items.enumerated()), id: \.element.id) { i, n in
+                                    row(n, last: i == items.count - 1)
+                                }
+                            }
+                            .background(KStudy.card, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                         }
-                        .background(KStudy.card, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-                        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                     }
                 }
-                .padding(.horizontal, 16).padding(.top, 6).padding(.bottom, 30)
+                .padding(.leading, wide ? 8 : 16).padding(.trailing, wide ? 32 : 16).padding(.top, 6).padding(.bottom, 30)
             }
             .scrollIndicators(.hidden)
         }
-        .padColumn()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(KStudy.bg.ignoresSafeArea())
         .task {
             list = await NotificationsAPI.list()
             // The unread dots stay on this visit; the next one shows them read.
             if list?.contains(where: { !$0.read }) == true { await NotificationsAPI.markAllRead() }
+        }
+    }
+
+    /// The daily reminder time; opens Settings.
+    private var timeButton: some View {
+        Button { app.go(.settings) } label: {
+            HStack(spacing: 6) {
+                KIcon(name: .clock, size: 14, width: 1.8)
+                Text(Format.num(notifyTime, lang)).font(KFont.mono(12, .regular))
+            }
+            .foregroundStyle(KStudy.text2)
+            .padding(.horizontal, 12).frame(height: wide ? 40 : 36)
+            .background(KStudy.card, in: Capsule())
+            .overlay(Capsule().stroke(KStudy.line, lineWidth: 1))
         }
     }
 

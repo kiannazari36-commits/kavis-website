@@ -9,6 +9,7 @@ import SwiftUI
 struct SamplesView: View {
     @Environment(AppPrefs.self) private var prefs
     @Environment(AppModel.self) private var app
+    @Environment(\.padRail) private var wide
     @Environment(ToastCenter.self) private var toast
     @Environment(TrialModel.self) private var trial
 
@@ -89,6 +90,7 @@ struct SamplesView: View {
     private var screen: some View {
         ZStack {
             C.bg.ignoresSafeArea()
+            if wide { wideScreen } else {
             VStack(spacing: 0) {
                 header
                 ScrollView {
@@ -107,8 +109,45 @@ struct SamplesView: View {
                 }
                 .scrollDismissesKeyboard(.interactively)
             }
-            .padColumn()
+            }
         }
+    }
+
+    /// iPad (design NewIPad "questions"): big title with the course chips at the end, adding samples on the left and
+    /// the lecturer's style on the right.
+    private var wideScreen: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 18) {
+                HStack(spacing: 16) {
+                    Button { app.back() } label: {
+                        KIcon(name: .back, size: 20, width: 1.8, flipsInRTL: true).foregroundStyle(KPhone.text)
+                            .frame(width: 46, height: 46).background(C.card, in: Circle()).overlay(Circle().stroke(C.line, lineWidth: 1))
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(t("back"))
+                    (Text(t("smp_titleA") + " ") + Text(t("smp_titleB")).foregroundColor(C.text3).fontWeight(.regular))
+                        .font(KFont.ui(40, .medium, lang: lang)).kTracking(-0.03, size: 40, lang: lang).foregroundStyle(KPhone.text)
+                        .lineLimit(1).minimumScaleFactor(0.6)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .accessibilityAddTraits(.isHeader)
+                }
+                coursePicker
+                HStack(alignment: .top, spacing: 18) {
+                    card {
+                        Text(t("smp_lead")).font(KFont.ui(13, lang: lang)).kLineHeight(1.55, size: 13, lang: lang).foregroundStyle(C.text2)
+                        methods
+                        if writing { writeBox }
+                        sampleList
+                        primary(busy == .analyze ? t("smp_analyzing") : t(style == nil ? "smp_analyze" : "smp_reanalyze"), dim: samples.isEmpty, action: analyze)
+                    }
+                    .frame(maxWidth: .infinity)
+                    styleCard.frame(maxWidth: .infinity)
+                }
+            }
+            .padPage()
+        }
+        .scrollIndicators(.hidden)
+        .scrollDismissesKeyboard(.interactively)
     }
 
     /// The course page tab: the same parts as four numbered steps (as the web's `<Samples courseId>`).

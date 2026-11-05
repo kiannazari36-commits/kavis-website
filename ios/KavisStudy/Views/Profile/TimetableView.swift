@@ -6,6 +6,7 @@ struct TimetableView: View {
     @Environment(AppPrefs.self) private var prefs
     @Environment(AppModel.self) private var app
     @Environment(ToastCenter.self) private var toast
+    @Environment(\.padRail) private var wide
 
     @State private var classes: [ClassEntry]?
     @State private var day = 1
@@ -30,24 +31,27 @@ struct TimetableView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 4) {
-                Button { app.back() } label: {
-                    KIcon(name: .back, size: 22, width: 1.8, flipsInRTL: true).foregroundStyle(KPhone.text).frame(width: 44, height: 44)
+        Group {
+            if wide { wideBody } else {
+                VStack(spacing: 0) {
+                    HStack(spacing: 4) {
+                        Button { app.back() } label: {
+                            KIcon(name: .back, size: 22, width: 1.8, flipsInRTL: true).foregroundStyle(KPhone.text).frame(width: 44, height: 44)
+                        }
+                        .accessibilityLabel(prefs.d("Geri"))
+                        Text(t("schTitle")).font(KFont.ui(20, .bold, lang: lang)).foregroundStyle(KPhone.text)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .padding(.leading, 6).padding(.trailing, 12).frame(height: 48)
+                    .padding(.top, KLayout.top(54, minimum: 6))
+                    if let classes {
+                        if classes.isEmpty { empty } else { list(classes) }
+                    } else {
+                        Spacer()
+                    }
                 }
-                .accessibilityLabel(prefs.d("Geri"))
-                Text(t("schTitle")).font(KFont.ui(20, .bold, lang: lang)).foregroundStyle(KPhone.text)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .padding(.leading, 6).padding(.trailing, 12).frame(height: 48)
-            .padding(.top, KLayout.top(54, minimum: 6))
-            if let classes {
-                if classes.isEmpty { empty } else { list(classes) }
-            } else {
-                Spacer()
             }
         }
-        .padColumn()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(KStudy.bg.ignoresSafeArea())
         .task {
@@ -61,6 +65,75 @@ struct TimetableView: View {
     }
 
     private func reload() async { classes = await TimetableAPI.list() }
+
+    // MARK: iPad (design NewIPad "schedule": the week as one column per day)
+
+    private var wideBody: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                PadHeader(title: t("schTitle"), onBack: { app.back() }) {
+                    PadPill(label: t("schAdd"), icon: .plus) { adding = true }
+                }
+                if let classes {
+                    if classes.isEmpty {
+                        empty.padding(.horizontal, -20).frame(maxWidth: 560, alignment: .leading)
+                    } else {
+                        HStack(alignment: .top, spacing: 12) {
+                            ForEach(shownDays, id: \.self) { wd in dayColumn(wd, classes.filter { $0.weekday == wd }) }
+                        }
+                        Label { Text(t("schPrivate")).font(KFont.ui(12, lang: lang)).foregroundStyle(KStudy.text2) } icon: {
+                            KIcon(name: .lock, size: 15, width: 1.8).foregroundStyle(KStudy.text2)
+                        }
+                    }
+                }
+            }
+            .padPage()
+        }
+        .scrollIndicators(.hidden)
+    }
+
+    private func dayColumn(_ wd: Int, _ items: [ClassEntry]) -> some View {
+        let tag = wd == today ? t("schToday") : wd == tomorrow ? t("schTomorrow") : ""
+        return VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .firstTextBaseline, spacing: 6) {
+                Text(dayName(wd, short: false)).font(KFont.ui(15, .semibold, lang: lang)).foregroundStyle(KPhone.text)
+                if !tag.isEmpty { Text(tag).font(KFont.ui(11, .semibold, lang: lang)).foregroundStyle(KStudy.priText) }
+            }
+            if items.isEmpty {
+                Text(t("schNoClasses")).font(KFont.ui(12, lang: lang)).foregroundStyle(KStudy.text2)
+            }
+            ForEach(items) { c in
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        Text("\(Format.num(c.start, lang))\(c.end.map { "–" + Format.num($0, lang) } ?? "")").font(KFont.mono(12, .semibold)).foregroundStyle(KStudy.priText)
+                        Spacer(minLength: 4)
+                        Button { toggle(c) } label: {
+                            KIcon(name: .bell, size: 16, width: 1.8).foregroundStyle(c.remind ? KStudy.ambText : KStudy.text3)
+                                .frame(width: 34, height: 34)
+                                .background(c.remind ? KStudy.ambSoft : .clear, in: Circle())
+                                .overlay(Circle().stroke(c.remind ? .clear : KStudy.line, lineWidth: 1))
+                        }
+                        .accessibilityLabel(c.remind ? t("schRemind") : t("schRemindOff"))
+                        .accessibilityAddTraits(c.remind ? .isSelected : [])
+                    }
+                    Text(c.title).font(KFont.ui(14, .semibold, lang: lang)).foregroundStyle(KPhone.text)
+                    let detail = [c.room, c.teacher].compactMap { $0 }.joined(separator: " · ")
+                    if !detail.isEmpty { Text(detail).font(KFont.ui(11, lang: lang)).foregroundStyle(KStudy.text2) }
+                }
+                .padding(12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(KStudy.card, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(KStudy.line, lineWidth: 1))
+                .contextMenu {
+                    Button(role: .destructive) { remove(c) } label: { Label(t("schDelete"), systemImage: "trash") }
+                }
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .topLeading)
+        .background(wd == today ? KStudy.priSoft.opacity(0.5) : KStudy.card.opacity(0.5), in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).stroke(KStudy.line, lineWidth: 1))
+    }
 
     // MARK: Empty
 
