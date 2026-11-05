@@ -57,6 +57,7 @@ struct RecordingView: View {
     @Environment(AppPrefs.self) private var prefs
     @Environment(AppModel.self) private var app
     @Environment(ToastCenter.self) private var toast
+    @Environment(\.padRail) private var wide
 
     let recordingId: String
     /// Opened from a note on a PDF page: start at that moment (seconds).
@@ -93,7 +94,12 @@ struct RecordingView: View {
         ZStack {
             C.bg.ignoresSafeArea()
             VStack(spacing: 0) {
-                header
+                if wide {
+                    // Design NewIPad "audio": big title, the lesson · day · length under it; the page uses the full width.
+                    PadHeader(title: t("rec_page"), sub: rec.map { [$0.pdf?.title ?? "", Format.clock($0.seconds)].filter { !$0.isEmpty }.joined(separator: " · ") },
+                              onBack: { app.back() })
+                        .padPage().padding(.bottom, -16)
+                } else { header }
                 if let rec {
                     ScrollView {
                         VStack(spacing: 12) {
@@ -103,7 +109,7 @@ struct RecordingView: View {
                             tabBar
                             if emphasis { emphasisTab(rec) } else { transcript(rec) }
                         }
-                        .padding(.horizontal, 16).padding(.bottom, 24)
+                        .padding(.leading, wide ? 8 : 16).padding(.trailing, wide ? 32 : 16).padding(.bottom, 24)
                     }
                 } else if loaded {
                     Text(t("noResults")).font(KFont.ui(14, lang: lang)).foregroundStyle(C.text2).padding(.top, 40)
@@ -112,7 +118,6 @@ struct RecordingView: View {
                     Spacer()
                 }
             }
-            .padColumn()
         }
         .task(id: recordingId) {
             // Again every 4 seconds while the server is still matching.

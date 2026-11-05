@@ -8,6 +8,7 @@ struct ReviewView: View {
     @Environment(AppPrefs.self) private var prefs
     @Environment(AppModel.self) private var app
     @Environment(ToastCenter.self) private var toast
+    @Environment(\.padRail) private var wide
 
     let reviewId: String
 
@@ -55,7 +56,7 @@ struct ReviewView: View {
         ZStack {
             C.bg.ignoresSafeArea()
             VStack(spacing: 0) {
-                header
+                if wide { wideHeader.padPage().padding(.bottom, -32) } else { header }
                 ScrollView {
                     VStack(alignment: .leading, spacing: 14) {
                         if let review, review.status != "done" {
@@ -70,10 +71,12 @@ struct ReviewView: View {
                             Text(t(review == nil ? "rvLoadFail" : "rvNoReview")).font(KFont.ui(14, lang: lang)).foregroundStyle(C.text2)
                         }
                     }
-                    .padding(.horizontal, 20).padding(.top, 4).padding(.bottom, 34)
+                    .padding(.horizontal, 20).padding(.top, wide ? 16 : 4).padding(.bottom, 34)
+                    // Design NewIPad "revise": the steps sit in a 720 pt column in the middle.
+                    .frame(maxWidth: wide ? 720 : .infinity, alignment: .leading)
+                    .frame(maxWidth: .infinity)
                 }
             }
-            .padColumn()
         }
         .task(id: reviewId) {
             guard let r = await PlanAPI.review(reviewId) else { loaded = true; return }
@@ -111,6 +114,18 @@ struct ReviewView: View {
             }
         }
         .padding(.horizontal, 20).padding(.top, KLayout.top(60, minimum: 6)).padding(.bottom, 12)
+    }
+
+    /// Design NewIPad "revise": big title, the lesson and time under it, "Sonra" at the end.
+    private var wideHeader: some View {
+        PadHeader(title: t("rvTitle"), sub: review.map { [$0.title, "~\(Format.num($0.minutes, lang))\(prefs.d(" dk"))"].filter { !$0.isEmpty }.joined(separator: " · ") },
+                  onBack: { app.back() }) {
+            Button { app.back() } label: {
+                Text(t("rvLater")).font(KFont.ui(14, lang: lang)).foregroundStyle(KPhone.text)
+                    .padding(.horizontal, 16).frame(height: 42).overlay(Capsule().stroke(C.line, lineWidth: 1))
+            }
+            .buttonStyle(.plain)
+        }
     }
 
     private var stepBar: some View {

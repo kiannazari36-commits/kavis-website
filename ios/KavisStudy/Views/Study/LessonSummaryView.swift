@@ -8,6 +8,7 @@ import SwiftUI
 struct LessonSummaryView: View {
     @Environment(AppPrefs.self) private var prefs
     @Environment(AppModel.self) private var app
+    @Environment(\.padRail) private var wide
 
     let materialId: String
 
@@ -50,6 +51,7 @@ struct LessonSummaryView: View {
     var body: some View {
         ZStack {
             C.bg.ignoresSafeArea()
+            if wide { wideBody } else {
             VStack(spacing: 0) {
                 header
                 tabBar
@@ -67,7 +69,7 @@ struct LessonSummaryView: View {
                     .padding(.horizontal, 16).padding(.top, 4).padding(.bottom, 24)
                 }
             }
-            .padColumn()
+            }
         }
         .onAppear { if app.openGeneralSummary { app.openGeneralSummary = false; tab = .general } }
         .task {
@@ -83,6 +85,36 @@ struct LessonSummaryView: View {
             general = await g
             exams = await e
         }
+    }
+
+    // MARK: iPad (design NewIPad "review": big header with the tabs at the end, then two columns)
+
+    private var wideBody: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                PadHeader(title: d(tab == .general ? "Genel özet" : "Ders özeti"), sub: subtitle, onBack: { app.back() }) {
+                    tabBar.padding(.horizontal, -16).padding(.bottom, -10).frame(width: 380)
+                }
+                if tab == .lesson {
+                    HStack(alignment: .top, spacing: 18) {
+                        VStack(spacing: 14) {
+                            weakCard
+                            actions
+                        }
+                        .frame(maxWidth: .infinity)
+                        VStack(spacing: 14) {
+                            wordsCard
+                            recapCard
+                        }
+                        .frame(width: 420)
+                    }
+                } else {
+                    VStack(spacing: 14) { generalContent }
+                }
+            }
+            .padPage()
+        }
+        .scrollIndicators(.hidden)
     }
 
     // MARK: Header
