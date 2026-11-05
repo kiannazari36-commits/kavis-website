@@ -9,6 +9,7 @@ struct ExamCenterView: View {
     @Environment(AppPrefs.self) private var prefs
     @Environment(AppModel.self) private var app
     @Environment(ToastCenter.self) private var toast
+    @Environment(\.padRail) private var wide
 
     private enum Mode { case course, all }
 
@@ -48,21 +49,22 @@ struct ExamCenterView: View {
     var body: some View {
         ZStack {
             C.bg.ignoresSafeArea()
-            VStack(spacing: 0) {
-                header
-                ScrollView {
-                    VStack(spacing: 14) {
-                        weekCard
-                        modes
-                        courseList
-                        optionsCard
-                        startButton
+            if wide { wideBody } else {
+                VStack(spacing: 0) {
+                    header
+                    ScrollView {
+                        VStack(spacing: 14) {
+                            weekCard
+                            modes
+                            courseList
+                            optionsCard
+                            startButton
+                        }
+                        .padding(.horizontal, 16).padding(.top, 4).padding(.bottom, 24)
                     }
-                    .padding(.horizontal, 16).padding(.top, 4).padding(.bottom, 24)
+                    .scrollIndicators(.hidden)
                 }
-                .scrollIndicators(.hidden)
             }
-            .padColumn()
             if weekOpen {
                 ExamWeekSheet(courses: courses, exams: exams, current: week?.kind ?? .midterm, onClose: { weekOpen = false }) { saved in
                     weekOpen = false
@@ -85,6 +87,39 @@ struct ExamCenterView: View {
             selected = exams.first.map(\.courseId) ?? courses.first?.id
             allSelected = Set(courses.map(\.id))
         }
+    }
+
+    // MARK: iPad (design NewIPad "exam": the big header, then two columns)
+
+    private var wideBody: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                PadHeader(title: d("Sınav merkezi"), sub: wideSub, onBack: { app.back() }) {
+                    HStack(spacing: 4) {
+                        KIcon(name: .star, size: 10, width: 0).foregroundStyle(Color(hex: 0xE39A26))
+                        Text(d("Hocanın tarzında")).font(KFont.ui(11, .semibold, lang: lang)).foregroundStyle(C.text2)
+                    }
+                    .padding(.horizontal, 10).padding(.vertical, 6)
+                    .background(Color(hex: 0xF2B33D, opacity: 0.2), in: Capsule())
+                }
+                HStack(alignment: .top, spacing: 18) {
+                    VStack(spacing: 14) {
+                        weekCard
+                        modes
+                        optionsCard
+                        startButton
+                    }
+                    .frame(width: 380)
+                    courseList.frame(maxWidth: .infinity)
+                }
+            }
+            .padPage()
+        }
+        .scrollIndicators(.hidden)
+    }
+
+    private var wideSub: String {
+        d(week?.kind == .midterm || week == nil ? "VİZE HAFTASINA HAZIRLIK" : "SINAV HAFTASI").capitalized(with: lang.locale)
     }
 
     // MARK: Week

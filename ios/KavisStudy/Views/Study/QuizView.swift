@@ -20,6 +20,7 @@ struct QuizView: View {
     @Environment(AppPrefs.self) private var prefs
     @Environment(AppModel.self) private var app
     @Environment(ToastCenter.self) private var toast
+    @Environment(\.padRail) private var wide
 
     let target: QuizTarget
 
@@ -78,11 +79,23 @@ struct QuizView: View {
     var body: some View {
         ZStack {
             C.bg.ignoresSafeArea()
-            VStack(spacing: 0) {
-                header
-                if phase == .result { result } else if let question { body(question) } else { Spacer() }
+            if wide {
+                // Design NewIPad "exam" / quiz: the page header, the question in one card at most 760 pt wide.
+                VStack(alignment: .leading, spacing: 16) {
+                    wideHeader
+                    Group { if phase == .result { result } else if let question { body(question) } else { Spacer() } }
+                        .padding(.horizontal, 12).padding(.vertical, 8)
+                        .background(C.card, in: RoundedRectangle(cornerRadius: 28, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: 28, style: .continuous).stroke(C.line, lineWidth: 1))
+                        .frame(maxWidth: 760)
+                }
+                .padPage()
+            } else {
+                VStack(spacing: 0) {
+                    header
+                    if phase == .result { result } else if let question { body(question) } else { Spacer() }
+                }
             }
-            .padColumn()
             if phase == .conf { confidenceSheet }
         }
         .task {
@@ -134,6 +147,27 @@ struct QuizView: View {
         }
         .padding(.horizontal, 16).padding(.bottom, 12)
         .padding(.top, KLayout.top(54, minimum: 6))
+    }
+
+    private var wideHeader: some View {
+        PadHeader(title: wideTitle, sub: "\(d("Soru")) \(Format.num(min(index + 1, total), lang)) / \(Format.num(total, lang))", onBack: { app.back() }) {
+            GeometryReader { g in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(C.sub)
+                    Capsule().fill(C.pri).frame(width: g.size.width * CGFloat(phase == .result ? total : index) / CGFloat(max(total, 1)))
+                }
+            }
+            .frame(width: 160, height: 6)
+            .accessibilityHidden(true)
+        }
+    }
+
+    private var wideTitle: String {
+        switch target.kind {
+        case .check: d("Bölüm kontrolü")
+        case .final: d("Ders sonu sınavı")
+        case .exam: d("Sınav merkezi")
+        }
     }
 
     // MARK: Question
