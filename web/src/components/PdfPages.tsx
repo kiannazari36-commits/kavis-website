@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { getDocument, GlobalWorkerOptions, TextLayer, type PDFDocumentProxy } from 'pdfjs-dist';
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+import { fold, termHits } from '../api/terms';
 import s from './PdfPages.module.css';
 
 // The reader's "Orijinal PDF": the teacher's pages exactly as they are (figures, tables, slides), drawn with pdf.js.
@@ -215,7 +216,7 @@ function Page({ pdf, n, width, height, terms, highlights, onTerm, children }: Pa
   );
 }
 
-const norm = (x: string) => x.toLocaleLowerCase().replace(/\s+/g, ' ').trim();
+const norm = (x: string) => fold(x).replace(/\s+/g, ' ').trim();
 
 /**
  * Marks hard words (underlined, tap = explanation) and highlighted sentences on a page's text layer. pdf.js puts
@@ -231,7 +232,7 @@ function decorate(layer: HTMLElement, terms: Props['terms'], highlights: string[
   const from: [number, number][] = [];
   texts.forEach((t, ri) => {
     for (let ci = 0; ci < t.length; ci++) {
-      const ch = /\s/.test(t[ci]) ? ' ' : t[ci].toLocaleLowerCase();
+      const ch = /\s/.test(t[ci]) ? ' ' : fold(t[ci]);
       if (ch === ' ' && (page.endsWith(' ') || !page)) continue;
       page += ch;
       from.push([ri, ci]);
@@ -255,16 +256,8 @@ function decorate(layer: HTMLElement, terms: Props['terms'], highlights: string[
     if (q.length < 2) continue;
     for (let i = page.indexOf(q); i >= 0; i = page.indexOf(q, i + q.length)) add(i, i + q.length, 'hl');
   }
-  for (const t of terms) {
-    const q = norm(t.surface);
-    if (q.length < 3) continue;
-    for (let i = page.indexOf(q); i >= 0; i = page.indexOf(q, i + q.length)) {
-      // Whole words only ("ace" not inside "surface").
-      const before = page[i - 1];
-      const after = page[i + q.length];
-      if ((!before || !/\p{L}/u.test(before)) && (!after || !/\p{L}/u.test(after))) add(i, i + q.length, 'term', t.key);
-    }
-  }
+  // Whole words with their Turkish endings ("kaptoprilin"), not inside other words ("ace" not in "surface").
+  for (const t of terms) for (const [a, b] of termHits(page, t.surface)) add(a, b, 'term', t.key);
   runs.forEach((r, ri) => {
     const raw = texts[ri];
     const mine = marks.filter((m) => m.run === ri && m.a < raw.length).sort((x, y) => x.a - y.a);

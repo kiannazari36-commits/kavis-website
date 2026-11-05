@@ -315,6 +315,10 @@ struct CourseFolderView: View {
     @State private var deleting = false
     @State private var examOpen = false
     @State private var exams: [CourseExam] = []
+    @State private var tab: Tab = .pdfs
+    @State private var due: [FlashCard]?
+
+    private enum Tab: String, CaseIterable { case pdfs, prep, cards, rec }
 
     private var lang: Lang { prefs.lang }
     private func d(_ turkish: String) -> String { prefs.d(turkish) }
@@ -326,16 +330,17 @@ struct CourseFolderView: View {
                 if let course {
                     VStack(alignment: .leading, spacing: 14) {
                         summary(course)
-                        if course.pdfs.isEmpty { empty } else { lessons(course) }
-                        if !recordings.isEmpty { recordingList }
-                        Button(action: addPdf) {
-                            HStack(spacing: 8) {
-                                KIcon(name: .plus, size: 18, width: 2)
-                                Text(d("Bu derse PDF ekle")).font(KFont.ui(15, .medium, lang: lang))
-                            }
-                            .foregroundStyle(KPhone.ctaText)
-                            .frame(maxWidth: .infinity, minHeight: 54)
-                            .background(KPhone.cta, in: Capsule())
+                        tabBar
+                        switch tab {
+                        case .pdfs:
+                            if course.pdfs.isEmpty { empty } else { lessons(course) }
+                            addPdfButton
+                        case .prep:
+                            SamplesView(courseId: courseId, embedded: true)
+                        case .cards:
+                            cardsTab(course)
+                        case .rec:
+                            recTab
                         }
                     }
                     .padding(.horizontal, 20)
@@ -357,6 +362,7 @@ struct CourseFolderView: View {
             course = await CoursesAPI.getCourse(id: courseId)
             recordings = await RecordingAPI.recordingsOfCourse(courseId)
             exams = await ExamsAPI.upcoming()
+            due = await CardsAPI.dueCards(courseId: courseId)
         }
         .alert(prefs.t("cfRenameTitle"), isPresented: $renaming) {
             TextField(prefs.t("wel_coursePh"), text: $newName)
@@ -420,6 +426,107 @@ struct CourseFolderView: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityHint(prefs.t("rec_open"))
+            }
+        }
+    }
+
+    private var addPdfButton: some View {
+        Button(action: addPdf) {
+            HStack(spacing: 8) {
+                KIcon(name: .plus, size: 18, width: 2)
+                Text(d("Bu derse PDF ekle")).font(KFont.ui(15, .medium, lang: lang))
+            }
+            .foregroundStyle(KPhone.ctaText)
+            .frame(maxWidth: .infinity, minHeight: 54)
+            .background(KPhone.cta, in: Capsule())
+        }
+    }
+
+    /// Course sections as on the web: PDF'ler · Sınava hazırlık · Kartlar · Ses kayıtları (scrolls sideways when narrow).
+    private var tabBar: some View {
+        ScrollView(.horizontal) {
+            HStack(spacing: 8) {
+                ForEach(Tab.allCases, id: \.self) { x in
+                    let on = x == tab
+                    Button { tab = x } label: {
+                        HStack(spacing: 6) {
+                            Text(tabTitle(x))
+                            if x == .rec && !recordings.isEmpty { Text(Format.num(recordings.count, lang)).font(KFont.mono(11, .regular)) }
+                        }
+                        .font(KFont.ui(14, .medium, lang: lang))
+                        .foregroundStyle(on ? KPhone.ctaText : KPhone.text)
+                        .padding(.horizontal, 16).frame(height: 40)
+                        .background(on ? KPhone.cta : KPhone.card, in: Capsule())
+                        .overlay(Capsule().stroke(on ? .clear : KPhone.line, lineWidth: 1))
+                    }
+                    .accessibilityAddTraits(on ? .isSelected : [])
+                }
+            }
+        }
+        .scrollIndicators(.hidden)
+        .accessibilityLabel(prefs.t("cfTabs"))
+    }
+
+    private func tabTitle(_ x: Tab) -> String {
+        switch x {
+        case .pdfs: prefs.t("pdfs")
+        case .prep: prefs.t("cfTabPrep")
+        case .cards: prefs.t("cfTabCards")
+        case .rec: prefs.t("cfTabRec")
+        }
+    }
+
+    /// "Kartlar": due-card count, this course's cards, and one row per PDF → that lesson's cards.
+    private func cardsTab(_ c: Course) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(due == nil ? "…" : due!.isEmpty ? prefs.t("cf_cardsNone")
+                 : prefs.t("cf_cardsDue", ["n": due!.count >= 30 ? Format.num(30, lang) + "+" : Format.num(due!.count, lang)]))
+                .font(KFont.ui(15, .medium, lang: lang)).kLineHeight(1.45, size: 15, lang: lang).foregroundStyle(KPhone.text)
+            Button { app.go(.cards(courseId)) } label: {
+                HStack(spacing: 8) {
+                    KIcon(name: .cards, size: 18, width: 1.8)
+                    Text(prefs.t("cf_cardsAll")).font(KFont.ui(15, .medium, lang: lang))
+                }
+                .foregroundStyle(KPhone.ctaText).frame(maxWidth: .infinity, minHeight: 54).background(KPhone.cta, in: Capsule())
+            }
+            if !c.pdfs.isEmpty {
+                Text(prefs.t("cf_cardsByPdf")).font(KFont.ui(18, .medium, lang: lang)).foregroundStyle(KPhone.text).padding(.top, 6)
+                ForEach(c.pdfs) { pdf in
+                    Button { app.go(.lessonCards(pdf.id)) } label: {
+                        HStack(spacing: 12) {
+                            KIcon(name: .cards, size: 22, width: 1.8).foregroundStyle(KPhone.brand)
+                                .frame(width: 46, height: 46).background(KPhone.sub, in: Circle())
+                            Text(pdf.title[lang]).font(KFont.ui(15, .medium, lang: lang)).foregroundStyle(KPhone.text).lineLimit(1)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            KIcon(name: .chevron, size: 18, width: 1.8, flipsInRTL: true).foregroundStyle(KPhone.text3)
+                        }
+                        .padding(.horizontal, 14).padding(.vertical, 12)
+                        .background(KPhone.card, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).stroke(KPhone.line, lineWidth: 1))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+
+    /// "Ses kayıtları": the course's recordings and "Ders ses kaydı ekle".
+    private var recTab: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            if recordings.isEmpty {
+                Text(prefs.t("cf_recEmpty")).font(KFont.ui(14, lang: lang)).foregroundStyle(KPhone.text2)
+            } else {
+                recordingList
+            }
+            Button {
+                app.uploadCourseId = courseId
+                app.go(.upload(.audio))
+            } label: {
+                HStack(spacing: 8) {
+                    KIcon(name: .mic, size: 18, width: 1.8)
+                    Text(prefs.t("cf_recNew")).font(KFont.ui(15, .medium, lang: lang))
+                }
+                .foregroundStyle(KPhone.ctaText).frame(maxWidth: .infinity, minHeight: 54).background(KPhone.cta, in: Capsule())
             }
         }
     }

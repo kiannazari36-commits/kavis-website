@@ -366,3 +366,27 @@
   text-decoration: underline;
   cursor: pointer;
 }
+
+/* Course page tab "Sınava hazırlık": four numbered steps */
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.step {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--pri-t);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.links .makeAlt {
+  flex: 1;
+  margin-top: 0;
+}

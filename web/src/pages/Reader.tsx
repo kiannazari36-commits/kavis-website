@@ -6,7 +6,7 @@ import { useToast } from '../components/Toast';
 import Icon from '../components/Icon';
 import Wordmark from '../components/Wordmark';
 import { getPdf, recentPdfs } from '../api/courses';
-import { addHighlight, getLesson, markRead, saveStudyTime, tapTerm, translate, type TranslationStyle } from '../api/reader';
+import { addHighlight, getLesson, removeHighlight, markRead, saveStudyTime, tapTerm, translate, type TranslationStyle } from '../api/reader';
 import { askAssistant, latestThread, type ChatMessage, type SourceMode } from '../api/assistant';
 import { findMolecules, type Molecule } from '../components/molecules';
 import WebLinks from '../components/WebLinks';
@@ -18,7 +18,7 @@ import MicButton from '../components/MicButton';
 import { sectionCheckCounter } from '../api/quiz';
 import { addTermCard } from '../api/cards';
 import { lectureMarks, recordingsOf, type LectureMark } from '../api/recording';
-import { loadInk, saveInk, type InkSurface, type PageInk, type Stroke } from '../api/ink';
+import { blockOrdinals, inkKey, loadInk, saveInk, type InkSurface, type PageInk, type Stroke } from '../api/ink';
 import { pdfBytes, pdfPath } from '../api/pdfFile';
 import { lessonStatus, retryLesson } from '../api/upload';
 import type { PdfSelection } from '../components/PdfPages';
@@ -111,7 +111,8 @@ export default function Reader() {
   // Assistant panel: remembered; without a saved choice open only on wide screens.
   const [panel, setPanel] = usePanelPref('kavis.readerPanel', 1200);
   const [term, setTerm] = useState<string | null>(null);
-  const [selected, setSelected] = useState(false);
+  // The tapped sentence: block index in the open section + paragraph index (only one at a time).
+  const [selected, setSelected] = useState<{ b: number; p: number } | null>(null);
   // The section list (one button that opens the others) and the page search box.
   const [secMenu, setSecMenu] = useState(false);
   const [pageQuery, setPageQuery] = useState('');
@@ -123,20 +124,29 @@ export default function Reader() {
   const [pen, setPen] = useState(false);
   const [penColor, setPenColor] = useState(PEN_COLORS[0]);
   // The reading mode's cards and the original PDF's pages have different shapes, so their drawings are kept apart.
-  const savedInk = useAsync(() => (pdfId ? loadInk(pdfId) : Promise.resolve({} as Record<number, PageInk>)), [pdfId]);
-  const savedPdfInk = useAsync(() => (pdfId ? loadInk(pdfId, 'web_pdf') : Promise.resolve({} as Record<number, PageInk>)), [pdfId]);
+  const savedInk = useAsync(() => (pdfId ? loadInk(pdfId) : Promise.resolve({} as Record<string, PageInk>)), [pdfId]);
+  const savedPdfInk = useAsync(() => (pdfId ? loadInk(pdfId, 'web_pdf') : Promise.resolve({} as Record<string, PageInk>)), [pdfId]);
   const [inkEdits, setInkEdits] = useState<Record<string, PageInk>>({});
-  const [lastInk, setLastInk] = useState<[number, InkSurface] | null>(null);
-  const inkOf = (page: number, on: InkSurface = 'card'): PageInk =>
-    inkEdits[`${on}:${page}`] ?? (on === 'card' ? savedInk : savedPdfInk)?.[page] ?? { id: null, strokes: [] };
-  const setInk = async (page: number, strokes: Stroke[], on: InkSurface = 'card') => {
-    const key = `${on}:${page}`;
-    const now = { id: inkOf(page, on).id, strokes };
+  const [lastInk, setLastInk] = useState<[number, InkSurface, number] | null>(null);
+  // Reading cards: a drawing belongs to one card (page + the card's number among the cards of that page).
+  const inkOf = (page: number, on: InkSurface = 'card', block = 0): PageInk =>
+    inkEdits[`${on}:${inkKey(page, on === 'card' ? block : undefined)}`] ??
+    (on === 'card' ? savedInk : savedPdfInk)?.[inkKey(page, on === 'card' ? block : undefined)] ??
+    { id: null, strokes: [] };
+  const setInk = async (page: number, strokes: Stroke[], on: InkSurface = 'card', block = 0) => {
+    const key = `${on}:${inkKey(page, on === 'card' ? block : undefined)}`;
+    const now = { id: inkOf(page, on, block).id, strokes };
     setInkEdits((x) => ({ ...x, [key]: now }));
-    setLastInk([page, on]);
-    const id = await saveInk(pdfId, page, now, on);
+    setLastInk([page, on, block]);
+    const id = await saveInk(pdfId, page, now, on, block);
     setInkEdits((x) => ({ ...x, [key]: { ...x[key], id } }));
   };
+  // Every card's number among the cards of its page, over the whole lesson.
+  const inkOrd = useMemo(() => {
+    const all = (doc?.sections ?? []).flatMap((x) => x.blocks);
+    const ord = blockOrdinals(all.map((b) => b.pageFrom));
+    return new Map(all.map((b, i) => [b, ord[i]]));
+  }, [doc]);
 
   // "Orijinal PDF | Okuma modu": the teacher's own pages, or the reading page made from them. Only lessons with a PDF
   // file have the first one (not photo lessons or the exam summary). The choice is kept in this browser.
@@ -327,7 +337,7 @@ export default function Reader() {
       if (e.key !== 'Escape') return;
       setSecMenu(false);
       setTerm(null);
-      setSelected(false);
+      setSelected(null);
       setTrSource(null);
       setFocus(false);
       exitFullscreen();
@@ -383,7 +393,7 @@ export default function Reader() {
 
   const title = pdfInfo?.pdf.title ?? '';
   // The exam summary has no share, recording or lesson-summary step; it can be saved as a PDF instead.
-  const isSummary = !!pdfInfo && pdfInfo.course.summary?.id === pdfId;
+  const isSummary = !!pdfInfo && (pdfInfo.course.summary?.id === pdfId || pdfInfo.course.brief?.id === pdfId);
   const sectionFrom = (i: number) => Math.min(...doc.sections[i].blocks.map((b) => b.pageFrom));
   const sectionTo = (i: number) => Math.max(...doc.sections[i].blocks.map((b) => b.pageTo));
   // The section a page belongs to (a page with only a figure: the section before it).
@@ -425,7 +435,7 @@ export default function Reader() {
     }
     setSec(i);
     setTerm(null);
-    setSelected(false);
+    setSelected(null);
     scroller.current?.scrollTo({ top: 0, behavior: 'smooth' });
   };
   // Page search: open the section with that page and scroll to it.
@@ -478,7 +488,7 @@ export default function Reader() {
     }
     setPdfSel(null);
     setTerm(null);
-    setSelected(false);
+    setSelected(null);
     stopSpeaking();
     setReading(false);
     if (m === 'text') {
@@ -584,7 +594,7 @@ export default function Reader() {
       exitFullscreen();
     } else {
       setTerm(null);
-      setSelected(false);
+      setSelected(null);
       setFocus(true);
       enterFullscreen();
     }
@@ -716,9 +726,9 @@ export default function Reader() {
             {section.blocks.map((b, i) => (
               <Block
                 marks={marks.filter((m) => m.page >= b.pageFrom && m.page <= b.pageTo)}
-                ink={inkOf(b.pageFrom).strokes}
+                ink={inkOf(b.pageFrom, 'card', inkOrd.get(b) ?? 0).strokes}
                 pen={pen ? penColor : null}
-                onInk={(strokes) => setInk(b.pageFrom, strokes)}
+                onInk={(strokes) => setInk(b.pageFrom, strokes, 'card', inkOrd.get(b) ?? 0)}
                 key={`${sec_}-${i}`}
                 doc={doc}
                 block={b}
@@ -727,38 +737,50 @@ export default function Reader() {
                 term={term}
                 onTerm={(id) => {
                   setTerm(term === id ? null : id);
-                  setSelected(false);
+                  setSelected(null);
                 }}
-                selected={selected}
+                selPara={selected?.b === i ? selected.p : null}
                 highlights={highlights}
-                onSelect={() => {
-                  setSelected(!selected);
+                onSelect={(p) => {
+                  setSelected(selected?.b === i && selected.p === p ? null : { b: i, p });
                   setTerm(null);
                 }}
-                selActs={[
-                  [t('actTranslate'), () => (setSelected(false), setTrSource({ text: sentenceOf(b), page: b.pageFrom }))],
+                selActs={(p) => [
+                  [t('actTranslate'), () => (setSelected(null), setTrSource({ text: sentenceAt(b, p), page: b.pageFrom }))],
                   [
                     t('actCopy'),
                     () => {
-                      setSelected(false);
-                      const p = b.paragraphs.find((x) => !Array.isArray(x));
-                      if (p && !Array.isArray(p)) navigator.clipboard?.writeText(p.text).catch(() => {});
+                      setSelected(null);
+                      const text = sentenceAt(b, p);
+                      if (text) navigator.clipboard?.writeText(text).catch(() => {});
                       toast(t('copied'));
                     },
                   ],
-                  [
-                    t('actHighlight'),
-                    () => {
-                      setSelected(false);
-                      const text = sentenceOf(b);
-                      if (text && !highlights.includes(text)) {
-                        setHighlights([...highlights, text]);
-                        addHighlight(pdfId, b.pageFrom, text);
-                      }
-                      toast(t('highlighted'));
-                    },
-                  ],
-                  [t('actAsk'), () => (setSelected(false), askAssistant(t('askSentence') + sentenceOf(b)))],
+                  // A highlighted sentence can be un-highlighted (otherwise it would stay yellow for good).
+                  highlights.includes(sentenceAt(b, p))
+                    ? [
+                        t('actUnhighlight'),
+                        () => {
+                          setSelected(null);
+                          const text = sentenceAt(b, p);
+                          setHighlights(highlights.filter((h) => h !== text));
+                          removeHighlight(pdfId, text);
+                          toast(t('unhighlighted'));
+                        },
+                      ]
+                    : [
+                        t('actHighlight'),
+                        () => {
+                          setSelected(null);
+                          const text = sentenceAt(b, p);
+                          if (text && !highlights.includes(text)) {
+                            setHighlights([...highlights, text]);
+                            addHighlight(pdfId, b.pageFrom, text);
+                          }
+                          toast(t('highlighted'));
+                        },
+                      ],
+                  [t('actAsk'), () => (setSelected(null), askAssistant(t('askSentence') + sentenceAt(b, p)))],
                 ]}
                 onTranslate={() => setTrSource({ text: blockText(b), page: b.pageFrom })}
               />
@@ -825,7 +847,7 @@ export default function Reader() {
               className={s.penText}
               onClick={() => {
                 if (lastInk === null || !inkOf(...lastInk).strokes.length) return toast(t('penNothing'));
-                setInk(lastInk[0], inkOf(...lastInk).strokes.slice(0, -1), lastInk[1]);
+                setInk(lastInk[0], inkOf(...lastInk).strokes.slice(0, -1), lastInk[1], lastInk[2]);
               }}
             >
               {t('penUndo')}
@@ -944,11 +966,10 @@ function marked(text: string, highlights: string[]): ReactNode {
   return out;
 }
 
-/** The selectable sentence of a block, if it has one. */
-/** The first paragraph of a page (the selection menu works on it). */
-function sentenceOf(b: ReaderBlock) {
-  const p = b.paragraphs.find((x) => !Array.isArray(x));
-  return p && !Array.isArray(p) ? p.text : b.paragraphs[0] ? paraText(b.paragraphs[0]) : (b.heading ?? '');
+/** The tapped sentence of a block (paragraph index `i`; the selection menu works on it). */
+function sentenceAt(b: ReaderBlock, i: number) {
+  const p = b.paragraphs[i];
+  return p && !Array.isArray(p) ? p.text : (b.heading ?? '');
 }
 /** The whole text of a page: heading and paragraphs, one per line ("Çevir", reading aloud). */
 function blockText(b: ReaderBlock) {
@@ -973,10 +994,11 @@ type BlockProps = {
   fontSize: number;
   term: string | null;
   onTerm: (id: string) => void;
-  selected: boolean;
+  /** Paragraph index of the tapped sentence in this block (null = none). */
+  selPara: number | null;
   highlights: string[];
-  onSelect: () => void;
-  selActs: [string, () => void][];
+  onSelect: (paragraph: number) => void;
+  selActs: (paragraph: number) => [string, () => void][];
   onTranslate: () => void;
 };
 
@@ -986,8 +1008,10 @@ const MolViewer = lazy(() => import('../components/MolViewer'));
 const blockPlain = (b: ReaderBlock) =>
   [b.heading ?? '', ...b.paragraphs.map((p) => (Array.isArray(p) ? p.map((x) => (typeof x === 'string' ? x : x.text)).join('') : p.text))].join(' ');
 
-function Block({ doc, block, terms, fontSize, term, onTerm, selected, highlights, onSelect, selActs, onTranslate, marks, ink, pen, onInk }: BlockProps) {
+function Block({ doc, block, terms, fontSize, term, onTerm, selPara, highlights, onSelect, selActs, onTranslate, marks, ink, pen, onInk }: BlockProps) {
   const { t, lang } = useI18n();
+  const [params] = useSearchParams();
+  const courseId = params.get('course') ?? '';
   const [molOpen, setMolOpen] = useState<Molecule | null>(null);
   // Chip only when we have the structure of a drug named in this block.
   const mols = findMolecules(blockPlain(block));
@@ -1072,16 +1096,16 @@ function Block({ doc, block, terms, fontSize, term, onTerm, selected, highlights
                 role="button"
                 tabIndex={0}
                 title={t('selectSentence')}
-                aria-pressed={selected}
-                className={`${s.selectable} ${selected ? s.selOn : ''} ${highlights.includes(p.text) ? s.highlight : ''}`}
-                onClick={onSelect}
-                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), onSelect())}
+                aria-pressed={selPara === i}
+                className={`${s.selectable} ${selPara === i ? s.selOn : ''} ${highlights.includes(p.text) ? s.highlight : ''}`}
+                onClick={() => onSelect(i)}
+                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), onSelect(i))}
               >
                 {highlights.includes(p.text) ? p.text : marked(p.text, highlights)}
               </p>
-              {selected && (
+              {selPara === i && (
                 <div role="toolbar" aria-label={t('selectedSentence')} className={s.selBar}>
-                  {selActs.map(([label, fn]) => (
+                  {selActs(i).map(([label, fn]) => (
                     <button key={label} onClick={fn}>
                       {label}
                     </button>
@@ -1092,6 +1116,15 @@ function Block({ doc, block, terms, fontSize, term, onTerm, selected, highlights
           ),
         )}
       </div>
+      {block.links?.map((l) => (
+        // A full page load, so the reader opens the other lesson at that page.
+        <Link key={`${l.pdf}-${l.page}`} reloadDocument to={`/reader?course=${courseId}&pdf=${l.pdf}&page=${l.page}`} className={s.chipBtn}>
+          <span className={s.chipIcon}>
+            <Icon name="file" size={16} />
+          </span>
+          {l.label}
+        </Link>
+      ))}
       {mols.map((m) => (
         <button key={m.id} className={s.chipBtn} onClick={() => setMolOpen(m)}>
           <span className={s.chipIcon}>
