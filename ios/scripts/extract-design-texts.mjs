@@ -120,7 +120,7 @@ for (const file of DESIGN_FILES) {
   const tk = literal(src, '_TK');
   table.k.forEach((turkish, i) => {
     const entry = byTurkish[turkish] ?? (byTurkish[turkish] = { tr: turkish });
-    for (const l of ['en', 'fa', 'ar']) entry[l] ??= table[l][i];
+    for (const l of ['en', 'fa', 'ar']) if (typeof table[l][i] === 'string') entry[l] ??= table[l][i];
   });
   // Texts the design translates differently in one place (the key is the design key, e.g. p0a).
   for (const [k, langs] of Object.entries(pt)) {

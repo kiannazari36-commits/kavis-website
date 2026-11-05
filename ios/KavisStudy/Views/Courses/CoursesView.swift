@@ -23,10 +23,10 @@ private enum FolderPalette {
 }
 
 /// "12 dk", "2 sa 5 dk" in the design's words.
-private func minutesText(_ m: Int, _ d: (String) -> String) -> String {
-    if m <= 0 { return d("0 dk") }
-    if m < 60 { return "\(m)\(d(" dk"))" }
-    return "\(m / 60)\(d(" sa"))" + (m % 60 > 0 ? " \(m % 60)\(d(" dk"))" : "")
+private func minutesText(_ m: Int, _ d: (String) -> String, _ lang: Lang) -> String {
+    if m <= 0 { return Format.num(d("0 dk"), lang) }
+    if m < 60 { return "\(Format.num(m, lang))\(d(" dk"))" }
+    return "\(Format.num(m / 60, lang))\(d(" sa"))" + (m % 60 > 0 ? " \(Format.num(m % 60, lang))\(d(" dk"))" : "")
 }
 
 private struct CourseHeader: View {
@@ -161,7 +161,8 @@ struct CoursesListView: View {
         let full = prefs.d("2026–2027 Güz dönemi · 5 ders · 9 PDF · 19 sa", numbers: [("19", minutes / 60), ("5", courses.count), ("9", pdfs)])
         guard let cut = full.range(of: " · ") else { return full }
         let term = CoursesAPI.termName()
-        let head = term.hasSuffix("Güz") ? String(full[..<cut.lowerBound]).replacingOccurrences(of: "2026–2027", with: String(term.prefix(9))) : term
+        // The years stay left to right inside Persian / Arabic text (else "2027–2026").
+        let head = term.hasSuffix("Güz") ? String(full[..<cut.lowerBound]).replacingOccurrences(of: "2026–2027", with: "\u{2066}\(term.prefix(9))\u{2069}") : term
         return head + full[cut.lowerBound...]
     }
 
@@ -176,7 +177,7 @@ struct CoursesListView: View {
                     .background(p.bg, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                 Text(c.name[lang]).font(KFont.ui(17, .semibold, lang: lang)).foregroundStyle(KPhone.text)
                     .lineLimit(2).multilineTextAlignment(.leading)
-                Text("\(Format.num(c.pdfs.count, lang)) PDF · \(minutesText(st.minutes, d))\(c.pdfs.isEmpty || c.examDate == nil ? "" : " " + d("· sınav") + " " + c.exam[lang])")
+                Text("\(Format.num(c.pdfs.count, lang)) PDF · \(minutesText(st.minutes, d, lang))\(c.pdfs.isEmpty || c.examDate == nil ? "" : " " + d("· sınav") + " " + c.exam[lang])")
                     .font(KFont.ui(12, lang: lang)).foregroundStyle(KPhone.text2).lineLimit(1)
                 Spacer(minLength: 0)
                 if deviceCount(c) > 0 {
@@ -266,7 +267,7 @@ struct CoursesListView: View {
                     HStack {
                         Text("\(Format.num(c.pdfs.count, lang)) PDF").font(KFont.mono(11, .semibold)).foregroundStyle(p.fg)
                         Spacer()
-                        Text(minutesText(st.minutes, d)).font(KFont.ui(11, lang: lang)).foregroundStyle(KPhone.text2)
+                        Text(minutesText(st.minutes, d, lang)).font(KFont.ui(11, lang: lang)).foregroundStyle(KPhone.text2)
                     }
                     Text(c.name[lang])
                         .font(KFont.ui(16, .semibold, lang: lang))
@@ -501,7 +502,7 @@ struct CourseFolderView: View {
     /// "3 PDF · ayrılan süre 3 sa 50 dk · sınav 14 Kas" (design NewIPad).
     private func wideSub(_ c: Course) -> String {
         let st = CoursesAPI.stats(c)
-        var line = "\(Format.num(c.pdfs.count, lang))\(d(" PDF · ayrılan süre "))\(minutesText(st.minutes, d))"
+        var line = "\(Format.num(c.pdfs.count, lang))\(d(" PDF · ayrılan süre "))\(minutesText(st.minutes, d, lang))"
         if c.examDate != nil { line += d(" · sınav ") + c.exam[lang] }
         return line
     }
@@ -523,7 +524,7 @@ struct CourseFolderView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 VStack(alignment: .trailing, spacing: 4) {
-                    Text("\(d("ayrılan süre")) \(minutesText(pdf.minutes, d))").font(KFont.ui(11, lang: lang)).foregroundStyle(KPhone.text2)
+                    Text("\(d("ayrılan süre")) \(minutesText(pdf.minutes, d, lang))").font(KFont.ui(11, lang: lang)).foregroundStyle(KPhone.text2)
                     GeometryReader { g in
                         ZStack(alignment: .leading) {
                             Capsule().fill(FolderPalette.track)
@@ -735,7 +736,7 @@ struct CourseFolderView: View {
             HStack(spacing: 8) {
                 stat(Format.num(c.pdfs.count, lang), "PDF")
                 stat("%\(Format.num(st.percent, lang))", d("okundu"))
-                stat(minutesText(st.minutes, d), d("çalışma"))
+                stat(minutesText(st.minutes, d, lang), d("çalışma"))
             }
         }
         .padding(18)
@@ -772,7 +773,7 @@ struct CourseFolderView: View {
                                     }
                                 }
                                 .frame(height: 5)
-                                Text(minutesText(pdf.minutes, d)).font(KFont.mono(11, .regular)).foregroundStyle(KPhone.text2).frame(minWidth: 58, alignment: .trailing)
+                                Text(minutesText(pdf.minutes, d, lang)).font(KFont.mono(11, .regular)).foregroundStyle(KPhone.text2).frame(minWidth: 58, alignment: .trailing)
                             }
                             Text(pageLine(pdf)).font(KFont.ui(11, lang: lang)).foregroundStyle(KPhone.text3)
                         }
