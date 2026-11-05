@@ -312,7 +312,8 @@ export default function Upload() {
             </button>
           )}
           {ready && lessonId && (
-            <button className={s.pri} onClick={() => navigate(`/reader?course=${status?.courseId ?? ''}&pdf=${lessonId}`)}>
+            // Design: ScrUpload goes on to the placement test ("Seviye tespiti"); "no" there opens the reader.
+            <button className={s.pri} onClick={() => navigate(`/placement?course=${status?.courseId ?? ''}&pdf=${lessonId}`)}>
               {t('up_open')}
             </button>
           )}

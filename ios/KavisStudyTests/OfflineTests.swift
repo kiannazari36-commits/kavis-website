@@ -6,7 +6,7 @@ final class OfflineTests: XCTestCase {
     private let id1 = "11111111-1111-1111-1111-111111111111"
 
     func testEveryKeptFileBelongsToItsLesson() {
-        for name in ["pdf-\(id1).pdf", "lesson-\(id1).json", "ink-\(id1).json", "ink-\(id1)-pdf.json", "cards-\(id1).json", "summary-\(id1).json"] {
+        for name in ["pdf-\(id1).pdf", "lesson-\(id1).json", "ink-\(id1).json", "ink-\(id1)-pdf.json", "marks-\(id1).json", "cards-\(id1).json", "summary-\(id1).json"] {
             XCTAssertEqual(OfflineStore.lessonId(name), id1, name)
         }
         XCTAssertNil(OfflineStore.lessonId("lesson-short.json"))

@@ -6,12 +6,34 @@ import Supabase
 /// of kind `ink`; the drawing itself is a small JSON file in the private bucket `ink` (`<user id>/<lesson>/<page>.json`).
 /// Two surfaces: the reader's page cards (`anchor` empty) and the iPad's full-screen PDF (`anchor.surface = "pdf"`,
 /// file `pdf-<page>.json`); their drawings use different coordinates, so they are kept apart.
+/// The web's drawings are rows of the same kind with their lines inside `anchor` (`strokes`, and `surface = "web_pdf"`
+/// on its PDF pages) and no file: they are skipped here (and never changed), so drawing on the web does not break this.
 enum InkAPI {
     enum Surface { case card, pdf }
 
+    /// Only `anchor.surface` is read; anything else in `anchor` (the web's `strokes` list) is ignored.
+    private struct Anchor: Decodable { let surface: String? }
+
     private struct Row: Decodable {
-        let id: String; let page: Int; let ink_path: String?; let anchor: [String: String]?
-        func on(_ surface: Surface) -> Bool { (anchor?["surface"] == "pdf") == (surface == .pdf) }
+        let id: String; let page: Int; let ink_path: String?; let anchor: Anchor?
+
+        init(from decoder: Decoder) throws {
+            enum Key: String, CodingKey { case id, page, ink_path, anchor }
+            let c = try decoder.container(keyedBy: Key.self)
+            id = try c.decode(String.self, forKey: .id)
+            page = try c.decode(Int.self, forKey: .page)
+            ink_path = try c.decodeIfPresent(String.self, forKey: .ink_path)
+            anchor = try? c.decodeIfPresent(Anchor.self, forKey: .anchor)
+        }
+
+        /// A drawing made by this app (a PencilKit file) on that surface.
+        func on(_ surface: Surface) -> Bool {
+            guard ink_path != nil else { return false }
+            switch surface {
+            case .pdf: return anchor?.surface == "pdf"
+            case .card: return anchor?.surface == nil
+            }
+        }
     }
     private struct File: Codable { let drawing: Data }
 
@@ -26,7 +48,7 @@ enum InkAPI {
             return kept(materialId, surface)
         }
         var result: [Int: PKDrawing] = [:]
-        for row in rows {
+        for row in rows where row.on(surface) {
             guard let path = row.ink_path,
                   let data = try? await supabase.storage.from("ink").download(path: path),
                   let file = try? JSONDecoder().decode(File.self, from: data),

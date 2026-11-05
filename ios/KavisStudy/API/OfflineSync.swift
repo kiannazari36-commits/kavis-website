@@ -6,7 +6,7 @@ import Supabase
 /// Settings "Çalıştığım PDF'leri indir" (decided with Kian, 5 Nov 2026): while the app is open and the switch is on, the
 /// lessons the student studies come to the phone ahead, newest first, so they open without internet: the lessons opened
 /// at least once (on any device, the web too) and the ones uploaded in the last 14 days. Per lesson: the reading page and
-/// hard words, the original PDF, the pen notes, the cards and the summary already made (no AI call, nothing paid).
+/// hard words, the original PDF, the pen notes, the highlights, the cards and the summary already made (no AI call, nothing paid).
 /// Only on Wi-Fi without Low Data Mode, unless the student allows mobile data (kept on this device): then on any network.
 /// Everything is written through OfflineStore (one copy, 1 GB limit); with the switch off nothing new comes.
 @MainActor @Observable
@@ -93,6 +93,7 @@ final class OfflineSync {
         _ = await ReaderAPI.pdfData(materialId: id)
         _ = await InkAPI.load(materialId: id, surface: .card)
         _ = await InkAPI.load(materialId: id, surface: .pdf)
+        _ = await ReaderAPI.highlights(materialId: id)
         await SummaryAPI.keepSaved(materialId: id)
         return await CardsAPI.keepDeck(materialId: id)
     }

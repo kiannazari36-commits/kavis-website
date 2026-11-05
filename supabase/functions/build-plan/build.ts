@@ -28,7 +28,7 @@ export async function build(db: SupabaseClient, uid: string, today: string, lang
     db.from('materials').select('id, course_id, title, page_count').eq('user_id', uid).eq('status', 'ready'),
     db.from('reading_progress').select('material_id, pages_read').eq('user_id', uid),
     db.from('quizzes').select('material_id').eq('user_id', uid).eq('kind', 'lesson_end'),
-    db.from('material_topics').select('id, material_id, title, importance, teacher_said_exam, topic_progress(state, mastery, next_review_at)').eq('user_id', uid),
+    db.from('material_topics').select('id, material_id, title, page_from, page_to, importance, teacher_said_exam, topic_progress(state, mastery, next_review_at)').eq('user_id', uid),
     db.from('flashcards').select('from_mistake').eq('user_id', uid).lte('due_at', endOfToday),
     db.from('study_plans').select('id, plan_items(id, day, minutes, status)').eq('user_id', uid).eq('week_start', weekStart).maybeSingle(),
   ]);
@@ -51,6 +51,14 @@ export async function build(db: SupabaseClient, uid: string, today: string, lang
   }));
   const courseIds = new Set(courseIn.map((c) => c.id));
   const read = new Map((progress.data ?? []).map((r) => [r.material_id, r.pages_read as number[]]));
+  // Pages of topics the placement test showed the student already knows count as read: no reading task for them.
+  for (const t of topics.data ?? []) {
+    const tp = (Array.isArray(t.topic_progress) ? t.topic_progress[0] : t.topic_progress) as { state: string } | null;
+    if (tp?.state !== 'known' || !t.page_from) continue;
+    const pages = read.get(t.material_id) ?? [];
+    for (let p = t.page_from; p <= (t.page_to ?? t.page_from); p++) if (!pages.includes(p)) pages.push(p);
+    read.set(t.material_id, pages);
+  }
   const withQuiz = new Set((quizzes.data ?? []).map((q) => q.material_id));
   const lessonIn: LessonIn[] = (materials.data ?? [])
     .filter((m) => !m.course_id || courseIds.has(m.course_id))

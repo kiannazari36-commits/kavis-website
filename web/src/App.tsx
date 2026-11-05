@@ -23,6 +23,7 @@ const Settings = lazy(() => import('./pages/Settings'));
 const Notifications = lazy(() => import('./pages/Notifications'));
 const Schedule = lazy(() => import('./pages/Schedule'));
 const Upload = lazy(() => import('./pages/Upload'));
+const Placement = lazy(() => import('./pages/Placement'));
 const Record = lazy(() => import('./pages/Record'));
 const Recording = lazy(() => import('./pages/Recording'));
 const Samples = lazy(() => import('./pages/Samples'));
@@ -69,6 +70,7 @@ export default function App() {
                     <Route path="/notifications" element={<Notifications />} />
                     <Route path="/schedule" element={<Schedule />} />
                     <Route path="/upload" element={<Upload />} />
+                    <Route path="/placement" element={<Placement />} />
                     <Route path="/record" element={<Record />} />
                     <Route path="/recording" element={<Recording />} />
                     <Route path="/samples" element={<Samples />} />

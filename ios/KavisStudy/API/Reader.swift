@@ -163,9 +163,6 @@ enum ReaderAPI {
         )
     }
 
-    /// Too many small sections (about one per page) for the pages: the server groups them once into a few general
-    /// parts (Edge Function group-sections). The same rule as the web and the server.
-    /// The student's original PDF as a short-lived signed link (iPad "tam ekran PDF"); nil for photos or when offline.
     /// The original PDF's bytes: the phone's copy when there is one, else downloaded once and kept (OfflineStore).
     static func pdfData(materialId: String) async -> Data? {
         if let kept = OfflineStore.pdf(materialId) { return kept }
@@ -176,14 +173,57 @@ enum ReaderAPI {
         return data
     }
 
-    static func pdfURL(materialId: String) async -> URL? {
+    /// Whether the lesson has an original PDF ("Orijinal PDF" in the reader): a copy on the phone, or a PDF file on
+    /// the server. Photo lessons, the exam summary and shared copies have none, and show only "Okuma modu".
+    static func hasPdf(materialId: String) async -> Bool {
+        if OfflineStore.pdf(materialId) != nil { return true }
+        return await pdfPath(materialId: materialId) != nil
+    }
+
+    private static func pdfPath(materialId: String) async -> String? {
         struct File: Decodable { let storage_path: String }
         let rows: [File] = (try? await supabase.from("material_files").select("storage_path")
             .eq("material_id", value: materialId).order("sort_order").limit(1).execute().value) ?? []
         guard let path = rows.first?.storage_path, path.lowercased().hasSuffix(".pdf") else { return nil }
+        return path
+    }
+
+    /// The student's original PDF as a short-lived signed link; nil for photos or when offline.
+    static func pdfURL(materialId: String) async -> URL? {
+        guard let path = await pdfPath(materialId: materialId) else { return nil }
         return try? await supabase.storage.from("materials").createSignedURL(path: path, expiresIn: 3600)
     }
 
+    /// The parts of the teacher's text the student highlighted ("Vurgula"; `annotations` kind 'highlight' with
+    /// `anchor.text`, the same rows as the web). Shown on the PDF pages and in reading mode.
+    /// Without internet: the phone's copy.
+    static func highlights(materialId: String) async -> [String] {
+        struct Anchor: Decodable { let text: String? }
+        struct Row: Decodable { let anchor: Anchor? }
+        let file = "marks-\(materialId).json"
+        guard let rows: [Row] = try? await supabase.from("annotations").select("anchor")
+            .eq("material_id", value: materialId).eq("kind", value: "highlight").execute().value else {
+            return OfflineStore.read(file).flatMap { try? JSONDecoder().decode([String].self, from: $0) } ?? []
+        }
+        var texts: [String] = []
+        for t in rows.compactMap({ $0.anchor?.text }) where !t.isEmpty && !texts.contains(t) { texts.append(t) }
+        if let data = try? JSONEncoder().encode(texts) { OfflineStore.write(data, file) }
+        return texts
+    }
+
+    static func addHighlight(materialId: String, page: Int, text: String) async {
+        guard let uid = supabase.auth.currentUser?.id.uuidString.lowercased() else { return }
+        let file = "marks-\(materialId).json"
+        var kept = OfflineStore.read(file).flatMap { try? JSONDecoder().decode([String].self, from: $0) } ?? []
+        if !kept.contains(text) { kept.append(text) }
+        if let data = try? JSONEncoder().encode(kept) { OfflineStore.write(data, file) }
+        struct Anchor: Encodable { let text: String }
+        struct New: Encodable { let user_id, material_id: String; let page: Int; let kind = "highlight"; let anchor: Anchor }
+        _ = try? await supabase.from("annotations").insert(New(user_id: uid, material_id: materialId, page: page, anchor: Anchor(text: text))).execute()
+    }
+
+    /// Too many small sections (about one per page) for the pages: the server groups them once into a few general
+    /// parts (Edge Function group-sections). The same rule as the web and the server.
     static func needsGrouping(_ doc: ReaderDoc) -> Bool {
         guard doc.grouped != true, !doc.sections.isEmpty else { return false }
         let pages = Set(doc.sections.flatMap { $0.blocks.map(\.pageFrom) }).count
