@@ -7324,5 +7324,4601 @@
   "en": "* Fair use: fastest service for 40 lessons and 1,000 questions a month on Monthly, 200 lessons and 5,000 questions in total on Term, and 480 lessons and 12,000 questions in total on Yearly. After that you can keep going, a little slower.",
   "fa": "* استفادهٔ منصفانه: سریع‌ترین سرویس در ماهانه ۴۰ درس و ۱۰۰۰ سؤال در ماه، در ترمی در مجموع ۲۰۰ درس و ۵۰۰۰ سؤال و در سالانه در مجموع ۴۸۰ درس و ۱۲۰۰۰ سؤال. بعد از آن هم ادامه می‌دهی، کمی کندتر.",
   "ar": "* استخدام عادل: أسرع خدمة لـ40 درسًا و1000 سؤال شهريًا في الباقة الشهرية، و200 درس و5000 سؤال إجمالًا في باقة الفصل، و480 درسًا و12000 سؤال إجمالًا في الباقة السنوية. بعدها تستمر لكن أبطأ قليلًا."
+ },
+ " PDF dışı bilgiyi ayrıca işaretlerim.": {
+  "tr": " PDF dışı bilgiyi ayrıca işaretlerim.",
+  "en": " I'll flag info from outside the PDFs.",
+  "fa": " اطلاعات خارج از PDF را جداگانه مشخص می‌کنم.",
+  "ar": " سأشير بشكل منفصل إلى المعلومات من خارج PDF."
+ },
+ " PDF · ayrılan süre ": {
+  "tr": " PDF · ayrılan süre ",
+  "en": " PDFs · time allotted ",
+  "fa": " PDF · زمان اختصاص‌یافته ",
+  "ar": " PDF · الوقت المخصص "
+ },
+ " SAYFA": {
+  "tr": " SAYFA",
+  "en": " PAGES",
+  "fa": " صفحه",
+  "ar": " صفحات"
+ },
+ " SORU İNCELENDİ": {
+  "tr": " SORU İNCELENDİ",
+  "en": " QUESTIONS REVIEWED",
+  "fa": " سؤال بررسی شد",
+  "ar": " سؤال تمت مراجعته"
+ },
+ " açıldı": {
+  "tr": " açıldı",
+  "en": " opened",
+  "fa": " باز شد",
+  "ar": " فُتح"
+ },
+ " açıldı · kaldığın yerden devam": {
+  "tr": " açıldı · kaldığın yerden devam",
+  "en": " opened · picking up where you left off",
+  "fa": " باز شد · ادامه از جایی که ماندی",
+  "ar": " فُتح · تابع من حيث توقفت"
+ },
+ " bu tarz kapatıldı": {
+  "tr": " bu tarz kapatıldı",
+  "en": " – this style turned off",
+  "fa": " – این سبک غیرفعال شد",
+  "ar": " – تم إيقاف هذا النمط"
+ },
+ " bu tarz kullanılacak": {
+  "tr": " bu tarz kullanılacak",
+  "en": " – this style will be used",
+  "fa": " – این سبک استفاده می‌شود",
+  "ar": " – سيُستخدم هذا النمط"
+ },
+ " ders bulundu · 5 gün": {
+  "tr": " ders bulundu · 5 gün",
+  "en": " classes found · 5 days",
+  "fa": " درس پیدا شد · 5 روز",
+  "ar": " مادة تم العثور عليها · 5 أيام"
+ },
+ " dersin var": {
+  "tr": " dersin var",
+  "en": " classes",
+  "fa": " کلاس داری",
+  "ar": " محاضرات"
+ },
+ " dersinden 3 soru hazırlanıyor…": {
+  "tr": " dersinden 3 soru hazırlanıyor…",
+  "en": " – preparing 3 questions…",
+  "fa": " – در حال آماده‌کردن 3 سؤال…",
+  "ar": " – جارٍ تحضير 3 أسئلة…"
+ },
+ " dk durdu": {
+  "tr": " dk durdu",
+  "en": " min",
+  "fa": " دقیقه",
+  "ar": " د"
+ },
+ " eklendi · 3 soru bulundu": {
+  "tr": " eklendi · 3 soru bulundu",
+  "en": " added · 3 questions found",
+  "fa": " اضافه شد · 3 سؤال پیدا شد",
+  "ar": " أُضيف · تم العثور على 3 أسئلة"
+ },
+ " grubundadır.": {
+  "tr": " grubundadır.",
+  "en": " group.",
+  "fa": " قرار دارند.",
+  "ar": " عادةً."
+ },
+ " gün": {
+  "tr": " gün",
+  "en": " days",
+  "fa": " روز",
+  "ar": " أيام"
+ },
+ " gününe yeni ders eklendi · 15:00 Mesleki İngilizce": {
+  "tr": " gününe yeni ders eklendi · 15:00 Mesleki İngilizce",
+  "en": " — new class added · 15:00 Professional English",
+  "fa": " — کلاس جدید اضافه شد · 15:00 زبان انگلیسی تخصصی",
+  "ar": " — أُضيفت محاضرة جديدة · 15:00 الإنجليزية المهنية"
+ },
+ " gününe zaten yeni ders eklendi": {
+  "tr": " gününe zaten yeni ders eklendi",
+  "en": " — a new class was already added",
+  "fa": " — قبلاً کلاس جدید اضافه شده",
+  "ar": " — أُضيفت محاضرة جديدة مسبقًا"
+ },
+ " hazırlandı · ": {
+  "tr": " hazırlandı · ",
+  "en": " ready · ",
+  "fa": " آماده شد · ",
+  "ar": " جاهز · "
+ },
+ " için hatırlatma açıldı": {
+  "tr": " için hatırlatma açıldı",
+  "en": " — reminder on",
+  "fa": " — یادآوری روشن شد",
+  "ar": " — تم تفعيل التذكير"
+ },
+ " için hatırlatma kapatıldı": {
+  "tr": " için hatırlatma kapatıldı",
+  "en": " — reminder off",
+  "fa": " — یادآوری خاموش شد",
+  "ar": " — تم إيقاف التذكير"
+ },
+ " kaldı": {
+  "tr": " kaldı",
+  "en": " left",
+  "fa": " مانده",
+  "ar": " متبقية"
+ },
+ " kapatıldı": {
+  "tr": " kapatıldı",
+  "en": " turned off",
+  "fa": " خاموش شد",
+  "ar": " أُوقف"
+ },
+ " kartlara eklendi": {
+  "tr": " kartlara eklendi",
+  "en": " added to cards",
+  "fa": " به کارت‌ها اضافه شد",
+  "ar": " أُضيف إلى البطاقات"
+ },
+ " kartlarına eklendi": {
+  "tr": " kartlarına eklendi",
+  "en": " cards — added",
+  "fa": " — به کارت‌ها اضافه شد",
+  "ar": " — أُضيفت إلى البطاقات"
+ },
+ " kaynaklarında arıyor…": {
+  "tr": " kaynaklarında arıyor…",
+  "en": " — searching sources…",
+  "fa": " — در منابع جست‌وجو می‌کند…",
+  "ar": " — يبحث في المصادر…"
+ },
+ " nedir?": {
+  "tr": " nedir?",
+  "en": " — what is it?",
+  "fa": " چیست؟",
+  "ar": " — ما هو؟"
+ },
+ " sınavı": {
+  "tr": " sınavı",
+  "en": " exam",
+  "fa": " امتحان",
+  "ar": " امتحان"
+ },
+ " sınavını başlat · ": {
+  "tr": " sınavını başlat · ",
+  "en": " — start exam · ",
+  "fa": " — شروع امتحان · ",
+  "ar": " — ابدأ الامتحان · "
+ },
+ " varsa hipertansif acil durum vardır; tansiyon damar yoluyla ilaçla, ilk saatte en fazla %25 düşürülür.": {
+  "tr": " varsa hipertansif acil durum vardır; tansiyon damar yoluyla ilaçla, ilk saatte en fazla %25 düşürülür.",
+  "en": " is present, it's a hypertensive emergency; BP is lowered with IV drugs, by at most 25% in the first hour.",
+  "fa": " وجود داشته باشد، اورژانس فشار خون است؛ فشار با داروی وریدی، در ساعت اول حداکثر 25% پایین آورده می‌شود.",
+  "ar": " موجودًا، فهي حالة طوارئ لارتفاع ضغط الدم؛ يُخفَّض الضغط بأدوية وريدية بحد أقصى 25% في الساعة الأولى."
+ },
+ " vizesi · 19 Ekim · 8 gün kaldı · ders PDF'in, ses kaydın, soruların ve zayıf konuların birleştirildi": {
+  "tr": " vizesi · 19 Ekim · 8 gün kaldı · ders PDF'in, ses kaydın, soruların ve zayıf konuların birleştirildi",
+  "en": " midterm · Oct 19 · 8 days left · your PDF, recording, questions and weak topics combined",
+  "fa": " میان‌ترم · 19 اکتبر · 8 روز مانده · PDF درس، ضبط صوتی، سؤال‌ها و موضوعات ضعیفت ترکیب شدند",
+  "ar": " منتصف الفصل · 19 أكتوبر · بقي 8 أيام · دُمج ملف PDF والتسجيل والأسئلة ونقاط ضعفك"
+ },
+ " · 1 saat önce ve tam saatinde bildirim gelecek": {
+  "tr": " · 1 saat önce ve tam saatinde bildirim gelecek",
+  "en": " · notified 1 hour before and on time",
+  "fa": " · 1 ساعت قبل و سر ساعت اعلان می‌آید",
+  "ar": " · سيصلك إشعار قبل ساعة وفي الموعد"
+ },
+ " · Bildim ": {
+  "tr": " · Bildim ",
+  "en": " · Knew it ",
+  "fa": " · بلد بودم ",
+  "ar": " · عرفتها "
+ },
+ " · Zor ": {
+  "tr": " · Zor ",
+  "en": " · Hard ",
+  "fa": " · سخت ",
+  "ar": " · صعب "
+ },
+ " · asistan artık bunu da kullanır": {
+  "tr": " · asistan artık bunu da kullanır",
+  "en": " · assistant will use this too",
+  "fa": " · دستیار از این هم استفاده می‌کند",
+  "ar": " · سيستخدمه المساعد أيضًا"
+ },
+ " · bugün": {
+  "tr": " · bugün",
+  "en": " · today",
+  "fa": " · امروز",
+  "ar": " · اليوم"
+ },
+ " · konu: ": {
+  "tr": " · konu: ",
+  "en": " · topic: ",
+  "fa": " · موضوع: ",
+  "ar": " · الموضوع: "
+ },
+ " · sınav ": {
+  "tr": " · sınav ",
+  "en": " · exam ",
+  "fa": " · امتحان ",
+  "ar": " · الامتحان "
+ },
+ " · yarın": {
+  "tr": " · yarın",
+  "en": " · tomorrow",
+  "fa": " · فردا",
+  "ar": " · غدًا"
+ },
+ " · yarısı zayıf konulardan": {
+  "tr": " · yarısı zayıf konulardan",
+  "en": " · half from weak topics",
+  "fa": " · نیمی از موضوعات ضعیف",
+  "ar": " · نصفها من المواضيع الضعيفة"
+ },
+ " çekildi": {
+  "tr": " çekildi",
+  "en": " captured",
+  "fa": " گرفته شد",
+  "ar": " التُقطت"
+ },
+ " özetine 10 dk göz at": {
+  "tr": " özetine 10 dk göz at",
+  "en": " summary – review for 10 min",
+  "fa": " — 10 دقیقه خلاصه را مرور کن",
+  "ar": " — راجع الملخص 10 د"
+ },
+ "! EKSİKLER": {
+  "tr": "! EKSİKLER",
+  "en": "! GAPS",
+  "fa": "! کمبودها",
+  "ar": "! النواقص"
+ },
+ "\"Sınavda böyle sorulur\" bölümü ve çıkmış soru kalıpları": {
+  "tr": "\"Sınavda böyle sorulur\" bölümü ve çıkmış soru kalıpları",
+  "en": "\"How it's asked in exams\" section and past question patterns",
+  "fa": "بخش «در امتحان این‌طور می‌پرسند» و الگوهای سؤالات قبلی",
+  "ar": "قسم «هكذا يُسأل في الامتحان» وأنماط الأسئلة السابقة"
+ },
+ "'da \"Hadi başlayalım!\" bildirimi gelir.": {
+  "tr": "'da \"Hadi başlayalım!\" bildirimi gelir.",
+  "en": " you'll get a \"Let's start!\" notification.",
+  "fa": " اعلان «بیا شروع کنیم!» می‌آید.",
+  "ar": " يصلك إشعار «هيا نبدأ!»."
+ },
+ "'da hatırlatacağım": {
+  "tr": "'da hatırlatacağım",
+  "en": ", I'll remind you",
+  "fa": " یادآوری می‌کنم",
+  "ar": " سأذكّرك"
+ },
+ "'da hatırlatırım": {
+  "tr": "'da hatırlatırım",
+  "en": ", I'll remind you",
+  "fa": " یادت می‌اندازم",
+  "ar": " أذكّرك"
+ },
+ ". Ekibimiz inceliyor; çözünce buradan ve bildirimle haber vereceğiz. Ekran görüntüsü eklersen daha hızlı çözeriz.": {
+  "tr": ". Ekibimiz inceliyor; çözünce buradan ve bildirimle haber vereceğiz. Ekran görüntüsü eklersen daha hızlı çözeriz.",
+  "en": ". Our team is on it; we'll let you know here and by notification once it's fixed. Adding a screenshot helps us fix it faster.",
+  "fa": ". تیم ما در حال بررسی است؛ وقتی حل شد همین‌جا و با اعلان خبرت می‌کنیم. اگر اسکرین‌شات اضافه کنی سریع‌تر حل می‌کنیم.",
+  "ar": ". فريقنا يراجعه؛ سنخبرك هنا وبإشعار عند الحل. إضافة لقطة شاشة تساعدنا على الحل أسرع."
+ },
+ ". Sadece dinlemek yeter.": {
+  "tr": ". Sadece dinlemek yeter.",
+  "en": ". Just listening is enough.",
+  "fa": ". فقط گوش دادن کافی است.",
+  "ar": ". يكفي أن تستمع فقط."
+ },
+ "09:00 Farmasötik Kimya II · Amfi 1 · 14:00 Farm. Tek. III Lab": {
+  "tr": "09:00 Farmasötik Kimya II · Amfi 1 · 14:00 Farm. Tek. III Lab",
+  "en": "09:00 Pharmaceutical Chemistry II · Amphi 1 · 14:00 Pharm. Tech. III Lab",
+  "fa": "09:00 شیمی دارویی II · آمفی 1 · 14:00 آزمایشگاه فناوری داروسازی III",
+  "ar": "09:00 الكيمياء الصيدلانية II · المدرج 1 · 14:00 مختبر التقانة الصيدلانية III"
+ },
+ "09:00 · 1 saat önce + tam saatinde": {
+  "tr": "09:00 · 1 saat önce + tam saatinde",
+  "en": "09:00 · 1 hour before + on time",
+  "fa": "09:00 · 1 ساعت قبل + سر ساعت",
+  "ar": "09:00 · قبل ساعة + في الموعد"
+ },
+ "09:00 · Farmasötik Kimya II": {
+  "tr": "09:00 · Farmasötik Kimya II",
+  "en": "09:00 · Pharmaceutical Chemistry II",
+  "fa": "09:00 · شیمی دارویی II",
+  "ar": "09:00 · الكيمياء الصيدلانية II"
+ },
+ "1 hafta": {
+  "tr": "1 hafta",
+  "en": "1 week",
+  "fa": "1 هفته",
+  "ar": "1 أسبوع"
+ },
+ "1 hoca vurgusu": {
+  "tr": "1 hoca vurgusu",
+  "en": "1 lecturer emphasis",
+  "fa": "1 تأکید استاد",
+  "ar": "1 تركيز من الأستاذ"
+ },
+ "1 sa": {
+  "tr": "1 sa",
+  "en": "1 h",
+  "fa": "1 ساعت",
+  "ar": "1 س"
+ },
+ "1 sa 10 dk": {
+  "tr": "1 sa 10 dk",
+  "en": "1 h 10 min",
+  "fa": "1 ساعت 10 دقیقه",
+  "ar": "1 س 10 د"
+ },
+ "1 saat ertelendi · 10:00'da hatırlatırız": {
+  "tr": "1 saat ertelendi · 10:00'da hatırlatırız",
+  "en": "Snoozed 1 hour · we'll remind you at 10:00",
+  "fa": "1 ساعت عقب افتاد · ساعت 10:00 یادآوری می‌کنیم",
+  "ar": "تم التأجيل 1 ساعة · سنذكّرك عند 10:00"
+ },
+ "1 unutma tekrarı": {
+  "tr": "1 unutma tekrarı",
+  "en": "1 spaced review",
+  "fa": "1 مرور ضدفراموشی",
+  "ar": "1 مراجعة ضد النسيان"
+ },
+ "1 zayıf konu": {
+  "tr": "1 zayıf konu",
+  "en": "1 weak topic",
+  "fa": "1 موضوع ضعیف",
+  "ar": "1 موضوع ضعيف"
+ },
+ "1 · Tanım": {
+  "tr": "1 · Tanım",
+  "en": "1 · Definition",
+  "fa": "1 · تعریف",
+  "ar": "1 · التعريف"
+ },
+ "10 soru · 15 dk": {
+  "tr": "10 soru · 15 dk",
+  "en": "10 questions · 15 min",
+  "fa": "10 سؤال · 15 دقیقه",
+  "ar": "10 أسئلة · 15 د"
+ },
+ "10 sorunun 4'ü hasta vakası, 2'si doz hesabı olur": {
+  "tr": "10 sorunun 4'ü hasta vakası, 2'si doz hesabı olur",
+  "en": "4 of 10 questions are patient cases, 2 are dose calculations",
+  "fa": "از 10 سؤال، 4 تا مورد بیمار و 2 تا محاسبه دوز است",
+  "ar": "من 10 أسئلة: 4 حالات مرضية و2 حساب جرعات"
+ },
+ "12 kart · 8 dk": {
+  "tr": "12 kart · 8 dk",
+  "en": "12 cards · 8 min",
+  "fa": "12 کارت · 8 دقیقه",
+  "ar": "12 بطاقة · 8 د"
+ },
+ "12 kart · tekrar için": {
+  "tr": "12 kart · tekrar için",
+  "en": "12 cards · for review",
+  "fa": "12 کارت · برای مرور",
+  "ar": "12 بطاقة · للمراجعة"
+ },
+ "19–23 Ekim · Sınava özel özet ve sorular hazır": {
+  "tr": "19–23 Ekim · Sınava özel özet ve sorular hazır",
+  "en": "19–23 October · Exam summary and questions ready",
+  "fa": "19–23 اکتبر · خلاصه و سؤال‌های مخصوص امتحان آماده است",
+  "ar": "19–23 أكتوبر · ملخص وأسئلة خاصة بالامتحان جاهزة"
+ },
+ "2 PDF · henüz sınav yok": {
+  "tr": "2 PDF · henüz sınav yok",
+  "en": "2 PDFs · no exams yet",
+  "fa": "2 PDF · هنوز امتحانی نیست",
+  "ar": "2 PDF · لا امتحانات بعد"
+ },
+ "2 PDF · ort. 74": {
+  "tr": "2 PDF · ort. 74",
+  "en": "2 PDFs · avg 74",
+  "fa": "2 PDF · میانگین 74",
+  "ar": "2 PDF · المعدل 74"
+ },
+ "2 PDF · ort. 90": {
+  "tr": "2 PDF · ort. 90",
+  "en": "2 PDFs · avg 90",
+  "fa": "2 PDF · میانگین 90",
+  "ar": "2 PDF · المعدل 90"
+ },
+ "2 kez tekrarladı": {
+  "tr": "2 kez tekrarladı",
+  "en": "Repeated 2 times",
+  "fa": "2 بار تکرار کرد",
+  "ar": "كرّرها 2 مرة"
+ },
+ "2 sa": {
+  "tr": "2 sa",
+  "en": "2 h",
+  "fa": "2 ساعت",
+  "ar": "2 س"
+ },
+ "2 sa 40 dk": {
+  "tr": "2 sa 40 dk",
+  "en": "2 h 40 min",
+  "fa": "2 ساعت 40 دقیقه",
+  "ar": "2 س 40 د"
+ },
+ "2 sınav hatası": {
+  "tr": "2 sınav hatası",
+  "en": "2 exam mistakes",
+  "fa": "2 اشتباه امتحانی",
+  "ar": "2 خطأ في الامتحان"
+ },
+ "2 · İlaç tedavisi": {
+  "tr": "2 · İlaç tedavisi",
+  "en": "2 · Drug therapy",
+  "fa": "2 · درمان دارویی",
+  "ar": "2 · العلاج الدوائي"
+ },
+ "2,5 mg/gün · 2–4 haftada bir artırılır": {
+  "tr": "2,5 mg/gün · 2–4 haftada bir artırılır",
+  "en": "2.5 mg/day · increased every 2–4 weeks",
+  "fa": "2.5 mg/روز · هر 2–4 هفته افزایش می‌یابد",
+  "ar": "2.5 mg/يوم · تُزاد كل 2–4 أسابيع"
+ },
+ "2026–2027 Güz dönemi · 5 ders · 9 PDF · 19 sa": {
+  "tr": "2026–2027 Güz dönemi · 5 ders · 9 PDF · 19 sa",
+  "en": "2026–2027 Fall term · 5 courses · 9 PDFs · 19 h",
+  "fa": "2026–2027 نیمسال پاییز · 5 درس · 9 PDF · 19 ساعت",
+  "ar": "2026–2027 الفصل الخريفي · 5 مواد · 9 PDF · 19 س"
+ },
+ "2026–2027 Güz · hangi gün, saat kaçta dersin olduğunu bir gün önceden hatırlatırım": {
+  "tr": "2026–2027 Güz · hangi gün, saat kaçta dersin olduğunu bir gün önceden hatırlatırım",
+  "en": "2026–2027 Fall · I'll remind you a day ahead which day and time you have class",
+  "fa": "2026–2027 پاییز · یک روز قبل یادآوری می‌کنم چه روز و چه ساعتی کلاس داری",
+  "ar": "2026–2027 الخريف · أذكّرك قبل يوم بيوم وموعد محاضرتك"
+ },
+ "22 Eki": {
+  "tr": "22 Eki",
+  "en": "22 Oct",
+  "fa": "22 اکتبر",
+  "ar": "22 أكتوبر"
+ },
+ "3 PDF · ort. 70": {
+  "tr": "3 PDF · ort. 70",
+  "en": "3 PDFs · avg 70",
+  "fa": "3 PDF · میانگین 70",
+  "ar": "3 PDF · المعدل 70"
+ },
+ "3 ders · 6 PDF · 248 MB": {
+  "tr": "3 ders · 6 PDF · 248 MB",
+  "en": "3 courses · 6 PDFs · 248 MB",
+  "fa": "3 درس · 6 PDF · 248 MB",
+  "ar": "3 مواد · 6 PDF · 248 MB"
+ },
+ "3 fotoğraf": {
+  "tr": "3 fotoğraf",
+  "en": "3 photos",
+  "fa": "3 عکس",
+  "ar": "3 صور"
+ },
+ "3 gün sonra · 16 Ekim": {
+  "tr": "3 gün sonra · 16 Ekim",
+  "en": "In 3 days · 16 October",
+  "fa": "3 روز بعد · 16 اکتبر",
+  "ar": "بعد 3 أيام · 16 أكتوبر"
+ },
+ "3 gün önce çalıştın · unutmadan önce kısa bir tekrar": {
+  "tr": "3 gün önce çalıştın · unutmadan önce kısa bir tekrar",
+  "en": "You studied 3 days ago · quick review before you forget",
+  "fa": "3 روز پیش خواندی · یک مرور کوتاه قبل از فراموشی",
+  "ar": "درست قبل 3 أيام · مراجعة سريعة قبل أن تنسى"
+ },
+ "3 ipucunun hepsini gördün · cevabını seç ya da cevabı göster": {
+  "tr": "3 ipucunun hepsini gördün · cevabını seç ya da cevabı göster",
+  "en": "You've seen all 3 hints · pick your answer or show the answer",
+  "fa": "هر 3 راهنمایی را دیدی · جوابت را انتخاب کن یا جواب را نشان بده",
+  "ar": "رأيت التلميحات الـ3 كلها · اختر إجابتك أو اعرض الإجابة"
+ },
+ "3 · Özel durumlar": {
+  "tr": "3 · Özel durumlar",
+  "en": "3 · Special cases",
+  "fa": "3 · موارد خاص",
+  "ar": "3 · حالات خاصة"
+ },
+ "36 sayfa · 88 terim · 52 soru · 30 kart hazırlandı.": {
+  "tr": "36 sayfa · 88 terim · 52 soru · 30 kart hazırlandı.",
+  "en": "36 pages · 88 terms · 52 questions · 30 cards prepared.",
+  "fa": "36 صفحه · 88 اصطلاح · 52 سؤال · 30 کارت آماده شد.",
+  "ar": "36 صفحة · 88 مصطلحًا · 52 سؤالًا · 30 بطاقة جاهزة."
+ },
+ "4 ana grup var: diüretikler, ACE inhibitörleri, ARB'ler ve kalsiyum kanal blokerleri.": {
+  "tr": "4 ana grup var: diüretikler, ACE inhibitörleri, ARB'ler ve kalsiyum kanal blokerleri.",
+  "en": "There are 4 main groups: diuretics, ACE inhibitors, ARBs and calcium channel blockers.",
+  "fa": "4 گروه اصلی وجود دارد: دیورتیک‌ها، مهارکننده‌های ACE، ARBها و مسدودکننده‌های کانال کلسیم.",
+  "ar": "هناك 4 مجموعات رئيسية: مدرات البول، مثبطات ACE، وARBs، وحاصرات قنوات الكالسيوم."
+ },
+ "4 sa": {
+  "tr": "4 sa",
+  "en": "4 h",
+  "fa": "4 ساعت",
+  "ar": "4 س"
+ },
+ "4 sa 10 dk / 6 sa hedef": {
+  "tr": "4 sa 10 dk / 6 sa hedef",
+  "en": "4 h 10 min / 6 h goal",
+  "fa": "4 ساعت 10 دقیقه / هدف 6 ساعت",
+  "ar": "4 س 10 د / الهدف 6 س"
+ },
+ "4 · Hipertansif kriz": {
+  "tr": "4 · Hipertansif kriz",
+  "en": "4 · Hypertensive crisis",
+  "fa": "4 · بحران فشار خون",
+  "ar": "4 · نوبة ارتفاع ضغط الدم"
+ },
+ "5 kısa bölüm · yaklaşık 6 dk · yalnızca senin PDF'in ve ses kaydından": {
+  "tr": "5 kısa bölüm · yaklaşık 6 dk · yalnızca senin PDF'in ve ses kaydından",
+  "en": "5 short parts · about 6 min · only from your PDF and recording",
+  "fa": "5 بخش کوتاه · حدود 6 دقیقه · فقط از PDF و صدای ضبط‌شده‌ات",
+  "ar": "5 أجزاء قصيرة · نحو 6 د · من ملف PDF وتسجيلك فقط"
+ },
+ "5 sa": {
+  "tr": "5 sa",
+  "en": "5 h",
+  "fa": "5 ساعت",
+  "ar": "5 س"
+ },
+ "6 haneli kodu": {
+  "tr": "6 haneli kodu",
+  "en": "the 6-digit code",
+  "fa": "کد 6 رقمی",
+  "ar": "الرمز المكون من 6 أرقام"
+ },
+ "6 soru · cevaplar ve nedenleri": {
+  "tr": "6 soru · cevaplar ve nedenleri",
+  "en": "6 questions · answers and reasons",
+  "fa": "6 سؤال · پاسخ‌ها و دلیل‌ها",
+  "ar": "6 أسئلة · الإجابات وأسبابها"
+ },
+ "7 gün geçerli": {
+  "tr": "7 gün geçerli",
+  "en": "Valid for 7 days",
+  "fa": "7 روز معتبر",
+  "ar": "صالح لمدة 7 أيام"
+ },
+ "7 sa": {
+  "tr": "7 sa",
+  "en": "7 h",
+  "fa": "7 ساعت",
+  "ar": "7 س"
+ },
+ "8 dakikalık tekrar seni bekliyor: özet, 6 kart, 3 soru.": {
+  "tr": "8 dakikalık tekrar seni bekliyor: özet, 6 kart, 3 soru.",
+  "en": "An 8-minute review is waiting: summary, 6 cards, 3 questions.",
+  "fa": "یک مرور 8 دقیقه‌ای منتظرت است: خلاصه، 6 کارت، 3 سؤال.",
+  "ar": "مراجعة مدتها 8 دقائق بانتظارك: ملخص، 6 بطاقات، 3 أسئلة."
+ },
+ ":00'da \"1 saat sonra ders çalışıyoruz\", ": {
+  "tr": ":00'da \"1 saat sonra ders çalışıyoruz\", ",
+  "en": ":00: \"Studying in 1 hour\", ",
+  "fa": ":00: «1 ساعت دیگر درس می‌خوانیم»، ",
+  "ar": ":00: «سندرس بعد 1 ساعة»، "
+ },
+ "ACE inhibitörlerinin en sık yan etkisi kuru öksürüktür. Nadiren anjiyoödem görülür; potasyumu da yükseltebilir.": {
+  "tr": "ACE inhibitörlerinin en sık yan etkisi kuru öksürüktür. Nadiren anjiyoödem görülür; potasyumu da yükseltebilir.",
+  "en": "The most common side effect of ACE inhibitors is dry cough. Angioedema is rare; they can also raise potassium.",
+  "fa": "شایع‌ترین عارضهٔ مهارکننده‌های ACE سرفهٔ خشک است. آنژیوادم نادر است؛ ممکن است پتاسیم را هم بالا ببرند.",
+  "ar": "أكثر آثار مثبطات ACE شيوعًا السعال الجاف. الوذمة الوعائية نادرة؛ وقد ترفع البوتاسيوم أيضًا."
+ },
+ "ACE inhibitörlerinin en sık yan etkisi nedir?": {
+  "tr": "ACE inhibitörlerinin en sık yan etkisi nedir?",
+  "en": "What is the most common side effect of ACE inhibitors?",
+  "fa": "شایع‌ترین عارضهٔ مهارکننده‌های ACE چیست؟",
+  "ar": "ما أكثر الآثار الجانبية شيوعًا لمثبطات ACE؟"
+ },
+ "ACE inhibitörü ve ARB kullanılmaz: bebeğin böbreklerine zarar verir.": {
+  "tr": "ACE inhibitörü ve ARB kullanılmaz: bebeğin böbreklerine zarar verir.",
+  "en": "ACE inhibitors and ARBs aren't used: they harm the baby's kidneys.",
+  "fa": "مهارکنندهٔ ACE و ARB مصرف نمی‌شوند: به کلیه‌های جنین آسیب می‌زنند.",
+  "ar": "لا تُستخدم مثبطات ACE وARB: فهي تضر كلى الجنين."
+ },
+ "ACE inhibitörü öksürük yaparsa ARB'ye geçilir.": {
+  "tr": "ACE inhibitörü öksürük yaparsa ARB'ye geçilir.",
+  "en": "If an ACE inhibitor causes cough, switch to an ARB.",
+  "fa": "اگر مهارکنندهٔ ACE سرفه ایجاد کند، به ARB تغییر می‌دهند.",
+  "ar": "إذا سبب مثبط ACE السعال يُنتقل إلى ARB."
+ },
+ "ACE inhibitörüyle öksürük olursa ne yapılır?": {
+  "tr": "ACE inhibitörüyle öksürük olursa ne yapılır?",
+  "en": "What do you do if an ACE inhibitor causes cough?",
+  "fa": "اگر مهارکنندهٔ ACE سرفه ایجاد کند چه باید کرد؟",
+  "ar": "ماذا يُفعل إذا سبب مثبط ACE السعال؟"
+ },
+ "ACE, bradikinini de yıkar. Enzim durunca bradikinin birikir ve öksürük yapar.": {
+  "tr": "ACE, bradikinini de yıkar. Enzim durunca bradikinin birikir ve öksürük yapar.",
+  "en": "ACE also breaks down bradykinin. When the enzyme stops, bradykinin builds up and causes cough.",
+  "fa": "ACE برادی‌کینین را هم تجزیه می‌کند. وقتی آنزیم متوقف شود، برادی‌کینین تجمع می‌یابد و سرفه ایجاد می‌کند.",
+  "ar": "يكسّر ACE البراديكينين أيضًا. عندما يتوقف الإنزيم يتراكم البراديكينين ويسبب السعال."
+ },
+ "ANLATILIYOR · ": {
+  "tr": "ANLATILIYOR · ",
+  "en": "NARRATING · ",
+  "fa": "در حال روایت · ",
+  "ar": "جارٍ الشرح · "
+ },
+ "ARB'ler ve kalsiyum kanal blokerlerini atladın (s. 12).": {
+  "tr": "ARB'ler ve kalsiyum kanal blokerlerini atladın (s. 12).",
+  "en": "You skipped ARBs and calcium channel blockers (p. 12).",
+  "fa": "ARBها و مسدودکننده‌های کانال کلسیم را جا انداختی (ص. 12).",
+  "ar": "تخطيت ARBs وحاصرات قنوات الكالسيوم (ص. 12)."
+ },
+ "ARB'ye geçilir": {
+  "tr": "ARB'ye geçilir",
+  "en": "Switch to an ARB",
+  "fa": "به ARB تغییر می‌دهند",
+  "ar": "يُنتقل إلى ARB"
+ },
+ "Aboneliğimi nasıl iptal ederim?": {
+  "tr": "Aboneliğimi nasıl iptal ederim?",
+  "en": "How do I cancel my subscription?",
+  "fa": "چطور اشتراکم را لغو کنم؟",
+  "ar": "كيف ألغي اشتراكي؟"
+ },
+ "Acil": {
+  "tr": "Acil",
+  "en": "Emergency",
+  "fa": "اورژانس",
+  "ar": "طوارئ"
+ },
+ "Adımlar": {
+  "tr": "Adımlar",
+  "en": "Steps",
+  "fa": "مراحل",
+  "ar": "الخطوات"
+ },
+ "Akıllı plan · şimdi": {
+  "tr": "Akıllı plan · şimdi",
+  "en": "Smart plan · now",
+  "fa": "برنامهٔ هوشمند · الان",
+  "ar": "خطة ذكية · الآن"
+ },
+ "Aldosteron azalır": {
+  "tr": "Aldosteron azalır",
+  "en": "Aldosterone decreases",
+  "fa": "آلدوسترون کاهش می‌یابد",
+  "ar": "ينخفض الألدوستيرون"
+ },
+ "Alıcı nasıl görür?": {
+  "tr": "Alıcı nasıl görür?",
+  "en": "How will the recipient see it?",
+  "fa": "گیرنده چطور می‌بیند؟",
+  "ar": "كيف يراه المستلم؟"
+ },
+ "Amfi 1 · Prof. Dr. A. Demir": {
+  "tr": "Amfi 1 · Prof. Dr. A. Demir",
+  "en": "Hall 1 · Prof. Dr. A. Demir",
+  "fa": "آمفی 1 · Prof. Dr. A. Demir",
+  "ar": "القاعة 1 · Prof. Dr. A. Demir"
+ },
+ "Amfi 2 · Dr. B. Arslan": {
+  "tr": "Amfi 2 · Dr. B. Arslan",
+  "en": "Hall 2 · Dr. B. Arslan",
+  "fa": "آمفی 2 · Dr. B. Arslan",
+  "ar": "القاعة 2 · Dr. B. Arslan"
+ },
+ "Amfi 3 · Prof. Dr. S. Aydın": {
+  "tr": "Amfi 3 · Prof. Dr. S. Aydın",
+  "en": "Hall 3 · Prof. Dr. S. Aydın",
+  "fa": "آمفی 3 · Prof. Dr. S. Aydın",
+  "ar": "القاعة 3 · Prof. Dr. S. Aydın"
+ },
+ "Anjiyotensin I'in anjiyotensin II'ye dönüşümünü engelleyen ilaçlar. Damar daralmasını ve aldosteronu azaltır. Örnek: kaptopril, ramipril.": {
+  "tr": "Anjiyotensin I'in anjiyotensin II'ye dönüşümünü engelleyen ilaçlar. Damar daralmasını ve aldosteronu azaltır. Örnek: kaptopril, ramipril.",
+  "en": "Drugs that block conversion of angiotensin I to angiotensin II. They reduce vasoconstriction and aldosterone. Examples: captopril, ramipril.",
+  "fa": "داروهایی که تبدیل آنژیوتانسین I به آنژیوتانسین II را مهار می‌کنند. تنگی رگ و آلدوسترون را کاهش می‌دهند. مثال: کاپتوپریل، رامی‌پریل.",
+  "ar": "أدوية تمنع تحويل الأنجيوتنسين I إلى الأنجيوتنسين II. تقلل تضيق الأوعية والألدوستيرون. أمثلة: كابتوبريل، راميبريل."
+ },
+ "Anlamadım": {
+  "tr": "Anlamadım",
+  "en": "I didn't get it",
+  "fa": "نفهمیدم",
+  "ar": "لم أفهم"
+ },
+ "Anlat, dinliyorum · sonunda 10 üzerinden puan": {
+  "tr": "Anlat, dinliyorum · sonunda 10 üzerinden puan",
+  "en": "Explain it, I'm listening · score out of 10 at the end",
+  "fa": "توضیح بده، گوش می‌دهم · در پایان نمره از 10",
+  "ar": "اشرح، أنا أستمع · في النهاية درجة من 10"
+ },
+ "Anlatım bitti · 5 bölümü dinledin": {
+  "tr": "Anlatım bitti · 5 bölümü dinledin",
+  "en": "Narration done · you listened to 5 parts",
+  "fa": "روایت تمام شد · 5 بخش را گوش دادی",
+  "ar": "انتهى الشرح · استمعت إلى 5 أجزاء"
+ },
+ "Anlatımı aç": {
+  "tr": "Anlatımı aç",
+  "en": "Turn on narration",
+  "fa": "روشن کردن روایت",
+  "ar": "تشغيل الشرح"
+ },
+ "Anlatımı kapat": {
+  "tr": "Anlatımı kapat",
+  "en": "Turn off narration",
+  "fa": "خاموش کردن روایت",
+  "ar": "إيقاف الشرح"
+ },
+ "App Store › Abonelikler bölümünden istediğin zaman iptal edebilirsin.": {
+  "tr": "App Store › Abonelikler bölümünden istediğin zaman iptal edebilirsin.",
+  "en": "You can cancel anytime in App Store › Subscriptions.",
+  "fa": "هر زمان بخواهی از App Store › Subscriptions لغو کن.",
+  "ar": "يمكنك الإلغاء متى شئت من App Store › الاشتراكات."
+ },
+ "App Store'dan indir": {
+  "tr": "App Store'dan indir",
+  "en": "Download on the App Store",
+  "fa": "دانلود از App Store",
+  "ar": "حمّله من App Store"
+ },
+ "Apple ile devam et": {
+  "tr": "Apple ile devam et",
+  "en": "Continue with Apple",
+  "fa": "ادامه با Apple",
+  "ar": "المتابعة مع Apple"
+ },
+ "Arkadaşından gelen 2 soru": {
+  "tr": "Arkadaşından gelen 2 soru",
+  "en": "2 questions from your friend",
+  "fa": "2 سؤال از دوستت",
+  "ar": "سؤالان من صديقك"
+ },
+ "Artık yanında Kavis var.": {
+  "tr": "Artık yanında Kavis var.",
+  "en": "Now you have Kavis by your side.",
+  "fa": "حالا Kavis کنارت است.",
+  "ar": "الآن Kavis بجانبك."
+ },
+ "Asistan ": {
+  "tr": "Asistan ",
+  "en": "Assistant: ",
+  "fa": "دستیار: ",
+  "ar": "المساعد: "
+ },
+ "Asistan cevabı yanlış": {
+  "tr": "Asistan cevabı yanlış",
+  "en": "Assistant's answer is wrong",
+  "fa": "پاسخ دستیار اشتباه است",
+  "ar": "إجابة المساعد خاطئة"
+ },
+ "Asistan için internet gerekli · PDF'ini okumaya devam edebilirsin": {
+  "tr": "Asistan için internet gerekli · PDF'ini okumaya devam edebilirsin",
+  "en": "Assistant needs internet · you can keep reading your PDF",
+  "fa": "دستیار به اینترنت نیاز دارد · می‌توانی به خواندن PDFت ادامه دهی",
+  "ar": "المساعد يحتاج إلى الإنترنت · يمكنك متابعة قراءة ملف PDF"
+ },
+ "Asistan konuyu özetliyor…": {
+  "tr": "Asistan konuyu özetliyor…",
+  "en": "Assistant is summarizing the topic…",
+  "fa": "دستیار در حال خلاصه کردن مبحث…",
+  "ar": "المساعد يلخص الموضوع…"
+ },
+ "Asistan paneli": {
+  "tr": "Asistan paneli",
+  "en": "Assistant panel",
+  "fa": "پنل دستیار",
+  "ar": "لوحة المساعد"
+ },
+ "Asistan yanlış bir şey söyledi": {
+  "tr": "Asistan yanlış bir şey söyledi",
+  "en": "The assistant said something wrong",
+  "fa": "دستیار چیز اشتباهی گفت",
+  "ar": "قال المساعد شيئًا خاطئًا"
+ },
+ "Asistan:": {
+  "tr": "Asistan:",
+  "en": "Assistant:",
+  "fa": "دستیار:",
+  "ar": "المساعد:"
+ },
+ "Asistan: Kaptoprilin –SH grubu çinkoya bağlanır; tat bozukluğu ve döküntü bu gruptan gelir.": {
+  "tr": "Asistan: Kaptoprilin –SH grubu çinkoya bağlanır; tat bozukluğu ve döküntü bu gruptan gelir.",
+  "en": "Assistant: Captopril's –SH group binds zinc; taste disturbance and rash come from this group.",
+  "fa": "دستیار: گروه –SH کاپتوپریل به روی متصل می‌شود؛ اختلال چشایی و بثورات از این گروه است.",
+  "ar": "المساعد: ترتبط مجموعة –SH في الكابتوبريل بالزنك؛ ومنها يأتي اضطراب التذوق والطفح."
+ },
+ "Asistana sor": {
+  "tr": "Asistana sor",
+  "en": "Ask the assistant",
+  "fa": "از دستیار بپرس",
+  "ar": "اسأل المساعد"
+ },
+ "Asistana sor: Bu yapı neden önemli?": {
+  "tr": "Asistana sor: Bu yapı neden önemli?",
+  "en": "Ask the assistant: Why is this structure important?",
+  "fa": "از دستیار بپرس: چرا این ساختار مهم است؟",
+  "ar": "اسأل المساعد: لماذا هذا التركيب مهم؟"
+ },
+ "Asistana soruldu: ": {
+  "tr": "Asistana soruldu: ",
+  "en": "Asked the assistant: ",
+  "fa": "از دستیار پرسیده شد: ",
+  "ar": "سُئل المساعد: "
+ },
+ "Asistana soruldu: Bu cümleyi açıkla": {
+  "tr": "Asistana soruldu: Bu cümleyi açıkla",
+  "en": "Asked the assistant: Explain this sentence",
+  "fa": "از دستیار پرسیده شد: این جمله را توضیح بده",
+  "ar": "سُئل المساعد: اشرح هذه الجملة"
+ },
+ "Ayarlar › Bildirimler bölümünden izin ver; iPad Ayarları › Kavis Study › Bildirimler de açık olmalı.": {
+  "tr": "Ayarlar › Bildirimler bölümünden izin ver; iPad Ayarları › Kavis Study › Bildirimler de açık olmalı.",
+  "en": "Allow it in Settings › Notifications; iPad Settings › Kavis Study › Notifications must also be on.",
+  "fa": "از تنظیمات › اعلان‌ها اجازه بده؛ تنظیمات iPad › Kavis Study › اعلان‌ها هم باید روشن باشد.",
+  "ar": "اسمح بها من الإعدادات › الإشعارات؛ ويجب تفعيل إعدادات iPad › Kavis Study › الإشعارات أيضًا."
+ },
+ "Ayağa kalkınca tansiyonun birden düşmesi; baş dönmesi ve bayılma yapabilir.": {
+  "tr": "Ayağa kalkınca tansiyonun birden düşmesi; baş dönmesi ve bayılma yapabilir.",
+  "en": "Blood pressure drops suddenly when you stand up; can cause dizziness and fainting.",
+  "fa": "فشار خون هنگام ایستادن ناگهان افت می‌کند؛ می‌تواند سرگیجه و غش ایجاد کند.",
+  "ar": "ينخفض الضغط فجأة عند الوقوف؛ وقد يسبب دوخة وإغماء."
+ },
+ "Az önce eklendi": {
+  "tr": "Az önce eklendi",
+  "en": "Just added",
+  "fa": "همین الان اضافه شد",
+  "ar": "أُضيف للتو"
+ },
+ "Aç": {
+  "tr": "Aç",
+  "en": "Open",
+  "fa": "باز کن",
+  "ar": "افتح"
+ },
+ "Açmak için Kavis Study uygulaması gerekli.": {
+  "tr": "Açmak için Kavis Study uygulaması gerekli.",
+  "en": "You need the Kavis Study app to open this.",
+  "fa": "برای باز کردن، برنامهٔ Kavis Study لازم است.",
+  "ar": "تحتاج إلى تطبيق Kavis Study لفتحه."
+ },
+ "Açık hatırlatma yok": {
+  "tr": "Açık hatırlatma yok",
+  "en": "No active reminders",
+  "fa": "یادآور فعالی نیست",
+  "ar": "لا توجد تذكيرات مفعّلة"
+ },
+ "Açık mod açık": {
+  "tr": "Açık mod açık",
+  "en": "Light mode on",
+  "fa": "حالت روشن فعال است",
+  "ar": "الوضع الفاتح مفعّل"
+ },
+ "Açık moda geç": {
+  "tr": "Açık moda geç",
+  "en": "Switch to light mode",
+  "fa": "رفتن به حالت روشن",
+  "ar": "التبديل إلى الوضع الفاتح"
+ },
+ "Açıldı": {
+  "tr": "Açıldı",
+  "en": "Opened",
+  "fa": "باز شد",
+  "ar": "تم الفتح"
+ },
+ "Açıldı · Elif'ten geldi": {
+  "tr": "Açıldı · Elif'ten geldi",
+  "en": "Opened · from Elif",
+  "fa": "باز شد · از طرف Elif",
+  "ar": "تم الفتح · من Elif"
+ },
+ "Bakın bu çok önemli, sınavda mutlaka soruyorum: tiyazid verdiğiniz hastada gut varsa olmaz. Ürik asidi artırıyor. Gebelik burada göreceli, karıştırmayın.": {
+  "tr": "Bakın bu çok önemli, sınavda mutlaka soruyorum: tiyazid verdiğiniz hastada gut varsa olmaz. Ürik asidi artırıyor. Gebelik burada göreceli, karıştırmayın.",
+  "en": "Listen, this is very important, I always ask it in the exam: if the patient you give a thiazide to has gout, it's a no. It raises uric acid. Pregnancy is relative here, don't mix them up.",
+  "fa": "دقت کنید، این خیلی مهم است و حتماً در امتحان می‌پرسم: اگر بیماری که به او تیازید می‌دهید نقرس دارد، نمی‌شود. اسید اوریک را بالا می‌برد. بارداری اینجا نسبی است، قاطی نکنید.",
+  "ar": "انتبهوا، هذا مهم جداً وأسأل عنه دائماً في الامتحان: إذا كان المريض الذي تعطونه الثيازيد مصاباً بالنقرس فلا يجوز. فهو يرفع حمض اليوريك. الحمل هنا نسبي، لا تخلطوا بينهما."
+ },
+ "Bağlantı gelene kadar cihazındaki derslerinle çalışmaya devam et:": {
+  "tr": "Bağlantı gelene kadar cihazındaki derslerinle çalışmaya devam et:",
+  "en": "Until you're back online, keep studying with the courses on your device:",
+  "fa": "تا وصل شدن اینترنت، با درس‌های روی دستگاهت ادامه بده:",
+  "ar": "إلى أن يعود الاتصال، تابع الدراسة بالمواد الموجودة على جهازك:"
+ },
+ "Bağlantı kopyalandı · istediğin kişiye gönderebilirsin": {
+  "tr": "Bağlantı kopyalandı · istediğin kişiye gönderebilirsin",
+  "en": "Link copied · you can send it to anyone",
+  "fa": "لینک کپی شد · می‌توانی برای هر کسی بفرستی",
+  "ar": "تم نسخ الرابط · يمكنك إرساله لمن تريد"
+ },
+ "Bağlantıya dokun": {
+  "tr": "Bağlantıya dokun",
+  "en": "Tap the link",
+  "fa": "روی لینک بزن",
+  "ar": "اضغط على الرابط"
+ },
+ "Bağlantıyı kopyala": {
+  "tr": "Bağlantıyı kopyala",
+  "en": "Copy link",
+  "fa": "کپی لینک",
+  "ar": "نسخ الرابط"
+ },
+ "Başka ders ekle": {
+  "tr": "Başka ders ekle",
+  "en": "Add another course",
+  "fa": "افزودن درس دیگر",
+  "ar": "إضافة مادة أخرى"
+ },
+ "Başlangıç planı": {
+  "tr": "Başlangıç planı",
+  "en": "Starter plan",
+  "fa": "برنامه‌ی شروع",
+  "ar": "خطة البداية"
+ },
+ "Baştan tekrar et": {
+  "tr": "Baştan tekrar et",
+  "en": "Review from the start",
+  "fa": "از اول مرور کن",
+  "ar": "راجع من البداية"
+ },
+ "Belirli bir nedeni bulunamayan hipertansiyon. Hastaların büyük çoğunluğu bu gruptadır; esansiyel hipertansiyon da denir.": {
+  "tr": "Belirli bir nedeni bulunamayan hipertansiyon. Hastaların büyük çoğunluğu bu gruptadır; esansiyel hipertansiyon da denir.",
+  "en": "Hypertension with no identifiable cause. Most patients are in this group; also called essential hypertension.",
+  "fa": "فشار خون بالایی که علت مشخصی برایش پیدا نمی‌شود. بیشتر بیماران در این گروه‌اند؛ به آن فشار خون اساسی هم می‌گویند.",
+  "ar": "ارتفاع ضغط الدم الذي لا يُعرف له سبب محدد. معظم المرضى في هذه المجموعة؛ ويُسمى أيضاً ارتفاع ضغط الدم الأساسي."
+ },
+ "Ben anlatayım: konuyu kendi cümlelerinle anlat, 10 üzerinden puan vereyim.": {
+  "tr": "Ben anlatayım: konuyu kendi cümlelerinle anlat, 10 üzerinden puan vereyim.",
+  "en": "Let me explain: explain the topic in your own words, I'll score it out of 10.",
+  "fa": "من توضیح می‌دهم: موضوع را با جمله‌های خودت توضیح بده، از 10 نمره می‌دهم.",
+  "ar": "دعني أشرح: اشرح الموضوع بكلماتك، وسأعطيك درجة من 10."
+ },
+ "Bildirim böyle gelecek": {
+  "tr": "Bildirim böyle gelecek",
+  "en": "This is how the notification will look",
+  "fa": "اعلان این‌طور می‌آید",
+  "ar": "هكذا سيظهر الإشعار"
+ },
+ "Bildirim dili: Türkçe · uygulama diliyle aynı": {
+  "tr": "Bildirim dili: Türkçe · uygulama diliyle aynı",
+  "en": "Notification language: Turkish · same as app language",
+  "fa": "زبان اعلان: ترکی · همان زبان برنامه",
+  "ar": "لغة الإشعار: التركية · نفس لغة التطبيق"
+ },
+ "Bildirim:": {
+  "tr": "Bildirim:",
+  "en": "Notification:",
+  "fa": "اعلان:",
+  "ar": "إشعار:"
+ },
+ "Bildirimler gelmiyor": {
+  "tr": "Bildirimler gelmiyor",
+  "en": "Notifications aren't coming",
+  "fa": "اعلان‌ها نمی‌آیند",
+  "ar": "الإشعارات لا تصل"
+ },
+ "Bilgilerimi düzenle": {
+  "tr": "Bilgilerimi düzenle",
+  "en": "Edit my info",
+  "fa": "ویرایش اطلاعات من",
+  "ar": "تعديل معلوماتي"
+ },
+ "Biliyorum": {
+  "tr": "Biliyorum",
+  "en": "I know",
+  "fa": "بلدم",
+  "ar": "أعرفها"
+ },
+ "Bilmedim ": {
+  "tr": "Bilmedim ",
+  "en": "Didn't know ",
+  "fa": "بلد نبودم ",
+  "ar": "لم أعرفها "
+ },
+ "Bir dahaki tekrarda önce bunlar sorulacak:": {
+  "tr": "Bir dahaki tekrarda önce bunlar sorulacak:",
+  "en": "Next review will ask these first:",
+  "fa": "در مرور بعدی اول این‌ها پرسیده می‌شوند:",
+  "ar": "في المراجعة القادمة ستُسأل هذه أولاً:"
+ },
+ "Bir ders seç": {
+  "tr": "Bir ders seç",
+  "en": "Choose a course",
+  "fa": "یک درس انتخاب کن",
+  "ar": "اختر مادة"
+ },
+ "Bir dersinde ortalaman %10'dan fazla artınca, uygulama kapalıyken de": {
+  "tr": "Bir dersinde ortalaman %10'dan fazla artınca, uygulama kapalıyken de",
+  "en": "When your average in a course rises by more than 10%, even when the app is closed",
+  "fa": "وقتی میانگینت در یک درس بیش از 10% بالا برود، حتی وقتی برنامه بسته است",
+  "ar": "عندما يرتفع معدلك في مادة بأكثر من 10%، حتى والتطبيق مغلق"
+ },
+ "Bir gün önce hatırlat": {
+  "tr": "Bir gün önce hatırlat",
+  "en": "Remind me a day before",
+  "fa": "یک روز قبل یادآوری کن",
+  "ar": "ذكّرني قبل يوم"
+ },
+ "Bir gün önce saat kaçta?": {
+  "tr": "Bir gün önce saat kaçta?",
+  "en": "What time the day before?",
+  "fa": "یک روز قبل، چه ساعتی؟",
+  "ar": "في أي ساعة قبل يوم؟"
+ },
+ "Bir ilacın o hastada ya da o durumda kullanılmaması gerektiği anlamına gelir; zararı yararından fazladır.": {
+  "tr": "Bir ilacın o hastada ya da o durumda kullanılmaması gerektiği anlamına gelir; zararı yararından fazladır.",
+  "en": "Means a drug should not be used in that patient or situation; its harm outweighs its benefit.",
+  "fa": "یعنی دارو نباید در آن بیمار یا آن شرایط مصرف شود؛ ضررش از فایده‌اش بیشتر است.",
+  "ar": "يعني أن الدواء لا يجب استخدامه لدى ذلك المريض أو في تلك الحالة؛ ضرره أكبر من نفعه."
+ },
+ "Bir sorun mu gördün? Bize yaz, ekibimiz çözsün. Ortalama cevap süresi: 2 saat.": {
+  "tr": "Bir sorun mu gördün? Bize yaz, ekibimiz çözsün. Ortalama cevap süresi: 2 saat.",
+  "en": "Spotted a problem? Write to us and our team will fix it. Average response time: 2 hours.",
+  "fa": "مشکلی دیدی؟ برایمان بنویس تا تیم ما حلش کند. میانگین زمان پاسخ: 2 ساعت.",
+  "ar": "لاحظت مشكلة؟ راسلنا وسيحلها فريقنا. متوسط وقت الرد: ساعتان."
+ },
+ "Bitir": {
+  "tr": "Bitir",
+  "en": "Finish",
+  "fa": "پایان",
+  "ar": "إنهاء"
+ },
+ "Bitirdim, değerlendir": {
+  "tr": "Bitirdim, değerlendir",
+  "en": "Done, evaluate",
+  "fa": "تمام شد، ارزیابی کن",
+  "ar": "انتهيت، قيّمني"
+ },
+ "Bitti": {
+  "tr": "Bitti",
+  "en": "Done",
+  "fa": "تمام",
+  "ar": "تم"
+ },
+ "Bradikinin birikir": {
+  "tr": "Bradikinin birikir",
+  "en": "Bradykinin accumulates",
+  "fa": "برادی‌کینین تجمع می‌یابد",
+  "ar": "يتراكم البراديكينين"
+ },
+ "Bu akşam ": {
+  "tr": "Bu akşam ",
+  "en": "Tonight at ",
+  "fa": "امشب ساعت ",
+  "ar": "الليلة الساعة "
+ },
+ "Bu akşam 20:00'de hatırlat": {
+  "tr": "Bu akşam 20:00'de hatırlat",
+  "en": "Remind me tonight at 20:00",
+  "fa": "امشب ساعت 20:00 یادآوری کن",
+  "ar": "ذكّرني الليلة الساعة 20:00"
+ },
+ "Bu ders Premium'a özel": {
+  "tr": "Bu ders Premium'a özel",
+  "en": "This course is Premium-only",
+  "fa": "این درس مخصوص Premium است",
+  "ar": "هذه المادة خاصة بـ Premium"
+ },
+ "Bu dönemin tüm derslerinden": {
+  "tr": "Bu dönemin tüm derslerinden",
+  "en": "From all your courses this term",
+  "fa": "از همه‌ی درس‌های این ترم",
+  "ar": "من جميع مواد هذا الفصل"
+ },
+ "Bu dönemki tüm sınavlarına göre": {
+  "tr": "Bu dönemki tüm sınavlarına göre",
+  "en": "Based on all your exams this term",
+  "fa": "بر اساس همه‌ی امتحان‌های این ترم",
+  "ar": "حسب جميع امتحاناتك هذا الفصل"
+ },
+ "Bu hafta çalışma": {
+  "tr": "Bu hafta çalışma",
+  "en": "Study this week",
+  "fa": "مطالعه‌ی این هفته",
+  "ar": "دراسة هذا الأسبوع"
+ },
+ "Bu saatlerde doğru cevap oranın %82. 22:00'den sonra %54'e düşüyor. Zor konuları sabaha bırak.": {
+  "tr": "Bu saatlerde doğru cevap oranın %82. 22:00'den sonra %54'e düşüyor. Zor konuları sabaha bırak.",
+  "en": "At these hours your correct-answer rate is 82%. After 22:00 it drops to 54%. Save hard topics for the morning.",
+  "fa": "در این ساعت‌ها درصد پاسخ درستت 82% است. بعد از 22:00 به 54% می‌رسد. موضوعات سخت را برای صبح بگذار.",
+  "ar": "في هذه الساعات نسبة إجاباتك الصحيحة 82%. بعد 22:00 تنخفض إلى 54%. اترك المواضيع الصعبة للصباح."
+ },
+ "Bu sayfadan 12 kart hazırlandı": {
+  "tr": "Bu sayfadan 12 kart hazırlandı",
+  "en": "12 cards made from this page",
+  "fa": "از این صفحه 12 کارت ساخته شد",
+  "ar": "تم إعداد 12 بطاقة من هذه الصفحة"
+ },
+ "Bu tarzda 10 soruluk sınav": {
+  "tr": "Bu tarzda 10 soruluk sınav",
+  "en": "10-question exam in this style",
+  "fa": "امتحان 10 سؤالی به این سبک",
+  "ar": "امتحان من 10 أسئلة بهذا الأسلوب"
+ },
+ "Bu tarzı nerede kullanalım?": {
+  "tr": "Bu tarzı nerede kullanalım?",
+  "en": "Where should we use this style?",
+  "fa": "این سبک را کجا استفاده کنیم؟",
+  "ar": "أين نستخدم هذا الأسلوب؟"
+ },
+ "Bu tekrarı sana göre hazırladım": {
+  "tr": "Bu tekrarı sana göre hazırladım",
+  "en": "I made this review just for you",
+  "fa": "این مرور را مخصوص تو آماده کردم",
+  "ar": "أعددت هذه المراجعة خصيصاً لك"
+ },
+ "Bugün Hipertansiyon tekrar günü": {
+  "tr": "Bugün Hipertansiyon tekrar günü",
+  "en": "Today is Hypertension review day",
+  "fa": "امروز روز مرور فشار خون بالا است",
+  "ar": "اليوم يوم مراجعة ارتفاع ضغط الدم"
+ },
+ "Bugün ne": {
+  "tr": "Bugün ne",
+  "en": "Today, what",
+  "fa": "امروز چه",
+  "ar": "اليوم، ماذا"
+ },
+ "Bugün tekrar günü": {
+  "tr": "Bugün tekrar günü",
+  "en": "Today is review day",
+  "fa": "امروز روز مرور است",
+  "ar": "اليوم يوم المراجعة"
+ },
+ "Bugünkü planın hazır: Hipertansiyon sınavı + 12 kart, 55 dk.": {
+  "tr": "Bugünkü planın hazır: Hipertansiyon sınavı + 12 kart, 55 dk.",
+  "en": "Today's plan is ready: Hypertension exam + 12 cards, 55 min.",
+  "fa": "برنامه‌ی امروزت آماده است: امتحان فشار خون بالا + 12 کارت، 55 دقیقه.",
+  "ar": "خطة اليوم جاهزة: امتحان ارتفاع ضغط الدم + 12 بطاقة، 55 د."
+ },
+ "Bugünkü tekrar kaldırıldı": {
+  "tr": "Bugünkü tekrar kaldırıldı",
+  "en": "Today's review removed",
+  "fa": "مرور امروز حذف شد",
+  "ar": "أُزيلت مراجعة اليوم"
+ },
+ "Bugünkü tekrar tamamlandı": {
+  "tr": "Bugünkü tekrar tamamlandı",
+  "en": "Today's review done",
+  "fa": "مرور امروز تمام شد",
+  "ar": "اكتملت مراجعة اليوم"
+ },
+ "Bugünkü tekrar tamamlandı · sonraki tekrar 3 gün sonra": {
+  "tr": "Bugünkü tekrar tamamlandı · sonraki tekrar 3 gün sonra",
+  "en": "Today's review done · next review in 3 days",
+  "fa": "مرور امروز تمام شد · مرور بعدی 3 روز دیگر",
+  "ar": "اكتملت مراجعة اليوم · المراجعة التالية بعد 3 أيام"
+ },
+ "Bugünlük kaldır": {
+  "tr": "Bugünlük kaldır",
+  "en": "Remove for today",
+  "fa": "برای امروز حذف کن",
+  "ar": "أزِل لليوم"
+ },
+ "Bugünün": {
+  "tr": "Bugünün",
+  "en": null,
+  "fa": "مرور",
+  "ar": "مراجعة"
+ },
+ "Bugünün planı": {
+  "tr": "Bugünün planı",
+  "en": "Today's plan",
+  "fa": "برنامه‌ی امروز",
+  "ar": "خطة اليوم"
+ },
+ "Bugünün planını aç": {
+  "tr": "Bugünün planını aç",
+  "en": "Open today's plan",
+  "fa": "باز کردن برنامه‌ی امروز",
+  "ar": "افتح خطة اليوم"
+ },
+ "Bugünün planını kapat": {
+  "tr": "Bugünün planını kapat",
+  "en": "Close today's plan",
+  "fa": "بستن برنامه‌ی امروز",
+  "ar": "أغلق خطة اليوم"
+ },
+ "Bunu kart yap": {
+  "tr": "Bunu kart yap",
+  "en": "Make this a card",
+  "fa": "از این کارت بساز",
+  "ar": "اجعلها بطاقة"
+ },
+ "Böbreklerden tuz ve su atılımını artırarak kan hacmini ve tansiyonu düşüren ilaçlar (ör. tiyazidler).": {
+  "tr": "Böbreklerden tuz ve su atılımını artırarak kan hacmini ve tansiyonu düşüren ilaçlar (ör. tiyazidler).",
+  "en": "Drugs that lower blood volume and blood pressure by increasing salt and water excretion by the kidneys (e.g. thiazides).",
+  "fa": "داروهایی که با افزایش دفع نمک و آب از کلیه‌ها، حجم خون و فشار خون را پایین می‌آورند (مثلاً تیازیدها).",
+  "ar": "أدوية تخفض حجم الدم وضغط الدم بزيادة إطراح الملح والماء عبر الكلى (مثل الثيازيدات)."
+ },
+ "Bölüm ": {
+  "tr": "Bölüm ",
+  "en": "Section ",
+  "fa": "بخش ",
+  "ar": "القسم "
+ },
+ "Bölüm 1 bitti. 1 dakikada pekiştir.": {
+  "tr": "Bölüm 1 bitti. 1 dakikada pekiştir.",
+  "en": "Section 1 done. Reinforce it in 1 minute.",
+  "fa": "بخش 1 تمام شد. در 1 دقیقه تثبیتش کن.",
+  "ar": "انتهى القسم 1. ثبّته في دقيقة واحدة."
+ },
+ "Bölüm 2 bitti. 1 dakikada pekiştir.": {
+  "tr": "Bölüm 2 bitti. 1 dakikada pekiştir.",
+  "en": "Section 2 done. Reinforce it in 1 minute.",
+  "fa": "بخش 2 تمام شد. در 1 دقیقه تثبیتش کن.",
+  "ar": "انتهى القسم 2. ثبّته في دقيقة واحدة."
+ },
+ "Bölüm 3 bitti. 1 dakikada pekiştir.": {
+  "tr": "Bölüm 3 bitti. 1 dakikada pekiştir.",
+  "en": "Section 3 done. Reinforce it in 1 minute.",
+  "fa": "بخش 3 تمام شد. در 1 دقیقه تثبیتش کن.",
+  "ar": "انتهى القسم 3. ثبّته في دقيقة واحدة."
+ },
+ "Bölüm kontrolü · 2 soru": {
+  "tr": "Bölüm kontrolü · 2 soru",
+  "en": "Section check · 2 questions",
+  "fa": "بررسی بخش · 2 سؤال",
+  "ar": "مراجعة القسم · سؤالان"
+ },
+ "Bölümler": {
+  "tr": "Bölümler",
+  "en": "Sections",
+  "fa": "بخش‌ها",
+  "ar": "الأقسام"
+ },
+ "Bölümünü": {
+  "tr": "Bölümünü",
+  "en": "section",
+  "fa": "بخش",
+  "ar": "القسم"
+ },
+ "Büyük": {
+  "tr": "Büyük",
+  "en": "Large",
+  "fa": "بزرگ",
+  "ar": "كبير"
+ },
+ "Cevabı görmek için karta dokun": {
+  "tr": "Cevabı görmek için karta dokun",
+  "en": "Tap the card to see the answer",
+  "fa": "برای دیدن جواب روی کارت بزن",
+  "ar": "اضغط على البطاقة لرؤية الإجابة"
+ },
+ "Cevabın altındaki kaynak sayfasını kontrol et ve buradan bize yaz; ilgili sayfayı inceleyip düzeltiriz.": {
+  "tr": "Cevabın altındaki kaynak sayfasını kontrol et ve buradan bize yaz; ilgili sayfayı inceleyip düzeltiriz.",
+  "en": "Check the source page under the answer and write to us here; we'll review that page and fix it.",
+  "fa": "صفحه‌ی منبع زیر جواب را بررسی کن و از اینجا برایمان بنویس؛ آن صفحه را بررسی و اصلاح می‌کنیم.",
+  "ar": "تحقق من صفحة المصدر أسفل الإجابة وراسلنا من هنا؛ سنراجع الصفحة ونصححها."
+ },
+ "Cuma": {
+  "tr": "Cuma",
+  "en": "Friday",
+  "fa": "جمعه",
+  "ar": "الجمعة"
+ },
+ "Cuma 10 Ekim": {
+  "tr": "Cuma 10 Ekim",
+  "en": "Friday, Oct 10",
+  "fa": "جمعه 10 اکتبر",
+  "ar": "الجمعة 10 أكتوبر"
+ },
+ "Cümle kopyalandı": {
+  "tr": "Cümle kopyalandı",
+  "en": "Sentence copied",
+  "fa": "جمله کپی شد",
+  "ar": "تم نسخ الجملة"
+ },
+ "Cümle sarıyla vurgulandı · notlarına eklendi": {
+  "tr": "Cümle sarıyla vurgulandı · notlarına eklendi",
+  "en": "Sentence highlighted in yellow · added to your notes",
+  "fa": "جمله با زرد هایلایت شد · به یادداشت‌هایت اضافه شد",
+  "ar": "تم تظليل الجملة بالأصفر · أُضيفت إلى ملاحظاتك"
+ },
+ "Cümleyi seç": {
+  "tr": "Cümleyi seç",
+  "en": "Select the sentence",
+  "fa": "جمله را انتخاب کن",
+  "ar": "اختر الجملة"
+ },
+ "D-110 · Doç. Dr. E. Şahin": {
+  "tr": "D-110 · Doç. Dr. E. Şahin",
+  "en": "D-110 · Assoc. Prof. Dr. E. Şahin",
+  "fa": "D-110 · دانشیار دکتر E. Şahin",
+  "ar": "D-110 · أ.م.د. E. Şahin"
+ },
+ "D-204 · Doç. Dr. M. Kaya": {
+  "tr": "D-204 · Doç. Dr. M. Kaya",
+  "en": "D-204 · Assoc. Prof. Dr. M. Kaya",
+  "fa": "D-204 · دانشیار دکتر M. Kaya",
+  "ar": "D-204 · أ.م.د. M. Kaya"
+ },
+ "D-305 · yeni eklendi": {
+  "tr": "D-305 · yeni eklendi",
+  "en": "D-305 · newly added",
+  "fa": "D-305 · تازه اضافه شد",
+  "ar": "D-305 · أُضيف حديثًا"
+ },
+ "DURAKLATILDI · ": {
+  "tr": "DURAKLATILDI · ",
+  "en": "PAUSED · ",
+  "fa": "متوقف شد · ",
+  "ar": "متوقف مؤقتًا · "
+ },
+ "Daha fazla soru ekle": {
+  "tr": "Daha fazla soru ekle",
+  "en": "Add more questions",
+  "fa": "سؤال‌های بیشتر اضافه کن",
+  "ar": "أضف مزيدًا من الأسئلة"
+ },
+ "Daha kolay anlat": {
+  "tr": "Daha kolay anlat",
+  "en": "Explain more simply",
+  "fa": "ساده‌تر توضیح بده",
+  "ar": "اشرح بشكل أبسط"
+ },
+ "Daha kolay dille anlatılıyor…": {
+  "tr": "Daha kolay dille anlatılıyor…",
+  "en": "Explaining in simpler words…",
+  "fa": "با زبانی ساده‌تر توضیح داده می‌شود…",
+  "ar": "جارٍ الشرح بلغة أبسط…"
+ },
+ "Daha önce çalıştığın PDF'ler cihazında. Okuyabilir, kartlarını ve hazır sorularını çözebilirsin.": {
+  "tr": "Daha önce çalıştığın PDF'ler cihazında. Okuyabilir, kartlarını ve hazır sorularını çözebilirsin.",
+  "en": "PDFs you studied before are on your device. You can read them and do their cards and ready-made questions.",
+  "fa": "PDFهایی که قبلاً خواندی روی دستگاهت هستند. می‌توانی بخوانی و کارت‌ها و سؤال‌های آماده‌شان را حل کنی.",
+  "ar": "ملفات PDF التي درستها سابقًا على جهازك. يمكنك قراءتها وحل بطاقاتها وأسئلتها الجاهزة."
+ },
+ "Ders PDF'ini seç ya da buraya bırak": {
+  "tr": "Ders PDF'ini seç ya da buraya bırak",
+  "en": "Choose the lecture PDF or drop it here",
+  "fa": "PDF درس را انتخاب کن یا اینجا رها کن",
+  "ar": "اختر ملف PDF للدرس أو أفلته هنا"
+ },
+ "Ders PDF'leriyle eşleştirildi": {
+  "tr": "Ders PDF'leriyle eşleştirildi",
+  "en": "Matched with lecture PDFs",
+  "fa": "با PDFهای درس تطبیق داده شد",
+  "ar": "تمت مطابقته مع ملفات PDF للدرس"
+ },
+ "Ders ekle ile derslerini tek tek ekleyebilirsin": {
+  "tr": "Ders ekle ile derslerini tek tek ekleyebilirsin",
+  "en": "Use Add course to add your courses one by one",
+  "fa": "با «افزودن درس» درس‌هایت را یکی‌یکی اضافه کن",
+  "ar": "استخدم «إضافة مادة» لإضافة موادك واحدة تلو الأخرى"
+ },
+ "Ders gelen kutunda bekliyor · Premium olunca açılır": {
+  "tr": "Ders gelen kutunda bekliyor · Premium olunca açılır",
+  "en": "Lesson is waiting in your inbox · unlocks with Premium",
+  "fa": "درس در صندوق ورودی‌ات منتظر است · با Premium باز می‌شود",
+  "ar": "الدرس ينتظر في صندوق الوارد · يُفتح مع Premium"
+ },
+ "Ders sabahı da hatırlat": {
+  "tr": "Ders sabahı da hatırlat",
+  "en": "Remind me on class morning too",
+  "fa": "صبح روز کلاس هم یادآوری کن",
+  "ar": "ذكّرني صباح يوم المحاضرة أيضًا"
+ },
+ "Ders ses kaydı": {
+  "tr": "Ders ses kaydı",
+  "en": "Lecture recording",
+  "fa": "صدای کلاس",
+  "ar": "تسجيل المحاضرة"
+ },
+ "Dersin hazır!": {
+  "tr": "Dersin hazır!",
+  "en": "Your lesson is ready!",
+  "fa": "درست آماده است!",
+  "ar": "درسك جاهز!"
+ },
+ "Dersin olduğu günden önceki akşam": {
+  "tr": "Dersin olduğu günden önceki akşam",
+  "en": "The evening before class day",
+  "fa": "عصر روز قبل از کلاس",
+  "ar": "مساء اليوم السابق للمحاضرة"
+ },
+ "Derslerim klasörü ›": {
+  "tr": "Derslerim klasörü ›",
+  "en": "My Courses folder ›",
+  "fa": "پوشه درس‌های من ›",
+  "ar": "مجلد موادي ›"
+ },
+ "Derslerim klasörün hazır · ": {
+  "tr": "Derslerim klasörün hazır · ",
+  "en": "Your My Courses folder is ready · ",
+  "fa": "پوشه «درس‌های من» آماده است · ",
+  "ar": "مجلد «موادي» جاهز · "
+ },
+ "Derslerime ekle": {
+  "tr": "Derslerime ekle",
+  "en": "Add to My Courses",
+  "fa": "افزودن به درس‌های من",
+  "ar": "أضف إلى موادي"
+ },
+ "Derslerini": {
+  "tr": "Derslerini",
+  "en": "Your courses",
+  "fa": "درس‌هایت را",
+  "ar": "موادك"
+ },
+ "Derslerini tek tek ekle": {
+  "tr": "Derslerini tek tek ekle",
+  "en": "Add your courses one by one",
+  "fa": "درس‌هایت را یکی‌یکی اضافه کن",
+  "ar": "أضف موادك واحدة تلو الأخرى"
+ },
+ "Destek ekibi yazıyor…": {
+  "tr": "Destek ekibi yazıyor…",
+  "en": "Support team is typing…",
+  "fa": "تیم پشتیبانی در حال نوشتن است…",
+  "ar": "فريق الدعم يكتب…"
+ },
+ "Destek mesajı": {
+  "tr": "Destek mesajı",
+  "en": "Support message",
+  "fa": "پیام پشتیبانی",
+  "ar": "رسالة الدعم"
+ },
+ "Dil": {
+  "tr": "Dil",
+  "en": "Language",
+  "fa": "زبان",
+  "ar": "اللغة"
+ },
+ "Dilini": {
+  "tr": "Dilini",
+  "en": "Your language",
+  "fa": "زبانت را",
+  "ar": "لغتك"
+ },
+ "Dinliyorum… konuşmayı bitirince düğmeye bas.": {
+  "tr": "Dinliyorum… konuşmayı bitirince düğmeye bas.",
+  "en": "Listening… press the button when you finish speaking.",
+  "fa": "گوش می‌دهم… وقتی حرفت تمام شد دکمه را بزن.",
+  "ar": "أستمع… اضغط الزر عندما تنتهي من الكلام."
+ },
+ "Dislipidemi.pdf": {
+  "tr": "Dislipidemi.pdf",
+  "en": "Dyslipidemia.pdf",
+  "fa": "دیس‌لیپیدمی.pdf",
+  "ar": "اضطراب_شحميات_الدم.pdf"
+ },
+ "Diyabet dersin hazır": {
+  "tr": "Diyabet dersin hazır",
+  "en": "Your Diabetes lesson is ready",
+  "fa": "درس دیابتت آماده است",
+  "ar": "درس السكري جاهز"
+ },
+ "Diyabet · kartlar": {
+  "tr": "Diyabet · kartlar",
+  "en": "Diabetes · cards",
+  "fa": "دیابت · کارت‌ها",
+  "ar": "السكري · البطاقات"
+ },
+ "Diyabet.pdf": {
+  "tr": "Diyabet.pdf",
+  "en": "Diabetes.pdf",
+  "fa": "دیابت.pdf",
+  "ar": "السكري.pdf"
+ },
+ "Diyabetik hastalarda böbreği koruduğu için ilk seçenek ACE inhibitörü veya ARB'dir. Yaşlılarda düşük dozla başlanır ve ortostatik hipotansiyon açısından izlenir.": {
+  "tr": "Diyabetik hastalarda böbreği koruduğu için ilk seçenek ACE inhibitörü veya ARB'dir. Yaşlılarda düşük dozla başlanır ve ortostatik hipotansiyon açısından izlenir.",
+  "en": "In diabetic patients, an ACE inhibitor or ARB is first choice because it protects the kidneys. In the elderly, start low and monitor for orthostatic hypotension.",
+  "fa": "در بیماران دیابتی، مهارکننده ACE یا ARB انتخاب اول است چون از کلیه محافظت می‌کند. در سالمندان با دوز پایین شروع و از نظر افت فشار وضعیتی پایش می‌شود.",
+  "ar": "لدى مرضى السكري، يكون مثبط ACE أو ARB الخيار الأول لأنه يحمي الكلى. لدى المسنين يُبدأ بجرعة منخفضة ويُراقَب انخفاض ضغط الدم الانتصابي."
+ },
+ "Diüretikler, ACE inhibitörleri, ARB'ler ve kalsiyum kanal blokerleri": {
+  "tr": "Diüretikler, ACE inhibitörleri, ARB'ler ve kalsiyum kanal blokerleri",
+  "en": "Diuretics, ACE inhibitors, ARBs and calcium channel blockers",
+  "fa": "دیورتیک‌ها، مهارکننده‌های ACE، ARBها و مسدودکننده‌های کانال کلسیم",
+  "ar": "مدرات البول ومثبطات ACE وARBs وحاصرات قنوات الكالسيوم"
+ },
+ "Dosya taranmış sayfalardan oluşuyorsa \"Metin tanıma ile dene\" seçeneğini kullan. 100 MB üstü dosyaları bölerek yükle.": {
+  "tr": "Dosya taranmış sayfalardan oluşuyorsa \"Metin tanıma ile dene\" seçeneğini kullan. 100 MB üstü dosyaları bölerek yükle.",
+  "en": "If the file is made of scanned pages, use the \"Try with text recognition\" option. Split files over 100 MB before uploading.",
+  "fa": "اگر فایل از صفحات اسکن‌شده است، گزینه «امتحان با تشخیص متن» را بزن. فایل‌های بالای 100 MB را تقسیم کن و بارگذاری کن.",
+  "ar": "إذا كان الملف من صفحات ممسوحة ضوئيًا فاستخدم خيار «جرّب التعرّف على النص». قسّم الملفات الأكبر من 100 MB قبل رفعها."
+ },
+ "Dosyalar açılıyor… Diyabet.pdf seçildi": {
+  "tr": "Dosyalar açılıyor… Diyabet.pdf seçildi",
+  "en": "Opening Files… Diabetes.pdf selected",
+  "fa": "در حال باز کردن فایل‌ها… دیابت.pdf انتخاب شد",
+  "ar": "جارٍ فتح الملفات… تم اختيار السكري.pdf"
+ },
+ "Doz hesabı": {
+  "tr": "Doz hesabı",
+  "en": "Dose calculation",
+  "fa": "محاسبه دوز",
+  "ar": "حساب الجرعة"
+ },
+ "Doğal anlatım: aynı anlamı o dilde doğal konuşulduğu gibi anlatır; daha kolay anlaşılır.": {
+  "tr": "Doğal anlatım: aynı anlamı o dilde doğal konuşulduğu gibi anlatır; daha kolay anlaşılır.",
+  "en": "Natural wording: says the same meaning the way it's naturally spoken in that language; easier to understand.",
+  "fa": "بیان طبیعی: همان معنا را همان‌طور که در آن زبان طبیعی گفته می‌شود بیان می‌کند؛ راحت‌تر فهمیده می‌شود.",
+  "ar": "صياغة طبيعية: تنقل المعنى نفسه كما يُقال طبيعيًا في تلك اللغة؛ أسهل للفهم."
+ },
+ "Doğru, kaydet": {
+  "tr": "Doğru, kaydet",
+  "en": "Correct, save",
+  "fa": "درسته، ذخیره کن",
+  "ar": "صحيح، احفظ"
+ },
+ "Doğrula ve devam et": {
+  "tr": "Doğrula ve devam et",
+  "en": "Verify and continue",
+  "fa": "تأیید کن و ادامه بده",
+  "ar": "تحقّق وتابع"
+ },
+ "Duraklat": {
+  "tr": "Duraklat",
+  "en": "Pause",
+  "fa": "مکث",
+  "ar": "إيقاف مؤقت"
+ },
+ "Dün": {
+  "tr": "Dün",
+  "en": "Yesterday",
+  "fa": "دیروز",
+  "ar": "أمس"
+ },
+ "Düz çeviri: hocanın cümlesini kelimesi kelimesine çevirir; terimleri aynen öğrenmek için.": {
+  "tr": "Düz çeviri: hocanın cümlesini kelimesi kelimesine çevirir; terimleri aynen öğrenmek için.",
+  "en": "Literal translation: translates the lecturer's sentence word for word; to learn terms exactly.",
+  "fa": "ترجمه تحت‌اللفظی: جمله استاد را کلمه به کلمه ترجمه می‌کند؛ برای یادگیری دقیق اصطلاحات.",
+  "ar": "ترجمة حرفية: تترجم جملة المحاضر كلمة بكلمة؛ لتعلّم المصطلحات كما هي."
+ },
+ "Düşük dozla başlanır (ör. ramipril 2,5 mg/gün), doz 2–4 haftada bir artırılır.": {
+  "tr": "Düşük dozla başlanır (ör. ramipril 2,5 mg/gün), doz 2–4 haftada bir artırılır.",
+  "en": "Start with a low dose (e.g. ramipril 2,5 mg/day), increase every 2–4 weeks.",
+  "fa": "با دوز پایین شروع می‌شود (مثلاً رامیپریل 2,5 mg/روز)، دوز هر 2–4 هفته افزایش می‌یابد.",
+  "ar": "يُبدأ بجرعة منخفضة (مثل راميبريل 2,5 mg/يوم)، وتُزاد الجرعة كل 2–4 أسابيع."
+ },
+ "E-postanı": {
+  "tr": "E-postanı",
+  "en": "Check",
+  "fa": "ایمیلت را",
+  "ar": "تحقّق من"
+ },
+ "Eklenenler": {
+  "tr": "Eklenenler",
+  "en": "Added",
+  "fa": "افزوده‌شده‌ها",
+  "ar": "المُضافة"
+ },
+ "Ekran görüntüsü ekle": {
+  "tr": "Ekran görüntüsü ekle",
+  "en": "Add screenshot",
+  "fa": "افزودن اسکرین‌شات",
+  "ar": "إضافة لقطة شاشة"
+ },
+ "Ekran görüntüsü eklendi · ekran_20-14.png": {
+  "tr": "Ekran görüntüsü eklendi · ekran_20-14.png",
+  "en": "Screenshot added · screen_20-14.png",
+  "fa": "اسکرین‌شات اضافه شد · screen_20-14.png",
+  "ar": "تمت إضافة لقطة الشاشة · screen_20-14.png"
+ },
+ "Ekran kapalıyken de kaydeder. Kayıt yalnızca senin hesabında saklanır; derse kayıt almadan önce hocandan izin almayı unutma.": {
+  "tr": "Ekran kapalıyken de kaydeder. Kayıt yalnızca senin hesabında saklanır; derse kayıt almadan önce hocandan izin almayı unutma.",
+  "en": "Records even with the screen off. The recording is kept only in your account; remember to ask your instructor's permission before recording a class.",
+  "fa": "حتی با صفحه خاموش هم ضبط می‌کند. ضبط فقط در حساب تو ذخیره می‌شود؛ یادت نرود قبل از ضبط کلاس از استادت اجازه بگیری.",
+  "ar": "يسجّل حتى والشاشة مطفأة. يُحفظ التسجيل في حسابك فقط؛ لا تنسَ استئذان أستاذك قبل تسجيل المحاضرة."
+ },
+ "Elif Yıldız sana bir ders gönderdi": {
+  "tr": "Elif Yıldız sana bir ders gönderdi",
+  "en": "Elif Yıldız sent you a course",
+  "fa": "Elif Yıldız برایت یک درس فرستاد",
+  "ar": "أرسلت لك Elif Yıldız درسًا"
+ },
+ "Elif sana bir ders gönderdi": {
+  "tr": "Elif sana bir ders gönderdi",
+  "en": "Elif sent you a course",
+  "fa": "Elif برایت یک درس فرستاد",
+  "ar": "أرسلت لك Elif درسًا"
+ },
+ "Elif'in gönderdiği ders, hesabını oluşturunca seni bekliyor olacak.": {
+  "tr": "Elif'in gönderdiği ders, hesabını oluşturunca seni bekliyor olacak.",
+  "en": "The course Elif sent will be waiting for you once you create your account.",
+  "fa": "درسی که Elif فرستاده، بعد از ساختن حسابت منتظرت خواهد بود.",
+  "ar": "الدرس الذي أرسلته Elif سيكون بانتظارك بعد إنشاء حسابك."
+ },
+ "Elinde soru": {
+  "tr": "Elinde soru",
+  "en": "Got any",
+  "fa": "سؤالی",
+  "ar": "هل لديك"
+ },
+ "Elle gir": {
+  "tr": "Elle gir",
+  "en": "Enter manually",
+  "fa": "دستی وارد کن",
+  "ar": "أدخل يدويًا"
+ },
+ "En güçlü dersin": {
+  "tr": "En güçlü dersin",
+  "en": "Your strongest course",
+  "fa": "قوی‌ترین درست",
+  "ar": "أقوى مادة لديك"
+ },
+ "En zayıf konun · doğruluk %38": {
+  "tr": "En zayıf konun · doğruluk %38",
+  "en": "Your weakest topic · accuracy 38%",
+  "fa": "ضعیف‌ترین مبحثت · دقت 38%",
+  "ar": "أضعف مواضيعك · الدقة 38%"
+ },
+ "En çok sorulan konular": {
+  "tr": "En çok sorulan konular",
+  "en": "Most-asked topics",
+  "fa": "پرسؤال‌ترین مبحث‌ها",
+  "ar": "أكثر المواضيع سؤالًا"
+ },
+ "En çok çalışman gereken ders": {
+  "tr": "En çok çalışman gereken ders",
+  "en": "Course you need to study most",
+  "fa": "درسی که بیشتر باید بخوانی",
+  "ar": "المادة التي تحتاج دراستها أكثر"
+ },
+ "Enalapril bir ACE inhibitörüdür; gebelikte bebeğin böbreklerine zarar verir.": {
+  "tr": "Enalapril bir ACE inhibitörüdür; gebelikte bebeğin böbreklerine zarar verir.",
+  "en": "Enalapril is an ACE inhibitor; in pregnancy it harms the baby's kidneys.",
+  "fa": "انالاپریل یک مهارکننده ACE است؛ در بارداری به کلیه‌های جنین آسیب می‌زند.",
+  "ar": "الإينالابريل مثبط لـ ACE؛ يضر بكليتي الجنين أثناء الحمل."
+ },
+ "Ertele": {
+  "tr": "Ertele",
+  "en": "Snooze",
+  "fa": "به تعویق بینداز",
+  "ar": "تأجيل"
+ },
+ "Eski sınav, hocanın örnek soruları ya da arkadaşının notu. Gönder, biz de sana daha çok o tarzda soru hazırlayalım.": {
+  "tr": "Eski sınav, hocanın örnek soruları ya da arkadaşının notu. Gönder, biz de sana daha çok o tarzda soru hazırlayalım.",
+  "en": "A past exam, your instructor's sample questions or a friend's notes. Send it, and we'll prepare more questions in that style for you.",
+  "fa": "امتحان قبلی، سؤال‌های نمونه استاد یا جزوه دوستت. بفرست تا سؤال‌های بیشتری به همان سبک برایت آماده کنیم.",
+  "ar": "امتحان سابق، أو أسئلة أستاذك النموذجية، أو ملاحظات صديقك. أرسلها لنعدّ لك أسئلة أكثر بذلك الأسلوب."
+ },
+ "Etki mekanizması": {
+  "tr": "Etki mekanizması",
+  "en": "Mechanism of action",
+  "fa": "مکانیسم اثر",
+  "ar": "آلية العمل"
+ },
+ "FARMAKOTERAPİ · 8 EKİM · 52 DK": {
+  "tr": "FARMAKOTERAPİ · 8 EKİM · 52 DK",
+  "en": "PHARMACOTHERAPY · OCT 8 · 52 MIN",
+  "fa": "دارودرمانی · 8 اکتبر · 52 دقیقه",
+  "ar": "العلاج الدوائي · 8 أكتوبر · 52 د"
+ },
+ "FARMAKOTERAPİ · SAYFA 12/48 · %25": {
+  "tr": "FARMAKOTERAPİ · SAYFA 12/48 · %25",
+  "en": "PHARMACOTHERAPY · PAGE 12/48 · 25%",
+  "fa": "دارودرمانی · صفحه 12/48 · 25%",
+  "ar": "العلاج الدوائي · الصفحة 12/48 · 25%"
+ },
+ "Farm. Teknoloji III": {
+  "tr": "Farm. Teknoloji III",
+  "en": "Pharm. Technology III",
+  "fa": "فناوری دارویی III",
+  "ar": "التقنية الصيدلانية III"
+ },
+ "Farmakoterapi ortalaman 12 günde 61 → 70 (+%15).": {
+  "tr": "Farmakoterapi ortalaman 12 günde 61 → 70 (+%15).",
+  "en": "Your Pharmacotherapy average went 61 → 70 in 12 days (+15%).",
+  "fa": "میانگین دارودرمانی‌ات در 12 روز 61 → 70 (+15%).",
+  "ar": "معدلك في العلاج الدوائي خلال 12 يومًا 61 → 70 (+15%)."
+ },
+ "Farmakoterapi vizesine 8 gün · özet + 6 soru.": {
+  "tr": "Farmakoterapi vizesine 8 gün · özet + 6 soru.",
+  "en": "8 days to the Pharmacotherapy midterm · summary + 6 questions.",
+  "fa": "8 روز تا میان‌ترم دارودرمانی · خلاصه + 6 سؤال.",
+  "ar": "8 أيام على نصفي العلاج الدوائي · ملخص + 6 أسئلة."
+ },
+ "Farmasötik Kimya II Lab": {
+  "tr": "Farmasötik Kimya II Lab",
+  "en": "Pharmaceutical Chemistry II Lab",
+  "fa": "آزمایشگاه شیمی دارویی II",
+  "ar": "مختبر الكيمياء الصيدلانية II"
+ },
+ "Farmasötik Teknoloji": {
+  "tr": "Farmasötik Teknoloji",
+  "en": "Pharmaceutical Technology",
+  "fa": "فناوری دارویی",
+  "ar": "التقنية الصيدلانية"
+ },
+ "Farmasötik Teknoloji III Lab": {
+  "tr": "Farmasötik Teknoloji III Lab",
+  "en": "Pharmaceutical Technology III Lab",
+  "fa": "آزمایشگاه فناوری دارویی III",
+  "ar": "مختبر التقنية الصيدلانية III"
+ },
+ "Fosforlu kalem": {
+  "tr": "Fosforlu kalem",
+  "en": "Highlighter",
+  "fa": "ماژیک هایلایت",
+  "ar": "قلم تمييز"
+ },
+ "Fotoğraf, PDF ya da yazarak": {
+  "tr": "Fotoğraf, PDF ya da yazarak",
+  "en": "Photo, PDF or by typing",
+  "fa": "عکس، PDF یا با تایپ",
+  "ar": "صورة أو PDF أو بالكتابة"
+ },
+ "Fotoğrafını çek": {
+  "tr": "Fotoğrafını çek",
+  "en": "Take a photo of it",
+  "fa": "از آن عکس بگیر",
+  "ar": "التقط صورة لها"
+ },
+ "Galeriden 2 fotoğraf eklendi": {
+  "tr": "Galeriden 2 fotoğraf eklendi",
+  "en": "2 photos added from gallery",
+  "fa": "2 عکس از گالری اضافه شد",
+  "ar": "تمت إضافة 2 صورة من المعرض"
+ },
+ "Gebelikte ACE inhibitörleri ve ARB'ler kullanılmaz. Metildopa ve labetalol tercih edilir.": {
+  "tr": "Gebelikte ACE inhibitörleri ve ARB'ler kullanılmaz. Metildopa ve labetalol tercih edilir.",
+  "en": "ACE inhibitors and ARBs are not used in pregnancy. Methyldopa and labetalol are preferred.",
+  "fa": "مهارکننده‌های ACE و ARBها در بارداری مصرف نمی‌شوند. متیل‌دوپا و لابتالول ترجیح داده می‌شوند.",
+  "ar": "لا تُستخدم مثبطات ACE وARBs في الحمل. ويُفضَّل الميثيل دوبا واللابيتالول."
+ },
+ "Gebelikte HT": {
+  "tr": "Gebelikte HT",
+  "en": "HTN in pregnancy",
+  "fa": "فشار خون در بارداری",
+  "ar": "ارتفاع الضغط في الحمل"
+ },
+ "Gebelikte güvenli antihipertansifler?": {
+  "tr": "Gebelikte güvenli antihipertansifler?",
+  "en": "Safe antihypertensives in pregnancy?",
+  "fa": "داروهای ضدفشار خون بی‌خطر در بارداری؟",
+  "ar": "خافضات الضغط الآمنة في الحمل؟"
+ },
+ "Gebelikte hangisi kullanılmaz?": {
+  "tr": "Gebelikte hangisi kullanılmaz?",
+  "en": "Which is not used in pregnancy?",
+  "fa": "کدام در بارداری مصرف نمی‌شود؟",
+  "ar": "أيّها لا يُستخدم في الحمل؟"
+ },
+ "Gebelikte metildopa, labetalol ve nifedipin tercih edilir. ACE inhibitörleri ve ARB'ler fetüse zarar verdiği için gebelikte ": {
+  "tr": "Gebelikte metildopa, labetalol ve nifedipin tercih edilir. ACE inhibitörleri ve ARB'ler fetüse zarar verdiği için gebelikte ",
+  "en": "In pregnancy, methyldopa, labetalol and nifedipine are preferred. ACE inhibitors and ARBs harm the fetus, so in pregnancy they are ",
+  "fa": "در بارداری متیل‌دوپا، لابتالول و نیفدیپین ترجیح داده می‌شوند. مهارکننده‌های ACE و ARBها به جنین آسیب می‌زنند، بنابراین در بارداری ",
+  "ar": "في الحمل يُفضَّل الميثيل دوبا واللابيتالول والنيفيديبين. مثبطات ACE وARBs تضر بالجنين، لذا فهي في الحمل "
+ },
+ "Genel sınavı başlat · ": {
+  "tr": "Genel sınavı başlat · ",
+  "en": "Start general exam · ",
+  "fa": "شروع امتحان جامع · ",
+  "ar": "ابدأ الامتحان الشامل · "
+ },
+ "Geri al": {
+  "tr": "Geri al",
+  "en": "Undo",
+  "fa": "برگرداندن",
+  "ar": "تراجع"
+ },
+ "Geri alınacak not yok": {
+  "tr": "Geri alınacak not yok",
+  "en": "No note to undo",
+  "fa": "یادداشتی برای واگرد نیست",
+  "ar": "لا توجد ملاحظة للتراجع عنها"
+ },
+ "Geri alındı · tekrar bugün planında": {
+  "tr": "Geri alındı · tekrar bugün planında",
+  "en": "Undone · review is in today's plan",
+  "fa": "واگرد شد · مرور در برنامه امروز است",
+  "ar": "تم التراجع · المراجعة في خطة اليوم"
+ },
+ "Geri · sonra devam et": {
+  "tr": "Geri · sonra devam et",
+  "en": "Back · continue later",
+  "fa": "بازگشت · بعداً ادامه بده",
+  "ar": "رجوع · أكمل لاحقًا"
+ },
+ "Geçen yılın vizesi · cevap anahtarlı": {
+  "tr": "Geçen yılın vizesi · cevap anahtarlı",
+  "en": "Last year's midterm · with answer key",
+  "fa": "میان‌ترم سال گذشته · با پاسخ‌نامه",
+  "ar": "نصفي العام الماضي · مع مفتاح الإجابات"
+ },
+ "Giriş yap": {
+  "tr": "Giriş yap",
+  "en": "Log in",
+  "fa": "ورود",
+  "ar": "تسجيل الدخول"
+ },
+ "Google ile devam et": {
+  "tr": "Google ile devam et",
+  "en": "Continue with Google",
+  "fa": "ادامه با Google",
+  "ar": "المتابعة باستخدام Google"
+ },
+ "Gut hastasında · ürik asidi artırır": {
+  "tr": "Gut hastasında · ürik asidi artırır",
+  "en": "In gout patients · raises uric acid",
+  "fa": "در بیمار نقرسی · اسید اوریک را بالا می‌برد",
+  "ar": "لدى مريض النقرس · يرفع حمض اليوريك"
+ },
+ "Gutta kontrendikedir: ürik asidi artırır ve gut atağını tetikler.": {
+  "tr": "Gutta kontrendikedir: ürik asidi artırır ve gut atağını tetikler.",
+  "en": "Contraindicated in gout: raises uric acid and triggers gout attacks.",
+  "fa": "در نقرس منع مصرف دارد: اسید اوریک را بالا می‌برد و حمله نقرس را تحریک می‌کند.",
+  "ar": "مضاد استطباب في النقرس: يرفع حمض اليوريك ويحفّز نوبة النقرس."
+ },
+ "Gönderdiğin sorularda bu konudan 5 soru çıkmış": {
+  "tr": "Gönderdiğin sorularda bu konudan 5 soru çıkmış",
+  "en": "5 questions on this topic appeared in the questions you sent",
+  "fa": "در سؤال‌هایی که فرستادی 5 سؤال از این مبحث آمده",
+  "ar": "ظهرت 5 أسئلة من هذا الموضوع في الأسئلة التي أرسلتها"
+ },
+ "Gör": {
+  "tr": "Gör",
+  "en": "View",
+  "fa": "ببین",
+  "ar": "عرض"
+ },
+ "Gün": {
+  "tr": "Gün",
+  "en": "Day",
+  "fa": "روز",
+  "ar": "اليوم"
+ },
+ "Günler, saatler, dersler ve derslikler ayıklanıyor": {
+  "tr": "Günler, saatler, dersler ve derslikler ayıklanıyor",
+  "en": "Extracting days, times, classes and classrooms",
+  "fa": "در حال استخراج روزها، ساعت‌ها، درس‌ها و کلاس‌ها",
+  "ar": "جارٍ استخراج الأيام والأوقات والمواد والقاعات"
+ },
+ "Günlük çalışma (dk)": {
+  "tr": "Günlük çalışma (dk)",
+  "en": "Daily study (min)",
+  "fa": "مطالعه روزانه (دقیقه)",
+  "ar": "الدراسة اليومية (د)"
+ },
+ "Güvenli seçenekler: metildopa, labetalol ve nifedipin.": {
+  "tr": "Güvenli seçenekler: metildopa, labetalol ve nifedipin.",
+  "en": "Safe options: methyldopa, labetalol and nifedipine.",
+  "fa": "گزینه‌های بی‌خطر: متیل‌دوپا، لابتالول و نیفدیپین.",
+  "ar": "الخيارات الآمنة: الميثيل دوبا واللابيتالول والنيفيديبين."
+ },
+ "Haftalık": {
+  "tr": "Haftalık",
+  "en": "Your weekly",
+  "fa": "برنامهٔ مطالعهٔ",
+  "ar": "خطة دراستك"
+ },
+ "Haftalık plan ›": {
+  "tr": "Haftalık plan ›",
+  "en": "Weekly plan ›",
+  "fa": "برنامه هفتگی ›",
+  "ar": "الخطة الأسبوعية ›"
+ },
+ "Haftalık özet: 5 sa 20 dk": {
+  "tr": "Haftalık özet: 5 sa 20 dk",
+  "en": "Weekly summary: 5h 20m",
+  "fa": "خلاصه هفتگی: 5 ساعت 20 دقیقه",
+  "ar": "ملخص الأسبوع: 5 س 20 د"
+ },
+ "Hangi bölümde": {
+  "tr": "Hangi bölümde",
+  "en": "Which department",
+  "fa": "در کدام رشته",
+  "ar": "في أي قسم"
+ },
+ "Hangi gün, saat kaçta, hangi derslikte dersin olduğunu bir gün önceden bildirimle hatırlatayım. İstersen bildirime o dersin kısa bir hazırlık önerisini de eklerim.": {
+  "tr": "Hangi gün, saat kaçta, hangi derslikte dersin olduğunu bir gün önceden bildirimle hatırlatayım. İstersen bildirime o dersin kısa bir hazırlık önerisini de eklerim.",
+  "en": "I'll remind you a day ahead which day, what time and which room your class is in. If you want, I'll add a short prep tip for that class too.",
+  "fa": "یک روز قبل با اعلان یادآوری می‌کنم کلاست چه روزی، چه ساعتی و در کدام کلاس است. اگر بخواهی، یک پیشنهاد کوتاه برای آمادگی هم اضافه می‌کنم.",
+  "ar": "سأذكّرك قبل يوم بإشعار بيوم وساعة وقاعة درسك. وإن أردت أضيف اقتراحًا قصيرًا للتحضير لذلك الدرس."
+ },
+ "Hasta vakası (hangi ilaç?)": {
+  "tr": "Hasta vakası (hangi ilaç?)",
+  "en": "Patient case (which drug?)",
+  "fa": "مورد بیمار (کدام دارو؟)",
+  "ar": "حالة مريض (أي دواء؟)"
+ },
+ "Hatırlatma kapalı": {
+  "tr": "Hatırlatma kapalı",
+  "en": "Reminder off",
+  "fa": "یادآوری خاموش",
+  "ar": "التذكير متوقف"
+ },
+ "Hatırlatma saati": {
+  "tr": "Hatırlatma saati",
+  "en": "Reminder time",
+  "fa": "ساعت یادآوری",
+  "ar": "وقت التذكير"
+ },
+ "Hatırlatma saati: dersten bir gün önce ": {
+  "tr": "Hatırlatma saati: dersten bir gün önce ",
+  "en": "Reminder time: day before class at ",
+  "fa": "ساعت یادآوری: یک روز قبل از کلاس، ساعت ",
+  "ar": "وقت التذكير: قبل الدرس بيوم، الساعة "
+ },
+ "Hatırlatmayı aç: ": {
+  "tr": "Hatırlatmayı aç: ",
+  "en": "Turn on reminder: ",
+  "fa": "روشن کردن یادآوری: ",
+  "ar": "تشغيل التذكير: "
+ },
+ "Hatırlatmayı kapat: ": {
+  "tr": "Hatırlatmayı kapat: ",
+  "en": "Turn off reminder: ",
+  "fa": "خاموش کردن یادآوری: ",
+  "ar": "إيقاف التذكير: "
+ },
+ "Hazır sorular": {
+  "tr": "Hazır sorular",
+  "en": "Ready questions",
+  "fa": "سؤال‌های آماده",
+  "ar": "أسئلة جاهزة"
+ },
+ "Hazırlayacaklarımız": {
+  "tr": "Hazırlayacaklarımız",
+  "en": "What we'll prepare",
+  "fa": "آنچه آماده می‌کنیم",
+  "ar": "ما سنحضّره"
+ },
+ "Hazırlık: ": {
+  "tr": "Hazırlık: ",
+  "en": "Prep: ",
+  "fa": "آمادگی: ",
+  "ar": "التحضير: "
+ },
+ "Hedef organ hasarı": {
+  "tr": "Hedef organ hasarı",
+  "en": "Target organ damage",
+  "fa": "آسیب اندام هدف",
+  "ar": "تلف الأعضاء المستهدفة"
+ },
+ "Hedefin 6 saatti. En çok: Hipertansiyon.": {
+  "tr": "Hedefin 6 saatti. En çok: Hipertansiyon.",
+  "en": "Your goal was 6 hours. Most: Hypertension.",
+  "fa": "هدفت 6 ساعت بود. بیشترین: فشار خون بالا.",
+  "ar": "كان هدفك 6 ساعات. الأكثر: ارتفاع ضغط الدم."
+ },
+ "Hesabın yok mu?": {
+  "tr": "Hesabın yok mu?",
+  "en": "No account?",
+  "fa": "حساب نداری؟",
+  "ar": "ليس لديك حساب؟"
+ },
+ "Hesabını": {
+  "tr": "Hesabını",
+  "en": "Your account",
+  "fa": "حسابت را",
+  "ar": "حسابك"
+ },
+ "Hesabını oluştur": {
+  "tr": "Hesabını oluştur",
+  "en": "Create your account",
+  "fa": "حسابت را بساز",
+  "ar": "أنشئ حسابك"
+ },
+ "Hesap": {
+  "tr": "Hesap",
+  "en": "Account",
+  "fa": "حساب",
+  "ar": "الحساب"
+ },
+ "Hesap oluştur": {
+  "tr": "Hesap oluştur",
+  "en": "Create account",
+  "fa": "ساخت حساب",
+  "ar": "إنشاء حساب"
+ },
+ "Hesap oluşturuldu · Ayşe": {
+  "tr": "Hesap oluşturuldu · Ayşe",
+  "en": "Account created · Ayşe",
+  "fa": "حساب ساخته شد · Ayşe",
+  "ar": "تم إنشاء الحساب · Ayşe"
+ },
+ "Hesap ve ödeme": {
+  "tr": "Hesap ve ödeme",
+  "en": "Account and payment",
+  "fa": "حساب و پرداخت",
+  "ar": "الحساب والدفع"
+ },
+ "Hipertansif krizde tansiyon 180/120'nin üstündedir. Organ hasarı varsa acil durumdur; ilk saatte tansiyon en fazla %25 düşürülür.": {
+  "tr": "Hipertansif krizde tansiyon 180/120'nin üstündedir. Organ hasarı varsa acil durumdur; ilk saatte tansiyon en fazla %25 düşürülür.",
+  "en": "In a hypertensive crisis BP is above 180/120. With organ damage it's an emergency; in the first hour BP is lowered by at most 25%.",
+  "fa": "در بحران فشار خون، فشار بالای 180/120 است. اگر آسیب اندام باشد اورژانس است؛ در ساعت اول فشار حداکثر 25% پایین آورده می‌شود.",
+  "ar": "في أزمة ارتفاع الضغط يكون الضغط فوق 180/120. إذا وُجد تلف بالأعضاء فهي حالة طارئة؛ ويُخفض الضغط في الساعة الأولى بنسبة 25% كحد أقصى."
+ },
+ "Hipertansiyon nedir?": {
+  "tr": "Hipertansiyon nedir?",
+  "en": "What is hypertension?",
+  "fa": "فشار خون بالا چیست؟",
+  "ar": "ما هو ارتفاع ضغط الدم؟"
+ },
+ "Hipertansiyon · 5 konu · kaynak sayfalarıyla": {
+  "tr": "Hipertansiyon · 5 konu · kaynak sayfalarıyla",
+  "en": "Hypertension · 5 topics · with source pages",
+  "fa": "فشار خون بالا · 5 مبحث · با صفحات منبع",
+  "ar": "ارتفاع ضغط الدم · 5 مواضيع · مع صفحات المصدر"
+ },
+ "Hipertansiyon · Ders özeti": {
+  "tr": "Hipertansiyon · Ders özeti",
+  "en": "Hypertension · Lecture summary",
+  "fa": "فشار خون بالا · خلاصه درس",
+  "ar": "ارتفاع ضغط الدم · ملخص الدرس"
+ },
+ "Hipertansiyon · Ders özeti · 5 konu": {
+  "tr": "Hipertansiyon · Ders özeti · 5 konu",
+  "en": "Hypertension · Lecture summary · 5 topics",
+  "fa": "فشار خون بالا · خلاصه درس · 5 مبحث",
+  "ar": "ارتفاع ضغط الدم · ملخص الدرس · 5 مواضيع"
+ },
+ "Hipertansiyon · Farmakoterapi": {
+  "tr": "Hipertansiyon · Farmakoterapi",
+  "en": "Hypertension · Pharmacotherapy",
+  "fa": "فشار خون بالا · دارودرمانی",
+  "ar": "ارتفاع ضغط الدم · العلاج الدوائي"
+ },
+ "Hipertansiyon · Farmakoterapi · sana özel özet + 6 kart + 3 soru · yaklaşık 8 dk": {
+  "tr": "Hipertansiyon · Farmakoterapi · sana özel özet + 6 kart + 3 soru · yaklaşık 8 dk",
+  "en": "Hypertension · Pharmacotherapy · your summary + 6 cards + 3 questions · about 8 min",
+  "fa": "فشار خون بالا · دارودرمانی · خلاصه مخصوص تو + 6 کارت + 3 سؤال · حدود 8 دقیقه",
+  "ar": "ارتفاع ضغط الدم · العلاج الدوائي · ملخص خاص بك + 6 بطاقات + 3 أسئلة · نحو 8 د"
+ },
+ "Hipertansiyon · kısa sınav": {
+  "tr": "Hipertansiyon · kısa sınav",
+  "en": "Hypertension · short quiz",
+  "fa": "فشار خون بالا · آزمون کوتاه",
+  "ar": "ارتفاع ضغط الدم · اختبار قصير"
+ },
+ "Hipertansiyon · özet + 6 kart + 3 soru · 8 dk": {
+  "tr": "Hipertansiyon · özet + 6 kart + 3 soru · 8 dk",
+  "en": "Hypertension · summary + 6 cards + 3 questions · 8 min",
+  "fa": "فشار خون بالا · خلاصه + 6 کارت + 3 سؤال · 8 دقیقه",
+  "ar": "ارتفاع ضغط الدم · ملخص + 6 بطاقات + 3 أسئلة · 8 د"
+ },
+ "Hipertansiyon özeti Derslerim klasörüne eklendi": {
+  "tr": "Hipertansiyon özeti Derslerim klasörüne eklendi",
+  "en": "Hypertension summary added to My Courses folder",
+  "fa": "خلاصه فشار خون بالا به پوشه درس‌های من اضافه شد",
+  "ar": "أُضيف ملخص ارتفاع ضغط الدم إلى مجلد موادي"
+ },
+ "Hipertansiyon, Diyabet, Tablet Formülasyonu cihazında · istediğini silebilirsin": {
+  "tr": "Hipertansiyon, Diyabet, Tablet Formülasyonu cihazında · istediğini silebilirsin",
+  "en": "Hypertension, Diabetes, Tablet Formulation on your device · delete any you want",
+  "fa": "فشار خون بالا، دیابت، فرمولاسیون قرص روی دستگاهت · هرکدام را خواستی پاک کن",
+  "ar": "ارتفاع ضغط الدم، السكري، تركيب الأقراص على جهازك · احذف ما تشاء"
+ },
+ "Hipertansiyon, tekrarlanan ölçümlerde sistolik kan basıncının 140 mmHg veya diyastolik kan basıncının 90 mmHg ve üzerinde olmasıdır. Vakaların çoğu ": {
+  "tr": "Hipertansiyon, tekrarlanan ölçümlerde sistolik kan basıncının 140 mmHg veya diyastolik kan basıncının 90 mmHg ve üzerinde olmasıdır. Vakaların çoğu ",
+  "en": "Hypertension is a systolic BP of 140 mmHg or more, or a diastolic BP of 90 mmHg or more, on repeated measurements. Most cases are ",
+  "fa": "فشار خون بالا یعنی فشار سیستولیک 140 mmHg یا بیشتر، یا فشار دیاستولیک 90 mmHg یا بیشتر در اندازه‌گیری‌های مکرر. بیشتر موارد از نوع ",
+  "ar": "ارتفاع ضغط الدم هو أن يكون الضغط الانقباضي 140 mmHg أو أكثر، أو الانبساطي 90 mmHg أو أكثر في قياسات متكررة. معظم الحالات من نوع "
+ },
+ "Hipertansiyon.pdf · el yazısı notlarınla": {
+  "tr": "Hipertansiyon.pdf · el yazısı notlarınla",
+  "en": "Hypertension.pdf · with your handwritten notes",
+  "fa": "فشار_خون_بالا.pdf · با یادداشت‌های دست‌نویست",
+  "ar": "ارتفاع_ضغط_الدم.pdf · مع ملاحظاتك المكتوبة بخط اليد"
+ },
+ "Hipokalemi ve kan şekerinde yükselme yapabilir.": {
+  "tr": "Hipokalemi ve kan şekerinde yükselme yapabilir.",
+  "en": "Can cause hypokalemia and raised blood sugar.",
+  "fa": "ممکن است هیپوکالمی و افزایش قند خون ایجاد کند.",
+  "ar": "قد يسبب نقص بوتاسيوم الدم وارتفاع سكر الدم."
+ },
+ "Hoca 9 dk durdu": {
+  "tr": "Hoca 9 dk durdu",
+  "en": "Lecturer spent 9 min",
+  "fa": "استاد 9 دقیقه مکث کرد",
+  "ar": "توقف الأستاذ 9 د"
+ },
+ "Hoca burada ": {
+  "tr": "Hoca burada ",
+  "en": "Lecturer spent here ",
+  "fa": "استاد اینجا ",
+  "ar": "توقف الأستاذ هنا "
+ },
+ "Hoca derste \"sınavda soruyorum\" dedi · ses kaydında 14 dk durdu": {
+  "tr": "Hoca derste \"sınavda soruyorum\" dedi · ses kaydında 14 dk durdu",
+  "en": "Lecturer said \"I'll ask this in the exam\" · spent 14 min in the recording",
+  "fa": "استاد سر کلاس گفت «این را در امتحان می‌پرسم» · در ضبط صدا 14 دقیقه رویش ماند",
+  "ar": "قال الأستاذ \"سأسأل عن هذا في الامتحان\" · توقف 14 د في التسجيل"
+ },
+ "Hoca derste bu konuda 4 dk durdu": {
+  "tr": "Hoca derste bu konuda 4 dk durdu",
+  "en": "Lecturer spent 4 min on this in class",
+  "fa": "استاد سر کلاس 4 دقیقه روی این مبحث ماند",
+  "ar": "توقف الأستاذ 4 د عند هذا في الدرس"
+ },
+ "Hoca derste neyi vurguladı?": {
+  "tr": "Hoca derste neyi vurguladı?",
+  "en": "What did the lecturer stress in class?",
+  "fa": "استاد سر کلاس روی چه چیزی تأکید کرد؟",
+  "ar": "على ماذا ركّز الأستاذ في الدرس؟"
+ },
+ "Hoca vurguladı": {
+  "tr": "Hoca vurguladı",
+  "en": "Lecturer stressed",
+  "fa": "تأکید استاد",
+  "ar": "ركّز عليه الأستاذ"
+ },
+ "Hoca şunu söylüyor: Alfa-1 blokerler ilk dozda ani tansiyon düşmesi (ortostatik hipotansiyon) yapabilir; bu yüzden ilk doz yatmadan önce verilir. PDF s. 13.": {
+  "tr": "Hoca şunu söylüyor: Alfa-1 blokerler ilk dozda ani tansiyon düşmesi (ortostatik hipotansiyon) yapabilir; bu yüzden ilk doz yatmadan önce verilir. PDF s. 13.",
+  "en": "The lecturer says: Alpha-1 blockers can cause a sudden BP drop (orthostatic hypotension) on the first dose, so the first dose is given at bedtime. PDF p. 13.",
+  "fa": "استاد می‌گوید: مسدودکننده‌های آلفا-1 در دوز اول ممکن است افت ناگهانی فشار (افت فشار وضعیتی) ایجاد کنند؛ برای همین دوز اول قبل از خواب داده می‌شود. PDF ص. 13.",
+  "ar": "يقول الأستاذ: حاصرات ألفا-1 قد تسبب هبوطًا مفاجئًا في الضغط (انخفاض ضغط الدم الانتصابي) مع الجرعة الأولى؛ لذلك تُعطى الجرعة الأولى قبل النوم. PDF ص. 13."
+ },
+ "Hoca şunu söylüyor: Dört ilaç grubu eşit derecede ilk basamaktır; hangisinin seçileceği hastanın diğer hastalıklarına göre belirlenir. PDF s. 12.": {
+  "tr": "Hoca şunu söylüyor: Dört ilaç grubu eşit derecede ilk basamaktır; hangisinin seçileceği hastanın diğer hastalıklarına göre belirlenir. PDF s. 12.",
+  "en": "The lecturer says: The four drug groups are equally first-line; the choice depends on the patient's other conditions. PDF p. 12.",
+  "fa": "استاد می‌گوید: چهار گروه دارویی به یک اندازه خط اول درمان‌اند؛ انتخاب بر اساس بیماری‌های دیگر بیمار است. PDF ص. 12.",
+  "ar": "يقول الأستاذ: مجموعات الأدوية الأربع خط أول بالتساوي؛ ويُحدَّد الاختيار حسب أمراض المريض الأخرى. PDF ص. 12."
+ },
+ "Hoca şunu söylüyor: Hipertansiyon tanısı için en az iki farklı vizitte ölçüm gerekir; tek bir yüksek ölçüm yetmez. PDF s. 5 ile aynı.": {
+  "tr": "Hoca şunu söylüyor: Hipertansiyon tanısı için en az iki farklı vizitte ölçüm gerekir; tek bir yüksek ölçüm yetmez. PDF s. 5 ile aynı.",
+  "en": "The lecturer says: Diagnosing hypertension needs readings at at least two separate visits; one high reading isn't enough. Same as PDF p. 5.",
+  "fa": "استاد می‌گوید: برای تشخیص فشار خون بالا اندازه‌گیری در حداقل دو ویزیت جدا لازم است؛ یک عدد بالا کافی نیست. مثل PDF ص. 5.",
+  "ar": "يقول الأستاذ: تشخيص ارتفاع ضغط الدم يحتاج قياسات في زيارتين مختلفتين على الأقل؛ قياس مرتفع واحد لا يكفي. مطابق لـ PDF ص. 5."
+ },
+ "Hoca şunu söylüyor: Tiyazidler kandaki ürik asidi yükseltir; gut hastasında atak yapabilir, bu yüzden kesinlikle verilmez (zorunlu kontrendikasyon). Gebelikte ise “göreceli” — yani dikkatle değerlendirilir. PDF s. 14 ile aynı.": {
+  "tr": "Hoca şunu söylüyor: Tiyazidler kandaki ürik asidi yükseltir; gut hastasında atak yapabilir, bu yüzden kesinlikle verilmez (zorunlu kontrendikasyon). Gebelikte ise “göreceli” — yani dikkatle değerlendirilir. PDF s. 14 ile aynı.",
+  "en": "The lecturer says: Thiazides raise blood uric acid; they can trigger an attack in gout patients, so they're never given (absolute contraindication). In pregnancy it's “relative” — meaning it's weighed carefully. Same as PDF p. 14.",
+  "fa": "استاد می‌گوید: تیازیدها اسید اوریک خون را بالا می‌برند؛ در بیمار نقرسی ممکن است حمله ایجاد کنند، پس اصلاً داده نمی‌شوند (منع مصرف مطلق). در بارداری «نسبی» است — یعنی با احتیاط بررسی می‌شود. مثل PDF ص. 14.",
+  "ar": "يقول الأستاذ: الثيازيدات ترفع حمض اليوريك في الدم؛ وقد تسبب نوبة لمريض النقرس، لذا لا تُعطى أبدًا (مانع استعمال مطلق). أما في الحمل فهو “نسبي” — أي يُقيَّم بحذر. مطابق لـ PDF ص. 14."
+ },
+ "Hocan en çok hasta vakası soruyor": {
+  "tr": "Hocan en çok hasta vakası soruyor",
+  "en": "Your lecturer asks patient cases the most",
+  "fa": "استادت بیشتر از همه مورد بیمار می‌پرسد",
+  "ar": "أستاذك يسأل عن حالات المرضى أكثر شيء"
+ },
+ "Hocanın derste yazdırdığı sorular": {
+  "tr": "Hocanın derste yazdırdığı sorular",
+  "en": "Questions the lecturer dictated in class",
+  "fa": "سؤال‌هایی که استاد سر کلاس دیکته کرد",
+  "ar": "الأسئلة التي أملاها الأستاذ في الدرس"
+ },
+ "Hocanın en çok durduğu konular": {
+  "tr": "Hocanın en çok durduğu konular",
+  "en": "Topics the lecturer spent most time on",
+  "fa": "مباحثی که استاد بیشتر رویشان ماند",
+  "ar": "المواضيع التي توقف عندها الأستاذ أكثر"
+ },
+ "Hocanın konulara ayırdığı süre ·": {
+  "tr": "Hocanın konulara ayırdığı süre ·",
+  "en": "Time the lecturer gave each topic ·",
+  "fa": "زمانی که استاد به هر مبحث داد ·",
+  "ar": "الوقت الذي خصصه الأستاذ لكل موضوع ·"
+ },
+ "Hocanın metni hiç değiştirilmez. Asistan istersen sadece senin yüklediğin materyalle, istersen yapay zekâ araştırmasıyla da cevap verir.": {
+  "tr": "Hocanın metni hiç değiştirilmez. Asistan istersen sadece senin yüklediğin materyalle, istersen yapay zekâ araştırmasıyla da cevap verir.",
+  "en": "The lecturer's text is never changed. The assistant answers only from the material you uploaded — or, if you choose, with AI research too.",
+  "fa": "متن استاد هرگز تغییر نمی‌کند. دستیار اگر بخواهی فقط با مطالبی که خودت آپلود کردی جواب می‌دهد و اگر بخواهی با جستجوی هوش مصنوعی هم.",
+  "ar": "لا يُغيَّر نص الأستاذ أبدًا. يجيب المساعد إن شئت من المواد التي رفعتها فقط، وإن شئت يستعين أيضًا ببحث الذكاء الاصطناعي."
+ },
+ "Hocanın soru tarzı burada görünecek": {
+  "tr": "Hocanın soru tarzı burada görünecek",
+  "en": "Your lecturer's question style will show here",
+  "fa": "سبک سؤال استادت اینجا نشان داده می‌شود",
+  "ar": "سيظهر هنا أسلوب أسئلة أستاذك"
+ },
+ "Hocanın tarzında 10 soruluk sınav hazırlanıyor…": {
+  "tr": "Hocanın tarzında 10 soruluk sınav hazırlanıyor…",
+  "en": "Preparing a 10-question exam in your lecturer's style…",
+  "fa": "امتحان 10 سؤالی به سبک استاد آماده می‌شود…",
+  "ar": "يُحضَّر امتحان من 10 أسئلة بأسلوب الأستاذ…"
+ },
+ "Hocanın uzun durduğu konular": {
+  "tr": "Hocanın uzun durduğu konular",
+  "en": "Topics the lecturer spent long on",
+  "fa": "مباحثی که استاد زیاد رویشان ماند",
+  "ar": "المواضيع التي أطال فيها الأستاذ"
+ },
+ "Hocanın uzun durduğu, tekrar ettiği ya da “sınavda çıkar” dediği konular özetinde ve sınavlarında daha ağırlıklı yer alır.": {
+  "tr": "Hocanın uzun durduğu, tekrar ettiği ya da “sınavda çıkar” dediği konular özetinde ve sınavlarında daha ağırlıklı yer alır.",
+  "en": "Topics the lecturer spent long on, repeated or said “will be on the exam” weigh more in your summary and exams.",
+  "fa": "مباحثی که استاد زیاد رویشان ماند، تکرار کرد یا گفت «در امتحان می‌آید» در خلاصه و امتحان‌هایت وزن بیشتری دارند.",
+  "ar": "المواضيع التي أطال فيها الأستاذ أو كرّرها أو قال “ستأتي في الامتحان” لها وزن أكبر في ملخصك وامتحاناتك."
+ },
+ "Hocanın vurguladığı 3 konu": {
+  "tr": "Hocanın vurguladığı 3 konu",
+  "en": "3 topics the lecturer stressed",
+  "fa": "3 مبحثی که استاد تأکید کرد",
+  "ar": "3 مواضيع ركّز عليها الأستاذ"
+ },
+ "Hocanın vurguladığı konulardan sınav": {
+  "tr": "Hocanın vurguladığı konulardan sınav",
+  "en": "Exam on the topics the lecturer stressed",
+  "fa": "آزمون از مباحث مورد تأکید استاد",
+  "ar": "اختبار في المواضيع التي أكّدها الأستاذ"
+ },
+ "Hocanın vurguları": {
+  "tr": "Hocanın vurguları",
+  "en": "What the lecturer stressed",
+  "fa": "تأکیدهای استاد",
+  "ar": "تأكيدات الأستاذ"
+ },
+ "Kavis Study Destek": {
+  "tr": "Kavis Study Destek",
+  "en": "Kavis Study Support",
+  "fa": "پشتیبانی Kavis Study",
+  "ar": "دعم Kavis Study"
+ },
+ "Kavis Study simgesi": {
+  "tr": "Kavis Study simgesi",
+  "en": "Kavis Study icon",
+  "fa": "نماد Kavis Study",
+  "ar": "أيقونة Kavis Study"
+ },
+ "Kavis Study yüklendi": {
+  "tr": "Kavis Study yüklendi",
+  "en": "Kavis Study installed",
+  "fa": "Kavis Study نصب شد",
+  "ar": "تم تثبيت Kavis Study"
+ },
+ "Kavis Study · Hipertansiyon anlatımı": {
+  "tr": "Kavis Study · Hipertansiyon anlatımı",
+  "en": "Kavis Study · Hypertension lecture",
+  "fa": "Kavis Study · توضیح فشار خون بالا",
+  "ar": "Kavis Study · شرح ارتفاع ضغط الدم"
+ },
+ "KART ": {
+  "tr": "KART ",
+  "en": "CARD ",
+  "fa": "کارت ",
+  "ar": "بطاقة "
+ },
+ "KAYNAK · S. 12": {
+  "tr": "KAYNAK · S. 12",
+  "en": "SOURCE · P. 12",
+  "fa": "منبع · ص. 12",
+  "ar": "المصدر · ص. 12"
+ },
+ "KB 180/120 üzerinde ve organ hasarı varsa acil durumdur; hastanede damar yoluyla tedavi edilir.": {
+  "tr": "KB 180/120 üzerinde ve organ hasarı varsa acil durumdur; hastanede damar yoluyla tedavi edilir.",
+  "en": "BP above 180/120 with organ damage is an emergency; it's treated in hospital via IV.",
+  "fa": "فشار بالای 180/120 همراه با آسیب اندام اورژانس است؛ در بیمارستان با تزریق وریدی درمان می‌شود.",
+  "ar": "الضغط فوق 180/120 مع تلف الأعضاء حالة طارئة؛ يُعالَج في المستشفى عبر الوريد."
+ },
+ "KVKK aydınlatma metnini": {
+  "tr": "KVKK aydınlatma metnini",
+  "en": "the KVKK privacy notice",
+  "fa": "اطلاعیه حریم خصوصی KVKK",
+  "ar": "إشعار الخصوصية KVKK"
+ },
+ "Kaldığın sayfadan devam ediyorsun": {
+  "tr": "Kaldığın sayfadan devam ediyorsun",
+  "en": "You're continuing from where you left off",
+  "fa": "از صفحه‌ای که مانده بودی ادامه می‌دهی",
+  "ar": "تتابع من الصفحة التي توقفت عندها"
+ },
+ "Kalem · bordo": {
+  "tr": "Kalem · bordo",
+  "en": "Pen · burgundy",
+  "fa": "قلم · زرشکی",
+  "ar": "قلم · خمري"
+ },
+ "Kalem · mavi": {
+  "tr": "Kalem · mavi",
+  "en": "Pen · blue",
+  "fa": "قلم · آبی",
+  "ar": "قلم · أزرق"
+ },
+ "Kan basıncı 180/120 mmHg'nin üzerindeyse ve ": {
+  "tr": "Kan basıncı 180/120 mmHg'nin üzerindeyse ve ",
+  "en": "If BP is above 180/120 mmHg and ",
+  "fa": "اگر فشار خون بالای 180/120 mmHg باشد و ",
+  "ar": "إذا كان ضغط الدم فوق 180/120 mmHg وكان هناك "
+ },
+ "Kart oluşturuldu · ": {
+  "tr": "Kart oluşturuldu · ",
+  "en": "Card created · ",
+  "fa": "کارت ساخته شد · ",
+  "ar": "تم إنشاء البطاقة · "
+ },
+ "Kartlar bitti · şimdi 3 kısa soru": {
+  "tr": "Kartlar bitti · şimdi 3 kısa soru",
+  "en": "Cards done · now 3 short questions",
+  "fa": "کارت‌ها تمام شد · حالا 3 سؤال کوتاه",
+  "ar": "انتهت البطاقات · الآن 3 أسئلة قصيرة"
+ },
+ "Kartlara geç · 6 kart": {
+  "tr": "Kartlara geç · 6 kart",
+  "en": "Go to cards · 6 cards",
+  "fa": "برو به کارت‌ها · 6 کارت",
+  "ar": "انتقل إلى البطاقات · 6 بطاقات"
+ },
+ "Kartlarda": {
+  "tr": "Kartlarda",
+  "en": "In cards",
+  "fa": "در کارت‌ها",
+  "ar": "في البطاقات"
+ },
+ "Kartlarda bu soruya 2 kez \"tekrar sor\" dedin": {
+  "tr": "Kartlarda bu soruya 2 kez \"tekrar sor\" dedin",
+  "en": "In cards you hit \"ask again\" on this question 2 times",
+  "fa": "در کارت‌ها 2 بار برای این سؤال «دوباره بپرس» زدی",
+  "ar": "في البطاقات اخترت \"اسأل مجددًا\" لهذا السؤال 2 مرات"
+ },
+ "Kavram": {
+  "tr": "Kavram",
+  "en": "Concept",
+  "fa": "مفهوم",
+  "ar": "مفهوم"
+ },
+ "Kaydı durdur": {
+  "tr": "Kaydı durdur",
+  "en": "Stop recording",
+  "fa": "توقف ضبط",
+  "ar": "إيقاف التسجيل"
+ },
+ "Kayıt durdu · ": {
+  "tr": "Kayıt durdu · ",
+  "en": "Recording stopped · ",
+  "fa": "ضبط متوقف شد · ",
+  "ar": "توقف التسجيل · "
+ },
+ "Kayıt ol": {
+  "tr": "Kayıt ol",
+  "en": "Sign up",
+  "fa": "ثبت‌نام",
+  "ar": "إنشاء حساب"
+ },
+ "Kayıt seçildi · Ders_8Ekim.m4a (52 dk)": {
+  "tr": "Kayıt seçildi · Ders_8Ekim.m4a (52 dk)",
+  "en": "Recording selected · Lecture_8Oct.m4a (52 min)",
+  "fa": "ضبط انتخاب شد · درس_8اکتبر.m4a (52 دقیقه)",
+  "ar": "تم اختيار التسجيل · محاضرة_8أكتوبر.m4a (52 د)"
+ },
+ "Kayıtlı derslerim": {
+  "tr": "Kayıtlı derslerim",
+  "en": "My saved lectures",
+  "fa": "درس‌های ذخیره‌شده‌ام",
+  "ar": "محاضراتي المحفوظة"
+ },
+ "Kendi planın": {
+  "tr": "Kendi planın",
+  "en": "Your own plan",
+  "fa": "برنامهٔ خودت",
+  "ar": "خطتك الخاصة"
+ },
+ "Kilit ekranı önizlemesi": {
+  "tr": "Kilit ekranı önizlemesi",
+  "en": "Lock screen preview",
+  "fa": "پیش‌نمایش صفحهٔ قفل",
+  "ar": "معاينة شاشة القفل"
+ },
+ "Kilit ekranında gör": {
+  "tr": "Kilit ekranında gör",
+  "en": "See on lock screen",
+  "fa": "در صفحهٔ قفل ببین",
+  "ar": "اعرض على شاشة القفل"
+ },
+ "Kod gelmedi mi? Tekrar gönder": {
+  "tr": "Kod gelmedi mi? Tekrar gönder",
+  "en": "Didn't get the code? Resend",
+  "fa": "کد نیامد؟ دوباره بفرست",
+  "ar": "لم يصلك الرمز؟ أعد الإرسال"
+ },
+ "Kodu e-postadan yapıştır": {
+  "tr": "Kodu e-postadan yapıştır",
+  "en": "Paste the code from your email",
+  "fa": "کد را از ایمیل بچسبان",
+  "ar": "الصق الرمز من بريدك الإلكتروني"
+ },
+ "Komplikasyonu olmayan hastada bu gruplardan biriyle başlanabilir.": {
+  "tr": "Komplikasyonu olmayan hastada bu gruplardan biriyle başlanabilir.",
+  "en": "In a patient without complications, you can start with one of these groups.",
+  "fa": "در بیمار بدون عارضه می‌توان با یکی از این گروه‌ها شروع کرد.",
+  "ar": "في المريض بدون مضاعفات يمكن البدء بإحدى هذه المجموعات."
+ },
+ "Kontrendikasyon": {
+  "tr": "Kontrendikasyon",
+  "en": "Contraindication",
+  "fa": "منع مصرف",
+  "ar": "مضاد استطباب"
+ },
+ "Kontrendike": {
+  "tr": "Kontrendike",
+  "en": "Contraindicated",
+  "fa": "منع مصرف دارد",
+  "ar": "مضاد استطباب"
+ },
+ "Konu seç": {
+  "tr": "Konu seç",
+  "en": "Choose topic",
+  "fa": "موضوع را انتخاب کن",
+  "ar": "اختر الموضوع"
+ },
+ "Konu: İlk basamak ilaçlar ve kontrendikasyonlar": {
+  "tr": "Konu: İlk basamak ilaçlar ve kontrendikasyonlar",
+  "en": "Topic: First-line drugs and contraindications",
+  "fa": "موضوع: داروهای خط اول و موارد منع مصرف",
+  "ar": "الموضوع: أدوية الخط الأول ومضادات الاستطباب"
+ },
+ "Konular sonraki tekrar gününe kaydırıldı": {
+  "tr": "Konular sonraki tekrar gününe kaydırıldı",
+  "en": "Topics moved to the next review day",
+  "fa": "موضوع‌ها به روز مرور بعدی منتقل شدند",
+  "ar": "نُقلت المواضيع إلى يوم المراجعة التالي"
+ },
+ "Konuşmanın tam metni": {
+  "tr": "Konuşmanın tam metni",
+  "en": "Full transcript of the talk",
+  "fa": "متن کامل گفتار",
+  "ar": "النص الكامل للحديث"
+ },
+ "Kopyala": {
+  "tr": "Kopyala",
+  "en": "Copy",
+  "fa": "کپی",
+  "ar": "نسخ"
+ },
+ "Koyu mod açık": {
+  "tr": "Koyu mod açık",
+  "en": "Dark mode on",
+  "fa": "حالت تیره روشن است",
+  "ar": "الوضع الداكن مفعّل"
+ },
+ "Koyu moda geç": {
+  "tr": "Koyu moda geç",
+  "en": "Switch to dark mode",
+  "fa": "رفتن به حالت تیره",
+  "ar": "انتقل إلى الوضع الداكن"
+ },
+ "Kullanım koşulları": {
+  "tr": "Kullanım koşulları",
+  "en": "Terms of use",
+  "fa": "شرایط استفاده",
+  "ar": "شروط الاستخدام"
+ },
+ "Kuru öksürük · bradikinin birikir": {
+  "tr": "Kuru öksürük · bradikinin birikir",
+  "en": "Dry cough · bradykinin builds up",
+  "fa": "سرفهٔ خشک · برادی‌کینین تجمع می‌یابد",
+  "ar": "سعال جاف · يتراكم البراديكينين"
+ },
+ "Küçük": {
+  "tr": "Küçük",
+  "en": "Small",
+  "fa": "کوچک",
+  "ar": "صغير"
+ },
+ "KİLİTLİ": {
+  "tr": "KİLİTLİ",
+  "en": "LOCKED",
+  "fa": "قفل",
+  "ar": "مقفل"
+ },
+ "Kısa bir hasta öyküsü verip \"hangi ilaç seçilmeli?\" diye soruyor. Şıklar genelde aynı ilaç grubundan.": {
+  "tr": "Kısa bir hasta öyküsü verip \"hangi ilaç seçilmeli?\" diye soruyor. Şıklar genelde aynı ilaç grubundan.",
+  "en": "It gives a short patient case and asks \"which drug should be chosen?\". Options are usually from the same drug group.",
+  "fa": "یک شرح حال کوتاه بیمار می‌دهد و می‌پرسد «کدام دارو باید انتخاب شود؟». گزینه‌ها معمولاً از یک گروه دارویی‌اند.",
+  "ar": "يعطي قصة مريض قصيرة ويسأل «أي دواء يجب اختياره؟». الخيارات عادةً من نفس المجموعة الدوائية."
+ },
+ "Kısa hazırlık önerisi ekle": {
+  "tr": "Kısa hazırlık önerisi ekle",
+  "en": "Add a short prep tip",
+  "fa": "یک پیشنهاد آمادگی کوتاه اضافه کن",
+  "ar": "أضف اقتراح تحضير قصيرًا"
+ },
+ "Lab 2 · uygulama": {
+  "tr": "Lab 2 · uygulama",
+  "en": "Lab 2 · practical",
+  "fa": "آزمایشگاه 2 · عملی",
+  "ar": "المختبر 2 · عملي"
+ },
+ "Lab 4 · uygulama": {
+  "tr": "Lab 4 · uygulama",
+  "en": "Lab 4 · practical",
+  "fa": "آزمایشگاه 4 · عملی",
+  "ar": "المختبر 4 · عملي"
+ },
+ "MOLEKÜL YAPISI · SAYFA 12'DE GEÇEN İLAÇ": {
+  "tr": "MOLEKÜL YAPISI · SAYFA 12'DE GEÇEN İLAÇ",
+  "en": "MOLECULAR STRUCTURE · DRUG ON PAGE 12",
+  "fa": "ساختار مولکولی · دارویی که در صفحهٔ 12 آمده",
+  "ar": "البنية الجزيئية · الدواء المذكور في الصفحة 12"
+ },
+ "Merhaba Elif! Ben Kavis Study destek ekibinden. Uygulamada bir sorun mu gördün? Konuyu seç ve kısaca yaz; gerekirse ekran görüntüsü ekle.": {
+  "tr": "Merhaba Elif! Ben Kavis Study destek ekibinden. Uygulamada bir sorun mu gördün? Konuyu seç ve kısaca yaz; gerekirse ekran görüntüsü ekle.",
+  "en": "Hi Elif! I'm from the Kavis Study support team. Did you spot a problem in the app? Pick a topic and write briefly; add a screenshot if needed.",
+  "fa": "سلام Elif! من از تیم پشتیبانی Kavis Study هستم. مشکلی در برنامه دیدی؟ موضوع را انتخاب کن و کوتاه بنویس؛ اگر لازم بود اسکرین‌شات اضافه کن.",
+  "ar": "مرحبًا Elif! أنا من فريق دعم Kavis Study. هل لاحظت مشكلة في التطبيق؟ اختر الموضوع واكتب باختصار؛ وأضف لقطة شاشة إن لزم."
+ },
+ "Merhaba,": {
+  "tr": "Merhaba,",
+  "en": "Hi,",
+  "fa": "سلام،",
+  "ar": "مرحبًا،"
+ },
+ "Mesaj": {
+  "tr": "Mesaj",
+  "en": "Message",
+  "fa": "پیام",
+  "ar": "رسالة"
+ },
+ "Mesajla gönder": {
+  "tr": "Mesajla gönder",
+  "en": "Send by message",
+  "fa": "با پیام بفرست",
+  "ar": "أرسل برسالة"
+ },
+ "Mesajlar açılıyor · bağlantı eklendi": {
+  "tr": "Mesajlar açılıyor · bağlantı eklendi",
+  "en": "Opening messages · link added",
+  "fa": "پیام‌ها باز می‌شود · لینک اضافه شد",
+  "ar": "جارٍ فتح الرسائل · أُضيف الرابط"
+ },
+ "Mesajlar · Elif Yıldız": {
+  "tr": "Mesajlar · Elif Yıldız",
+  "en": "Messages · Elif Yıldız",
+  "fa": "پیام‌ها · Elif Yıldız",
+  "ar": "الرسائل · Elif Yıldız"
+ },
+ "Mesleki İngilizce": {
+  "tr": "Mesleki İngilizce",
+  "en": "Professional English",
+  "fa": "زبان انگلیسی تخصصی",
+  "ar": "الإنجليزية المهنية"
+ },
+ "Metildopa ve labetalol": {
+  "tr": "Metildopa ve labetalol",
+  "en": "Methyldopa and labetalol",
+  "fa": "متیل‌دوپا و لابتالول",
+  "ar": "ميثيل دوبا ولابيتالول"
+ },
+ "Metin": {
+  "tr": "Metin",
+  "en": "Text",
+  "fa": "متن",
+  "ar": "النص"
+ },
+ "Molekül yapısı": {
+  "tr": "Molekül yapısı",
+  "en": "Molecular structure",
+  "fa": "ساختار مولکولی",
+  "ar": "البنية الجزيئية"
+ },
+ "Molekül yapısı · Kaptopril": {
+  "tr": "Molekül yapısı · Kaptopril",
+  "en": "Molecular structure · Captopril",
+  "fa": "ساختار مولکولی · کاپتوپریل",
+  "ar": "البنية الجزيئية · كابتوبريل"
+ },
+ "Nasıl": {
+  "tr": "Nasıl",
+  "en": "How",
+  "fa": "چطور",
+  "ar": "كيف"
+ },
+ "Ne paylaşmak istiyorsun?": {
+  "tr": "Ne paylaşmak istiyorsun?",
+  "en": "What do you want to share?",
+  "fa": "چه چیزی می‌خواهی به اشتراک بگذاری؟",
+  "ar": "ماذا تريد أن تشارك؟"
+ },
+ "Neden bu konu:": {
+  "tr": "Neden bu konu:",
+  "en": "Why this topic:",
+  "fa": "چرا این موضوع:",
+  "ar": "لماذا هذا الموضوع:"
+ },
+ "Neden hâlâ 1976'daki gibi ders çalışıyorsun?": {
+  "tr": "Neden hâlâ 1976'daki gibi ders çalışıyorsun?",
+  "en": "Why are you still studying like it's 1976?",
+  "fa": "چرا هنوز مثل سال 1976 درس می‌خوانی؟",
+  "ar": "لماذا ما زلت تدرس كما في عام 1976؟"
+ },
+ "Not al (Apple Pencil ya da parmak)": {
+  "tr": "Not al (Apple Pencil ya da parmak)",
+  "en": "Take notes (Apple Pencil or finger)",
+  "fa": "یادداشت بردار (Apple Pencil یا انگشت)",
+  "ar": "دوّن ملاحظات (Apple Pencil أو الإصبع)"
+ },
+ "Not alanı · yazmak için çiz": {
+  "tr": "Not alanı · yazmak için çiz",
+  "en": "Note area · draw to write",
+  "fa": "ناحیهٔ یادداشت · برای نوشتن بکش",
+  "ar": "منطقة الملاحظات · ارسم لتكتب"
+ },
+ "Not araçları": {
+  "tr": "Not araçları",
+  "en": "Note tools",
+  "fa": "ابزارهای یادداشت",
+  "ar": "أدوات الملاحظات"
+ },
+ "Not modu kapandı": {
+  "tr": "Not modu kapandı",
+  "en": "Note mode off",
+  "fa": "حالت یادداشت خاموش شد",
+  "ar": "تم إيقاف وضع الملاحظات"
+ },
+ "Not modu · Apple Pencil ya da parmağınla yaz": {
+  "tr": "Not modu · Apple Pencil ya da parmağınla yaz",
+  "en": "Note mode · write with Apple Pencil or your finger",
+  "fa": "حالت یادداشت · با Apple Pencil یا انگشتت بنویس",
+  "ar": "وضع الملاحظات · اكتب بـ Apple Pencil أو بإصبعك"
+ },
+ "Not modu · yalnızca Apple Pencil yazar": {
+  "tr": "Not modu · yalnızca Apple Pencil yazar",
+  "en": "Note mode · only Apple Pencil writes",
+  "fa": "حالت یادداشت · فقط Apple Pencil می‌نویسد",
+  "ar": "وضع الملاحظات · يكتب Apple Pencil فقط"
+ },
+ "Notların kaydedildi": {
+  "tr": "Notların kaydedildi",
+  "en": "Your notes were saved",
+  "fa": "یادداشت‌هایت ذخیره شد",
+  "ar": "تم حفظ ملاحظاتك"
+ },
+ "O dersin PDF'inden 10 dakikalık özet önerilir": {
+  "tr": "O dersin PDF'inden 10 dakikalık özet önerilir",
+  "en": "A 10-minute summary from that course's PDF is suggested",
+  "fa": "یک خلاصهٔ 10 دقیقه‌ای از PDF همان درس پیشنهاد می‌شود",
+  "ar": "يُقترح ملخص مدته 10 دقائق من ملف PDF لتلك المادة"
+ },
+ "OKUL PROGRAMI · YARIN 2 DERS": {
+  "tr": "OKUL PROGRAMI · YARIN 2 DERS",
+  "en": "SCHOOL TIMETABLE · 2 CLASSES TOMORROW",
+  "fa": "برنامهٔ کلاس‌ها · فردا 2 کلاس",
+  "ar": "الجدول الدراسي · غدًا 2 محاضرة"
+ },
+ "Okul ders": {
+  "tr": "Okul ders",
+  "en": "My school",
+  "fa": "برنامهٔ",
+  "ar": "جدولي"
+ },
+ "Okul ders programım": {
+  "tr": "Okul ders programım",
+  "en": "My school timetable",
+  "fa": "برنامهٔ کلاس‌هایم",
+  "ar": "جدولي الدراسي"
+ },
+ "Okul ders programım: yarın 2 ders, ilk ders 09:00 Farmasötik Kimya II": {
+  "tr": "Okul ders programım: yarın 2 ders, ilk ders 09:00 Farmasötik Kimya II",
+  "en": "My school timetable: 2 classes tomorrow, first class 09:00 Pharmaceutical Chemistry II",
+  "fa": "برنامهٔ کلاس‌هایم: فردا 2 کلاس، اولین کلاس 09:00 شیمی دارویی II",
+  "ar": "جدولي الدراسي: غدًا 2 محاضرة، الأولى 09:00 الكيمياء الصيدلانية II"
+ },
+ "Okuldaki ders programını bana ver": {
+  "tr": "Okuldaki ders programını bana ver",
+  "en": "Give me my school timetable",
+  "fa": "برنامهٔ کلاس‌هایم را بده",
+  "ar": "أعطني جدولي الدراسي"
+ },
+ "Okuldaki ders programının fotoğrafı": {
+  "tr": "Okuldaki ders programının fotoğrafı",
+  "en": "Photo of your school timetable",
+  "fa": "عکس برنامهٔ کلاس‌هایت",
+  "ar": "صورة جدولك الدراسي"
+ },
+ "Organ hasarı yoksa (hipertansif ivedi durum) tansiyon ağızdan alınan ilaçlarla 24–48 saat içinde yavaşça düşürülür. Çok hızlı düşürmek beyin ve kalbe zarar verebilir.": {
+  "tr": "Organ hasarı yoksa (hipertansif ivedi durum) tansiyon ağızdan alınan ilaçlarla 24–48 saat içinde yavaşça düşürülür. Çok hızlı düşürmek beyin ve kalbe zarar verebilir.",
+  "en": "Without organ damage (hypertensive urgency), blood pressure is lowered slowly over 24–48 hours with oral drugs. Lowering it too fast can harm the brain and heart.",
+  "fa": "اگر آسیب ارگان نباشد (فوریت فشار خون)، فشار با داروهای خوراکی طی 24–48 ساعت به‌آرامی پایین آورده می‌شود. پایین آوردن خیلی سریع می‌تواند به مغز و قلب آسیب بزند.",
+  "ar": "إذا لم يوجد تلف عضوي (حالة إلحاحية)، يُخفَّض الضغط ببطء خلال 24–48 ساعة بأدوية فموية. التخفيض السريع جدًا قد يضر الدماغ والقلب."
+ },
+ "Ortostatik": {
+  "tr": "Ortostatik",
+  "en": "Orthostatic",
+  "fa": "ارتواستاتیک",
+  "ar": "انتصابي"
+ },
+ "Oynat": {
+  "tr": "Oynat",
+  "en": "Play",
+  "fa": "پخش",
+  "ar": "تشغيل"
+ },
+ "PDF ile eşleştiriliyor": {
+  "tr": "PDF ile eşleştiriliyor",
+  "en": "Matching with PDF",
+  "fa": "در حال تطبیق با PDF",
+  "ar": "جارٍ المطابقة مع PDF"
+ },
+ "PDF sayfalarıyla eşleşme": {
+  "tr": "PDF sayfalarıyla eşleşme",
+  "en": "Matching PDF pages",
+  "fa": "تطبیق با صفحه‌های PDF",
+  "ar": "المطابقة مع صفحات PDF"
+ },
+ "PDF ve notlarım": {
+  "tr": "PDF ve notlarım",
+  "en": "PDF and my notes",
+  "fa": "PDF و یادداشت‌هایم",
+  "ar": "PDF وملاحظاتي"
+ },
+ "PDF veya ekran görüntüsü yükle": {
+  "tr": "PDF veya ekran görüntüsü yükle",
+  "en": "Upload a PDF or screenshot",
+  "fa": "PDF یا اسکرین‌شات آپلود کن",
+  "ar": "ارفع PDF أو لقطة شاشة"
+ },
+ "PDF yükleme": {
+  "tr": "PDF yükleme",
+  "en": "PDF upload",
+  "fa": "آپلود PDF",
+  "ar": "رفع PDF"
+ },
+ "PDF yüklenmiyor": {
+  "tr": "PDF yüklenmiyor",
+  "en": "PDF won't upload",
+  "fa": "PDF آپلود نمی‌شود",
+  "ar": "لا يتم رفع PDF"
+ },
+ "PDF'im yüklenmiyor, ne yapmalıyım?": {
+  "tr": "PDF'im yüklenmiyor, ne yapmalıyım?",
+  "en": "My PDF won't upload, what should I do?",
+  "fa": "PDFم آپلود نمی‌شود، چه کار کنم؟",
+  "ar": "ملف PDF لا يُرفع، ماذا أفعل؟"
+ },
+ "PDF'ini yükle; Kavis anlatsın, sorsun, sınava hazırlasın.": {
+  "tr": "PDF'ini yükle; Kavis anlatsın, sorsun, sınava hazırlasın.",
+  "en": "Upload your PDF; Kavis explains, quizzes you and gets you exam-ready.",
+  "fa": "PDFت را آپلود کن؛ Kavis توضیح می‌دهد، سؤال می‌پرسد و برای امتحان آماده‌ات می‌کند.",
+  "ar": "ارفع ملف PDF؛ Kavis يشرح ويسألك ويجهّزك للامتحان."
+ },
+ "PDF'lerin ve soruların yalnızca senin hesabında saklanır.": {
+  "tr": "PDF'lerin ve soruların yalnızca senin hesabında saklanır.",
+  "en": "Your PDFs and questions are stored only in your account.",
+  "fa": "PDFها و سؤال‌هایت فقط در حساب خودت ذخیره می‌شوند.",
+  "ar": "ملفاتك وأسئلتك تُحفظ في حسابك فقط."
+ },
+ "PDF'lerin yalnızca uygulamanın içinde, şifreli saklanır. iPad'in dosyalarında görünmez, başka uygulamalarla paylaşılamaz.": {
+  "tr": "PDF'lerin yalnızca uygulamanın içinde, şifreli saklanır. iPad'in dosyalarında görünmez, başka uygulamalarla paylaşılamaz.",
+  "en": "Your PDFs are stored encrypted, only inside the app. They don't appear in your iPad's files and can't be shared with other apps.",
+  "fa": "PDFهایت فقط داخل برنامه و به‌صورت رمزگذاری‌شده ذخیره می‌شوند. در فایل‌های iPad دیده نمی‌شوند و با برنامه‌های دیگر قابل اشتراک نیستند.",
+  "ar": "ملفاتك تُحفظ مشفّرة داخل التطبيق فقط. لا تظهر في ملفات iPad ولا يمكن مشاركتها مع تطبيقات أخرى."
+ },
+ "Parmakla yaz": {
+  "tr": "Parmakla yaz",
+  "en": "Write with finger",
+  "fa": "نوشتن با انگشت",
+  "ar": "الكتابة بالإصبع"
+ },
+ "Parmakla yazma açık · parmağınla da yazabilirsin": {
+  "tr": "Parmakla yazma açık · parmağınla da yazabilirsin",
+  "en": "Finger writing on · you can write with your finger too",
+  "fa": "نوشتن با انگشت روشن · با انگشتت هم می‌توانی بنویسی",
+  "ar": "الكتابة بالإصبع مفعّلة · يمكنك الكتابة بإصبعك أيضًا"
+ },
+ "Parmakla yazma kapalı · parmak sayfayı kaydırır, yalnızca Apple Pencil yazar": {
+  "tr": "Parmakla yazma kapalı · parmak sayfayı kaydırır, yalnızca Apple Pencil yazar",
+  "en": "Finger writing off · finger scrolls the page, only Apple Pencil writes",
+  "fa": "نوشتن با انگشت خاموش · انگشت صفحه را اسکرول می‌کند، فقط Apple Pencil می‌نویسد",
+  "ar": "الكتابة بالإصبع معطّلة · الإصبع يمرّر الصفحة، وApple Pencil فقط يكتب"
+ },
+ "Paylaş": {
+  "tr": "Paylaş",
+  "en": "Share",
+  "fa": "اشتراک‌گذاری",
+  "ar": "مشاركة"
+ },
+ "Paylaşılan dersler yalnızca Premium hesaplarda açılır. 3 gün ücretsiz dene, istediğin zaman iptal et.": {
+  "tr": "Paylaşılan dersler yalnızca Premium hesaplarda açılır. 3 gün ücretsiz dene, istediğin zaman iptal et.",
+  "en": "Shared courses only open on Premium accounts. Try 3 days free, cancel anytime.",
+  "fa": "درس‌های اشتراکی فقط در حساب‌های Premium باز می‌شوند. 3 روز رایگان امتحان کن، هر وقت خواستی لغو کن.",
+  "ar": "الدروس المشتركة تُفتح فقط في حسابات Premium. جرّب 3 أيام مجانًا، وألغِ متى شئت."
+ },
+ "Paylaşım menüsü açılıyor": {
+  "tr": "Paylaşım menüsü açılıyor",
+  "en": "Opening share menu",
+  "fa": "منوی اشتراک‌گذاری باز می‌شود",
+  "ar": "جارٍ فتح قائمة المشاركة"
+ },
+ "Pazartesi": {
+  "tr": "Pazartesi",
+  "en": "Monday",
+  "fa": "دوشنبه",
+  "ar": "الإثنين"
+ },
+ "Perşembe": {
+  "tr": "Perşembe",
+  "en": "Thursday",
+  "fa": "پنجشنبه",
+  "ar": "الخميس"
+ },
+ "Plan kendini düzeltir; kalan işleri sonraki günlere dağıtır. Haftada bir gün dinlenme günüdür.": {
+  "tr": "Plan kendini düzeltir; kalan işleri sonraki günlere dağıtır. Haftada bir gün dinlenme günüdür.",
+  "en": "The plan fixes itself; it spreads remaining tasks over the next days. One day a week is a rest day.",
+  "fa": "برنامه خودش را اصلاح می‌کند؛ کارهای باقی‌مانده را بین روزهای بعد پخش می‌کند. یک روز در هفته روز استراحت است.",
+  "ar": "الخطة تصحّح نفسها؛ وتوزّع المهام المتبقية على الأيام التالية. يوم واحد في الأسبوع للراحة."
+ },
+ "Planı istediğin zaman Ayarlar › Çalışma planı bölümünden değiştirebilirsin.": {
+  "tr": "Planı istediğin zaman Ayarlar › Çalışma planı bölümünden değiştirebilirsin.",
+  "en": "You can change it any time in Settings › Study plan.",
+  "fa": "هر وقت خواستی از تنظیمات › برنامهٔ مطالعه تغییرش بده.",
+  "ar": "يمكنك تغييرها في أي وقت من الإعدادات › خطة الدراسة."
+ },
+ "Planını": {
+  "tr": "Planını",
+  "en": "Your plan",
+  "fa": "برنامه‌ات",
+  "ar": "خطتك"
+ },
+ "Potasyum düşer": {
+  "tr": "Potasyum düşer",
+  "en": "Potassium drops",
+  "fa": "پتاسیم کاهش می‌یابد",
+  "ar": "ينخفض البوتاسيوم"
+ },
+ "Prazosin, doksazosin… ilk dozda hasta ayağa kalkınca bayılabilir. O yüzden ilk dozu yatarken veriyoruz.": {
+  "tr": "Prazosin, doksazosin… ilk dozda hasta ayağa kalkınca bayılabilir. O yüzden ilk dozu yatarken veriyoruz.",
+  "en": "Prazosin, doxazosin… on the first dose the patient may faint when standing up. That's why we give the first dose lying down.",
+  "fa": "پرازوسین، دوکسازوسین… با دوز اول ممکن است بیمار هنگام بلند شدن غش کند. برای همین دوز اول را در حالت درازکش می‌دهیم.",
+  "ar": "البرازوسين، الدوكسازوسين… قد يُغمى على المريض عند الوقوف بعد الجرعة الأولى. لذلك نعطي الجرعة الأولى وهو مستلقٍ."
+ },
+ "Premium olmayan bir arkadaşın için adım adım": {
+  "tr": "Premium olmayan bir arkadaşın için adım adım",
+  "en": "Step by step for a friend without Premium",
+  "fa": "قدم‌به‌قدم برای دوستی که Premium ندارد",
+  "ar": "خطوة بخطوة لصديق ليس لديه Premium"
+ },
+ "Premium · 3 günlük ücretsiz deneme": {
+  "tr": "Premium · 3 günlük ücretsiz deneme",
+  "en": "Premium · 3-day free trial",
+  "fa": "Premium · آزمایش رایگان 3 روزه",
+  "ar": "Premium · تجربة مجانية 3 أيام"
+ },
+ "Premium'a geç · 3 gün ücretsiz": {
+  "tr": "Premium'a geç · 3 gün ücretsiz",
+  "en": "Go Premium · 3 days free",
+  "fa": "ارتقا به Premium · 3 روز رایگان",
+  "ar": "انتقل إلى Premium · 3 أيام مجانًا"
+ },
+ "Primer hipertansiyon": {
+  "tr": "Primer hipertansiyon",
+  "en": "Primary hypertension",
+  "fa": "فشار خون اولیه",
+  "ar": "ارتفاع ضغط الدم الأولي"
+ },
+ "Profil": {
+  "tr": "Profil",
+  "en": "Profile",
+  "fa": "پروفایل",
+  "ar": "الملف الشخصي"
+ },
+ "Programı aç": {
+  "tr": "Programı aç",
+  "en": "Open schedule",
+  "fa": "باز کردن برنامه کلاس‌ها",
+  "ar": "افتح الجدول"
+ },
+ "Programı nasıl eklemek istersin?": {
+  "tr": "Programı nasıl eklemek istersin?",
+  "en": "How would you like to add your schedule?",
+  "fa": "برنامه کلاس‌هایت را چطور می‌خواهی اضافه کنی؟",
+  "ar": "كيف تريد إضافة جدولك؟"
+ },
+ "Programın kaydedildi · her dersten bir gün önce ": {
+  "tr": "Programın kaydedildi · her dersten bir gün önce ",
+  "en": "Schedule saved · the day before each class, at ",
+  "fa": "برنامه‌ات ذخیره شد · یک روز قبل از هر کلاس، ساعت ",
+  "ar": "تم حفظ جدولك · قبل كل محاضرة بيوم، الساعة "
+ },
+ "Programın okunuyor…": {
+  "tr": "Programın okunuyor…",
+  "en": "Reading your schedule…",
+  "fa": "در حال خواندن برنامه‌ات…",
+  "ar": "جارٍ قراءة جدولك…"
+ },
+ "Programın yalnızca hatırlatma için kullanılır, kimseyle paylaşılmaz.": {
+  "tr": "Programın yalnızca hatırlatma için kullanılır, kimseyle paylaşılmaz.",
+  "en": "Your schedule is only used for reminders and isn't shared with anyone.",
+  "fa": "برنامه‌ات فقط برای یادآوری استفاده می‌شود و با کسی به اشتراک گذاشته نمی‌شود.",
+  "ar": "يُستخدم جدولك للتذكيرات فقط ولا يُشارك مع أحد."
+ },
+ "Programını ekle · hangi gün, saat kaçta dersin olduğunu bir gün önceden hatırlatayım.": {
+  "tr": "Programını ekle · hangi gün, saat kaçta dersin olduğunu bir gün önceden hatırlatayım.",
+  "en": "Add your schedule · I'll remind you a day ahead which day and time you have class.",
+  "fa": "برنامه‌ات را اضافه کن · یک روز قبل یادآوری می‌کنم چه روزی و چه ساعتی کلاس داری.",
+  "ar": "أضف جدولك · سأذكّرك قبلها بيوم في أي يوم وساعة لديك محاضرة."
+ },
+ "Proteinüri": {
+  "tr": "Proteinüri",
+  "en": "Proteinuria",
+  "fa": "پروتئینوری",
+  "ar": "البيلة البروتينية"
+ },
+ "Prototip: örnek cevap gösteriliyor · gerçek uygulamada senin sorunun cevabı gelir": {
+  "tr": "Prototip: örnek cevap gösteriliyor · gerçek uygulamada senin sorunun cevabı gelir",
+  "en": "Prototype: showing a sample answer · in the real app you get the answer to your question",
+  "fa": "نمونه اولیه: پاسخ نمونه نمایش داده می‌شود · در برنامه واقعی پاسخ سؤال خودت می‌آید",
+  "ar": "نموذج أولي: تُعرض إجابة نموذجية · في التطبيق الحقيقي تصلك إجابة سؤالك"
+ },
+ "Ramipril kaç mg ile başlanır?": {
+  "tr": "Ramipril kaç mg ile başlanır?",
+  "en": "What's the starting dose of ramipril in mg?",
+  "fa": "رامی‌پریل با چند میلی‌گرم شروع می‌شود؟",
+  "ar": "بكم ملغ يُبدأ الراميبريل؟"
+ },
+ "Renin artar": {
+  "tr": "Renin artar",
+  "en": "Renin rises",
+  "fa": "رنین افزایش می‌یابد",
+  "ar": "يرتفع الرينين"
+ },
+ "S. 13": {
+  "tr": "S. 13",
+  "en": "p. 13",
+  "fa": "ص. 13",
+  "ar": "ص. 13"
+ },
+ "S. 14 · hoca: \"sınavda soruyorum\"": {
+  "tr": "S. 14 · hoca: \"sınavda soruyorum\"",
+  "en": "p. 14 · prof: \"I ask this in exams\"",
+  "fa": "ص. 14 · استاد: «این را در امتحان می‌پرسم»",
+  "ar": "ص. 14 · الأستاذ: \"أسأل عن هذا في الامتحان\""
+ },
+ "S. 21": {
+  "tr": "S. 21",
+  "en": "p. 21",
+  "fa": "ص. 21",
+  "ar": "ص. 21"
+ },
+ "S. 21 · zayıf konu": {
+  "tr": "S. 21 · zayıf konu",
+  "en": "p. 21 · weak topic",
+  "fa": "ص. 21 · مبحث ضعیف",
+  "ar": "ص. 21 · موضوع ضعيف"
+ },
+ "SANA ÖZEL ÖZET · 5 KONU · ~3 DK": {
+  "tr": "SANA ÖZEL ÖZET · 5 KONU · ~3 DK",
+  "en": "YOUR PERSONAL SUMMARY · 5 TOPICS · ~3 MIN",
+  "fa": "خلاصه مخصوص تو · 5 مبحث · ~3 دقیقه",
+  "ar": "ملخص خاص بك · 5 مواضيع · ~3 د"
+ },
+ "SAYFA 10–11": {
+  "tr": "SAYFA 10–11",
+  "en": "PAGES 10–11",
+  "fa": "صفحه 10–11",
+  "ar": "الصفحات 10–11"
+ },
+ "SAYFA 14–15": {
+  "tr": "SAYFA 14–15",
+  "en": "PAGES 14–15",
+  "fa": "صفحه 14–15",
+  "ar": "الصفحات 14–15"
+ },
+ "SAYFA 16": {
+  "tr": "SAYFA 16",
+  "en": "PAGE 16",
+  "fa": "صفحه 16",
+  "ar": "صفحة 16"
+ },
+ "SESLİ ANLATIM · HİPERTANSİYON": {
+  "tr": "SESLİ ANLATIM · HİPERTANSİYON",
+  "en": "AUDIO LESSON · HYPERTENSION",
+  "fa": "توضیح صوتی · فشار خون بالا",
+  "ar": "شرح صوتي · ارتفاع ضغط الدم"
+ },
+ "Saat 09:00'da Hipertansiyon seni bekliyor.": {
+  "tr": "Saat 09:00'da Hipertansiyon seni bekliyor.",
+  "en": "Hypertension is waiting for you at 09:00.",
+  "fa": "ساعت 09:00 فشار خون بالا منتظرت است.",
+  "ar": "ارتفاع ضغط الدم بانتظارك الساعة 09:00."
+ },
+ "Salı": {
+  "tr": "Salı",
+  "en": "Tuesday",
+  "fa": "سه‌شنبه",
+  "ar": "الثلاثاء"
+ },
+ "Sarı fosforlu": {
+  "tr": "Sarı fosforlu",
+  "en": "Yellow highlighter",
+  "fa": "هایلایت زرد",
+  "ar": "قلم تمييز أصفر"
+ },
+ "Satın alımlar kontrol edildi · aktif abonelik yok": {
+  "tr": "Satın alımlar kontrol edildi · aktif abonelik yok",
+  "en": "Purchases checked · no active subscription",
+  "fa": "خریدها بررسی شد · اشتراک فعالی نیست",
+  "ar": "تم التحقق من المشتريات · لا يوجد اشتراك نشط"
+ },
+ "Sayfa sesli okunuyor…": {
+  "tr": "Sayfa sesli okunuyor…",
+  "en": "Reading page aloud…",
+  "fa": "در حال خواندن صفحه با صدا…",
+  "ar": "جارٍ قراءة الصفحة بصوت عالٍ…"
+ },
+ "Sayfa özetleniyor…": {
+  "tr": "Sayfa özetleniyor…",
+  "en": "Summarizing page…",
+  "fa": "در حال خلاصه کردن صفحه…",
+  "ar": "جارٍ تلخيص الصفحة…"
+ },
+ "Sağdan sola": {
+  "tr": "Sağdan sola",
+  "en": "Right to left",
+  "fa": "راست به چپ",
+  "ar": "من اليمين إلى اليسار"
+ },
+ "Sekonder hipertansiyonda ise böbrek hastalığı, endokrin bozukluklar veya bazı ilaçlar gibi belirli bir neden vardır; neden tedavi edilince tansiyon düzelebilir.": {
+  "tr": "Sekonder hipertansiyonda ise böbrek hastalığı, endokrin bozukluklar veya bazı ilaçlar gibi belirli bir neden vardır; neden tedavi edilince tansiyon düzelebilir.",
+  "en": "In secondary hypertension there is a specific cause, such as kidney disease, endocrine disorders or certain drugs; treating the cause can bring blood pressure back to normal.",
+  "fa": "در فشار خون بالای ثانویه علت مشخصی مثل بیماری کلیه، اختلالات غدد درون‌ریز یا برخی داروها وجود دارد؛ با درمان علت، فشار خون می‌تواند بهتر شود.",
+  "ar": "في ارتفاع ضغط الدم الثانوي يوجد سبب محدد مثل أمراض الكلى أو الاضطرابات الغدية أو بعض الأدوية؛ وعند علاج السبب قد يعود الضغط إلى طبيعته."
+ },
+ "Ses kaydı çalışmıyor": {
+  "tr": "Ses kaydı çalışmıyor",
+  "en": "Audio recording isn't working",
+  "fa": "ضبط صدا کار نمی‌کند",
+  "ar": "التسجيل الصوتي لا يعمل"
+ },
+ "Ses kaydında en çok tiyazidlerin kontrendikasyonlarında durdu (14 dk) ve “sınavda soruyorum” dedi. Sayfa 14'ü birlikte okuyalım mı?": {
+  "tr": "Ses kaydında en çok tiyazidlerin kontrendikasyonlarında durdu (14 dk) ve “sınavda soruyorum” dedi. Sayfa 14'ü birlikte okuyalım mı?",
+  "en": "In the recording, your lecturer spent the most time on thiazide contraindications (14 min) and said “I'll ask this on the exam”. Shall we read page 14 together?",
+  "fa": "در ضبط صدا، استاد بیشتر از همه روی موارد منع مصرف تیازیدها مکث کرد (14 دقیقه) و گفت «در امتحان می‌پرسم». صفحه 14 را با هم بخوانیم؟",
+  "ar": "في التسجيل توقف الأستاذ أطول وقت عند موانع استعمال الثيازيدات (14 دقيقة) وقال «سأسأل عنها في الامتحان». هل نقرأ الصفحة 14 معًا؟"
+ },
+ "Ses metne çevriliyor": {
+  "tr": "Ses metne çevriliyor",
+  "en": "Transcribing audio",
+  "fa": "در حال تبدیل صدا به متن",
+  "ar": "جارٍ تحويل الصوت إلى نص"
+ },
+ "Sesli anlatım": {
+  "tr": "Sesli anlatım",
+  "en": "Audio lesson",
+  "fa": "توضیح صوتی",
+  "ar": "شرح صوتي"
+ },
+ "Sesli anlatım başladı · 5 bölüm, ~6 dk · sol altta oynatıcı": {
+  "tr": "Sesli anlatım başladı · 5 bölüm, ~6 dk · sol altta oynatıcı",
+  "en": "Audio lesson started · 5 parts, ~6 min · player at bottom left",
+  "fa": "توضیح صوتی شروع شد · 5 بخش، ~6 دقیقه · پخش‌کننده پایین سمت چپ",
+  "ar": "بدأ الشرح الصوتي · 5 أجزاء، ~6 دقائق · المشغل أسفل اليسار"
+ },
+ "Sesli anlatım başladı · uygulamadan çıksan da devam eder": {
+  "tr": "Sesli anlatım başladı · uygulamadan çıksan da devam eder",
+  "en": "Audio lesson started · it keeps playing even if you leave the app",
+  "fa": "توضیح صوتی شروع شد · حتی اگر از برنامه خارج شوی ادامه می‌دهد",
+  "ar": "بدأ الشرح الصوتي · يستمر حتى لو خرجت من التطبيق"
+ },
+ "Sesli anlatım kapatıldı": {
+  "tr": "Sesli anlatım kapatıldı",
+  "en": "Audio lesson turned off",
+  "fa": "توضیح صوتی خاموش شد",
+  "ar": "تم إيقاف الشرح الصوتي"
+ },
+ "Sesli anlatım sürüyor": {
+  "tr": "Sesli anlatım sürüyor",
+  "en": "Audio lesson playing",
+  "fa": "توضیح صوتی در حال پخش است",
+  "ar": "الشرح الصوتي مستمر"
+ },
+ "Sesli anlatım ve “Ben anlatayım”": {
+  "tr": "Sesli anlatım ve “Ben anlatayım”",
+  "en": "Audio lessons and “Let me explain”",
+  "fa": "توضیح صوتی و «بگذار توضیح بدهم»",
+  "ar": "الشرح الصوتي و«دعني أشرح»"
+ },
+ "Sesli okunuyor: ": {
+  "tr": "Sesli okunuyor: ",
+  "en": "Reading aloud: ",
+  "fa": "در حال خواندن: ",
+  "ar": "قراءة بصوت عالٍ: "
+ },
+ "Seçili cümle": {
+  "tr": "Seçili cümle",
+  "en": "Selected sentence",
+  "fa": "جمله انتخاب‌شده",
+  "ar": "الجملة المحددة"
+ },
+ "Silgi": {
+  "tr": "Silgi",
+  "en": "Eraser",
+  "fa": "پاک‌کن",
+  "ar": "ممحاة"
+ },
+ "Solda sorularını ekle, sonra": {
+  "tr": "Solda sorularını ekle, sonra",
+  "en": "Add your questions on the left, then",
+  "fa": "سؤال‌هایت را سمت چپ اضافه کن، بعد",
+  "ar": "أضف أسئلتك على اليسار، ثم"
+ },
+ "Soldan sağa": {
+  "tr": "Soldan sağa",
+  "en": "Left to right",
+  "fa": "چپ به راست",
+  "ar": "من اليسار إلى اليمين"
+ },
+ "Son bölüm bitti. 1 dakikada pekiştir.": {
+  "tr": "Son bölüm bitti. 1 dakikada pekiştir.",
+  "en": "Last part done. Lock it in in 1 minute.",
+  "fa": "بخش آخر تمام شد. در 1 دقیقه تثبیتش کن.",
+  "ar": "انتهى الجزء الأخير. ثبّته في دقيقة 1."
+ },
+ "Son sınav 84/100 · +13 puan": {
+  "tr": "Son sınav 84/100 · +13 puan",
+  "en": "Last exam 84/100 · +13 points",
+  "fa": "امتحان آخر 84/100 · +13 نمره",
+  "ar": "آخر امتحان 84/100 · +13 درجة"
+ },
+ "Son sınav puanı": {
+  "tr": "Son sınav puanı",
+  "en": "Last exam score",
+  "fa": "نمره آخرین امتحان",
+  "ar": "درجة آخر امتحان"
+ },
+ "Son sınavda bu konudaki 3 sorudan 2'sini yanlış yaptın": {
+  "tr": "Son sınavda bu konudaki 3 sorudan 2'sini yanlış yaptın",
+  "en": "In your last exam you got 2 of 3 questions on this topic wrong",
+  "fa": "در امتحان آخر 2 تا از 3 سؤال این موضوع را اشتباه زدی",
+  "ar": "في آخر امتحان أخطأت في 2 من 3 أسئلة عن هذا الموضوع"
+ },
+ "Son sınavdaki hataların, kartlarda zorlandığın sorular ve hocanın vurguladığı yerler. Her konunun altında neden seçtiğimi yazdım.": {
+  "tr": "Son sınavdaki hataların, kartlarda zorlandığın sorular ve hocanın vurguladığı yerler. Her konunun altında neden seçtiğimi yazdım.",
+  "en": "Your mistakes from the last exam, cards you struggled with, and spots your lecturer stressed. Under each topic I wrote why I picked it.",
+  "fa": "اشتباه‌های امتحان آخرت، کارت‌هایی که با آن‌ها مشکل داشتی و جاهایی که استاد تأکید کرد. زیر هر موضوع نوشتم چرا انتخابش کردم.",
+  "ar": "أخطاؤك في آخر امتحان، والبطاقات التي واجهت فيها صعوبة، والنقاط التي ركّز عليها أستاذك. كتبت تحت كل موضوع سبب اختياره."
+ },
+ "Sonra": {
+  "tr": "Sonra",
+  "en": "Later",
+  "fa": "بعداً",
+  "ar": "لاحقًا"
+ },
+ "Sonra yap: ertele ya da kaldır": {
+  "tr": "Sonra yap: ertele ya da kaldır",
+  "en": "Do it later: snooze or remove",
+  "fa": "بعداً انجام بده: به تعویق بینداز یا حذف کن",
+  "ar": "افعلها لاحقًا: أجّل أو احذف"
+ },
+ "Sonraki bölüm": {
+  "tr": "Sonraki bölüm",
+  "en": "Next part",
+  "fa": "بخش بعدی",
+  "ar": "الجزء التالي"
+ },
+ "Sonraki bölüme geç": {
+  "tr": "Sonraki bölüme geç",
+  "en": "Go to next part",
+  "fa": "برو به بخش بعدی",
+  "ar": "انتقل إلى الجزء التالي"
+ },
+ "Sonraki tekrar 3 gün sonra · 16 Ekim": {
+  "tr": "Sonraki tekrar 3 gün sonra · 16 Ekim",
+  "en": "Next review in 3 days · Oct 16",
+  "fa": "مرور بعدی 3 روز دیگر · 16 اکتبر",
+  "ar": "المراجعة التالية بعد 3 أيام · 16 أكتوبر"
+ },
+ "Sonraki tekrar:": {
+  "tr": "Sonraki tekrar:",
+  "en": "Next review:",
+  "fa": "مرور بعدی:",
+  "ar": "المراجعة التالية:"
+ },
+ "Sonuç ve yanlışlarım": {
+  "tr": "Sonuç ve yanlışlarım",
+  "en": "Results and my mistakes",
+  "fa": "نتیجه و اشتباه‌هایم",
+  "ar": "النتيجة وأخطائي"
+ },
+ "Soru ekle": {
+  "tr": "Soru ekle",
+  "en": "Add question",
+  "fa": "افزودن سؤال",
+  "ar": "أضف سؤالًا"
+ },
+ "Soru tarzını çıkar": {
+  "tr": "Soru tarzını çıkar",
+  "en": "Find the question style",
+  "fa": "سبک سؤال‌ها را پیدا کن",
+  "ar": "استخرج أسلوب الأسئلة"
+ },
+ "Soru tipleri": {
+  "tr": "Soru tipleri",
+  "en": "Question types",
+  "fa": "انواع سؤال",
+  "ar": "أنواع الأسئلة"
+ },
+ "Soru tipleri ayrıldı": {
+  "tr": "Soru tipleri ayrıldı",
+  "en": "Question types sorted",
+  "fa": "انواع سؤال جدا شد",
+  "ar": "تم فرز أنواع الأسئلة"
+ },
+ "Soru örneği": {
+  "tr": "Soru örneği",
+  "en": "Sample question",
+  "fa": "نمونه سؤال",
+  "ar": "نموذج سؤال"
+ },
+ "Soru örneği ekle · hocanın tarzını öğrenelim": {
+  "tr": "Soru örneği ekle · hocanın tarzını öğrenelim",
+  "en": "Add sample questions · let's learn your lecturer's style",
+  "fa": "نمونه سؤال اضافه کن · سبک استاد را یاد بگیریم",
+  "ar": "أضف نماذج أسئلة · لنتعلّم أسلوب أستاذك"
+ },
+ "Sorular metne çevrildi": {
+  "tr": "Sorular metne çevrildi",
+  "en": "Questions converted to text",
+  "fa": "سؤال‌ها به متن تبدیل شد",
+  "ar": "تم تحويل الأسئلة إلى نص"
+ },
+ "Soruların": {
+  "tr": "Soruların",
+  "en": "Analyzing",
+  "fa": "سؤال‌هایت",
+  "ar": "جارٍ تحليل"
+ },
+ "Soruların yalnızca senin hesabında kalır. Cevap anahtarı yoksa sorun değil; doğru cevabı ders PDF'inden buluruz.": {
+  "tr": "Soruların yalnızca senin hesabında kalır. Cevap anahtarı yoksa sorun değil; doğru cevabı ders PDF'inden buluruz.",
+  "en": "Your questions stay in your account only. No answer key? No problem; we'll find the right answer in the lecture PDF.",
+  "fa": "سؤال‌هایت فقط در حساب خودت می‌مانند. کلید جواب نداری؟ مشکلی نیست؛ جواب درست را از PDF درس پیدا می‌کنیم.",
+  "ar": "تبقى أسئلتك في حسابك فقط. لا يوجد مفتاح إجابات؟ لا مشكلة؛ سنجد الإجابة الصحيحة في PDF المادة."
+ },
+ "Sorularında 4 kez": {
+  "tr": "Sorularında 4 kez",
+  "en": "4 times in their questions",
+  "fa": "4 بار در سؤال‌هایش",
+  "ar": "4 مرات في أسئلته"
+ },
+ "Sorununu yaz… (ör. PDF yüklenmiyor)": {
+  "tr": "Sorununu yaz… (ör. PDF yüklenmiyor)",
+  "en": "Describe your problem… (e.g. PDF won't upload)",
+  "fa": "مشکلت را بنویس… (مثلاً PDF آپلود نمی‌شود)",
+  "ar": "اكتب مشكلتك… (مثلًا: ملف PDF لا يُرفع)"
+ },
+ "Sık sorulan konular bulundu": {
+  "tr": "Sık sorulan konular bulundu",
+  "en": "Frequently asked topics found",
+  "fa": "موضوعات پرتکرار پیدا شد",
+  "ar": "تم العثور على المواضيع الأكثر تكرارًا"
+ },
+ "Sınav haftası, zayıf konuların ve hocanın vurguları": {
+  "tr": "Sınav haftası, zayıf konuların ve hocanın vurguları",
+  "en": "Exam week, your weak topics and your lecturer's emphasis",
+  "fa": "هفته امتحان، موضوعات ضعیفت و تأکیدهای استاد",
+  "ar": "أسبوع الامتحانات ومواضيعك الضعيفة وتركيز أستاذك"
+ },
+ "Sınav haftası: Vize 19–23 Ekim · ayarlardan değiştirilebilir": {
+  "tr": "Sınav haftası: Vize 19–23 Ekim · ayarlardan değiştirilebilir",
+  "en": "Exam week: Midterm Oct 19–23 · can be changed in settings",
+  "fa": "هفته امتحان: میان‌ترم 19–23 اکتبر · از تنظیمات قابل تغییر است",
+  "ar": "أسبوع الامتحانات: نصفي 19–23 أكتوبر · يمكن تغييره من الإعدادات"
+ },
+ "Sınav hatası": {
+  "tr": "Sınav hatası",
+  "en": "Exam mistake",
+  "fa": "اشتباه امتحان",
+  "ar": "خطأ في الامتحان"
+ },
+ "Sınav puanları: ": {
+  "tr": "Sınav puanları: ",
+  "en": "Exam scores: ",
+  "fa": "نمره‌های امتحان: ",
+  "ar": "درجات الامتحانات: "
+ },
+ "Sınava": {
+  "tr": "Sınava",
+  "en": "Exam",
+  "fa": "ویژهٔ",
+  "ar": "خاص"
+ },
+ "Sınava ekleniyor": {
+  "tr": "Sınava ekleniyor",
+  "en": "Adding to exam",
+  "fa": "در حال افزودن به امتحان",
+  "ar": "جارٍ الإضافة إلى الامتحان"
+ },
+ "Sınava girecek dersler": {
+  "tr": "Sınava girecek dersler",
+  "en": "Courses with exams",
+  "fa": "درس‌های امتحانی",
+  "ar": "المواد التي ستُمتحن فيها"
+ },
+ "Sınava özel hazırlığın hazır": {
+  "tr": "Sınava özel hazırlığın hazır",
+  "en": "Your exam prep is ready",
+  "fa": "آمادگی ویژه امتحانت آماده است",
+  "ar": "تحضيرك للامتحان جاهز"
+ },
+ "Sınava özel sorular": {
+  "tr": "Sınava özel sorular",
+  "en": "Exam-focused questions",
+  "fa": "سؤال‌های ویژه امتحان",
+  "ar": "أسئلة خاصة بالامتحان"
+ },
+ "Sınava özel özet": {
+  "tr": "Sınava özel özet",
+  "en": "Exam-focused summary",
+  "fa": "خلاصه ویژه امتحان",
+  "ar": "ملخص خاص بالامتحان"
+ },
+ "Sınava özel özet ve sorular": {
+  "tr": "Sınava özel özet ve sorular",
+  "en": "Exam-focused summary and questions",
+  "fa": "خلاصه و سؤال‌های ویژه امتحان",
+  "ar": "ملخص وأسئلة خاصة بالامتحان"
+ },
+ "Sınavlarda": {
+  "tr": "Sınavlarda",
+  "en": "In exams",
+  "fa": "در آزمون‌ها",
+  "ar": "في الاختبارات"
+ },
+ "TERİM · S.": {
+  "tr": "TERİM · S.",
+  "en": "TERM · P.",
+  "fa": "اصطلاح · ص.",
+  "ar": "مصطلح · ص."
+ },
+ "Talebe otomatik eklenenler": {
+  "tr": "Talebe otomatik eklenenler",
+  "en": "Auto-added to your request",
+  "fa": "به‌طور خودکار به درخواست اضافه می‌شود",
+  "ar": "يُضاف تلقائيًا إلى طلبك"
+ },
+ "Tam değil · doğrusu yeşil olan": {
+  "tr": "Tam değil · doğrusu yeşil olan",
+  "en": "Not quite · the right one is green",
+  "fa": "کاملاً درست نیست · جواب درست سبز است",
+  "ar": "ليس تمامًا · الصحيح هو الأخضر"
+ },
+ "Tansiyon ilk saatte en fazla %25 düşürülür; hızlı düşürmek tehlikelidir.": {
+  "tr": "Tansiyon ilk saatte en fazla %25 düşürülür; hızlı düşürmek tehlikelidir.",
+  "en": "Blood pressure is lowered by at most 25% in the first hour; lowering it fast is dangerous.",
+  "fa": "فشار خون در ساعت اول حداکثر 25% کاهش داده می‌شود؛ کاهش سریع خطرناک است.",
+  "ar": "يُخفَّض ضغط الدم بنسبة 25% كحد أقصى في الساعة الأولى؛ الخفض السريع خطير."
+ },
+ "Tanım": {
+  "tr": "Tanım",
+  "en": "Definition",
+  "fa": "تعریف",
+  "ar": "التعريف"
+ },
+ "Tanıtım": {
+  "tr": "Tanıtım",
+  "en": "Introduction",
+  "fa": "معرفی",
+  "ar": "التعريف بالتطبيق"
+ },
+ "Tebrikler Elif!": {
+  "tr": "Tebrikler Elif!",
+  "en": "Congrats Elif!",
+  "fa": "تبریک Elif!",
+  "ar": "مبروك يا Elif!"
+ },
+ "Tek ilaçla hedefe ulaşılamazsa farklı gruptan ikinci ilaç eklenir.": {
+  "tr": "Tek ilaçla hedefe ulaşılamazsa farklı gruptan ikinci ilaç eklenir.",
+  "en": "If one drug doesn't reach the target, a second drug from another group is added.",
+  "fa": "اگر با یک دارو به هدف نرسیم، داروی دوم از گروهی دیگر اضافه می‌شود.",
+  "ar": "إذا لم يتحقق الهدف بدواء واحد، يُضاف دواء ثانٍ من مجموعة أخرى."
+ },
+ "Tekrar bu akşam 20:00'ye ertelendi": {
+  "tr": "Tekrar bu akşam 20:00'ye ertelendi",
+  "en": "Review moved to 20:00 tonight",
+  "fa": "مرور به امشب 20:00 موکول شد",
+  "ar": "تأجّلت المراجعة إلى 20:00 هذا المساء"
+ },
+ "Tekrar hoş geldin, Elif": {
+  "tr": "Tekrar hoş geldin, Elif",
+  "en": "Welcome back, Elif",
+  "fa": "خوش برگشتی، Elif",
+  "ar": "مرحبًا بعودتك يا Elif"
+ },
+ "Tekrar kaydedildi · kaldığın yerden devam edersin": {
+  "tr": "Tekrar kaydedildi · kaldığın yerden devam edersin",
+  "en": "Review saved · you'll pick up where you left off",
+  "fa": "مرور ذخیره شد · از همان‌جا ادامه می‌دهی",
+  "ar": "حُفظت المراجعة · ستكمل من حيث توقفت"
+ },
+ "Tekrar sor": {
+  "tr": "Tekrar sor",
+  "en": "Ask again",
+  "fa": "دوباره بپرس",
+  "ar": "اسأل مجددًا"
+ },
+ "Tekrar tamam, aferin!": {
+  "tr": "Tekrar tamam, aferin!",
+  "en": "Review done, well done!",
+  "fa": "مرور تمام شد، آفرین!",
+  "ar": "انتهت المراجعة، أحسنت!"
+ },
+ "Tekrar yarına ertelendi": {
+  "tr": "Tekrar yarına ertelendi",
+  "en": "Review moved to tomorrow",
+  "fa": "مرور به فردا موکول شد",
+  "ar": "تأجّلت المراجعة إلى الغد"
+ },
+ "Tekrar çek": {
+  "tr": "Tekrar çek",
+  "en": "Retake",
+  "fa": "دوباره بگیر",
+  "ar": "أعد الالتقاط"
+ },
+ "Tekrara başla": {
+  "tr": "Tekrara başla",
+  "en": "Start review",
+  "fa": "شروع مرور",
+  "ar": "ابدأ المراجعة"
+ },
+ "Tekrarı bitir": {
+  "tr": "Tekrarı bitir",
+  "en": "Finish review",
+  "fa": "پایان مرور",
+  "ar": "أنهِ المراجعة"
+ },
+ "Tekrarı sonra yap": {
+  "tr": "Tekrarı sonra yap",
+  "en": "Review later",
+  "fa": "بعداً مرور کن",
+  "ar": "راجع لاحقًا"
+ },
+ "Terim": {
+  "tr": "Terim",
+  "en": "Term",
+  "fa": "اصطلاح",
+  "ar": "المصطلح"
+ },
+ "Terim açıklaması": {
+  "tr": "Terim açıklaması",
+  "en": "Term explanation",
+  "fa": "توضیح اصطلاح",
+  "ar": "شرح المصطلح"
+ },
+ "Teşekkürler Elif! Talebini aldık (#4821)": {
+  "tr": "Teşekkürler Elif! Talebini aldık (#4821)",
+  "en": "Thanks Elif! We got your request (#4821)",
+  "fa": "ممنون Elif! درخواستت را گرفتیم (#4821)",
+  "ar": "شكرًا يا Elif! استلمنا طلبك (#4821)"
+ },
+ "Titrasyon": {
+  "tr": "Titrasyon",
+  "en": "Titration",
+  "fa": "تیتراسیون",
+  "ar": "المعايرة"
+ },
+ "Tiyazidler hangi hastada kontrendikedir?": {
+  "tr": "Tiyazidler hangi hastada kontrendikedir?",
+  "en": "In which patient are thiazides contraindicated?",
+  "fa": "تیازیدها در کدام بیمار منع مصرف دارند؟",
+  "ar": "لدى أي مريض يُمنع استخدام الثيازيدات؟"
+ },
+ "Tiyazidler ürik asidi artırır; bu yüzden gut zorunlu kontrendikasyondur. Hoca derste 'sınavda soruyorum' dedi.": {
+  "tr": "Tiyazidler ürik asidi artırır; bu yüzden gut zorunlu kontrendikasyondur. Hoca derste 'sınavda soruyorum' dedi.",
+  "en": "Thiazides raise uric acid, so gout is a compelling contraindication. The lecturer said 'I ask this in exams'.",
+  "fa": "تیازیدها اسید اوریک را بالا می‌برند؛ پس نقرس منع مصرف قطعی است. استاد سر کلاس گفت «این را در امتحان می‌پرسم».",
+  "ar": "ترفع الثيازيدات حمض اليوريك؛ لذا النقرس مضاد استطباب مطلق. قال المحاضر «أسأل هذا في الامتحان»."
+ },
+ "Tiyazidler ürik asidi artırır; gut atağını tetikler.": {
+  "tr": "Tiyazidler ürik asidi artırır; gut atağını tetikler.",
+  "en": "Thiazides raise uric acid and trigger gout attacks.",
+  "fa": "تیازیدها اسید اوریک را بالا می‌برند و حمله نقرس را تحریک می‌کنند.",
+  "ar": "ترفع الثيازيدات حمض اليوريك وتثير نوبات النقرس."
+ },
+ "Tiyazidlerde gut zorunlu kontrendikasyondur (ürik asit artar).": {
+  "tr": "Tiyazidlerde gut zorunlu kontrendikasyondur (ürik asit artar).",
+  "en": "For thiazides, gout is a compelling contraindication (uric acid rises).",
+  "fa": "در تیازیدها نقرس منع مصرف قطعی است (اسید اوریک بالا می‌رود).",
+  "ar": "في الثيازيدات النقرس مضاد استطباب مطلق (يرتفع حمض اليوريك)."
+ },
+ "Tiyazidlerin zorunlu kontrendikasyonu gebelik değil, gut (s. 14).": {
+  "tr": "Tiyazidlerin zorunlu kontrendikasyonu gebelik değil, gut (s. 14).",
+  "en": "The compelling contraindication of thiazides is gout, not pregnancy (p. 14).",
+  "fa": "منع مصرف قطعی تیازیدها نقرس است، نه بارداری (ص. 14).",
+  "ar": "مضاد الاستطباب المطلق للثيازيدات هو النقرس لا الحمل (ص. 14)."
+ },
+ "TÜRKÇE · SAYFA 12 · HOCANIN METNİ": {
+  "tr": "TÜRKÇE · SAYFA 12 · HOCANIN METNİ",
+  "en": "TURKISH · PAGE 12 · LECTURER'S TEXT",
+  "fa": "ترکی · صفحه 12 · متن استاد",
+  "ar": "التركية · صفحة 12 · نص المحاضر"
+ },
+ "Tüm bildirimler okundu": {
+  "tr": "Tüm bildirimler okundu",
+  "en": "All notifications read",
+  "fa": "همه اعلان‌ها خوانده شد",
+  "ar": "تمت قراءة كل الإشعارات"
+ },
+ "Tümünü okundu yap": {
+  "tr": "Tümünü okundu yap",
+  "en": "Mark all as read",
+  "fa": "همه را خوانده‌شده کن",
+  "ar": "تعليم الكل كمقروء"
+ },
+ "Unutmaman için": {
+  "tr": "Unutmaman için",
+  "en": "So you don't forget",
+  "fa": "تا فراموش نکنی",
+  "ar": "حتى لا تنسى"
+ },
+ "Uygulama dilini": {
+  "tr": "Uygulama dilini",
+  "en": "Choose",
+  "fa": "زبان برنامه را",
+  "ar": "اختر"
+ },
+ "Uygulama donuyor": {
+  "tr": "Uygulama donuyor",
+  "en": "App is freezing",
+  "fa": "برنامه هنگ می‌کند",
+  "ar": "التطبيق يتجمد"
+ },
+ "Uygulama görünümü": {
+  "tr": "Uygulama görünümü",
+  "en": "App appearance",
+  "fa": "ظاهر برنامه",
+  "ar": "مظهر التطبيق"
+ },
+ "Uygulama hatası": {
+  "tr": "Uygulama hatası",
+  "en": "App error",
+  "fa": "خطای برنامه",
+  "ar": "خطأ في التطبيق"
+ },
+ "Uygulama kapalıyken bildirim böyle gelir · dokununca İlerleme sayfası açılır": {
+  "tr": "Uygulama kapalıyken bildirim böyle gelir · dokununca İlerleme sayfası açılır",
+  "en": "This is how notifications arrive when the app is closed · tap to open the Progress page",
+  "fa": "وقتی برنامه بسته است اعلان این‌طور می‌آید · با لمس، صفحه پیشرفت باز می‌شود",
+  "ar": "هكذا يصل الإشعار والتطبيق مغلق · المس لفتح صفحة التقدّم"
+ },
+ "Uygulama kapalıyken de asistan anlatmaya devam ediyor": {
+  "tr": "Uygulama kapalıyken de asistan anlatmaya devam ediyor",
+  "en": "The assistant keeps explaining even when the app is closed",
+  "fa": "حتی وقتی برنامه بسته است دستیار به توضیح ادامه می‌دهد",
+  "ar": "يواصل المساعد الشرح حتى والتطبيق مغلق"
+ },
+ "Uygulama sürümü 1.0 (iPad), cihaz ve son açtığın ekran. Ders PDF'lerin paylaşılmaz.": {
+  "tr": "Uygulama sürümü 1.0 (iPad), cihaz ve son açtığın ekran. Ders PDF'lerin paylaşılmaz.",
+  "en": "App version 1.0 (iPad), device and the last screen you opened. Your course PDFs are not shared.",
+  "fa": "نسخه برنامه 1.0 (iPad)، دستگاه و آخرین صفحه‌ای که باز کردی. PDFهای درسی‌ات به اشتراک گذاشته نمی‌شوند.",
+  "ar": "إصدار التطبيق 1.0 (iPad)، والجهاز وآخر شاشة فتحتها. لا تُشارَك ملفات PDF الخاصة بموادك."
+ },
+ "Uygulama teması": {
+  "tr": "Uygulama teması",
+  "en": "App theme",
+  "fa": "تم برنامه",
+  "ar": "سمة التطبيق"
+ },
+ "Uygulamada bir sorun mu gördün? Destek ekibimizle yazış, sorununu çözelim.": {
+  "tr": "Uygulamada bir sorun mu gördün? Destek ekibimizle yazış, sorununu çözelim.",
+  "en": "Spotted a problem in the app? Chat with our support team and we'll fix it.",
+  "fa": "مشکلی در برنامه دیدی؟ با تیم پشتیبانی ما گفتگو کن تا حلش کنیم.",
+  "ar": "رأيت مشكلة في التطبيق؟ راسل فريق الدعم وسنحلّها."
+ },
+ "Uygulamadan çıksan ya da ekranı kilitlesen de": {
+  "tr": "Uygulamadan çıksan ya da ekranı kilitlesen de",
+  "en": "Even if you leave the app or lock the screen",
+  "fa": "حتی اگر از برنامه خارج شوی یا صفحه را قفل کنی",
+  "ar": "حتى لو خرجت من التطبيق أو قفلت الشاشة"
+ },
+ "Vize haftasına ": {
+  "tr": "Vize haftasına ",
+  "en": "Until midterm week: ",
+  "fa": "تا هفته میان‌ترم ",
+  "ar": "حتى أسبوع النصفي: "
+ },
+ "Vize için Hipertansiyon özetini gönderdim, bir bak.": {
+  "tr": "Vize için Hipertansiyon özetini gönderdim, bir bak.",
+  "en": "I sent the Hypertension summary for the midterm, take a look.",
+  "fa": "خلاصه فشار خون بالا را برای میان‌ترم فرستادم، یک نگاه بنداز.",
+  "ar": "أرسلت ملخص ارتفاع ضغط الدم للنصفي، ألقِ نظرة."
+ },
+ "Vize · 19–23 Ekim · takviminden alındı": {
+  "tr": "Vize · 19–23 Ekim · takviminden alındı",
+  "en": "Midterm · Oct 19–23 · taken from your calendar",
+  "fa": "میان‌ترم · 19–23 اکتبر · از تقویمت گرفته شد",
+  "ar": "النصفي · 19–23 أكتوبر · مأخوذ من تقويمك"
+ },
+ "Vize_2025_sorular.pdf": {
+  "tr": "Vize_2025_sorular.pdf",
+  "en": "Midterm_2025_questions.pdf",
+  "fa": "سؤالات_میان‌ترم_2025.pdf",
+  "ar": "أسئلة_النصفي_2025.pdf"
+ },
+ "Vurgula": {
+  "tr": "Vurgula",
+  "en": "Highlight",
+  "fa": "برجسته کن",
+  "ar": "تمييز"
+ },
+ "Vurgular bulunuyor": {
+  "tr": "Vurgular bulunuyor",
+  "en": "Finding highlights",
+  "fa": "در حال یافتن نکات مهم",
+  "ar": "جارٍ إيجاد النقاط المهمة"
+ },
+ "YARIN": {
+  "tr": "YARIN",
+  "en": "TOMORROW",
+  "fa": "فردا",
+  "ar": "غدًا"
+ },
+ "YARIN · SALI ·": {
+  "tr": "YARIN · SALI ·",
+  "en": "TOMORROW · TUE ·",
+  "fa": "فردا · سه‌شنبه ·",
+  "ar": "غدًا · الثلاثاء ·"
+ },
+ "YAZI": {
+  "tr": "YAZI",
+  "en": "TEXT",
+  "fa": "متن",
+  "ar": "نص"
+ },
+ "YENİ": {
+  "tr": "YENİ",
+  "en": "NEW",
+  "fa": "جدید",
+  "ar": "جديد"
+ },
+ "YENİ TALEP": {
+  "tr": "YENİ TALEP",
+  "en": "NEW REQUEST",
+  "fa": "درخواست جدید",
+  "ar": "طلب جديد"
+ },
+ "Yalnızca Hipertansiyon.pdf ve ses kaydından": {
+  "tr": "Yalnızca Hipertansiyon.pdf ve ses kaydından",
+  "en": "Only from Hypertension.pdf and the audio recording",
+  "fa": "فقط از Hypertension.pdf و فایل صوتی",
+  "ar": "فقط من Hypertension.pdf والتسجيل الصوتي"
+ },
+ "Yan etki / etkileşim eşleştirme": {
+  "tr": "Yan etki / etkileşim eşleştirme",
+  "en": "Side effect / interaction matching",
+  "fa": "تطبیق عارضه جانبی / تداخل",
+  "ar": "مطابقة الآثار الجانبية / التداخلات"
+ },
+ "Yan etkiler: kuru öksürük (bradikinin birikir), anjiyoödem, hiperkalemi.": {
+  "tr": "Yan etkiler: kuru öksürük (bradikinin birikir), anjiyoödem, hiperkalemi.",
+  "en": "Side effects: dry cough (bradykinin builds up), angioedema, hyperkalemia.",
+  "fa": "عوارض جانبی: سرفه خشک (تجمع برادی‌کینین)، آنژیوادم، هیپرکالمی.",
+  "ar": "الآثار الجانبية: سعال جاف (تراكم البراديكينين)، وذمة وعائية، فرط بوتاسيوم الدم."
+ },
+ "Yapıştırılan metin": {
+  "tr": "Yapıştırılan metin",
+  "en": "Pasted text",
+  "fa": "متن چسبانده‌شده",
+  "ar": "نص ملصوق"
+ },
+ "Yardım": {
+  "tr": "Yardım",
+  "en": "Help",
+  "fa": "راهنما",
+  "ar": "مساعدة"
+ },
+ "Yarın": {
+  "tr": "Yarın",
+  "en": "Tomorrow",
+  "fa": "فردا",
+  "ar": "غدًا"
+ },
+ "Yarın ": {
+  "tr": "Yarın ",
+  "en": "Tomorrow ",
+  "fa": "فردا ",
+  "ar": "غدًا "
+ },
+ "Yarın 2 dersin var": {
+  "tr": "Yarın 2 dersin var",
+  "en": "You have 2 classes tomorrow",
+  "fa": "فردا 2 کلاس داری",
+  "ar": "لديك حصتان غدًا"
+ },
+ "Yarın dersin yok": {
+  "tr": "Yarın dersin yok",
+  "en": "No classes tomorrow",
+  "fa": "فردا کلاس نداری",
+  "ar": "لا محاضرات غدًا"
+ },
+ "Yarın sabah planına eklendi": {
+  "tr": "Yarın sabah planına eklendi",
+  "en": "Added to tomorrow morning's plan",
+  "fa": "به برنامه فردا صبح اضافه شد",
+  "ar": "أُضيف إلى خطة صباح الغد"
+ },
+ "Yarına ertele": {
+  "tr": "Yarına ertele",
+  "en": "Postpone to tomorrow",
+  "fa": "بگذار برای فردا",
+  "ar": "أجّل إلى الغد"
+ },
+ "Yarının dersleri açıldı": {
+  "tr": "Yarının dersleri açıldı",
+  "en": "Tomorrow's classes opened",
+  "fa": "کلاس‌های فردا باز شد",
+  "ar": "تم فتح حصص الغد"
+ },
+ "Yazı": {
+  "tr": "Yazı",
+  "en": "Text",
+  "fa": "متن",
+  "ar": "نص"
+ },
+ "Yazı boyutu": {
+  "tr": "Yazı boyutu",
+  "en": "Text size",
+  "fa": "اندازه متن",
+  "ar": "حجم الخط"
+ },
+ "Yazı boyutu: ": {
+  "tr": "Yazı boyutu: ",
+  "en": "Text size: ",
+  "fa": "اندازه متن: ",
+  "ar": "حجم الخط: "
+ },
+ "Yeni ders klasörü oluşturuldu": {
+  "tr": "Yeni ders klasörü oluşturuldu",
+  "en": "New course folder created",
+  "fa": "پوشه درس جدید ساخته شد",
+  "ar": "تم إنشاء مجلد مادة جديدة"
+ },
+ "Yeni program yükle": {
+  "tr": "Yeni program yükle",
+  "en": "Upload new schedule",
+  "fa": "بارگذاری برنامه جدید",
+  "ar": "رفع جدول جديد"
+ },
+ "Yeni programını ekle · eskisi yenisiyle değişecek": {
+  "tr": "Yeni programını ekle · eskisi yenisiyle değişecek",
+  "en": "Add your new schedule · it will replace the old one",
+  "fa": "برنامه جدیدت را اضافه کن · جایگزین قبلی می‌شود",
+  "ar": "أضف جدولك الجديد · سيحل محل القديم"
+ },
+ "Yeni soru hazırlanıyor · yine ipucuyla ilerleyeceğiz": {
+  "tr": "Yeni soru hazırlanıyor · yine ipucuyla ilerleyeceğiz",
+  "en": "Preparing a new question · again with hints",
+  "fa": "در حال آماده کردن سؤال جدید · باز هم با راهنمایی پیش می‌رویم",
+  "ar": "جارٍ تحضير سؤال جديد · سنتقدم بالتلميحات مجددًا"
+ },
+ "Yeni örnek ": {
+  "tr": "Yeni örnek ",
+  "en": "New sample ",
+  "fa": "نمونه جدید ",
+  "ar": "نموذج جديد "
+ },
+ "Yeniden çekebilirsin · programın tamamı görünsün": {
+  "tr": "Yeniden çekebilirsin · programın tamamı görünsün",
+  "en": "You can retake it · so the whole schedule shows",
+  "fa": "می‌توانی دوباره عکس بگیری · تا کل برنامه دیده شود",
+  "ar": "يمكنك إعادة التصوير · ليظهر الجدول كاملًا"
+ },
+ "Yeşil fosforlu": {
+  "tr": "Yeşil fosforlu",
+  "en": "Green highlighter",
+  "fa": "ماژیک فسفری سبز",
+  "ar": "قلم تظليل أخضر"
+ },
+ "Yüklemek için internet gerekli": {
+  "tr": "Yüklemek için internet gerekli",
+  "en": "Internet needed to upload",
+  "fa": "برای بارگذاری اینترنت لازم است",
+  "ar": "الرفع يتطلب اتصالًا بالإنترنت"
+ },
+ "Yüklemek için internet gerekli. Kayıtlı derslerini okumaya devam edebilirsin.": {
+  "tr": "Yüklemek için internet gerekli. Kayıtlı derslerini okumaya devam edebilirsin.",
+  "en": "Internet needed to upload. You can keep reading your saved lessons.",
+  "fa": "برای بارگذاری اینترنت لازم است. می‌توانی درس‌های ذخیره‌شده‌ات را ادامه بدهی.",
+  "ar": "الرفع يتطلب اتصالًا بالإنترنت. يمكنك متابعة قراءة دروسك المحفوظة."
+ },
+ "Yüksek tansiyonun beyin, kalp, böbrek veya gözde yaptığı akut hasar (ör. inme, kalp yetmezliği, böbrek yetmezliği).": {
+  "tr": "Yüksek tansiyonun beyin, kalp, böbrek veya gözde yaptığı akut hasar (ör. inme, kalp yetmezliği, böbrek yetmezliği).",
+  "en": "Acute damage high blood pressure causes to the brain, heart, kidneys or eyes (e.g. stroke, heart failure, kidney failure).",
+  "fa": "آسیب حادی که فشار خون بالا به مغز، قلب، کلیه یا چشم می‌زند (مثلاً سکته مغزی، نارسایی قلبی، نارسایی کلیه).",
+  "ar": "الضرر الحاد الذي يسببه ارتفاع ضغط الدم للدماغ أو القلب أو الكلى أو العين (مثل السكتة الدماغية، قصور القلب، الفشل الكلوي)."
+ },
+ "Yükselişte": {
+  "tr": "Yükselişte",
+  "en": "Rising",
+  "fa": "رو به بالا",
+  "ar": "في ارتفاع"
+ },
+ "Yıl 2026.": {
+  "tr": "Yıl 2026.",
+  "en": "Year 2026.",
+  "fa": "سال 2026.",
+  "ar": "العام 2026."
+ },
+ "Zamanı gelince hatırlatacağım": {
+  "tr": "Zamanı gelince hatırlatacağım",
+  "en": "I'll remind you when it's time",
+  "fa": "به موقعش یادت می‌اندازم",
+  "ar": "سأذكّرك عندما يحين الوقت"
+ },
+ "Zaten hesabın var mı?": {
+  "tr": "Zaten hesabın var mı?",
+  "en": "Already have an account?",
+  "fa": "قبلاً حساب داری؟",
+  "ar": "لديك حساب بالفعل؟"
+ },
+ "Zayıf konun": {
+  "tr": "Zayıf konun",
+  "en": "Weak topic",
+  "fa": "مبحث ضعیف",
+  "ar": "موضوع ضعيف"
+ },
+ "Zayıf · %38": {
+  "tr": "Zayıf · %38",
+  "en": "Weak · %38",
+  "fa": "ضعیف · %38",
+  "ar": "ضعيف · %38"
+ },
+ "Zayıf · %54": {
+  "tr": "Zayıf · %54",
+  "en": "Weak · %54",
+  "fa": "ضعیف · %54",
+  "ar": "ضعيف · %54"
+ },
+ "adresine gönderdik.": {
+  "tr": "adresine gönderdik.",
+  "en": "is where we sent it.",
+  "fa": "فرستادیم.",
+  "ar": "هو العنوان الذي أرسلناه إليه."
+ },
+ "anlatmaya devam eder": {
+  "tr": "anlatmaya devam eder",
+  "en": "keeps explaining",
+  "fa": "به توضیح ادامه می‌دهد",
+  "ar": "يواصل الشرح"
+ },
+ "aynen korunur": {
+  "tr": "aynen korunur",
+  "en": "kept as is",
+  "fa": "بدون تغییر حفظ می‌شود",
+  "ar": "يُحفظ كما هو"
+ },
+ "ayrılan süre": {
+  "tr": "ayrılan süre",
+  "en": "time allotted",
+  "fa": "زمان اختصاص‌یافته",
+  "ar": "الوقت المخصص"
+ },
+ "dk": {
+  "tr": "dk",
+  "en": "min",
+  "fa": "دقیقه",
+  "ar": "د"
+ },
+ "düğmesine dokun. Hangi tip soruları sevdiğini ve en çok hangi konuları sorduğunu çıkarırız.": {
+  "tr": "düğmesine dokun. Hangi tip soruları sevdiğini ve en çok hangi konuları sorduğunu çıkarırız.",
+  "en": "button. We'll find which question types they like and which topics they ask most.",
+  "fa": "بزن. می‌فهمیم چه نوع سؤال‌هایی را دوست دارد و بیشتر از کدام مباحث سؤال می‌دهد.",
+  "ar": "المس الزر. سنستخرج أنواع الأسئلة المفضلة والمواضيع الأكثر طرحًا."
+ },
+ "ekle": {
+  "tr": "ekle",
+  "en": "a course",
+  "fa": "درس",
+  "ar": "مادة"
+ },
+ "elif@ogrenci.edu.tr · Ankara Üniversitesi · Eczacılık 3. sınıf": {
+  "tr": "elif@ogrenci.edu.tr · Ankara Üniversitesi · Eczacılık 3. sınıf",
+  "en": "elif@ogrenci.edu.tr · Ankara University · Pharmacy, year 3",
+  "fa": "elif@ogrenci.edu.tr · دانشگاه آنکارا · داروسازی، سال 3",
+  "ar": "elif@ogrenci.edu.tr · جامعة أنقرة · صيدلة، السنة 3"
+ },
+ "görülebilir; ilk dozun yatmadan önce alınması önerilir.": {
+  "tr": "görülebilir; ilk dozun yatmadan önce alınması önerilir.",
+  "en": "may occur; taking the first dose at bedtime is advised.",
+  "fa": "ممکن است دیده شود؛ توصیه می‌شود دوز اول قبل از خواب مصرف شود.",
+  "ar": "قد يحدث؛ يُنصح بتناول الجرعة الأولى قبل النوم."
+ },
+ "gününe ders ekle": {
+  "tr": "gününe ders ekle",
+  "en": "– add a class",
+  "fa": "– افزودن درس",
+  "ar": "– إضافة حصة"
+ },
+ "hazır": {
+  "tr": "hazır",
+  "en": "ready",
+  "fa": "آماده",
+  "ar": "جاهز"
+ },
+ "hazırlanıyor…": {
+  "tr": "hazırlanıyor…",
+  "en": "preparing…",
+  "fa": "در حال آماده‌سازی…",
+  "ar": "جارٍ التحضير…"
+ },
+ "hedef organ hasarı": {
+  "tr": "hedef organ hasarı",
+  "en": "target organ damage",
+  "fa": "آسیب ارگان هدف",
+  "ar": "تلف الأعضاء المستهدفة"
+ },
+ "hoş geldin": {
+  "tr": "hoş geldin",
+  "en": "back",
+  "fa": "خوش آمدی",
+  "ar": "بعودتك"
+ },
+ "ilk doz etkisi": {
+  "tr": "ilk doz etkisi",
+  "en": "first-dose effect",
+  "fa": "اثر دوز اول",
+  "ar": "تأثير الجرعة الأولى"
+ },
+ "inceleniyor": {
+  "tr": "inceleniyor",
+  "en": "your questions",
+  "fa": "در حال بررسی است",
+  "ar": "أسئلتك"
+ },
+ "kartı biliyorsun": {
+  "tr": "kartı biliyorsun",
+  "en": "cards you know",
+  "fa": "کارت را بلدی",
+  "ar": "بطاقات تعرفها"
+ },
+ "kontrol et": {
+  "tr": "kontrol et",
+  "en": "your email",
+  "fa": "بررسی کن",
+  "ar": "بريدك"
+ },
+ "kuralım.": {
+  "tr": "kuralım.",
+  "en": "let's build it.",
+  "fa": "را بچینیم.",
+  "ar": "لنضعها."
+ },
+ "nasıl çalışır?": {
+  "tr": "nasıl çalışır?",
+  "en": "how it works",
+  "fa": "چطور کار می‌کند؟",
+  "ar": "كيف يعمل؟"
+ },
+ "okudum. PDF'lerim yalnızca benim hesabımda saklanır.": {
+  "tr": "okudum. PDF'lerim yalnızca benim hesabımda saklanır.",
+  "en": "– I've read it. My PDFs are stored only in my account.",
+  "fa": "را خواندم. PDFهایم فقط در حساب خودم ذخیره می‌شوند.",
+  "ar": "– قرأته. ملفات PDF الخاصة بي تُحفظ في حسابي فقط."
+ },
+ "okuyorsun?": {
+  "tr": "okuyorsun?",
+  "en": "do you study in?",
+  "fa": "درس می‌خوانی؟",
+  "ar": "تدرس؟"
+ },
+ "oluştur": {
+  "tr": "oluştur",
+  "en": "create",
+  "fa": "بساز",
+  "ar": "أنشئ"
+ },
+ "oluşturalım.": {
+  "tr": "oluşturalım.",
+  "en": "let's set it up.",
+  "fa": "را بسازیم.",
+  "ar": "لننشئه."
+ },
+ "planı": {
+  "tr": "planı",
+  "en": null,
+  "fa": "امروز",
+  "ar": "اليوم"
+ },
+ "planım": {
+  "tr": "planım",
+  "en": "plan",
+  "fa": "درسی من",
+  "ar": "دراستي"
+ },
+ "primer hipertansiyon": {
+  "tr": "primer hipertansiyon",
+  "en": "primary hypertension",
+  "fa": "فشار خون اولیه",
+  "ar": "ارتفاع ضغط الدم الأولي"
+ },
+ "programım": {
+  "tr": "programım",
+  "en": "timetable",
+  "fa": "کلاس‌هایم",
+  "ar": "الدراسي"
+ },
+ "sarı = çok durulan yer": {
+  "tr": "sarı = çok durulan yer",
+  "en": "yellow = long focus",
+  "fa": "زرد = جایی که زیاد رویش ماند",
+  "ar": "الأصفر = تركيز طويل"
+ },
+ "ses kaydı": {
+  "tr": "ses kaydı",
+  "en": "recording",
+  "fa": "صدای کلاس",
+  "ar": "تسجيل"
+ },
+ "seç": {
+  "tr": "seç",
+  "en": "app language",
+  "fa": "انتخاب کن",
+  "ar": "لغة التطبيق"
+ },
+ "seçelim.": {
+  "tr": "seçelim.",
+  "en": "let's pick it.",
+  "fa": "را انتخاب کنیم.",
+  "ar": "لنخترها."
+ },
+ "sonra": {
+  "tr": "sonra",
+  "en": "later",
+  "fa": "بعد",
+  "ar": "لاحقًا"
+ },
+ "soru doğru": {
+  "tr": "soru doğru",
+  "en": "correct",
+  "fa": "سؤال درست",
+  "ar": "إجابات صحيحة"
+ },
+ "soru · birkaç saniye sürer": {
+  "tr": "soru · birkaç saniye sürer",
+  "en": "questions · takes a few seconds",
+  "fa": "سؤال · چند ثانیه طول می‌کشد",
+  "ar": "سؤال · يستغرق بضع ثوانٍ"
+ },
+ "tanıyalım.": {
+  "tr": "tanıyalım.",
+  "en": "let's get to know it.",
+  "fa": "را بشناسیم.",
+  "ar": "لنتعرّف عليه."
+ },
+ "tekrarı": {
+  "tr": "tekrarı",
+  "en": null,
+  "fa": "امروز",
+  "ar": "اليوم"
+ },
+ "var mı?": {
+  "tr": "var mı?",
+  "en": "questions?",
+  "fa": "داری؟",
+  "ar": "أسئلة؟"
+ },
+ "ve": {
+  "tr": "ve",
+  "en": "and",
+  "fa": "و",
+  "ar": "و"
+ },
+ "ve ayarlar": {
+  "tr": "ve ayarlar",
+  "en": "and settings",
+  "fa": "و تنظیمات",
+  "ar": "والإعدادات"
+ },
+ "ve destek": {
+  "tr": "ve destek",
+  "en": "and support",
+  "fa": "و پشتیبانی",
+  "ar": "والدعم"
+ },
+ "veya e-posta ile": {
+  "tr": "veya e-posta ile",
+  "en": "or with email",
+  "fa": "یا با ایمیل",
+  "ar": "أو بالبريد الإلكتروني"
+ },
+ "zaman damgalı": {
+  "tr": "zaman damgalı",
+  "en": "timestamped",
+  "fa": "با زمان‌بندی",
+  "ar": "مع طوابع زمنية"
+ },
+ "· 3 ders": {
+  "tr": "· 3 ders",
+  "en": "· 3 courses",
+  "fa": "· 3 درس",
+  "ar": "· 3 دروس"
+ },
+ "· Hipertansiyon": {
+  "tr": "· Hipertansiyon",
+  "en": "· Hypertension",
+  "fa": "· فشار خون بالا",
+  "ar": "· ارتفاع ضغط الدم"
+ },
+ "· PDF S.": {
+  "tr": "· PDF S.",
+  "en": "· PDF p.",
+  "fa": "· PDF ص.",
+  "ar": "· PDF ص."
+ },
+ "· S.": {
+  "tr": "· S.",
+  "en": "· p.",
+  "fa": "· ص.",
+  "ar": "· ص."
+ },
+ "· bu hafta": {
+  "tr": "· bu hafta",
+  "en": "· this week",
+  "fa": "· این هفته",
+  "ar": "· هذا الأسبوع"
+ },
+ "· kontrol et, yanlış varsa tekrar çek": {
+  "tr": "· kontrol et, yanlış varsa tekrar çek",
+  "en": "· check them, retake any wrong ones",
+  "fa": "· بررسی کن، اگر اشتباه بود دوباره بگیر",
+  "ar": "· تحقق منها، وأعد التصوير إن كان هناك خطأ"
+ },
+ "· sınav": {
+  "tr": "· sınav",
+  "en": "· exam",
+  "fa": "· امتحان",
+  "ar": "· الامتحان"
+ },
+ "ÇEKİLEN SAYFALAR ·": {
+  "tr": "ÇEKİLEN SAYFALAR ·",
+  "en": "CAPTURED PAGES ·",
+  "fa": "صفحه‌های گرفته‌شده ·",
+  "ar": "الصفحات الملتقطة ·"
+ },
+ "Çalıştığın PDF'ler cihazına kaydedilir, internet yokken de açılır. Ders paylaşma da Premium'a özel.": {
+  "tr": "Çalıştığın PDF'ler cihazına kaydedilir, internet yokken de açılır. Ders paylaşma da Premium'a özel.",
+  "en": "The PDFs you study are saved to your device and open without internet. Sharing courses is Premium-only too.",
+  "fa": "PDFهایی که می‌خوانی روی دستگاهت ذخیره می‌شوند و بدون اینترنت هم باز می‌شوند. اشتراک‌گذاری درس هم مخصوص Premium است.",
+  "ar": "تُحفظ ملفات PDF التي تدرسها على جهازك وتفتح حتى دون إنترنت. ومشاركة الدروس خاصة بـ Premium أيضًا."
+ },
+ "Çarşamba": {
+  "tr": "Çarşamba",
+  "en": "Wednesday",
+  "fa": "چهارشنبه",
+  "ar": "الأربعاء"
+ },
+ "Çeviri tarzı: doğal anlatım": {
+  "tr": "Çeviri tarzı: doğal anlatım",
+  "en": "Translation style: natural",
+  "fa": "سبک ترجمه: روان",
+  "ar": "أسلوب الترجمة: طبيعي"
+ },
+ "Çeviri tarzı: düz çeviri (kelimesi kelimesine)": {
+  "tr": "Çeviri tarzı: düz çeviri (kelimesi kelimesine)",
+  "en": "Translation style: literal (word for word)",
+  "fa": "سبک ترجمه: تحت‌اللفظی (کلمه به کلمه)",
+  "ar": "أسلوب الترجمة: حرفي (كلمة بكلمة)"
+ },
+ "Çevrimdışı kullanım · Premium": {
+  "tr": "Çevrimdışı kullanım · Premium",
+  "en": "Offline use · Premium",
+  "fa": "استفاده آفلاین · Premium",
+  "ar": "الاستخدام دون اتصال · Premium"
+ },
+ "Çevrimiçi · genelde 2 saat içinde cevap verir": {
+  "tr": "Çevrimiçi · genelde 2 saat içinde cevap verir",
+  "en": "Online · usually replies within 2 hours",
+  "fa": "آنلاین · معمولاً ظرف 2 ساعت پاسخ می‌دهد",
+  "ar": "متصل · يرد عادةً خلال 2 ساعة"
+ },
+ "Öksürük olursa ARB'ye geçilir; ARB öksürük yapmaz.": {
+  "tr": "Öksürük olursa ARB'ye geçilir; ARB öksürük yapmaz.",
+  "en": "If cough occurs, switch to an ARB; ARBs don't cause cough.",
+  "fa": "اگر سرفه ایجاد شود، به ARB تغییر می‌دهند؛ ARB سرفه ایجاد نمی‌کند.",
+  "ar": "إذا حدث السعال يُنتقل إلى ARB؛ فهو لا يسبب السعال."
+ },
+ "Ön yüz kısa vaka, arka yüz doğru ilaç ve nedeni": {
+  "tr": "Ön yüz kısa vaka, arka yüz doğru ilaç ve nedeni",
+  "en": "Front: short case, back: the right drug and why",
+  "fa": "رو: مورد کوتاه، پشت: داروی درست و دلیلش",
+  "ar": "الوجه: حالة قصيرة، الخلف: الدواء الصحيح وسببه"
+ },
+ "Önce \"Bir gün önce hatırlat\"ı aç": {
+  "tr": "Önce \"Bir gün önce hatırlat\"ı aç",
+  "en": "First turn on \"Remind me a day before\"",
+  "fa": "اول «یک روز قبل یادآوری کن» را روشن کن",
+  "ar": "فعّل أولًا \"ذكّرني قبل يوم\""
+ },
+ "Önce bir seçenek seç": {
+  "tr": "Önce bir seçenek seç",
+  "en": "Pick an option first",
+  "fa": "اول یک گزینه انتخاب کن",
+  "ar": "اختر خيارًا أولًا"
+ },
+ "Önce cevabı düşün, sonra karta dokun": {
+  "tr": "Önce cevabı düşün, sonra karta dokun",
+  "en": "Think of the answer first, then tap the card",
+  "fa": "اول به جواب فکر کن، بعد روی کارت بزن",
+  "ar": "فكّر في الإجابة أولًا، ثم المس البطاقة"
+ },
+ "Önce e-postadaki 6 haneli kodu gir": {
+  "tr": "Önce e-postadaki 6 haneli kodu gir",
+  "en": "First enter the 6-digit code from the email",
+  "fa": "اول کد 6 رقمی ایمیل را وارد کن",
+  "ar": "أدخل أولًا الرمز المكوّن من 6 أرقام من البريد"
+ },
+ "Önce kullanım koşullarını onayla (kutuyu işaretle)": {
+  "tr": "Önce kullanım koşullarını onayla (kutuyu işaretle)",
+  "en": "First accept the terms of use (tick the box)",
+  "fa": "اول شرایط استفاده را بپذیر (تیک بزن)",
+  "ar": "وافق أولًا على شروط الاستخدام (حدّد المربع)"
+ },
+ "Önce mesajını yaz": {
+  "tr": "Önce mesajını yaz",
+  "en": "Write your message first",
+  "fa": "اول پیامت را بنویس",
+  "ar": "اكتب رسالتك أولًا"
+ },
+ "Önce paylaşmak istediğin şeyi seç": {
+  "tr": "Önce paylaşmak istediğin şeyi seç",
+  "en": "First pick what you want to share",
+  "fa": "اول چیزی را که می‌خواهی به اشتراک بگذاری انتخاب کن",
+  "ar": "اختر أولًا ما تريد مشاركته"
+ },
+ "Önce sorunu yaz": {
+  "tr": "Önce sorunu yaz",
+  "en": "Describe the problem first",
+  "fa": "اول مشکل را بنویس",
+  "ar": "اكتب المشكلة أولًا"
+ },
+ "Önceki bölüm": {
+  "tr": "Önceki bölüm",
+  "en": "Previous section",
+  "fa": "بخش قبلی",
+  "ar": "القسم السابق"
+ },
+ "Önemli ve zayıf konuların": {
+  "tr": "Önemli ve zayıf konuların",
+  "en": "Your key and weak topics",
+  "fa": "مباحث مهم و ضعیف تو",
+  "ar": "مواضيعك المهمة والضعيفة"
+ },
+ "Önemli · özet": {
+  "tr": "Önemli · özet",
+  "en": "Key · summary",
+  "fa": "مهم · خلاصه",
+  "ar": "مهم · ملخص"
+ },
+ "Öneri": {
+  "tr": "Öneri",
+  "en": "Tip",
+  "fa": "پیشنهاد",
+  "ar": "اقتراح"
+ },
+ "Öneri: en verimli saatlerin 09:00–11:00": {
+  "tr": "Öneri: en verimli saatlerin 09:00–11:00",
+  "en": "Tip: your most productive hours 09:00–11:00",
+  "fa": "پیشنهاد: پربازده‌ترین ساعت‌هایت 09:00–11:00",
+  "ar": "اقتراح: أكثر ساعاتك إنتاجية 09:00–11:00"
+ },
+ "Örnek bildirimi gönder": {
+  "tr": "Örnek bildirimi gönder",
+  "en": "Send a test notification",
+  "fa": "ارسال اعلان نمونه",
+  "ar": "أرسل إشعارًا تجريبيًا"
+ },
+ "Özel durum": {
+  "tr": "Özel durum",
+  "en": "Special case",
+  "fa": "حالت خاص",
+  "ar": "حالة خاصة"
+ },
+ "Özel durumlar": {
+  "tr": "Özel durumlar",
+  "en": "Special cases",
+  "fa": "حالت‌های خاص",
+  "ar": "حالات خاصة"
+ },
+ "Özet türü": {
+  "tr": "Özet türü",
+  "en": "Summary type",
+  "fa": "نوع خلاصه",
+  "ar": "نوع الملخص"
+ },
+ "Özete ekleniyor": {
+  "tr": "Özete ekleniyor",
+  "en": "Adding to summary",
+  "fa": "در حال افزودن به خلاصه",
+  "ar": "تتم الإضافة إلى الملخص"
+ },
+ "Özetlerde": {
+  "tr": "Özetlerde",
+  "en": "In summaries",
+  "fa": "در خلاصه‌ها",
+  "ar": "في الملخصات"
+ },
+ "Öğrenci sisteminden indirdiğin program": {
+  "tr": "Öğrenci sisteminden indirdiğin program",
+  "en": "Schedule downloaded from the student system",
+  "fa": "برنامه‌ای که از سامانه دانشجویی دانلود کردی",
+  "ar": "الجدول الذي نزّلته من نظام الطلاب"
+ },
+ "Öğrenilen kelime": {
+  "tr": "Öğrenilen kelime",
+  "en": "Words learned",
+  "fa": "کلمه‌های یادگرفته",
+  "ar": "الكلمات المتعلَّمة"
+ },
+ "Ücretsiz plan · bu ay 2 dersten 1'i kullanıldı": {
+  "tr": "Ücretsiz plan · bu ay 2 dersten 1'i kullanıldı",
+  "en": "Free plan · 1 of 2 courses used this month",
+  "fa": "طرح رایگان · این ماه 1 از 2 درس استفاده شد",
+  "ar": "الخطة المجانية · استُخدم 1 من 2 درس هذا الشهر"
+ },
+ "çalışalım?": {
+  "tr": "çalışalım?",
+  "en": "shall we study?",
+  "fa": "بخوانیم؟",
+  "ar": "ندرس؟"
+ },
+ "çalışma planın": {
+  "tr": "çalışma planın",
+  "en": "study plan",
+  "fa": "هفتگی‌ات",
+  "ar": "الأسبوعية"
+ },
+ "çalışır?": {
+  "tr": "çalışır?",
+  "en": "does it work?",
+  "fa": "کار می‌کند؟",
+  "ar": "يعمل؟"
+ },
+ "öksürük ve anjiyoödem": {
+  "tr": "öksürük ve anjiyoödem",
+  "en": "cough and angioedema",
+  "fa": "سرفه و آنژیوادم",
+  "ar": "السعال والوذمة الوعائية"
+ },
+ "örneklerim": {
+  "tr": "örneklerim",
+  "en": "samples",
+  "fa": "سؤال‌هایم",
+  "ar": "أسئلتي"
+ },
+ "özel": {
+  "tr": "özel",
+  "en": "focus",
+  "fa": "امتحان",
+  "ar": "بالامتحان"
+ },
+ "özette ve sınavda": {
+  "tr": "özette ve sınavda",
+  "en": "in summary and exam",
+  "fa": "در خلاصه و امتحان",
+  "ar": "في الملخص والامتحان"
+ },
+ "İlaç grubu": {
+  "tr": "İlaç grubu",
+  "en": "Drug group",
+  "fa": "گروه دارویی",
+  "ar": "المجموعة الدوائية"
+ },
+ "İlk 2 hafta · dersler eşit dağıtılır": {
+  "tr": "İlk 2 hafta · dersler eşit dağıtılır",
+  "en": "First 2 weeks · courses split evenly",
+  "fa": "2 هفته اول · درس‌ها مساوی تقسیم می‌شوند",
+  "ar": "أول أسبوعين · تُوزَّع الدروس بالتساوي"
+ },
+ "İlk basamakta 4 grup: diüretik, ACE inhibitörü, ARB, kalsiyum kanal blokeri.": {
+  "tr": "İlk basamakta 4 grup: diüretik, ACE inhibitörü, ARB, kalsiyum kanal blokeri.",
+  "en": "4 first-line groups: diuretic, ACE inhibitor, ARB, calcium channel blocker.",
+  "fa": "4 گروه خط اول: دیورتیک، مهارکننده ACE، ARB، مسدودکننده کانال کلسیم.",
+  "ar": "4 مجموعات في الخط الأول: مدر بول، مثبط ACE، ARB، حاصر قنوات الكالسيوم."
+ },
+ "İlk basamakta diüretikler ve ACE inhibitörleri kullanılır. ACE inhibitörlerinin kuru öksürük yaptığı doğru.": {
+  "tr": "İlk basamakta diüretikler ve ACE inhibitörleri kullanılır. ACE inhibitörlerinin kuru öksürük yaptığı doğru.",
+  "en": "First line uses diuretics and ACE inhibitors. It's true that ACE inhibitors cause dry cough.",
+  "fa": "در خط اول از دیورتیک‌ها و مهارکننده‌های ACE استفاده می‌شود. درست است که مهارکننده‌های ACE سرفه خشک ایجاد می‌کنند.",
+  "ar": "يُستخدم في الخط الأول مدرات البول ومثبطات ACE. صحيح أن مثبطات ACE تسبب سعالًا جافًا."
+ },
+ "İlk basamakta dört grubumuz var: diüretik, ACE inhibitörü, ARB, kalsiyum kanal blokeri. Bunları sırayla değil, hastaya göre seçiyoruz.": {
+  "tr": "İlk basamakta dört grubumuz var: diüretik, ACE inhibitörü, ARB, kalsiyum kanal blokeri. Bunları sırayla değil, hastaya göre seçiyoruz.",
+  "en": "We have four first-line groups: diuretic, ACE inhibitor, ARB, calcium channel blocker. We don't pick them in order, but based on the patient.",
+  "fa": "در خط اول چهار گروه داریم: دیورتیک، مهارکننده ACE، ARB، مسدودکننده کانال کلسیم. این‌ها را به ترتیب نه، بلکه بر اساس بیمار انتخاب می‌کنیم.",
+  "ar": "لدينا أربع مجموعات في الخط الأول: مدر بول، مثبط ACE، ARB، حاصر قنوات الكالسيوم. لا نختارها بالترتيب بل حسب المريض."
+ },
+ "İlk basamakta dört grup var: diüretikler, ACE inhibitörleri, ARB'ler ve kalsiyum kanal blokerleri.": {
+  "tr": "İlk basamakta dört grup var: diüretikler, ACE inhibitörleri, ARB'ler ve kalsiyum kanal blokerleri.",
+  "en": "There are four first-line groups: diuretics, ACE inhibitors, ARBs and calcium channel blockers.",
+  "fa": "در خط اول چهار گروه هست: دیورتیک‌ها، مهارکننده‌های ACE، ARBها و مسدودکننده‌های کانال کلسیم.",
+  "ar": "هناك أربع مجموعات في الخط الأول: مدرات البول ومثبطات ACE وARB وحاصرات قنوات الكالسيوم."
+ },
+ "İlk basamaktaki 4 ilaç grubu hangileri?": {
+  "tr": "İlk basamaktaki 4 ilaç grubu hangileri?",
+  "en": "Which are the 4 first-line drug groups?",
+  "fa": "4 گروه دارویی خط اول کدام‌اند؟",
+  "ar": "ما هي مجموعات الأدوية الأربع في الخط الأول؟"
+ },
+ "İlk ders": {
+  "tr": "İlk ders",
+  "en": "First course",
+  "fa": "اولین درس",
+  "ar": "أول درس"
+ },
+ "İlk dersten 1 saat önce": {
+  "tr": "İlk dersten 1 saat önce",
+  "en": "1 hour before first class",
+  "fa": "1 ساعت قبل از اولین کلاس",
+  "ar": "قبل أول محاضرة بساعة واحدة"
+ },
+ "İndir": {
+  "tr": "İndir",
+  "en": "Download",
+  "fa": "دانلود",
+  "ar": "تنزيل"
+ },
+ "İnsülin türleri": {
+  "tr": "İnsülin türleri",
+  "en": "Insulin types",
+  "fa": "انواع انسولین",
+  "ar": "أنواع الإنسولين"
+ },
+ "İnternet yok · asistan şu an cevap veremiyor": {
+  "tr": "İnternet yok · asistan şu an cevap veremiyor",
+  "en": "No internet · the assistant can't reply right now",
+  "fa": "اینترنت نیست · دستیار الان نمی‌تواند پاسخ دهد",
+  "ar": "لا يوجد إنترنت · لا يستطيع المساعد الرد الآن"
+ },
+ "İnternet yok · çevrimdışı mod": {
+  "tr": "İnternet yok · çevrimdışı mod",
+  "en": "No internet · offline mode",
+  "fa": "اینترنت نیست · حالت آفلاین",
+  "ar": "لا يوجد إنترنت · وضع عدم الاتصال"
+ },
+ "İpucu modu açık · asistan cevabı söylemeden yol gösterecek": {
+  "tr": "İpucu modu açık · asistan cevabı söylemeden yol gösterecek",
+  "en": "Hint mode on · the assistant will guide you without giving the answer",
+  "fa": "حالت راهنمایی روشن است · دستیار بدون گفتن جواب راهنمایی‌ات می‌کند",
+  "ar": "وضع التلميح مفعّل · سيرشدك المساعد دون قول الإجابة"
+ },
+ "İyi gidiyorsun! Birkaç eksik var.": {
+  "tr": "İyi gidiyorsun! Birkaç eksik var.",
+  "en": "You're doing well! A few gaps left.",
+  "fa": "خوب پیش می‌روی! چند کمبود هست.",
+  "ar": "أنت تُبلي جيدًا! هناك بعض النواقص."
+ },
+ "ısı şeridi": {
+  "tr": "ısı şeridi",
+  "en": "heat strip",
+  "fa": "نوار حرارتی",
+  "ar": "شريط حراري"
+ },
+ "Şifre": {
+  "tr": "Şifre",
+  "en": "Password",
+  "fa": "رمز عبور",
+  "ar": "كلمة المرور"
+ },
+ "Şifre sıfırlama bağlantısı e-postana gönderildi": {
+  "tr": "Şifre sıfırlama bağlantısı e-postana gönderildi",
+  "en": "A password reset link was sent to your email",
+  "fa": "لینک بازنشانی رمز به ایمیلت ارسال شد",
+  "ar": "أُرسل رابط إعادة تعيين كلمة المرور إلى بريدك"
+ },
+ "Şifremi unuttum": {
+  "tr": "Şifremi unuttum",
+  "en": "Forgot password",
+  "fa": "رمزم را فراموش کردم",
+  "ar": "نسيت كلمة المرور"
+ },
+ "Şifreyi gizle": {
+  "tr": "Şifreyi gizle",
+  "en": "Hide password",
+  "fa": "پنهان کردن رمز",
+  "ar": "إخفاء كلمة المرور"
+ },
+ "Şifreyi göster": {
+  "tr": "Şifreyi göster",
+  "en": "Show password",
+  "fa": "نمایش رمز",
+  "ar": "إظهار كلمة المرور"
+ },
+ "Şimdi başla": {
+  "tr": "Şimdi başla",
+  "en": "Start now",
+  "fa": "الان شروع کن",
+  "ar": "ابدأ الآن"
+ },
+ "Şimdi tanımla başlayalım arkadaşlar. Sistolik yüz kırk ve üstü ya da diyastolik doksan ve üstü… iki ayrı vizitte ölçeceğiz, tek ölçümle tanı koymuyoruz.": {
+  "tr": "Şimdi tanımla başlayalım arkadaşlar. Sistolik yüz kırk ve üstü ya da diyastolik doksan ve üstü… iki ayrı vizitte ölçeceğiz, tek ölçümle tanı koymuyoruz.",
+  "en": "Now let's start with the definition, everyone. Systolic one forty and above or diastolic ninety and above… we'll measure on two separate visits; we don't diagnose from a single reading.",
+  "fa": "خب بچه‌ها با تعریف شروع کنیم. سیستولیک صد و چهل و بالاتر یا دیاستولیک نود و بالاتر… در دو ویزیت جداگانه اندازه می‌گیریم، با یک اندازه‌گیری تشخیص نمی‌دهیم.",
+  "ar": "لنبدأ الآن بالتعريف يا جماعة. الانقباضي مئة وأربعون فما فوق أو الانبساطي تسعون فما فوق… نقيس في زيارتين منفصلتين، ولا نشخّص بقياس واحد."
+ },
+ "“Sınavda çıkar” dedi · 3 kez tekrarladı": {
+  "tr": "“Sınavda çıkar” dedi · 3 kez tekrarladı",
+  "en": "Said “It'll be on the exam” · repeated 3 times",
+  "fa": "گفت «در امتحان می‌آید» · 3 بار تکرار کرد",
+  "ar": "قال “سيأتي في الامتحان” · كرّرها 3 مرات"
+ },
+ "“Sınavda çıkar” ipuçları": {
+  "tr": "“Sınavda çıkar” ipuçları",
+  "en": "“It'll be on the exam” hints",
+  "fa": "نکته‌های «در امتحان می‌آید»",
+  "ar": "تلميحات “سيأتي في الامتحان”"
+ },
+ "• ACE inhibitörlerine düşük dozla başlanır, doz 2–4 haftada bir artırılır.": {
+  "tr": "• ACE inhibitörlerine düşük dozla başlanır, doz 2–4 haftada bir artırılır.",
+  "en": "• ACE inhibitors are started at a low dose, increased every 2–4 weeks.",
+  "fa": "• مهارکننده‌های ACE با دوز کم شروع می‌شوند، دوز هر 2–4 هفته افزایش می‌یابد.",
+  "ar": "• تُبدأ مثبطات ACE بجرعة منخفضة، وتُزاد الجرعة كل 2–4 أسابيع."
+ },
+ "★ Çok iyi": {
+  "tr": "★ Çok iyi",
+  "en": "★ Very good",
+  "fa": "★ خیلی خوب",
+  "ar": "★ جيد جدًا"
+ },
+ "✓ DOĞRU ANLATTIKLARIN": {
+  "tr": "✓ DOĞRU ANLATTIKLARIN",
+  "en": "✓ WHAT YOU EXPLAINED RIGHT",
+  "fa": "✓ آنچه درست توضیح دادی",
+  "ar": "✓ ما شرحته بشكل صحيح"
+ },
+ "✕ YANLIŞLAR": {
+  "tr": "✕ YANLIŞLAR",
+  "en": "✕ MISTAKES",
+  "fa": "✕ اشتباه‌ها",
+  "ar": "✕ الأخطاء"
+ },
+ "Asistan cevap vermek için internete bağlanır. Sorunu kaydettim; bağlanınca cevaplarım.": {
+  "tr": "Asistan cevap vermek için internete bağlanır. Sorunu kaydettim; bağlanınca cevaplarım.",
+  "en": "The assistant needs internet to answer. I saved your question; I'll answer once you're online.",
+  "fa": "دستیار برای پاسخ دادن به اینترنت نیاز دارد. سؤالت را ذخیره کردم؛ وقتی وصل شدی جواب می‌دهم.",
+  "ar": "يحتاج المساعد إلى الإنترنت للإجابة. حفظتُ سؤالك؛ سأجيب عند الاتصال."
+ },
+ "Fotoğraftan okumak için internet gerekli · elle ekleyebilirsin": {
+  "tr": "Fotoğraftan okumak için internet gerekli · elle ekleyebilirsin",
+  "en": "Reading from a photo needs internet · you can add classes manually",
+  "fa": "خواندن از عکس به اینترنت نیاز دارد · می‌توانی دستی اضافه کنی",
+  "ar": "القراءة من الصورة تحتاج إلى الإنترنت · يمكنك الإضافة يدويًا"
+ },
+ "Hatırlatmalar internetsiz de gelir. Fotoğraftan okumak için internet gerekir; elle ekleyebilirsin.": {
+  "tr": "Hatırlatmalar internetsiz de gelir. Fotoğraftan okumak için internet gerekir; elle ekleyebilirsin.",
+  "en": "Reminders still arrive offline. Reading from a photo needs internet; you can add classes manually.",
+  "fa": "یادآوری‌ها بدون اینترنت هم می‌آیند. خواندن از عکس به اینترنت نیاز دارد؛ می‌توانی دستی اضافه کنی.",
+  "ar": "تصل التذكيرات حتى دون إنترنت. القراءة من الصورة تحتاج إلى الإنترنت؛ يمكنك الإضافة يدويًا."
+ },
+ "Özet, kartlar ve sorular önceden indirildi. Sonuçların internete bağlanınca kaydedilir.": {
+  "tr": "Özet, kartlar ve sorular önceden indirildi. Sonuçların internete bağlanınca kaydedilir.",
+  "en": "The summary, cards and questions were downloaded in advance. Your results are saved once you're online.",
+  "fa": "خلاصه، کارت‌ها و سؤال‌ها از قبل دانلود شده‌اند. نتایجت وقتی وصل شدی ذخیره می‌شود.",
+  "ar": "تم تنزيل الملخص والبطاقات والأسئلة مسبقًا. تُحفظ نتائجك عند الاتصال."
+ },
+ "İnternet yok · asistan bekliyor": {
+  "tr": "İnternet yok · asistan bekliyor",
+  "en": "No internet · assistant is waiting",
+  "fa": "اینترنت نیست · دستیار منتظر است",
+  "ar": "لا يوجد إنترنت · المساعد ينتظر"
+ },
+ "İnternet yok · bu tekrar cihazında": {
+  "tr": "İnternet yok · bu tekrar cihazında",
+  "en": "No internet · this review is on your device",
+  "fa": "اینترنت نیست · این مرور روی دستگاهت است",
+  "ar": "لا يوجد إنترنت · هذه المراجعة على جهازك"
+ },
+ "İnternet yok · programın cihazında": {
+  "tr": "İnternet yok · programın cihazında",
+  "en": "No internet · your timetable is on your device",
+  "fa": "اینترنت نیست · برنامه‌ات روی دستگاهت است",
+  "ar": "لا يوجد إنترنت · جدولك على جهازك"
+ },
+ "İnternet yok · sorun kaydedildi, bağlanınca cevaplayacağım": {
+  "tr": "İnternet yok · sorun kaydedildi, bağlanınca cevaplayacağım",
+  "en": "No internet · question saved, I'll answer when you're online",
+  "fa": "اینترنت نیست · سؤالت ذخیره شد، وقتی وصل شدی جواب می‌دهم",
+  "ar": "لا يوجد إنترنت · حُفظ سؤالك، سأجيب عند الاتصال"
+ },
+ "Dönem ortasında katıldıysan kısa bir sınavla bildiklerini atlayıp zayıf konularını bulalım.": {
+  "tr": "Dönem ortasında katıldıysan kısa bir sınavla bildiklerini atlayıp zayıf konularını bulalım.",
+  "en": "If you joined mid-term, let's skip what you know with a short test and find your weak topics.",
+  "fa": "اگر وسط ترم آمده‌ای، با یک آزمون کوتاه چیزهایی که بلدی را رد کنیم و مباحث ضعیفت را پیدا کنیم.",
+  "ar": "إذا انضممت في منتصف الفصل، لنتخطَّ ما تعرفه باختبار قصير ونجد مواضيعك الضعيفة."
+ },
+ "· bildiğin konuları atlayıp zayıf olanları buluruz": {
+  "tr": "· bildiğin konuları atlayıp zayıf olanları buluruz",
+  "en": "· we'll skip topics you know and find your weak ones",
+  "fa": "· مباحثی که بلدی را رد می‌کنیم و ضعیف‌ها را پیدا می‌کنیم",
+  "ar": "· سنتخطى ما تعرفه ونجد المواضيع الضعيفة"
+ },
+ "Ayda ~167 TL · %44 tasarruf": {
+  "tr": "Ayda ~167 TL · %44 tasarruf",
+  "en": "About 167 TL/month · save 44%",
+  "fa": "حدود ۱۶۷ لیر در ماه · ۴۴٪ صرفه‌جویی",
+  "ar": "حوالي 167 ليرة شهريًا · توفير 44%"
+ },
+ "Ayda ~240 TL · %20 tasarruf": {
+  "tr": "Ayda ~240 TL · %20 tasarruf",
+  "en": "About 240 TL/month · save 20%",
+  "fa": "حدود ۲۴۰ لیر در ماه · ۲۰٪ صرفه‌جویی",
+  "ar": "حوالي 240 ليرة شهريًا · توفير 20%"
+ },
+ "İlk aboneler bu fiyatta kalır": {
+  "tr": "İlk aboneler bu fiyatta kalır",
+  "en": "Early subscribers keep this price",
+  "fa": "مشترکان اول با همین قیمت می‌مانند",
+  "ar": "المشتركون الأوائل يبقون على هذا السعر"
+ },
+ "3 günlük deneme bitince seçtiğin plan App Store hesabından ücretlendirilir; istediğin zaman iptal edebilirsin. Fiyatlara KDV dahildir.": {
+  "tr": "3 günlük deneme bitince seçtiğin plan App Store hesabından ücretlendirilir; istediğin zaman iptal edebilirsin. Fiyatlara KDV dahildir.",
+  "en": "After the 3-day trial, your plan is charged to your App Store account; cancel anytime. Prices include VAT.",
+  "fa": "پس از آزمایش ۳ روزه، هزینهٔ پلن از حساب App Store کسر می‌شود؛ هر زمان می‌توانی لغو کنی. مالیات در قیمت‌ها لحاظ شده است.",
+  "ar": "بعد التجربة لمدة 3 أيام تُحتسب الخطة على حساب App Store؛ يمكنك الإلغاء في أي وقت. الأسعار شاملة الضريبة."
  }
 }

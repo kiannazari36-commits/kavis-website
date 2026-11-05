@@ -113,6 +113,71 @@ private struct PadColumn: ViewModifier {
     }
 }
 
+/// Design NewIPad: the header row of the wide pages (courses, exam, cards, upload, review, recording, notifications…):
+/// a 46 pt round back button, a 36 pt title with a small line under it, and the page's own buttons at the end.
+struct PadHeader<Trailing: View>: View {
+    @Environment(AppPrefs.self) private var prefs
+    let title: String
+    var sub: String? = nil
+    var onBack: () -> Void
+    @ViewBuilder var trailing: () -> Trailing
+
+    var body: some View {
+        HStack(spacing: 14) {
+            Button(action: onBack) {
+                KIcon(name: .back, size: 20, width: 1.8, flipsInRTL: true)
+                    .foregroundStyle(KPhone.text)
+                    .frame(width: 46, height: 46)
+                    .background(KPhone.card, in: Circle())
+                    .overlay(Circle().stroke(KPhone.line, lineWidth: 1))
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(prefs.t("signup.k1052"))
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title).font(KFont.ui(36, .medium, lang: prefs.lang)).kTracking(-0.03, size: 36, lang: prefs.lang)
+                    .foregroundStyle(KPhone.text).lineLimit(1).minimumScaleFactor(0.6)
+                    .accessibilityAddTraits(.isHeader)
+                if let sub { Text(sub).font(KFont.ui(13, lang: prefs.lang)).foregroundStyle(KPhone.text2).lineLimit(2) }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            trailing()
+        }
+    }
+}
+
+extension PadHeader where Trailing == EmptyView {
+    init(title: String, sub: String? = nil, onBack: @escaping () -> Void) {
+        self.init(title: title, sub: sub, onBack: onBack) { EmptyView() }
+    }
+}
+
+/// Design NewIPad: the bordo pill of the wide headers ("Ders ekle", "PDF ekle").
+struct PadPill: View {
+    @Environment(AppPrefs.self) private var prefs
+    let label: String
+    var icon: KIconName? = nil
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                if let icon { KIcon(name: icon, size: 16, width: 1.9) }
+                Text(label).font(KFont.ui(14, .medium, lang: prefs.lang))
+            }
+            .foregroundStyle(Color(hex: 0xFFFCF6))
+            .padding(.horizontal, 18).frame(height: 44)
+            .background(Color(hex: 0x9C2F3A), in: Capsule())
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 extension View {
+    /// Design NewIPad: a wide page's margins next to the rail (`padding: 32px 32px 32px 8px`).
+    func padPage() -> some View {
+        padding(.leading, 8).padding(.trailing, 32)
+            .padding(.top, KLayout.top(54, minimum: 10) + 8).padding(.bottom, 32)
+    }
+
     func padColumn(_ width: CGFloat = 760) -> some View { modifier(PadColumn(width: width)) }
 }
