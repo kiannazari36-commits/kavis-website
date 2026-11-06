@@ -37,6 +37,8 @@ struct ChatMessage: Identifiable, Equatable {
     var outsidePdf = false
     /// The question photo of "Soruyu çözdür" (only on this phone; the server keeps the text).
     var photo: Data? = nil
+    /// Asked by voice in hands-free mode (the bubble shows a microphone; only on this phone).
+    var voice = false
 }
 
 /// A past conversation ("Geçmiş"), newest first.
