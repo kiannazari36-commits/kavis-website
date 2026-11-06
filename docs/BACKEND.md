@@ -178,5 +178,5 @@ scheduled jobs: none left (`daily-planner`, `send-notifications` built — see a
 
 1. **Search for the assistant:** starts with Postgres full-text search on `material_chunks`; vector search
    (pgvector + embeddings) can be added later without changing the apps.
-2. **Course catalog:** fill `course_catalog` per department (the design has the pharmacy list).
+2. **Course catalog:** migration `20261106120000_course_catalog_fill.sql` fills `course_catalog` per department (Turkish names; local only until approved for live).
 3. **Edge Functions:** none is built yet (list above). Next step after this.

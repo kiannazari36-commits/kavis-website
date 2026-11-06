@@ -123,5 +123,5 @@ reset role;
 -- anon
 set role anon;
 select pg_temp.fails($$select * from public.profiles$$) as "anon cannot read profiles";
-select pg_temp.ok((select count(*) from public.course_catalog) = 0, 'anon can read catalog');
+select pg_temp.ok((select count(*) from public.course_catalog) > 0, 'anon can read catalog (filled)');
 reset role;
