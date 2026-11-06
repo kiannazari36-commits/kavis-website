@@ -2,7 +2,8 @@ import SwiftUI
 
 /// Design: design/ScrAssistant.dc.html (chat). The assistant answers only from the student's material; what it does
 /// not find in the lesson it says so. Answers come from the server (Edge Function "assistant", like the web) and
-/// appear while they are written; the conversation is kept. Voice, teach-back and "easy explanation" come later.
+/// appear while they are written; the conversation is kept. "Sürekli dinle" is hands-free (design voice mode): listen →
+/// send by itself after a pause → read the answer aloud → listen again, until "Durdur" or a long silence.
 struct AssistantChatView: View {
     @Environment(AppPrefs.self) private var prefs
     @Environment(AppModel.self) private var app
@@ -24,6 +25,7 @@ struct AssistantChatView: View {
     @State private var draft = ""
     @State private var quickOpen = false
     @State private var waiting = false
+    /// "Sürekli dinle" (hands-free) is on.
     @State private var listening = false
     @State private var femaleVoice = true
     @State private var speedIndex = 1
@@ -65,7 +67,10 @@ struct AssistantChatView: View {
             if !target.question.isEmpty || target.photo != nil { await ask(target.question, photo: target.photo) }
             if target.listen { toggleVoice() }
         }
-        .onDisappear { speaker.stop(); dictation.stop() }
+        .onDisappear { listening = false; speaker.stop(); dictation.stop() }
+        // Hands-free: when the answer has been read aloud, listen for the next question.
+        .onChange(of: speaker.speaking) { _, now in if !now { listenNext() } }
+        .onChange(of: offline) { _, now in if now { setHandsFree(false) } }
     }
 
     // MARK: iPad reader panel
@@ -98,6 +103,7 @@ struct AssistantChatView: View {
                 .padding(12)
             }
             .background(RadialGradient(colors: [Self.panelTop, Self.panelBg], center: .top, startRadius: 0, endRadius: 260))
+            readingBar
             messagesList
             composer
         }
@@ -115,6 +121,7 @@ struct AssistantChatView: View {
             Capsule().fill(KPhone.line).frame(width: 40, height: 5).padding(.top, 8)
             header
             controls
+            readingBar
             messagesList
             composer
         }
@@ -154,10 +161,7 @@ struct AssistantChatView: View {
 
     private var controls: some View {
         HStack(spacing: 8) {
-            Button {
-                listening.toggle()
-                toast.show(prefs.t("k165")) // speech recognition comes later
-            } label: {
+            Button { setHandsFree(!listening) } label: {
                 HStack(spacing: 8) {
                     ZStack(alignment: listening ? .trailing : .leading) {
                         Capsule().fill(listening ? KOnb.pri : KPhone.seg)
@@ -168,6 +172,7 @@ struct AssistantChatView: View {
                 }
                 .frame(minHeight: 44)
             }
+            .disabled(offline)
             .accessibilityAddTraits(listening ? .isSelected : [])
             Spacer()
             Button { femaleVoice.toggle() } label: {
@@ -236,6 +241,7 @@ struct AssistantChatView: View {
                         }
                         .id("typing")
                     }
+                    if listening && dictation.listening { listeningCircle.id("listen") }
                 }
                 .padding(.horizontal, 16).padding(.vertical, 14)
             }
@@ -247,6 +253,7 @@ struct AssistantChatView: View {
                 withAnimation { proxy.scrollTo(waiting ? "typing" : (messages.last?.id ?? "typing"), anchor: .bottom) }
             }
             .onChange(of: streaming) { _, _ in proxy.scrollTo("typing", anchor: .bottom) }
+            .onChange(of: dictation.listening) { _, now in if now && listening { withAnimation { proxy.scrollTo("listen", anchor: .bottom) } } }
         }
     }
 
@@ -261,7 +268,10 @@ struct AssistantChatView: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                                 .accessibilityLabel(prefs.t("solveLabel"))
                         }
-                        Text(message.text).font(KFont.ui(14, lang: lang)).kLineHeight(1.55, size: 14, lang: lang)
+                        HStack(spacing: 8) {
+                            if message.voice { KIcon(name: .mic, size: 14, width: 2).accessibilityHidden(true) }
+                            Text(message.text).font(KFont.ui(14, lang: lang)).kLineHeight(1.55, size: 14, lang: lang)
+                        }
                     }
                 } else {
                     AnswerText(text: message.text, lang: lang)
@@ -343,6 +353,57 @@ struct AssistantChatView: View {
         .accessibilityElement(children: .contain)
     }
 
+    // MARK: Hands-free (design ScrAssistant, voice)
+
+    private static let wave: [CGFloat] = [8, 14, 22, 12, 26, 18, 10, 20, 28, 16, 9, 18, 24, 12]
+
+    /// While the answer is read aloud: the sound wave, the voice and speed, and "Durdur" (ends hands-free).
+    @ViewBuilder private var readingBar: some View {
+        if listening && speaker.speaking {
+            HStack(spacing: 12) {
+                HStack(spacing: 3) {
+                    ForEach(Array(Self.wave.enumerated()), id: \.offset) { _, h in
+                        RoundedRectangle(cornerRadius: 2).fill(KOnb.priText).frame(width: 3, height: h)
+                    }
+                }
+                .frame(height: 28)
+                .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(d("Cevap sesli okunuyor…")).font(KFont.ui(14, .semibold, lang: lang)).foregroundStyle(KOnb.priText)
+                    Text("\(femaleVoice ? d("Kadın sesi") : Self.maleVoiceLabel(lang)) · \(speedLabel)")
+                        .font(KFont.mono(11, .regular)).foregroundStyle(KPhone.text2)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                Button { setHandsFree(false) } label: {
+                    RoundedRectangle(cornerRadius: 2).fill(KPhone.ctaText).frame(width: 10, height: 10)
+                        .frame(width: 40, height: 40).background(KOnb.pri, in: Circle())
+                }
+                .accessibilityLabel(d("Durdur"))
+            }
+            .padding(.horizontal, 14).padding(.vertical, 12)
+            .background(KOnb.priSoft, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .padding(.horizontal, 16).padding(.top, 10)
+        }
+    }
+
+    /// While listening hands-free: the microphone in its ring, "Dinliyorum…" and the words heard so far.
+    private var listeningCircle: some View {
+        VStack(spacing: 8) {
+            KIcon(name: .mic, size: 20, width: 1.8).foregroundStyle(KPhone.ctaText)
+                .frame(width: 44, height: 44).background(KOnb.pri, in: Circle())
+                .frame(width: 64, height: 64).background(KOnb.priSoft, in: Circle())
+                .background(Circle().fill(Color(light: Color(hex: 0x9C2F3A, opacity: 0.08), dark: Color(hex: 0xF09AA3, opacity: 0.12))).padding(-10))
+                .accessibilityHidden(true)
+            Text(d("Dinliyorum…")).font(KFont.ui(13, .semibold, lang: lang)).foregroundStyle(KOnb.priText)
+            if !draft.isEmpty {
+                Text(draft).font(KFont.ui(13, lang: lang)).italic().foregroundStyle(KOnb.text3).multilineTextAlignment(.center)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.top, 20)
+        .accessibilityElement(children: .combine)
+    }
+
     // MARK: Composer
 
     /// Ready questions (the web reader's quick menu): the first one asks for a simple explanation of the last topic.
@@ -389,7 +450,7 @@ struct AssistantChatView: View {
                 .font(KFont.ui(15, lang: lang)).foregroundStyle(KPhone.text)
                 .focused($focused)
                 .submitLabel(.send)
-                .onSubmit(send)
+                .onSubmit { send() }
                 .padding(.horizontal, 18).frame(height: 48)
                 .background(KPhone.sub, in: Capsule())
                 .disabled(offline)
@@ -427,22 +488,54 @@ struct AssistantChatView: View {
         }
     }
 
-    private func send() {
+    /// Turns hands-free on (starts listening) or off (stops listening and reading).
+    private func setHandsFree(_ on: Bool) {
+        listening = on
+        if on { return listenNext() }
+        dictation.stop()
+        speaker.stop()
+    }
+
+    /// Hands-free: listens for one question and sends it after a pause; a long silence turns hands-free off.
+    private func listenNext() {
+        guard listening, !offline, !waiting, !dictation.listening, !speaker.speaking else { return }
+        draft = ""
+        Task {
+            await dictation.start(lang: lang, autoStop: true, onText: { draft = $0 }, onEnd: { why in
+                guard listening else { return }
+                switch why {
+                case nil where !draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty:
+                    // No question left in the trial: the lock message shows and hands-free stops.
+                    if !send(voice: true) { listening = false }
+                case .denied: setHandsFree(false); toast.show(prefs.t("voiceNoMic"))
+                case .unsupported: setHandsFree(false); toast.show(prefs.t("voiceFailed"))
+                case nil, .empty: setHandsFree(false); toast.show(prefs.t("handsFreeOff"))
+                }
+            })
+        }
+    }
+
+    /// Sends the text box; false when nothing was sent (empty, busy, offline or the trial is used up).
+    @discardableResult private func send(voice: Bool = false) -> Bool {
         dictation.stop()
         let question = draft.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !question.isEmpty, !waiting, !offline else { return }
+        guard !question.isEmpty, !waiting, !offline else { return false }
+        var sent = false
         trial.perform(.question) {
+            sent = true
             draft = ""
+            waiting = true
             // "Ben anlatayım": the student's own words go with the request to check them against the lessons.
-            Task { await ask(target.teach ? prefs.t("teachPrefix") + question : question, shown: question) }
+            Task { await ask(target.teach ? prefs.t("teachPrefix") + question : question, shown: question, voice: voice) }
         }
+        return sent
     }
 
     /// Adds the question and the answer while the server writes it; the server saves both and counts the question.
     /// With a photo ("Soruyu çözdür") the server solves the question in it step by step.
-    private func ask(_ question: String, shown: String? = nil, photo: Data? = nil) async {
+    private func ask(_ question: String, shown: String? = nil, photo: Data? = nil, voice: Bool = false) async {
         let shown = shown ?? question
-        messages.append(ChatMessage(role: .user, text: shown.isEmpty ? prefs.t("solveLabel") : shown, photo: photo))
+        messages.append(ChatMessage(role: .user, text: shown.isEmpty ? prefs.t("solveLabel") : shown, photo: photo, voice: voice))
         waiting = true
         streaming = ""
         let result = await AssistantAPI.ask(question, courseId: isAll ? nil : target.topicId, materialId: target.materialId, page: target.page, threadId: threadId,
@@ -453,9 +546,10 @@ struct AssistantChatView: View {
         case .success(let r):
             threadId = r.threadId
             messages.append(r.message)
-            // Voice mode ("Sürekli dinle"): every answer is also read aloud with the chosen voice and speed.
+            // Hands-free ("Sürekli dinle"): the answer is read aloud with the chosen voice and speed, then it listens again.
             if listening { speak(r.message.text) }
         case .failure(let e):
+            listening = false
             if e == .locked { trial.lockedKey = "trialQFull" } else {
                 toast.show(prefs.t(e == .budget ? "askBudget" : e == .declined ? "askDeclined" : "askFailed"))
             }
