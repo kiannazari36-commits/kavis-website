@@ -87,6 +87,8 @@ struct RootView: View {
                 UploadView(kind: kind)
             case .reader(let id):
                 ReaderView(docID: id)
+            case .placement(let id):
+                PlacementView(materialId: id)
             case .lessonSummary(let id):
                 LessonSummaryView(materialId: id)
             case .samples(let course):

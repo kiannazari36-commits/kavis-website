@@ -54,6 +54,10 @@ struct ReaderView: View {
     @State private var hasPdf = false
     @State private var pdfDoc: PDFDocument?
     @State private var pdfFailed = false
+    /// Server state of a lesson that has no reading page yet (shows why a failed one stopped, and "Tekrar dene").
+    @State private var prep: UploadAPI.LessonStatus?
+    @State private var prepRound = 0
+    @State private var retrying = false
     /// The PDF page in the middle of the screen, the page it opens at and a jump asked by the section menu.
     @State private var pdfPage = 1
     @State private var startAt = 1
@@ -484,7 +488,25 @@ struct ReaderView: View {
         VStack(spacing: 14) {
             Spacer()
             Text(lesson?.title ?? "").font(KFont.ui(18, .semibold, lang: lang)).foregroundStyle(KRead.text)
-            Text(t("noReaderDoc")).font(KFont.ui(14, lang: lang)).foregroundStyle(KRead.text2).multilineTextAlignment(.center)
+            Text(t(prep?.status == .failed ? (prep?.budget == true ? "up_budget" : "up_processFailed") : "noReaderDoc"))
+                .font(KFont.ui(14, lang: lang)).foregroundStyle(KRead.text2).multilineTextAlignment(.center)
+            if prep?.status == .failed {
+                Button {
+                    Task {
+                        retrying = true
+                        let r = await UploadAPI.retry(docID)
+                        retrying = false
+                        switch r {
+                        case .success: toast.show(t("up_procT")); prep = nil; prepRound += 1
+                        case .failure(let f): toast.show(t(f == .trial ? "trialPdfFull" : "up_failed"))
+                        }
+                    }
+                } label: {
+                    Text(prefs.t("up_retry")).font(KFont.ui(14, .semibold, lang: lang)).foregroundStyle(KPhone.ctaText)
+                        .padding(.horizontal, 22).frame(height: 44).background(KPhone.cta, in: Capsule())
+                }
+                .disabled(retrying)
+            }
             Button { app.back() } label: {
                 Text(prefs.t("signup.k1052")).font(KFont.ui(14, .semibold, lang: lang)).foregroundStyle(KPhone.ctaText)
                     .padding(.horizontal, 22).frame(height: 44).background(KPhone.cta, in: Capsule())
@@ -492,6 +514,19 @@ struct ReaderView: View {
             Spacer()
         }
         .padding(.horizontal, 32)
+        .task(id: prepRound) { await followPrep() }
+    }
+
+    /// Asks the server about a lesson without a reading page every 4 seconds; when it is ready the page is loaded.
+    private func followPrep() async {
+        while !Task.isCancelled {
+            if let st = await UploadAPI.lessonStatus(docID) {
+                prep = st
+                if st.status == .ready { lesson = await ReaderAPI.getLesson(id: docID); return }
+                if st.status == .failed || st.status == .too_long || st.status == .needs_ocr { return }
+            }
+            try? await Task.sleep(for: .seconds(4))
+        }
     }
 
     // MARK: Top bar and theme
@@ -700,7 +735,7 @@ struct ReaderView: View {
                     HStack(spacing: 6) {
                         Circle().fill(Color(hex: UInt32(swatch))).frame(width: 12, height: 12)
                             .overlay(Circle().stroke(KRead.line, lineWidth: 1))
-                        Text(t(key)).font(KFont.ui(13, on ? .semibold : .regular, lang: lang))
+                        Text(t(key)).font(KFont.ui(13, on ? .semibold : .regular, lang: lang)).lineLimit(1).fixedSize(horizontal: true, vertical: false)
                     }
                     .foregroundStyle(on ? KRead.text : KRead.text2)
                     .padding(.horizontal, compact ? 14 : 0)
@@ -715,6 +750,7 @@ struct ReaderView: View {
         .background(KRead.seg, in: Capsule())
         .accessibilityElement(children: .contain)
         .accessibilityLabel(t("readingTheme"))
+        .layoutPriority(1)
     }
 
     // MARK: Sections and page cards

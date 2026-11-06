@@ -56,6 +56,8 @@ enum Route: Equatable {
     case progress
     case upload(UploadKind)
     case reader(String)
+    /// "Seviye tespiti" of a lesson just uploaded (design NewPlacement).
+    case placement(String)
     /// "Ders özeti" of one lesson (design ScrReview, tab "Bu ders").
     case lessonSummary(String)
     /// A lecture recording (transcript and the lecturer's emphasis), optionally from a moment (seconds).
@@ -90,7 +92,7 @@ final class AppModel {
 
     init() {
         user = AuthAPI.currentUser()
-        // Test switch: `-kavis.route welcome | login | signup | verify | onboarding | setup | home | profile | settings | courses | upload | uploadPhoto | uploadAudio | reader | assistant | chat`
+        // Test switch: `-kavis.route welcome | login | signup | verify | onboarding | setup | home | profile | settings | courses | upload | uploadPhoto | uploadAudio | reader | placement | assistant | chat`
         // jumps to a screen (removed before launch, see TODO.md).
         switch MockFlag.value("route") {
         case "welcome": route = .welcome
@@ -114,6 +116,7 @@ final class AppModel {
         case "uploadPhoto": route = .upload(.photo)
         case "uploadAudio": route = .upload(.audio)
         case "reader": route = .reader(MockFlag.value("material") ?? "hypertension")
+        case "placement": route = .placement(MockFlag.value("material") ?? "")
         case "summary": route = .lessonSummary(MockFlag.value("material") ?? "")
         case "samples": route = .samples(nil)
         case "quiz": route = .quiz(QuizTarget(materialId: "", kind: .exam, quizId: MockFlag.value("material")))
