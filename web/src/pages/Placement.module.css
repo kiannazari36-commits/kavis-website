@@ -488,3 +488,17 @@
 :global([data-theme='dark']) .counts > span {
   background: rgba(255, 240, 210, 0.14);
 }
+
+/* "PDF'te çalışman gereken sayfalar işaretlendi" (the reader marks the pages) */
+.marked {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text2);
+  padding: 0 4px;
+}
+
+.marked > svg {
+  flex: none;
+}

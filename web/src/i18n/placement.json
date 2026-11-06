@@ -44,7 +44,9 @@
   "ptHM": "{h} sa {m} dk",
   "ptM": "{m} dk",
   "ptNoQ": "Bu PDF için henüz soru yok · PDF açılıyor",
-  "ptFailed": "Sınav hazırlanamadı · tekrar dene"
+  "ptFailed": "Sınav hazırlanamadı · tekrar dene",
+  "ptMarked": "PDF'te çalışman gereken sayfalar işaretlendi",
+  "rdStudyWeak": "Zayıf · tekrar et"
  },
  "en": {
   "ptTitle": "Placement test",
@@ -91,7 +93,9 @@
   "ptHM": "{h} h {m} min",
   "ptM": "{m} min",
   "ptNoQ": "No questions for this PDF yet · opening the PDF",
-  "ptFailed": "Could not prepare the test · try again"
+  "ptFailed": "Could not prepare the test · try again",
+  "ptMarked": "The pages you need to study are marked in the PDF",
+  "rdStudyWeak": "Weak · review it"
  },
  "fa": {
   "ptTitle": "تعیین سطح",
@@ -138,7 +142,9 @@
   "ptHM": "{h} ساعت {m} دقیقه",
   "ptM": "{m} دقیقه",
   "ptNoQ": "هنوز برای این PDF سؤالی نیست · PDF باز می‌شود",
-  "ptFailed": "آزمون آماده نشد · دوباره امتحان کن"
+  "ptFailed": "آزمون آماده نشد · دوباره امتحان کن",
+  "ptMarked": "صفحه‌هایی که باید بخوانی در PDF علامت خورده‌اند",
+  "rdStudyWeak": "ضعیف · مرور کن"
  },
  "ar": {
   "ptTitle": "تحديد المستوى",
@@ -185,6 +191,8 @@
   "ptHM": "{h} س {m} د",
   "ptM": "{m} د",
   "ptNoQ": "لا توجد أسئلة لهذا الملف بعد · يُفتح الملف",
-  "ptFailed": "تعذّر تجهيز الاختبار · حاول مرة أخرى"
+  "ptFailed": "تعذّر تجهيز الاختبار · حاول مرة أخرى",
+  "ptMarked": "تم تحديد الصفحات التي يجب أن تدرسها في PDF",
+  "rdStudyWeak": "ضعيف · راجعه"
  }
 }

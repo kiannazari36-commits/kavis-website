@@ -21,6 +21,7 @@ import { lectureMarks, recordingsOf, type LectureMark } from '../api/recording';
 import { blockOrdinals, inkKey, loadInk, saveInk, type InkSurface, type PageInk, type Stroke } from '../api/ink';
 import { pdfBytes, pdfPath } from '../api/pdfFile';
 import { lessonStatus, retryLesson } from '../api/upload';
+import { studyMarks, studyStateOf, type StudyMark } from '../api/placement';
 import type { PdfSelection } from '../components/PdfPages';
 import { clock } from '../speech/transcribe';
 import { canSpeak, speak, speakAll, stopSpeaking } from '../hooks/speak';
@@ -82,6 +83,9 @@ export default function Reader() {
   const recording = recordings?.find((r) => r.status === 'ready') ?? recordings?.[0];
   // What the lecturer said about each page in the recording ("Hoca burada sınavda çıkar dedi").
   const marks = useAsync(() => (pdfId ? lectureMarks(pdfId) : Promise.resolve([])), [pdfId]) ?? [];
+  // Topic states from the placement test and quizzes: to-study / weak / known pages get a mark.
+  const study = useAsync(() => (pdfId ? studyMarks(pdfId) : Promise.resolve([])), [pdfId]) ?? [];
+  const [studyNoteGone, setStudyNoteGone] = useState<string[]>([]);
   const checkCount = useAsync(() => (pdfId ? sectionCheckCounter(pdfId) : Promise.resolve({ count: () => 0 })), [pdfId]);
   const doc = lesson?.doc;
   // A lesson without a reading page: why (a failed one can be asked again, e.g. after the monthly AI limit).
@@ -513,11 +517,30 @@ export default function Reader() {
         [t('actAsk'), () => askAssistant(t('askSentence') + pdfSel.text)],
       ]
     : [];
-  // Under a PDF page: the section check where a section ends, and the lesson summary after the last page.
+  // Over a PDF page, as on a reading-mode card: the topic's study mark and the lecturer's notes on that page.
+  const beforePdfPage = (page: number) => {
+    const mark = studyStateOf(study, page, page);
+    const notes = marks.filter((m) => m.page === page);
+    if (!mark && !notes.length) return null;
+    return (
+      <div className={s.pdfNotes}>
+        {mark && <StudyTag mark={mark} />}
+        <LectureNotes marks={notes} />
+      </div>
+    );
+  };
+  // Under a PDF page: the molecule chips of the drugs named on it, the section check where a section ends, and the
+  // lesson summary after the last page.
   const afterPdfPage = (page: number, last: boolean) => {
     const ends = doc.sections.map((_, i) => i).filter((i) => sectionTo(i) === page || (last && sectionTo(i) > page));
+    const pageText = doc.sections.flatMap((x) => x.blocks.filter((b) => b.pageFrom === page).map(blockPlain)).join(' ');
     return (
       <>
+        {pageText && (
+          <div className={s.pdfNotes}>
+            <MoleculeChips text={pageText} page={page} doc={doc} />
+          </div>
+        )}
         {ends.map((i) => {
           const n = checkCount ? checkCount.count(sectionFrom(i), sectionTo(i)) : 0;
           if (!n) return null;
@@ -576,6 +599,7 @@ export default function Reader() {
           overlay={(page) => (
             <InkLayer strokes={inkOf(page, 'web_pdf').strokes} pen={pen ? penColor : null} onDone={(st) => setInk(page, [...inkOf(page, 'web_pdf').strokes, st], 'web_pdf')} />
           )}
+          before={beforePdfPage}
           after={afterPdfPage}
           onTerm={(key) => {
             if (!lesson.terms[key]) return;
@@ -722,10 +746,27 @@ export default function Reader() {
 
         <div className={s.scroll} ref={scroller} onScroll={trackPage}>
           <div className={pdfMode ? `${s.column} ${s.pdfColumn}` : s.column}>
+            {study.some((m) => m.state !== 'known') && !studyNoteSeen(pdfId) && !studyNoteGone.includes(pdfId) && (
+              <div className={s.studyNote} role="status">
+                <Icon name="file" size={16} />
+                <span>{t('ptMarked')}</span>
+                <button
+                  className={s.studyNoteX}
+                  aria-label={t('close')}
+                  onClick={() => {
+                    keepStudyNoteSeen(pdfId);
+                    setStudyNoteGone([...studyNoteGone, pdfId]);
+                  }}
+                >
+                  <Icon name="close" size={14} />
+                </button>
+              </div>
+            )}
             {pdfMode ? pdfView : <>
             {section.blocks.map((b, i) => (
               <Block
                 marks={marks.filter((m) => m.page >= b.pageFrom && m.page <= b.pageTo)}
+                study={studyStateOf(study, b.pageFrom, b.pageTo)}
                 ink={inkOf(b.pageFrom, 'card', inkOrd.get(b) ?? 0).strokes}
                 pen={pen ? penColor : null}
                 onInk={(strokes) => setInk(b.pageFrom, strokes, 'card', inkOrd.get(b) ?? 0)}
@@ -988,6 +1029,8 @@ type BlockProps = {
   onInk: (strokes: Stroke[]) => void;
   /** Notes from the lecture recording on this page. */
   marks: LectureMark[];
+  /** The study mark of this page's topic (to study / weak / known), if it was tested. */
+  study: StudyMark | null;
   doc: ReaderDoc;
   block: ReaderBlock;
   terms: Record<string, ReaderTerm>;
@@ -1008,13 +1051,10 @@ const MolViewer = lazy(() => import('../components/MolViewer'));
 const blockPlain = (b: ReaderBlock) =>
   [b.heading ?? '', ...b.paragraphs.map((p) => (Array.isArray(p) ? p.map((x) => (typeof x === 'string' ? x : x.text)).join('') : p.text))].join(' ');
 
-function Block({ doc, block, terms, fontSize, term, onTerm, selPara, highlights, onSelect, selActs, onTranslate, marks, ink, pen, onInk }: BlockProps) {
+function Block({ doc, block, terms, fontSize, term, onTerm, selPara, highlights, onSelect, selActs, onTranslate, marks, study, ink, pen, onInk }: BlockProps) {
   const { t, lang } = useI18n();
   const [params] = useSearchParams();
   const courseId = params.get('course') ?? '';
-  const [molOpen, setMolOpen] = useState<Molecule | null>(null);
-  // Chip only when we have the structure of a drug named in this block.
-  const mols = findMolecules(blockPlain(block));
   const [tagKey, tagStyle] = TAGS[block.tag] ?? TAGS.definition;
   const pageLabel =
     block.pageFrom === block.pageTo
@@ -1044,21 +1084,13 @@ function Block({ doc, block, terms, fontSize, term, onTerm, selPara, highlights,
       <div className={s.pageTop}>
         <span className="mono">{pageLabel}</span>
         <span className={tagStyle === 'red' ? `${s.tag} ${s.tagRed}` : s.tag}>{t(tagKey)}</span>
+        {study && <StudyTag mark={study} />}
         <span className={s.grow} />
         <button className={s.translate} onClick={onTranslate}>
           {t('translate')}
         </button>
       </div>
-      {marks.map((m, i) => (
-        <Link key={i} to={`/recording?id=${m.recordingId}&t=${Math.floor(m.at)}`} className={m.kind === 'exam' ? `${s.lectureMark} ${s.lectureExam}` : s.lectureMark}>
-          <Icon name="mic" size={15} />
-          <span className={s.lectureText}>
-            <b>{m.kind === 'exam' ? t('markExam') : m.kind === 'stress' ? t('markStress') : t('markTime').replace('{n}', num(m.minutes, lang))}</b>
-            {m.text && <span>“{m.text}”</span>}
-          </span>
-          <span className="mono">{clock(m.at)}</span>
-        </Link>
-      ))}
+      <LectureNotes marks={marks} />
       {block.heading && (
         <h2 className={s.heading} lang={doc.language}>
           {block.heading}
@@ -1125,17 +1157,79 @@ function Block({ doc, block, terms, fontSize, term, onTerm, selPara, highlights,
           {l.label}
         </Link>
       ))}
+      <MoleculeChips text={blockPlain(block)} page={block.pageFrom} doc={doc} />
+    </article>
+  );
+}
+
+/** Notes from the lecture recording on a page ("Hoca burada sınavda çıkar dedi"); a tap opens the recording there. */
+function LectureNotes({ marks }: { marks: LectureMark[] }) {
+  const { t, lang } = useI18n();
+  return (
+    <>
+      {marks.map((m, i) => (
+        <Link key={i} to={`/recording?id=${m.recordingId}&t=${Math.floor(m.at)}`} className={m.kind === 'exam' ? `${s.lectureMark} ${s.lectureExam}` : s.lectureMark}>
+          <Icon name="mic" size={15} />
+          <span className={s.lectureText}>
+            <b>{m.kind === 'exam' ? t('markExam') : m.kind === 'stress' ? t('markStress') : t('markTime').replace('{n}', num(m.minutes, lang))}</b>
+            {m.text && <span>“{m.text}”</span>}
+          </span>
+          <span className="mono">{clock(m.at)}</span>
+        </Link>
+      ))}
+    </>
+  );
+}
+
+/** A chip for each drug named in the text that we have a structure for; a tap opens the molecule viewer. */
+function MoleculeChips({ text, page, doc }: { text: string; page: number; doc: ReaderDoc }) {
+  const { t, lang } = useI18n();
+  const [open, setOpen] = useState<Molecule | null>(null);
+  const mols = findMolecules(text);
+  if (!mols.length) return null;
+  return (
+    <>
       {mols.map((m) => (
-        <button key={m.id} className={s.chipBtn} onClick={() => setMolOpen(m)}>
+        <button key={m.id} className={s.chipBtn} onClick={() => setOpen(m)}>
           <span className={s.chipIcon}>
             <Icon name="molecule" size={16} />
           </span>
           {t('molecule')} · {m.name[lang]}
         </button>
       ))}
-      {molOpen && <MoleculeDialog mol={molOpen} page={block.pageFrom} contentLang={doc.language as Lang} onClose={() => setMolOpen(null)} />}
-    </article>
+      {open && <MoleculeDialog mol={open} page={page} contentLang={doc.language as Lang} onClose={() => setOpen(null)} />}
+    </>
   );
+}
+
+const STUDY_LABEL = { todo: 'ptStTodo', weak: 'rdStudyWeak', known: 'ptStKnow' } as const;
+
+/** The page's study mark from the placement test / quizzes: to study (red), weak (amber), known (green). */
+function StudyTag({ mark }: { mark: StudyMark }) {
+  const { t } = useI18n();
+  const cls = mark.state === 'todo' ? s.studyTodo : mark.state === 'weak' ? s.studyWeak : s.studyKnown;
+  return (
+    <span className={`${s.tag} ${cls}`} title={mark.title} dir="auto">
+      {t(STUDY_LABEL[mark.state])}
+    </span>
+  );
+}
+
+/** "PDF'te çalışman gereken sayfalar işaretlendi" is shown once per lesson (until closed on this browser). */
+const studyNoteKey = (pdfId: string) => `kavis.studyNote.${pdfId}`;
+function studyNoteSeen(pdfId: string) {
+  try {
+    return localStorage.getItem(studyNoteKey(pdfId)) === '1';
+  } catch {
+    return false;
+  }
+}
+function keepStudyNoteSeen(pdfId: string) {
+  try {
+    localStorage.setItem(studyNoteKey(pdfId), '1');
+  } catch {
+    /* private window: shown again next time */
+  }
 }
 
 type Clock = { day: string; seconds: number; paused: boolean; pending: number };

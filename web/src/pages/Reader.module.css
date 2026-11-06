@@ -1397,3 +1397,66 @@
   z-index: 6;
   box-shadow: 0 8px 24px rgba(42, 36, 32, 0.22);
 }
+
+/* Study marks from the placement test / quizzes (colors as on the placement result) */
+.studyTodo {
+  background: var(--pri-soft);
+  color: var(--pri-t);
+}
+
+.studyWeak {
+  background: var(--amb-soft);
+  color: var(--amb-t);
+}
+
+.studyKnown {
+  background: var(--good-soft);
+  color: var(--good);
+}
+
+/* "PDF'te çalışman gereken sayfalar işaretlendi": once per lesson, above the pages */
+.studyNote {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-block: 8px;
+  padding-inline: 14px 8px;
+  border-radius: 18px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  color: var(--text2);
+  font-size: 13px;
+}
+
+.studyNote > span {
+  flex: 1;
+}
+
+.studyNoteX {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 14px;
+  border: 0;
+  background: transparent;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Over / under a PDF page: study mark, lecturer's notes, molecule chips; as wide as the page */
+.pdfNotes {
+  width: min(var(--page-w, 100%), 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.pdfNotes > .lectureMark {
+  align-self: stretch;
+  margin: 0;
+}
