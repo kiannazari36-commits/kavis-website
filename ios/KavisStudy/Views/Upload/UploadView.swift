@@ -849,7 +849,8 @@ struct UploadView: View {
             }
             Spacer(minLength: 0)
             if ready, let lessonId {
-                Button { app.reset(to: .home); app.go(.reader(lessonId)) } label: {
+                // Design: ScrUpload goes on to the placement test ("Seviye tespiti"); "no" there opens the reader.
+                Button { app.reset(to: .home); app.go(.placement(lessonId)) } label: {
                     Text(prefs.t("up_open")).font(KFont.ui(16, .semibold, lang: lang)).foregroundStyle(KPhone.ctaText)
                         .frame(maxWidth: .infinity, minHeight: 52)
                         .background(KOnb.pri, in: RoundedRectangle(cornerRadius: 14, style: .continuous))

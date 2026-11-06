@@ -129,6 +129,8 @@ enum QuizAPI {
         let questionId: String; let chosen: Int?; let hints: Int; let confidence: Confidence?
         /// The text of a written answer (saved, not graded).
         var written: String? = nil
+        /// "Bilmiyorum" (placement test), graded as wrong.
+        var dontKnow = false
     }
 
     /// Saves a finished try, then the server grades it (right/wrong, score, topic mastery, wrong "sure" answers to
@@ -138,14 +140,14 @@ enum QuizAPI {
         let uid = user.id.uuidString.lowercased()
         let id = UUID().uuidString.lowercased()
         struct Attempt: Encodable { let id, quiz_id, user_id: String }
-        struct Row: Encodable { let attempt_id, question_id, user_id: String; let chosen_index: Int?; let written_answer: String?; let hints_used: Int; let confidence: String? }
+        struct Row: Encodable { let attempt_id, question_id, user_id: String; let chosen_index: Int?; let written_answer: String?; let hints_used: Int; let confidence: String?; let dont_know: Bool }
         struct Finish: Encodable { let finished_at: String }
         struct Body: Encodable { let attempt_id: String }
         struct Graded: Decodable { let score: Double? }
         do {
             try await supabase.from("quiz_attempts").insert(Attempt(id: id, quiz_id: quizId, user_id: uid)).execute()
             try await supabase.from("quiz_answers").insert(answers.map {
-                Row(attempt_id: id, question_id: $0.questionId, user_id: uid, chosen_index: $0.chosen, written_answer: $0.written, hints_used: $0.hints, confidence: $0.confidence?.rawValue)
+                Row(attempt_id: id, question_id: $0.questionId, user_id: uid, chosen_index: $0.chosen, written_answer: $0.written, hints_used: $0.hints, confidence: $0.confidence?.rawValue, dont_know: $0.dontKnow)
             }).execute()
             try await supabase.from("quiz_attempts").update(Finish(finished_at: ISO8601DateFormatter().string(from: Date()))).eq("id", value: id).execute()
             let graded: Graded = try await supabase.functions.invoke("grade-quiz", options: FunctionInvokeOptions(body: Body(attempt_id: id)))
