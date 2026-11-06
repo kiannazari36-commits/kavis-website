@@ -32,6 +32,8 @@ struct UploadView: View {
     /// The lesson on the server (the first part of a split PDF) and where the server is with it.
     @State private var lessonId: String?
     @State private var status: UploadAPI.LessonStatus?
+    /// Bumped after "Tekrar dene" so the server is asked about the lesson again.
+    @State private var followRound = 0
     @State private var partCount = 0
     @State private var busy = false
     /// Photo lesson: the pages in order.
@@ -810,10 +812,10 @@ struct UploadView: View {
             .padding(.horizontal, 14).padding(.vertical, 12)
             .background(KPhone.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
             VStack(alignment: .leading, spacing: 6) {
-                Text(ready ? prefs.t("up_ready") : d("Ders hazırlanıyor…")).font(KFont.ui(28, .bold, lang: lang)).kTracking(-0.02, size: 28, lang: lang).foregroundStyle(KPhone.text)
+                Text(ready ? prefs.t("up_ready") : serverStatus == .failed ? prefs.t("up_failedT") : d("Ders hazırlanıyor…")).font(KFont.ui(28, .bold, lang: lang)).kTracking(-0.02, size: 28, lang: lang).foregroundStyle(KPhone.text)
                     .accessibilityAddTraits(.isHeader)
                 if serverStatus == .failed {
-                    Text(prefs.t("up_processFailed")).font(KFont.ui(14, lang: lang)).foregroundStyle(KOnb.bad)
+                    Text(prefs.t(status?.budget == true ? "up_budget" : "up_processFailed")).font(KFont.ui(14, lang: lang)).foregroundStyle(KOnb.bad)
                 } else if !ready {
                     Text(d("Yaklaşık 2 dakika sürer. Uygulamayı kapatabilirsin; hazır olunca bildirim göndeririz."))
                         .font(KFont.ui(14, lang: lang)).kLineHeight(1.5, size: 14, lang: lang).foregroundStyle(KPhone.text2)
@@ -848,6 +850,14 @@ struct UploadView: View {
                 Text(Format.percent(progress, lang)).font(KFont.mono(12, .regular)).foregroundStyle(KPhone.text2)
             }
             Spacer(minLength: 0)
+            if serverStatus == .failed, let lessonId {
+                Button { Task { await retryFailed(lessonId) } } label: {
+                    Text(prefs.t("up_retry")).font(KFont.ui(16, .semibold, lang: lang)).foregroundStyle(KPhone.ctaText)
+                        .frame(maxWidth: .infinity, minHeight: 52)
+                        .background(KOnb.pri, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                }
+                .disabled(busy)
+            }
             if ready, let lessonId {
                 Button { app.reset(to: .home); app.go(.reader(lessonId)) } label: {
                     Text(prefs.t("up_open")).font(KFont.ui(16, .semibold, lang: lang)).foregroundStyle(KPhone.ctaText)
@@ -857,7 +867,7 @@ struct UploadView: View {
             }
         }
         .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 20)
-        .task(id: lessonId) { await follow() }
+        .task(id: (lessonId ?? "") + String(followRound)) { await follow() }
     }
 
     private var progress: Int { ready ? 100 : serverStatus == .processing ? 45 : 8 }
@@ -983,6 +993,17 @@ struct UploadView: View {
         mode = .processing
         await trial.refresh()
         if trial.status.fairSlow { fairOpen = true }
+    }
+
+    /// "Tekrar dene": the server prepares a failed lesson again (it accepts a failed lesson).
+    private func retryFailed(_ lessonId: String) async {
+        busy = true
+        let r = await UploadAPI.retry(lessonId)
+        busy = false
+        switch r {
+        case .success: status = nil; mode = .processing; followRound += 1
+        case .failure(let f): toast.show(prefs.t(f == .trial ? "trialPdfFull" : "up_failed"))
+        }
     }
 
     /// "Metin tanıma ile dene": a lesson the server found scanned is read again with text recognition; a PDF that is
