@@ -40,13 +40,11 @@ enum InkAPI {
     /// Every saved drawing of a lesson, by page.
     /// Without internet: the phone's copy (OfflineStore), kept up to date by every load and save.
     static func load(materialId: String, surface: Surface = .card) async -> [Int: PKDrawing] {
-        let rows: [Row]
-        do {
-            rows = try await supabase.from("annotations").select("id, page, ink_path, anchor")
-                .eq("material_id", value: materialId).eq("kind", value: "ink").execute().value
-        } catch {
-            return kept(materialId, surface)
-        }
+        let hasCopy = OfflineStore.read(keptFile(materialId, surface)) != nil
+        guard let rows: [Row] = await OfflineStore.fromServer(hasCopy: hasCopy, { retry in
+            try await supabase.from("annotations").select("id, page, ink_path, anchor")
+                .eq("material_id", value: materialId).eq("kind", value: "ink").retry(enabled: retry).execute().value
+        }) else { return kept(materialId, surface) }
         var result: [Int: PKDrawing] = [:]
         for row in rows where row.on(surface) {
             guard let path = row.ink_path,

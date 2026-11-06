@@ -47,19 +47,17 @@ enum CardsAPI {
             .lte("due_at", value: ISO8601DateFormatter().string(from: Date()))
         if let materialId { q = q.eq("card_decks.material_id", value: materialId) } else if let courseId { q = q.eq("card_decks.course_id", value: courseId) }
         // Take more than needed, so weak-topic cards can move to the front before the cut.
-        let rows: [Row]
-        do {
-            rows = try await q.order("due_at").limit(max(limit * 5, 150)).execute().value
-        } catch {
-            // Without internet: the decks kept on the phone (OfflineStore), this lesson's, this course's or all, due now.
-            let files = materialId.map { OfflineStore.read(keptFile($0)).map { [$0] } ?? [] } ?? OfflineStore.readAll(prefix: "cards-")
-            rows = files.flatMap { (try? JSONDecoder().decode([Row].self, from: $0)) ?? [] }
-                .filter { isDue($0.due_at) && (courseId == nil || materialId != nil || $0.card_decks.course_id == courseId) }
-                .sorted { ($0.due_at ?? "") < ($1.due_at ?? "") }
+        // Without internet: the decks kept on the phone (OfflineStore), this lesson's, this course's or all, due now.
+        let files = materialId.map { OfflineStore.read(keptFile($0)).map { [$0] } ?? [] } ?? OfflineStore.readAll(prefix: "cards-")
+        let fresh: [Row]? = await OfflineStore.fromServer(hasCopy: !files.isEmpty) { [q] retry in
+            try await q.order("due_at").limit(max(limit * 5, 150)).retry(enabled: retry).execute().value
         }
+        let rows = fresh ?? files.flatMap { (try? JSONDecoder().decode([Row].self, from: $0)) ?? [] }
+            .filter { isDue($0.due_at) && (courseId == nil || materialId != nil || $0.card_decks.course_id == courseId) }
+            .sorted { ($0.due_at ?? "") < ($1.due_at ?? "") }
         // A card is on a weak topic when its page lies in the page range of a weak topic of the same lesson (mistake cards
-        // carry their lesson in `material_id`, lesson cards in their deck). Same rule as the web.
-        let weakRows: [Weak] = (try? await supabase.from("topic_progress").select("material_topics!inner(material_id, page_from, page_to)")
+        // carry their lesson in `material_id`, lesson cards in their deck). Same rule as the web. Not asked without internet.
+        let weakRows: [Weak] = fresh == nil ? [] : (try? await supabase.from("topic_progress").select("material_topics!inner(material_id, page_from, page_to)")
             .eq("state", value: "weak").execute().value) ?? []
         let weak = weakRows.map(\.material_topics)
         func onWeakTopic(_ r: Row) -> Bool {

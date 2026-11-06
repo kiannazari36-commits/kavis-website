@@ -52,6 +52,25 @@ enum OfflineStore {
         }
     }
 
+    /// How long a screen with a copy on the phone waits for the server before it shows the copy (6 Nov 2026).
+    static let serverWait: Duration = .seconds(5)
+
+    /// The server's answer for something that may have a copy on the phone. With a copy the request is not retried
+    /// (the Supabase client retries a failed read 3 times, 1 + 2 + 4 s apart) and gets at most `wait`: nil then means
+    /// "show the copy", at once instead of a blank screen while the retries and time-outs run (seen 5 Nov 2026 with
+    /// the server down). Without a copy the request runs as usual, retries included.
+    static func fromServer<T: Sendable>(hasCopy: Bool, wait: Duration = serverWait,
+                                        _ ask: @escaping @Sendable (_ retry: Bool) async throws -> T) async -> T? {
+        guard hasCopy else { return try? await ask(true) }
+        return await withTaskGroup(of: T?.self) { group in
+            group.addTask { try? await ask(false) }
+            group.addTask { try? await Task.sleep(for: wait); return nil }
+            let first = await group.next() ?? nil
+            group.cancelAll()
+            return first
+        }
+    }
+
     /// The original PDF of a lesson, kept after its first download (the teacher's file does not change).
     static func pdf(_ materialId: String) -> Data? { read("pdf-\(materialId).pdf") }
     static func savePdf(_ data: Data, _ materialId: String) { write(data, "pdf-\(materialId).pdf") }

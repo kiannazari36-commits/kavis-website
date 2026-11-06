@@ -50,16 +50,18 @@ enum SummaryAPI {
         struct Sure: Decodable { let quiz_questions: QTopic? }
         struct Attempt: Decodable { let score: Double?; let started_at: Date }
 
-        async let materialQ: [Material] = supabase.from("materials").select("title, page_count").eq("id", value: materialId).limit(1).execute().value
+        // With the lesson on the phone a failed read is not retried, so without internet the copy shows at once.
+        let retry = !OfflineStore.has(materialId)
+        async let materialQ: [Material] = supabase.from("materials").select("title, page_count").eq("id", value: materialId).limit(1).retry(enabled: retry).execute().value
         async let topicsQ: [Topic] = supabase.from("material_topics").select("id, title, page_from, topic_progress(state, mastery)")
-            .eq("material_id", value: materialId).order("sort_order").execute().value
+            .eq("material_id", value: materialId).order("sort_order").retry(enabled: retry).execute().value
         async let tapsQ: [Tap] = supabase.from("term_lookups").select("taps, material_terms!inner(surface, explanation, material_id)")
-            .eq("material_terms.material_id", value: materialId).order("taps", ascending: false).limit(6).execute().value
+            .eq("material_terms.material_id", value: materialId).order("taps", ascending: false).limit(6).retry(enabled: retry).execute().value
         async let sureQ: [Sure] = supabase.from("quiz_answers").select("quiz_questions(topic_id)")
-            .eq("correct", value: false).eq("confidence", value: "sure").execute().value
+            .eq("correct", value: false).eq("confidence", value: "sure").retry(enabled: retry).execute().value
         async let attemptQ: [Attempt] = supabase.from("quiz_attempts").select("score, started_at, quizzes!inner(material_id)")
             .eq("quizzes.material_id", value: materialId).not("score", operator: .is, value: "null")
-            .order("started_at", ascending: false).limit(1).execute().value
+            .order("started_at", ascending: false).limit(1).retry(enabled: retry).execute().value
 
         var s = LessonSummary()
         if let m = (try? await materialQ)?.first { s.title = m.title; s.pages = m.page_count }
