@@ -143,7 +143,7 @@ struct SettingsView: View {
                 .scrollIndicators(.hidden)
                 .refreshable { await load() }
             }
-            FloatingTabBar(active: .settings, onCourses: { app.go(.courses) }, onProgress: { app.go(.progress) }, onSettings: {})
+            FloatingTabBar(active: .settings, onCourses: { app.go(.home) }, onProgress: { app.go(.progress) }, onSettings: {})
                 .frame(maxHeight: .infinity, alignment: .bottom)
                 .padding(.bottom, 8)
             if timeOpen { timeSheet.transition(.opacity) }
