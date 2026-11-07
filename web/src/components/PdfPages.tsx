@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { getDocument, GlobalWorkerOptions, TextLayer, type PDFDocumentProxy } from 'pdfjs-dist';
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import { fold, termHits } from '../api/terms';
@@ -27,6 +27,8 @@ type Props = {
   pen: boolean;
   /** Drawn over each page (the pen's lines). */
   overlay: (page: number) => ReactNode;
+  /** Shown over a page (the topic's study mark, the lecturer's notes on it). */
+  before: (page: number) => ReactNode;
   /** Shown under a page (the section check at the end of a section; `last` = the PDF's last page). */
   after: (page: number, last: boolean) => ReactNode;
   onTerm: (key: string) => void;
@@ -34,7 +36,7 @@ type Props = {
   onFail: () => void;
 };
 
-export default function PdfPages({ data, zoom, terms, highlights, startPage, pen, overlay, after, onTerm, onSelect, onFail }: Props) {
+export default function PdfPages({ data, zoom, terms, highlights, startPage, pen, overlay, before, after, onTerm, onSelect, onFail }: Props) {
   const [pdf, setPdf] = useState<PDFDocumentProxy | null>(null);
   // Each page's size in PDF points (width, height), read once.
   const [sizes, setSizes] = useState<[number, number][]>([]);
@@ -119,7 +121,8 @@ export default function PdfPages({ data, zoom, terms, highlights, startPage, pen
       {pdf &&
         pageWidth > 0 &&
         sizes.map(([w, h], i) => (
-          <div key={i + 1} className={s.slot}>
+          <div key={i + 1} className={s.slot} style={{ '--page-w': `${pageWidth}px` } as CSSProperties}>
+            {before(i + 1)}
             <Page pdf={pdf} n={i + 1} width={pageWidth} height={Math.round((pageWidth * h) / w)} terms={terms} highlights={highlights} onTerm={onTerm}>
               {overlay(i + 1)}
             </Page>

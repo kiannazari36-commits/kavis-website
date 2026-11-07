@@ -124,10 +124,12 @@ enum UploadAPI {
         try await supabase.functions.invoke("process-material", options: FunctionInvokeOptions(body: ProcessBody(material_id: id, ocr: ocr)))
     }
 
-    /// "Metin tanıma ile dene" for a lesson the server found scanned.
-    static func retryWithOcr(_ id: String) async -> Result<Void, Failure> {
+    /// "Tekrar dene" for a lesson that failed, and "Metin tanıma ile dene" (ocr) for one the server found scanned.
+    static func retry(_ id: String) async -> Result<Void, Failure> { await retryWithOcr(id, ocr: nil) }
+
+    static func retryWithOcr(_ id: String, ocr: Bool? = true) async -> Result<Void, Failure> {
         do {
-            try await process(id, ocr: true)
+            try await process(id, ocr: ocr)
             return .success(())
         } catch FunctionsError.httpError(let code, _) {
             return .failure(code == 403 ? .trial : .network)
@@ -145,6 +147,8 @@ enum UploadAPI {
         let stats: [String: Int]
         /// Last change on the server (a "processing" lesson unchanged for long was stopped).
         let updatedAt: Date?
+        /// Why a failed lesson stopped: the student's monthly AI budget is used up.
+        let budget: Bool
     }
 
     /// Where the server is with a lesson (the processing screen asks every 4 seconds).
@@ -155,12 +159,14 @@ enum UploadAPI {
             let page_count: Int?
             let course_id: String?
             let updated_at: Date?
+            let error: String?
             let material_content: OneOrMany<Content>?
         }
         guard let r: Row = try? await supabase.from("materials")
-            .select("status, page_count, course_id, updated_at, material_content(stats)")
+            .select("status, page_count, course_id, updated_at, error, material_content(stats)")
             .eq("id", value: id).single().execute().value else { return nil }
-        return LessonStatus(status: r.status, pages: r.page_count, courseId: r.course_id, stats: r.material_content?.first?.stats ?? [:], updatedAt: r.updated_at)
+        return LessonStatus(status: r.status, pages: r.page_count, courseId: r.course_id, stats: r.material_content?.first?.stats ?? [:], updatedAt: r.updated_at,
+                            budget: r.status == .failed && (r.error ?? "").localizedCaseInsensitiveContains("budget"))
     }
 
     /// Lessons whose preparation was stopped on the server (still "processing" after 5 minutes): asking again makes

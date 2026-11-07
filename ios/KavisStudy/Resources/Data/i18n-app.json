@@ -375,7 +375,11 @@
   "cf_cardsByPdf": "PDF’e göre kartlar",
   "cf_recNew": "Ders ses kaydı ekle",
   "cf_recEmpty": "Bu derste henüz ses kaydı yok.",
-  "smp_pickFirst": "Soru örneklerinin doğru derse gitmesi için önce yukarıdan dersi seç."
+  "smp_pickFirst": "Soru örneklerinin doğru derse gitmesi için önce yukarıdan dersi seç.",
+  "ptMarked": "PDF'te çalışman gereken sayfalar işaretlendi",
+  "rdStudyTodo": "Çalışılacak",
+  "rdStudyWeak": "Zayıf · tekrar et",
+  "rdStudyKnown": "Biliyorsun"
  },
  "en": {
   "pdfs": "PDFs",
@@ -753,7 +757,11 @@
   "cf_cardsByPdf": "Cards by PDF",
   "cf_recNew": "Add a lecture recording",
   "cf_recEmpty": "No recordings in this course yet.",
-  "smp_pickFirst": "Pick the course above first, so the samples go to the right course."
+  "smp_pickFirst": "Pick the course above first, so the samples go to the right course.",
+  "ptMarked": "The pages you need to study are marked in the PDF",
+  "rdStudyTodo": "To study",
+  "rdStudyWeak": "Weak · review it",
+  "rdStudyKnown": "You know it"
  },
  "fa": {
   "pdfs": "PDFها",
@@ -1131,7 +1139,11 @@
   "cf_cardsByPdf": "کارت‌ها بر اساس PDF",
   "cf_recNew": "افزودن صدای کلاس",
   "cf_recEmpty": "هنوز صدای کلاسی در این درس نیست.",
-  "smp_pickFirst": "اول درس را از بالا انتخاب کن تا نمونه‌سؤال‌ها به درس درست بروند."
+  "smp_pickFirst": "اول درس را از بالا انتخاب کن تا نمونه‌سؤال‌ها به درس درست بروند.",
+  "ptMarked": "صفحه‌هایی که باید بخوانی در PDF علامت خورده‌اند",
+  "rdStudyTodo": "برای مطالعه",
+  "rdStudyWeak": "ضعیف · مرور کن",
+  "rdStudyKnown": "بلدی"
  },
  "ar": {
   "pdfs": "ملفات PDF",
@@ -1509,6 +1521,10 @@
   "cf_cardsByPdf": "البطاقات حسب PDF",
   "cf_recNew": "إضافة تسجيل محاضرة",
   "cf_recEmpty": "لا توجد تسجيلات في هذه المادة بعد.",
-  "smp_pickFirst": "اختر المادة من الأعلى أولًا حتى تذهب نماذج الأسئلة إلى المادة الصحيحة."
+  "smp_pickFirst": "اختر المادة من الأعلى أولًا حتى تذهب نماذج الأسئلة إلى المادة الصحيحة.",
+  "ptMarked": "تم تحديد الصفحات التي يجب أن تدرسها في PDF",
+  "rdStudyTodo": "للدراسة",
+  "rdStudyWeak": "ضعيف · راجعه",
+  "rdStudyKnown": "تعرفه"
  }
 }

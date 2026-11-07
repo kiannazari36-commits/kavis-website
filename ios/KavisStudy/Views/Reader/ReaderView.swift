@@ -54,6 +54,10 @@ struct ReaderView: View {
     @State private var hasPdf = false
     @State private var pdfDoc: PDFDocument?
     @State private var pdfFailed = false
+    /// Server state of a lesson that has no reading page yet (shows why a failed one stopped, and "Tekrar dene").
+    @State private var prep: UploadAPI.LessonStatus?
+    @State private var prepRound = 0
+    @State private var retrying = false
     /// The PDF page in the middle of the screen, the page it opens at and a jump asked by the section menu.
     @State private var pdfPage = 1
     @State private var startAt = 1
@@ -151,6 +155,7 @@ struct ReaderView: View {
             let recs = await RecordingAPI.recordingsOf(docID)
             recordingId = (recs.first { $0.status == "ready" } ?? recs.first)?.id
             marks = await RecordingAPI.lectureMarks(docID)
+            study = await StudyMarksAPI.marks(materialId: docID)
             // So the share button knows at once whether the student has Premium.
             if !trial.status.premium { await trial.refresh() }
         }
@@ -483,7 +488,25 @@ struct ReaderView: View {
         VStack(spacing: 14) {
             Spacer()
             Text(lesson?.title ?? "").font(KFont.ui(18, .semibold, lang: lang)).foregroundStyle(KRead.text)
-            Text(t("noReaderDoc")).font(KFont.ui(14, lang: lang)).foregroundStyle(KRead.text2).multilineTextAlignment(.center)
+            Text(t(prep?.status == .failed ? (prep?.budget == true ? "up_budget" : "up_processFailed") : "noReaderDoc"))
+                .font(KFont.ui(14, lang: lang)).foregroundStyle(KRead.text2).multilineTextAlignment(.center)
+            if prep?.status == .failed {
+                Button {
+                    Task {
+                        retrying = true
+                        let r = await UploadAPI.retry(docID)
+                        retrying = false
+                        switch r {
+                        case .success: toast.show(t("up_procT")); prep = nil; prepRound += 1
+                        case .failure(let f): toast.show(t(f == .trial ? "trialPdfFull" : "up_failed"))
+                        }
+                    }
+                } label: {
+                    Text(prefs.t("up_retry")).font(KFont.ui(14, .semibold, lang: lang)).foregroundStyle(KPhone.ctaText)
+                        .padding(.horizontal, 22).frame(height: 44).background(KPhone.cta, in: Capsule())
+                }
+                .disabled(retrying)
+            }
             Button { app.back() } label: {
                 Text(prefs.t("signup.k1052")).font(KFont.ui(14, .semibold, lang: lang)).foregroundStyle(KPhone.ctaText)
                     .padding(.horizontal, 22).frame(height: 44).background(KPhone.cta, in: Capsule())
@@ -491,6 +514,19 @@ struct ReaderView: View {
             Spacer()
         }
         .padding(.horizontal, 32)
+        .task(id: prepRound) { await followPrep() }
+    }
+
+    /// Asks the server about a lesson without a reading page every 4 seconds; when it is ready the page is loaded.
+    private func followPrep() async {
+        while !Task.isCancelled {
+            if let st = await UploadAPI.lessonStatus(docID) {
+                prep = st
+                if st.status == .ready { lesson = await ReaderAPI.getLesson(id: docID); return }
+                if st.status == .failed || st.status == .too_long || st.status == .needs_ocr { return }
+            }
+            try? await Task.sleep(for: .seconds(4))
+        }
     }
 
     // MARK: Top bar and theme
@@ -517,7 +553,9 @@ struct ReaderView: View {
                 if hasPdf { HStack { modeSwitch; Spacer() }.padding(.horizontal, 16).padding(.top, 10) }
                 themePicker
             }
+            studyNote
             if pdfMode {
+                pdfPageNotes(doc)
                 pdfPane
             } else if let doc, let section {
                 ScrollView {
@@ -619,6 +657,9 @@ struct ReaderView: View {
     @State private var recordingId: String?
     /// What the lecturer said about each page in the recording ("Hoca burada sınavda çıkar dedi").
     @State private var marks: [RecordingAPI.LectureMark] = []
+    /// Topic states from the placement test and quizzes: to-study / weak / known pages get a mark.
+    @State private var study: [StudyMarksAPI.Mark] = []
+    @State private var studyNoteGone = false
 
     private var topBar: some View {
         HStack(spacing: 8) {
@@ -696,7 +737,7 @@ struct ReaderView: View {
                     HStack(spacing: 6) {
                         Circle().fill(Color(hex: UInt32(swatch))).frame(width: 12, height: 12)
                             .overlay(Circle().stroke(KRead.line, lineWidth: 1))
-                        Text(t(key)).font(KFont.ui(13, on ? .semibold : .regular, lang: lang))
+                        Text(t(key)).font(KFont.ui(13, on ? .semibold : .regular, lang: lang)).lineLimit(1).fixedSize(horizontal: true, vertical: false)
                     }
                     .foregroundStyle(on ? KRead.text : KRead.text2)
                     .padding(.horizontal, compact ? 14 : 0)
@@ -711,6 +752,7 @@ struct ReaderView: View {
         .background(KRead.seg, in: Capsule())
         .accessibilityElement(children: .contain)
         .accessibilityLabel(t("readingTheme"))
+        .layoutPriority(1)
     }
 
     // MARK: Sections and page cards
@@ -758,6 +800,98 @@ struct ReaderView: View {
             : t("pageLabel", ["n": Format.num(block.pageFrom, lang)])
     }
 
+    // MARK: Study marks, and the page's notes over the original PDF
+
+    /// The page's study mark from the placement test / quizzes: to study (red), weak (amber), known (green).
+    private func studyTag(_ m: StudyMarksAPI.Mark) -> some View {
+        let (key, bg, fg): (String, Color, Color) = switch m.state {
+        case .todo: ("rdStudyTodo", KRead.tagRed, KRead.tagRedFg)
+        case .weak: ("rdStudyWeak", KRead.chip, KRead.chipFg)
+        case .known: ("rdStudyKnown", KRead.good, KRead.goodFg)
+        }
+        return Text(t(key)).font(KFont.ui(11, .semibold, lang: lang)).foregroundStyle(fg)
+            .padding(.horizontal, 10).padding(.vertical, 4)
+            .background(bg, in: Capsule())
+            .accessibilityLabel("\(t(key)) · \(m.title)")
+    }
+
+    /// "PDF'te çalışman gereken sayfalar işaretlendi" (design NewPlacement), once per lesson until closed.
+    @ViewBuilder private var studyNote: some View {
+        if !studyNoteGone, study.contains(where: { $0.state != .known }), !StudyMarksAPI.noteSeen(docID) {
+            HStack(spacing: 8) {
+                KIcon(name: .file, size: 15, width: 1.8)
+                Text(t("ptMarked")).font(KFont.ui(13, lang: lang)).frame(maxWidth: .infinity, alignment: .leading)
+                Button {
+                    StudyMarksAPI.keepNoteSeen(docID)
+                    withAnimation(.easeOut(duration: 0.2)) { studyNoteGone = true }
+                } label: {
+                    KIcon(name: .close, size: 13, width: 2).frame(width: 30, height: 30)
+                }
+                .accessibilityLabel(t("close"))
+            }
+            .foregroundStyle(KRead.text2)
+            .padding(.leading, 14).padding(.trailing, 6).padding(.vertical, 5)
+            .background(KRead.chrome, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(KRead.line, lineWidth: 1))
+            .frame(maxWidth: wide ? 620 : .infinity)
+            .padding(.horizontal, wide ? 28 : 16).padding(.top, 10)
+        }
+    }
+
+    /// Over the original PDF (one scrolling view, so not between its pages): the page on screen's study mark,
+    /// the lecturer's notes on it and the molecule chips of the drugs it names, in one row that follows the page.
+    @ViewBuilder private func pdfPageNotes(_ doc: ReaderDoc?) -> some View {
+        let page = pdfPage
+        let mark = StudyMarksAPI.mark(study, from: page, to: page)
+        let notes = marks.filter { $0.page == page }
+        let text = (doc?.sections ?? []).flatMap { $0.blocks.filter { $0.pageFrom == page } }
+            .map { ([$0.heading].compactMap { $0 } + $0.paragraphs.map(\.plain)).joined(separator: " ") }.joined(separator: " ")
+        let mols = text.isEmpty ? [] : MoleculeLibrary.find(in: text)
+        if mark != nil || !notes.isEmpty || !mols.isEmpty {
+            ScrollView(.horizontal) {
+                HStack(spacing: 8) {
+                    if let mark { studyTag(mark) }
+                    ForEach(notes) { m in lectureChip(m) }
+                    ForEach(mols, id: \.id) { m in
+                        Button { molecule = (m, page) } label: {
+                            HStack(spacing: 6) {
+                                KIcon(name: .flask, size: 14, width: 1.7)
+                                Text("\(t("molecule").components(separatedBy: " · ")[0]) · \(m.text(m.name, doc?.docLang ?? .tr))")
+                                    .font(KFont.ui(12, .medium, lang: lang))
+                            }
+                            .foregroundStyle(KRead.text)
+                            .padding(.horizontal, 12).frame(height: 32)
+                            .background(KRead.chrome, in: Capsule())
+                            .overlay(Capsule().stroke(KRead.line, lineWidth: 1))
+                        }
+                    }
+                }
+                .padding(.horizontal, wide ? 28 : 16)
+            }
+            .scrollIndicators(.hidden)
+            .padding(.top, 8)
+            .id(page)
+            .transition(.opacity)
+        }
+    }
+
+    /// A lecture note as a short chip over the PDF; tapping it opens the recording at that moment.
+    private func lectureChip(_ m: RecordingAPI.LectureMark) -> some View {
+        let exam = m.kind == "exam"
+        let title = exam ? t("markExam") : m.kind == "stress" ? t("markStress") : t("markTime", ["n": Format.num(m.minutes, lang)])
+        return Button { app.go(.recording(m.recordingId, at: m.at)) } label: {
+            HStack(spacing: 6) {
+                KIcon(name: .mic, size: 13, width: 1.8).foregroundStyle(exam ? KRead.tagRedFg : KRead.chipFg)
+                Text(title).font(KFont.ui(12, .semibold, lang: lang)).foregroundStyle(KRead.text).lineLimit(1)
+                Text(Format.clock(Int(m.at))).font(KFont.mono(11, .regular)).foregroundStyle(KRead.text2)
+            }
+            .padding(.horizontal, 12).frame(height: 32)
+            .background(exam ? KRead.tagRed : KRead.chip, in: Capsule())
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint(m.text)
+    }
+
     /// A note from the lecture recording on this page; tapping it opens the recording at that moment.
     private func lectureMark(_ m: RecordingAPI.LectureMark) -> some View {
         let exam = m.kind == "exam"
@@ -800,6 +934,7 @@ struct ReaderView: View {
                     .foregroundStyle(tag.red ? KRead.tagRedFg : KRead.tagVioFg)
                     .padding(.horizontal, 10).padding(.vertical, 4)
                     .background(tag.red ? KRead.tagRed : KRead.tagVio, in: Capsule())
+                if let mark = StudyMarksAPI.mark(study, from: block.pageFrom, to: block.pageTo) { studyTag(mark) }
                 Spacer()
                 Button { translateText = block.paragraphs.first?.plain } label: {
                     Text(t("translate")).font(KFont.ui(12, lang: lang)).foregroundStyle(paper.ink)
@@ -1259,6 +1394,8 @@ enum KRead {
     static let tagVioFg = Color.pair(0x4A3F9A, 0xB9B4F0)
     static let tagRed = Color.pair(0xF5E3E2, 0x3A2224)
     static let tagRedFg = Color.pair(0x9C2F3A, 0xF09AA3)
+    static let good = Color.pair(0xE3F1E7, 0x22301F)
+    static let goodFg = Color.pair(0x2E7D4F, 0x8FBF7A)
     // The pop-up and the bottom bar are light in dark mode too.
     static let pop = Color.pair(0xFFFCF6, 0xEFE8DC)
     static let popFg = Color.pair(0x2A2420, 0x15120F)

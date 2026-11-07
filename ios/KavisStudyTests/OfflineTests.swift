@@ -51,4 +51,38 @@ final class OfflineTests: XCTestCase {
         XCTAssertFalse(CardsAPI.isDue("2026-11-06T08:00:00+00:00", now: now))
         XCTAssertTrue(CardsAPI.isDue(nil, now: now))
     }
+
+    // MARK: Server down (seen 5 Nov 2026: the reader stayed blank while the client retried)
+
+    private struct Down: Error {}
+
+    func testWithACopyAFailedReadIsNotRetriedAndGivesTheCopy() async {
+        let start = ContinuousClock.now
+        let answer: Int? = await OfflineStore.fromServer(hasCopy: true) { retry in
+            XCTAssertFalse(retry, "no retries when the phone has a copy")
+            throw Down()
+        }
+        XCTAssertNil(answer, "nil = show the phone's copy")
+        XCTAssertLessThan(ContinuousClock.now - start, .seconds(1), "at once, not after the retries")
+    }
+
+    func testWithACopyASlowServerGivesTheCopyAfterTheWait() async {
+        let start = ContinuousClock.now
+        let answer: Int? = await OfflineStore.fromServer(hasCopy: true, wait: .milliseconds(200)) { _ in
+            try await Task.sleep(for: .seconds(30))
+            return 1
+        }
+        XCTAssertNil(answer)
+        XCTAssertLessThan(ContinuousClock.now - start, .seconds(2), "does not wait for the server's time-out")
+    }
+
+    func testTheServersAnswerWinsWhenItComes() async {
+        let withCopy: Int? = await OfflineStore.fromServer(hasCopy: true) { _ in 7 }
+        XCTAssertEqual(withCopy, 7)
+        let noCopy: Int? = await OfflineStore.fromServer(hasCopy: false) { retry in
+            XCTAssertTrue(retry, "without a copy the usual retries stay")
+            return 8
+        }
+        XCTAssertEqual(noCopy, 8)
+    }
 }

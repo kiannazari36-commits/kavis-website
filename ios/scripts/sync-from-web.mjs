@@ -11,7 +11,7 @@ const out = join(root, 'ios', 'KavisStudy', 'Resources', 'Data');
 mkdirSync(out, { recursive: true });
 
 // 1. Texts: web/src/i18n/*.json -> i18n-*.json (same shape: { tr, en, fa, ar } -> key -> text)
-for (const name of ['desk', 'auth', 'app', 'reader', 'study', 'pages']) {
+for (const name of ['desk', 'auth', 'app', 'reader', 'study', 'pages', 'placement']) {
   copyFileSync(join(web, 'i18n', `${name}.json`), join(out, `i18n-${name}.json`));
 }
 

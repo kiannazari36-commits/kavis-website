@@ -132,26 +132,31 @@ enum ReaderAPI {
         struct Progress: Decodable { let pages_read: [Int]?; let last_page: Int?; let percent_read: Int? }
 
         // The answers are kept as they came (OfflineStore), so the lesson opens again without internet.
-        struct Saved: Codable { let material: Data; let content: Data; let terms: Data; let progress: Data }
-        async let materialQ = supabase.from("materials").select("title, page_count, course_id, courses(name)").eq("id", value: id).limit(1).execute().data
-        async let contentQ = supabase.from("material_content").select("reader_doc").eq("material_id", value: id).limit(1).execute().data
-        async let termsQ = supabase.from("material_terms").select("id, term_key, surface, page, explanation").eq("material_id", value: id).execute().data
-        async let progressQ = supabase.from("reading_progress").select("pages_read, last_page, percent_read").eq("material_id", value: id).limit(1).execute().data
-
+        struct Saved: Codable, Sendable { let material: Data; let content: Data; let terms: Data; let progress: Data }
         let file = "lesson-\(id).json"
+        let kept = OfflineStore.read(file).flatMap { try? JSONDecoder().decode(Saved.self, from: $0) }
+        let fresh = await OfflineStore.fromServer(hasCopy: kept != nil) { retry in
+            async let materialQ = supabase.from("materials").select("title, page_count, course_id, courses(name)").eq("id", value: id).limit(1).retry(enabled: retry).execute().data
+            async let contentQ = supabase.from("material_content").select("reader_doc").eq("material_id", value: id).limit(1).retry(enabled: retry).execute().data
+            async let termsQ = supabase.from("material_terms").select("id, term_key, surface, page, explanation").eq("material_id", value: id).retry(enabled: retry).execute().data
+            async let progressQ = supabase.from("reading_progress").select("pages_read, last_page, percent_read").eq("material_id", value: id).limit(1).retry(enabled: retry).execute().data
+            return try await Saved(material: materialQ, content: contentQ, terms: termsQ, progress: progressQ)
+        }
+
         let saved: Saved
-        if let m = try? await materialQ, let c = try? await contentQ, let t = try? await termsQ, let p = try? await progressQ {
-            saved = Saved(material: m, content: c, terms: t, progress: p)
-            if let data = try? JSONEncoder().encode(saved) { OfflineStore.write(data, file) }
-        } else if let data = OfflineStore.read(file), let old = try? JSONDecoder().decode(Saved.self, from: data) {
-            saved = old
+        if let fresh {
+            saved = fresh
+            if let data = try? JSONEncoder().encode(fresh) { OfflineStore.write(data, file) }
+        } else if let kept {
+            saved = kept
         } else {
             return nil
         }
         let decoder = JSONDecoder()
         guard let material = (try? decoder.decode([Material].self, from: saved.material))?.first else { return nil }
         let stored = (try? decoder.decode([Content].self, from: saved.content))?.first?.reader_doc
-        let doc = group ? await grouped(id, stored) : stored
+        // From the phone's copy the server is not asked to group the sections (it could not be reached just now).
+        let doc = group && fresh != nil ? await grouped(id, stored) : stored
         let terms = (try? decoder.decode([Term].self, from: saved.terms)) ?? []
         let progress = (try? decoder.decode([Progress].self, from: saved.progress))?.first
         return Lesson(
@@ -201,10 +206,11 @@ enum ReaderAPI {
         struct Anchor: Decodable { let text: String? }
         struct Row: Decodable { let anchor: Anchor? }
         let file = "marks-\(materialId).json"
-        guard let rows: [Row] = try? await supabase.from("annotations").select("anchor")
-            .eq("material_id", value: materialId).eq("kind", value: "highlight").execute().value else {
-            return OfflineStore.read(file).flatMap { try? JSONDecoder().decode([String].self, from: $0) } ?? []
-        }
+        let kept = OfflineStore.read(file).flatMap { try? JSONDecoder().decode([String].self, from: $0) }
+        guard let rows: [Row] = await OfflineStore.fromServer(hasCopy: kept != nil, { retry in
+            try await supabase.from("annotations").select("anchor")
+                .eq("material_id", value: materialId).eq("kind", value: "highlight").retry(enabled: retry).execute().value
+        }) else { return kept ?? [] }
         var texts: [String] = []
         for t in rows.compactMap({ $0.anchor?.text }) where !t.isEmpty && !texts.contains(t) { texts.append(t) }
         if let data = try? JSONEncoder().encode(texts) { OfflineStore.write(data, file) }
