@@ -10,9 +10,15 @@ func fakeRequest<T>(_ result: T, ms: Int = apiDelayMs) async -> T {
 }
 
 /// Web-like test switches for mock states, e.g. launch argument `-kavis.trial ended` or `-kavis.devices full`.
-/// To be removed before the public launch (see TODO.md).
+/// Debug builds only: in a Release build (TestFlight / App Store) every switch reads as "not set".
 enum MockFlag {
-    static func value(_ name: String) -> String? { UserDefaults.standard.string(forKey: "kavis.\(name)") }
+    static func value(_ name: String) -> String? {
+        #if DEBUG
+        UserDefaults.standard.string(forKey: "kavis.\(name)")
+        #else
+        nil
+        #endif
+    }
 }
 
 /// Reads a bundled mock JSON file (copied from the web by `ios/scripts/sync-from-web.mjs`).

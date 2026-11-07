@@ -17,6 +17,6 @@ enum PremiumAPI {
     /// Mock: Premium status of the account. A real server will check the Apple subscription,
     /// so Premium bought on the iPhone also unlocks the web. Test switch: `-kavis.premium 1`.
     static func isPremium() -> Bool {
-        UserDefaults.standard.string(forKey: "kavis.premium") == "1"
+        MockFlag.value("premium") == "1"
     }
 }

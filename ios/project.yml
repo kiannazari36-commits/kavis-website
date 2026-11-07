@@ -74,11 +74,16 @@ targets:
     entitlements:
       path: KavisStudy/KavisStudy.entitlements
       properties:
+        # Xcode switches this to `production` by itself when the archive is signed for TestFlight / App Store.
         aps-environment: development
         com.apple.developer.associated-domains: ["applinks:kavis-website.vercel.app"]
     settings:
       base:
+        # Bundle id registered in the Apple Developer account (Identifiers) must be exactly this.
         PRODUCT_BUNDLE_IDENTIFIER: study.kavis.app
+        # TODO(TestFlight): put the 10-character Team ID here (developer.apple.com > Membership details). Empty until the account is active.
+        DEVELOPMENT_TEAM: ""
+        CODE_SIGN_STYLE: Automatic
         TARGETED_DEVICE_FAMILY: "1,2" # iPhone and iPad
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         GENERATE_INFOPLIST_FILE: NO
