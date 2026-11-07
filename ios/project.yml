@@ -48,6 +48,8 @@ targets:
         # The local test copy (http://127.0.0.1) in the simulator; real servers stay https only.
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
+        # Only standard HTTPS encryption: Apple's export question is answered once here.
+        ITSAppUsesNonExemptEncryption: false
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         # iPad turns every way (the iPad design is landscape first).
         UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
