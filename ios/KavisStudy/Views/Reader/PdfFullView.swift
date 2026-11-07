@@ -28,7 +28,7 @@ struct PdfFullView: View {
     @State private var failed = false
     @State private var page = 1
     @State private var writing = false
-    @State private var ink: [Int: PKDrawing] = [:]
+    @State private var ink: [Int: InkPage] = [:]
     @State private var saving: [Int: Task<Void, Never>] = [:]
     @State private var openTerm: ReaderTerm?
     @State private var selection: PdfSelection?
@@ -49,7 +49,7 @@ struct PdfFullView: View {
                 PdfPagesView(document: document, page: $page, startPage: startPage, writing: writing, ink: $ink,
                              terms: terms, selectedTerm: openTerm.flatMap { t in terms.first { $0.value.id == t.id }?.key },
                              highlights: highlights + marks,
-                             onInk: { pg, drawing in saveInk(page: pg, drawing: drawing) },
+                             onInk: { pg, strokes in saveInk(page: pg, strokes: strokes) },
                              onTerm: { key in
                                  if let key, let id = terms[key]?.id, openTerm?.id != id { ReaderAPI.tapTerm(id) }
                                  withAnimation(.easeOut(duration: 0.2)) { openTerm = key.flatMap { terms[$0] } }
@@ -96,18 +96,18 @@ struct PdfFullView: View {
             guard let data = await ReaderAPI.pdfData(materialId: materialId),
                   let doc = PDFDocument(data: data) else { failed = true; return }
             document = doc
-            ink = await InkAPI.load(materialId: materialId, surface: .pdf)
+            ink = await InkAPI.loadPdf(materialId: materialId)
         }
     }
 
     /// Saves a page's handwriting a moment after the last stroke.
-    private func saveInk(page: Int, drawing: PKDrawing) {
+    private func saveInk(page: Int, strokes: [InkStroke]) {
         saving[page]?.cancel()
         let id = materialId
         saving[page] = Task {
             try? await Task.sleep(for: .seconds(1.5))
             guard !Task.isCancelled else { return }
-            await InkAPI.save(materialId: id, page: page, drawing: drawing, surface: .pdf)
+            await InkAPI.save(materialId: id, key: InkKey(page: page), strokes: strokes, surface: .pdf)
         }
     }
 

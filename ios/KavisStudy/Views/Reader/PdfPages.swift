@@ -25,7 +25,7 @@ struct PdfPagesView: UIViewRepresentable {
     let startPage: Int
     var jump: PdfJump?
     let writing: Bool
-    @Binding var ink: [Int: PKDrawing]
+    @Binding var ink: [Int: InkPage]
     /// The lesson's hard words, by term key.
     let terms: [String: ReaderTerm]
     /// The open word (term key), painted amber.
@@ -33,7 +33,7 @@ struct PdfPagesView: UIViewRepresentable {
     let highlights: [String]
     /// Room under the last page (the reader's bottom bar lies over it).
     var bottomInset: CGFloat = 0
-    let onInk: (Int, PKDrawing) -> Void
+    let onInk: (Int, [InkStroke]) -> Void
     let onTerm: (String?) -> Void
     var onSelect: (PdfSelection?) -> Void = { _ in }
     /// A new number takes the selection off (after a menu action).
@@ -79,9 +79,7 @@ struct PdfPagesView: UIViewRepresentable {
         c.select(selectedTerm)
         c.mark(highlights, in: document)
         // Notes that arrive after the PDF (loaded from the server) fill the pages that are already on screen.
-        for (canvas, pg) in c.pageOf where canvas.drawing.strokes.isEmpty {
-            if let d = ink[pg], !d.strokes.isEmpty { canvas.drawing = d }
-        }
+        for (canvas, pg) in c.pageOf { canvas.show(ink[pg] ?? InkPage()) }
         if clearSelection != c.lastClear {
             c.lastClear = clearSelection
             uiView.clearSelection()
@@ -125,7 +123,7 @@ struct PdfPagesView: UIViewRepresentable {
 
     final class Coordinator: NSObject, PDFPageOverlayViewProvider, PKCanvasViewDelegate, UIGestureRecognizerDelegate {
         var parent: PdfPagesView
-        var pageOf: [PKCanvasView: Int] = [:]
+        var pageOf: [InkCanvasView: Int] = [:]
         var lastJump: PdfJump?
         var lastClear = 0
         var lastWriting = false
@@ -278,7 +276,7 @@ struct PdfPagesView: UIViewRepresentable {
         }
 
         func pdfView(_ view: PDFView, overlayViewFor page: PDFPage) -> UIView? {
-            let canvas = PKCanvasView()
+            let canvas = InkCanvasView()
             canvas.backgroundColor = .clear
             canvas.isOpaque = false
             canvas.drawingPolicy = .anyInput
@@ -286,7 +284,11 @@ struct PdfPagesView: UIViewRepresentable {
             canvas.delegate = self
             canvas.isUserInteractionEnabled = parent.writing
             let number = (view.document?.index(for: page) ?? 0) + 1
-            if let d = parent.ink[number] { canvas.drawing = d }
+            canvas.show(parent.ink[number] ?? InkPage())
+            canvas.onStrokes = { [weak self] strokes in
+                self?.parent.ink[number] = InkPage(strokes: strokes)
+                self?.parent.onInk(number, strokes)
+            }
             pageOf[canvas] = number
             return canvas
         }
@@ -302,14 +304,17 @@ struct PdfPagesView: UIViewRepresentable {
         }
 
         func canvasViewDidBeginUsingTool(_ canvasView: PKCanvasView) {
+            (canvasView as? InkCanvasView)?.drawingNow = true
             picker.setVisible(true, forFirstResponder: canvasView)
             canvasView.becomeFirstResponder()
         }
 
+        func canvasViewDidEndUsingTool(_ canvasView: PKCanvasView) {
+            (canvasView as? InkCanvasView)?.drawingNow = false
+        }
+
         func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
-            guard let number = pageOf[canvasView] else { return }
-            parent.ink[number] = canvasView.drawing
-            parent.onInk(number, canvasView.drawing)
+            (canvasView as? InkCanvasView)?.changed()
         }
     }
 }

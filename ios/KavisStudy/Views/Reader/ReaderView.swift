@@ -31,8 +31,8 @@ struct ReaderView: View {
     @State private var speaker = Speaker()
     @State private var noteMode = false
     /// Handwritten notes by page (loaded with the lesson) and the molecule open in its sheet.
-    @State private var ink: [Int: PKDrawing] = [:]
-    @State private var inkSaving: [Int: Task<Void, Never>] = [:]
+    @State private var ink: [InkKey: InkPage] = [:]
+    @State private var inkSaving: [InkKey: Task<Void, Never>] = [:]
     @State private var molecule: (mol: Molecule, page: Int)?
     /// The top block on screen (its index in the section) and every page seen since the last save.
     @State private var topBlock: Int?
@@ -59,7 +59,7 @@ struct ReaderView: View {
     @State private var startAt = 1
     @State private var pdfJump: PdfJump?
     /// Handwriting on the PDF pages (its own surface: other coordinates than the page cards).
-    @State private var pdfInk: [Int: PKDrawing] = [:]
+    @State private var pdfInk: [Int: InkPage] = [:]
     @State private var pdfInkSaving: [Int: Task<Void, Never>] = [:]
     @State private var pdfSel: PdfSelection?
     @State private var clearSel = 0
@@ -200,7 +200,7 @@ struct ReaderView: View {
         pdfDoc = d
         pdfPage = min(max(1, startAt), d.pageCount)
         seen.insert(pdfPage)
-        pdfInk = await InkAPI.load(materialId: docID, surface: .pdf)
+        pdfInk = await InkAPI.loadPdf(materialId: docID)
     }
 
     private func sectionOf(_ page: Int) -> Int? {
@@ -307,7 +307,7 @@ struct ReaderView: View {
                 PdfPagesView(
                     document: pdfDoc, page: $pdfPage, startPage: startAt, jump: pdfJump, writing: noteMode, ink: $pdfInk,
                     terms: lesson?.terms ?? [:], selectedTerm: openTerm, highlights: highlights, bottomInset: 120,
-                    onInk: { pg, drawing in savePdfInk(page: pg, drawing: drawing) },
+                    onInk: { pg, strokes in savePdfInk(page: pg, strokes: strokes) },
                     onTerm: { key in
                         guard let key, lesson?.terms[key] != nil else { openTerm = nil; return }
                         if openTerm != key, let id = lesson?.terms[key]?.id { ReaderAPI.tapTerm(id) }
@@ -342,13 +342,13 @@ struct ReaderView: View {
     }
 
     /// Saves a PDF page's handwriting a moment after the last stroke (the same surface as the iPad's full-screen PDF).
-    private func savePdfInk(page: Int, drawing: PKDrawing) {
+    private func savePdfInk(page: Int, strokes: [InkStroke]) {
         pdfInkSaving[page]?.cancel()
         let id = docID
         pdfInkSaving[page] = Task {
             try? await Task.sleep(for: .seconds(1.5))
             guard !Task.isCancelled else { return }
-            await InkAPI.save(materialId: id, page: page, drawing: drawing, surface: .pdf)
+            await InkAPI.save(materialId: id, key: InkKey(page: page), strokes: strokes, surface: .pdf)
         }
     }
 
@@ -525,7 +525,7 @@ struct ReaderView: View {
                         if !wide { sectionHeader(doc) }
                         LazyVStack(alignment: .leading, spacing: 16) {
                             ForEach(Array(section.blocks.enumerated()), id: \.offset) { i, block in
-                                card(block, doc: doc)
+                                card(block, doc: doc, ink: InkKey(page: block.pageFrom, block: inkOrdinal(doc, block: i)))
                                     .id(i)
                                     .onAppear { for p in block.pageFrom...max(block.pageFrom, block.pageTo) { seen.insert(p) } }
                             }
@@ -539,6 +539,8 @@ struct ReaderView: View {
                 }
                 .scrollPosition(id: $topBlock, anchor: .top)
                 .scrollIndicators(.hidden)
+                // With the pen on a finger draws on the cards instead of scrolling (as on the PDF pages).
+                .scrollDisabled(noteMode)
             } else if loaded {
                 notReady
             } else {
@@ -778,7 +780,15 @@ struct ReaderView: View {
         .buttonStyle(.plain)
     }
 
-    private func card(_ block: ReaderBlock, doc: ReaderDoc) -> some View {
+    /// The card's number among the cards of its page, over the whole lesson (as the web), so a drawing stays on its card.
+    private func inkOrdinal(_ doc: ReaderDoc, block i: Int) -> Int {
+        let s = min(sectionIndex, doc.sections.count - 1)
+        let page = doc.sections[s].blocks[i].pageFrom
+        let before = doc.sections[..<s].flatMap(\.blocks) + doc.sections[s].blocks[..<i]
+        return before.filter { $0.pageFrom == page }.count
+    }
+
+    private func card(_ block: ReaderBlock, doc: ReaderDoc, ink key: InkKey) -> some View {
         let paper = KPaper.colors(paperChoice)
         let docLang = doc.docLang
         let tag = block.tagLabel
@@ -823,23 +833,23 @@ struct ReaderView: View {
         .overlay(RoundedRectangle(cornerRadius: 24, style: .continuous).stroke(paper.line, lineWidth: 1))
         .overlay {
             InkCanvas(
-                drawing: Binding(get: { ink[block.pageFrom] ?? PKDrawing() }, set: { ink[block.pageFrom] = $0 }),
+                page: ink[key] ?? InkPage(),
                 writing: noteMode,
                 inkColor: UIColor(paper.ink),
-                onChange: { saveInk(page: block.pageFrom, drawing: $0) }
+                onChange: { ink[key] = InkPage(strokes: $0); saveInk(key, strokes: $0) }
             )
         }
         .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
     }
 
     /// Saves a page's handwriting a moment after the last stroke.
-    private func saveInk(page: Int, drawing: PKDrawing) {
+    private func saveInk(_ key: InkKey, strokes: [InkStroke]) {
         guard let id = lesson?.id else { return }
-        inkSaving[page]?.cancel()
-        inkSaving[page] = Task {
+        inkSaving[key]?.cancel()
+        inkSaving[key] = Task {
             try? await Task.sleep(for: .seconds(1.5))
             guard !Task.isCancelled else { return }
-            await InkAPI.save(materialId: id, page: page, drawing: drawing)
+            await InkAPI.save(materialId: id, key: key, strokes: strokes)
         }
     }
 

@@ -85,7 +85,7 @@ The app never writes AI output, scores, usage counters, subscriptions or shares 
 | Translation lookup | `translations.source_hash` = SHA-256 (hex) of the sentence's UTF-8 text |
 | Tap a hard word | RPC `tap_term(term_id)`; explanation in `material_terms.explanation[lang]`, missing language → Edge `explain-term` |
 | Translate a sentence (literal / natural) | Edge `translate` (cached in `translations`) |
-| Highlights, notes, pen | `annotations` (+ `ink` bucket) |
+| Highlights, notes, pen | `annotations` (pen: kind `ink`, lines in `anchor.strokes`, one format for every app; the `ink` bucket only holds old iPad PencilKit files until the app turns them) |
 | Page reached, "anladım", finished | `reading_progress` |
 | Stopwatch | insert `study_sessions` when a session ends (also cards, quiz, review, assistant, audio) |
 | Read aloud | on the device (system voice, `tts_voice`, `tts_rate`) — no server cost |

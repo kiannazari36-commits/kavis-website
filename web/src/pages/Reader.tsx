@@ -125,7 +125,7 @@ export default function Reader() {
   const [penColor, setPenColor] = useState(PEN_COLORS[0]);
   // The reading mode's cards and the original PDF's pages have different shapes, so their drawings are kept apart.
   const savedInk = useAsync(() => (pdfId ? loadInk(pdfId) : Promise.resolve({} as Record<string, PageInk>)), [pdfId]);
-  const savedPdfInk = useAsync(() => (pdfId ? loadInk(pdfId, 'web_pdf') : Promise.resolve({} as Record<string, PageInk>)), [pdfId]);
+  const savedPdfInk = useAsync(() => (pdfId ? loadInk(pdfId, 'pdf') : Promise.resolve({} as Record<string, PageInk>)), [pdfId]);
   const [inkEdits, setInkEdits] = useState<Record<string, PageInk>>({});
   const [lastInk, setLastInk] = useState<[number, InkSurface, number] | null>(null);
   // Reading cards: a drawing belongs to one card (page + the card's number among the cards of that page).
@@ -135,11 +135,12 @@ export default function Reader() {
     { id: null, strokes: [] };
   const setInk = async (page: number, strokes: Stroke[], on: InkSurface = 'card', block = 0) => {
     const key = `${on}:${inkKey(page, on === 'card' ? block : undefined)}`;
-    const now = { id: inkOf(page, on, block).id, strokes };
+    const was = inkOf(page, on, block);
+    const now = { id: was.id, strokes, others: was.others };
     setInkEdits((x) => ({ ...x, [key]: now }));
     setLastInk([page, on, block]);
     const id = await saveInk(pdfId, page, now, on, block);
-    setInkEdits((x) => ({ ...x, [key]: { ...x[key], id } }));
+    setInkEdits((x) => ({ ...x, [key]: { ...x[key], id, others: undefined } }));
   };
   // Every card's number among the cards of its page, over the whole lesson.
   const inkOrd = useMemo(() => {
@@ -574,7 +575,7 @@ export default function Reader() {
           startPage={lastPage}
           pen={pen}
           overlay={(page) => (
-            <InkLayer strokes={inkOf(page, 'web_pdf').strokes} pen={pen ? penColor : null} onDone={(st) => setInk(page, [...inkOf(page, 'web_pdf').strokes, st], 'web_pdf')} />
+            <InkLayer strokes={inkOf(page, 'pdf').strokes} pen={pen ? penColor : null} onDone={(st) => setInk(page, [...inkOf(page, 'pdf').strokes, st], 'pdf')} />
           )}
           after={afterPdfPage}
           onTerm={(key) => {
@@ -1485,6 +1486,15 @@ function InkLayer({ strokes, pen, onDone }: { strokes: Stroke[]; pen: string | n
     drawing.current = st;
     setLive(st);
   };
+  // The drawn width in px: line widths are stored as parts of it (the same line is thicker on a bigger page).
+  const [width, setWidth] = useState(0);
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setWidth(el.getBoundingClientRect().width));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [strokes.length > 0 || !!pen]);
   const at = (e: { clientX: number; clientY: number }): [number, number] => {
     const r = box.current!.getBoundingClientRect();
     return [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height];
@@ -1495,8 +1505,9 @@ function InkLayer({ strokes, pen, onDone }: { strokes: Stroke[]; pen: string | n
       points={st.points.map(([x, y]) => `${x},${y}`).join(' ')}
       fill="none"
       stroke={st.color}
-      strokeWidth={3}
-      strokeLinecap="round"
+      strokeOpacity={st.tool === 'marker' ? 0.35 : st.tool === 'pencil' ? 0.85 : 1}
+      strokeWidth={st.w && width ? Math.max(1, st.w * width) : 3}
+      strokeLinecap={st.tool === 'marker' ? 'butt' : 'round'}
       strokeLinejoin="round"
       vectorEffect="non-scaling-stroke"
     />
@@ -1511,7 +1522,7 @@ function InkLayer({ strokes, pen, onDone }: { strokes: Stroke[]; pen: string | n
       onPointerDown={(e) => {
         if (!pen) return;
         e.currentTarget.setPointerCapture?.(e.pointerId);
-        draw({ color: pen, points: [at(e)] });
+        draw({ color: pen, w: 3 / e.currentTarget.getBoundingClientRect().width, points: [at(e)] });
       }}
       onPointerMove={(e) => drawing.current && draw({ ...drawing.current, points: [...drawing.current.points, at(e)] })}
       onPointerUp={() => {
