@@ -78,3 +78,34 @@ export function keepTest(materialId: string, t: SavedTest | null) {
     /* storage blocked: the test just starts again next time */
   }
 }
+
+/** A topic's state for the reader's page marks: to study (red), weak (amber), known (green). */
+export type StudyState = 'todo' | 'weak' | 'known';
+export type StudyMark = { title: string; pageFrom: number; pageTo: number; state: StudyState };
+
+/** The student's topic states on this lesson's pages (placement test and quiz results); topics never tested are left out. */
+export async function studyMarks(materialId: string): Promise<StudyMark[]> {
+  type Row = { title: string; page_from: number | null; page_to: number | null; topic_progress: { state: string }[] | { state: string } | null };
+  const { data, error } = await supabase
+    .from('material_topics')
+    .select('title, page_from, page_to, topic_progress(state)')
+    .eq('material_id', materialId)
+    .order('sort_order')
+    .returns<Row[]>();
+  if (error) console.error('studyMarks', error);
+  const marks: StudyMark[] = [];
+  for (const t of data ?? []) {
+    const p = Array.isArray(t.topic_progress) ? t.topic_progress[0] : t.topic_progress;
+    const state = p?.state;
+    if (!t.page_from || (state !== 'todo' && state !== 'weak' && state !== 'known')) continue;
+    marks.push({ title: t.title, pageFrom: t.page_from, pageTo: t.page_to ?? t.page_from, state });
+  }
+  return marks;
+}
+
+/** The mark of a page range: the most urgent state of the topics on it (to study, then weak, then known). */
+export function studyStateOf(marks: StudyMark[], from: number, to: number): StudyMark | null {
+  const on = marks.filter((m) => m.pageFrom <= to && m.pageTo >= from);
+  const rank: Record<StudyState, number> = { todo: 0, weak: 1, known: 2 };
+  return on.sort((a, b) => rank[a.state] - rank[b.state])[0] ?? null;
+}
