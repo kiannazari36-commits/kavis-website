@@ -173,6 +173,10 @@ enum InkFormat {
     /// Line width when a line has none (old web lines: 3 px).
     static let defaultWidth: CGFloat = 3
 
+    /// The pen a card starts with: bordo, the web's pen too. One colour that reads on every paper and theme; the
+    /// paper's own ink (dark brown) was unreadable on the web's dark theme. The student can pick any colour.
+    static let cardPen = UIColor(red: 0x9C / 255, green: 0x2F / 255, blue: 0x3A / 255, alpha: 1)
+
     static func drawing(_ strokes: [InkStroke], size: CGSize) -> PKDrawing {
         guard size.width > 0, size.height > 0 else { return PKDrawing() }
         return PKDrawing(strokes: strokes.compactMap { s in

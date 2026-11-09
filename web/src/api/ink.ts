@@ -1,13 +1,13 @@
 import { supabase } from './supabase';
 import { currentUser } from './auth';
-import { inkKey, blockOrdinals, groupInk, type InkSurface, type PageInk, type Stroke } from './inkKey';
+import { inkKey, blockOrdinals, groupInk, shownColor, type InkSurface, type PageInk, type Stroke } from './inkKey';
 
 // The pen on the reading page: lines drawn over a page, kept per page (table annotations, kind 'ink').
 // One format for every app (see Stroke): points are parts of the page's width and height (0–1), so the drawing fits
 // any screen size. Two surfaces with different page shapes, kept apart: the reading mode's page cards (no
 // `anchor.surface`, `anchor.block` = the card's number on its page) and the original PDF pages (`anchor.surface = 'pdf'`).
 
-export { inkKey, blockOrdinals };
+export { inkKey, blockOrdinals, shownColor };
 export type { InkSurface, PageInk, Stroke };
 
 export async function loadInk(materialId: string, surface: InkSurface = 'card'): Promise<Record<string, PageInk>> {

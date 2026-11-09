@@ -35,12 +35,22 @@ struct InkCanvas: UIViewRepresentable {
             view.tool = PKInkingTool(.pen, color: inkColor, width: 3)
         }
         view.show(page)
-        if !writing { view.resignFirstResponder() }
+        if !writing {
+            context.coordinator.picker.setVisible(false, forFirstResponder: view)
+            view.resignFirstResponder()
+        }
+    }
+
+    /// Leaving the page with the pen on: the tool picker goes with it.
+    static func dismantleUIView(_ view: InkCanvasView, coordinator: Coordinator) {
+        coordinator.picker.setVisible(false, forFirstResponder: view)
+        coordinator.picker.removeObserver(view)
+        view.resignFirstResponder()
     }
 
     final class Coordinator: NSObject, PKCanvasViewDelegate {
         var parent: InkCanvas
-        private let picker = PKToolPicker()
+        let picker = PKToolPicker()
         var inkColor: UIColor?
         init(_ parent: InkCanvas) { self.parent = parent }
 

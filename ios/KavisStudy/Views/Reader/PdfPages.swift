@@ -110,6 +110,7 @@ struct PdfPagesView: UIViewRepresentable {
         NotificationCenter.default.removeObserver(coordinator)
         coordinator.stop()
         coordinator.unmark()
+        coordinator.hidePicker()
     }
 
     /// The system's own menu on selected text is left out: the reader shows its own (Çevir / Kopyala / Vurgula / Sor).
@@ -150,6 +151,15 @@ struct PdfPagesView: UIViewRepresentable {
             page.addAnnotation(a)
             view?.annotationsChanged(on: page)
             added.append(a)
+        }
+
+        /// Leaving the PDF view with the pen on: the tool picker must not stay over the reader bar.
+        func hidePicker() {
+            for canvas in pageOf.keys {
+                picker.setVisible(false, forFirstResponder: canvas)
+                picker.removeObserver(canvas)
+                canvas.resignFirstResponder()
+            }
         }
 
         func stop() {
