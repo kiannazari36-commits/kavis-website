@@ -197,6 +197,8 @@ export function unreadablePage(text: string, hadText: boolean): boolean {
   if (!t) return hadText;
   const words = t.split(/\s+/).length;
   const unknown = (t.match(/\[\?\]/g) ?? []).length;
+  // Nothing but unreadable marks (and punctuation): no words to show.
+  if (unknown && !/\p{L}/u.test(t.replace(/\[\?\]/g, ''))) return true;
   return (words >= 3 && unknown / words > 0.3) || pageGarbled(t);
 }
 

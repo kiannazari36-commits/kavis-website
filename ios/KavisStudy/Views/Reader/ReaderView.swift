@@ -936,10 +936,12 @@ struct ReaderView: View {
                     .background(tag.red ? KRead.tagRed : KRead.tagVio, in: Capsule())
                 if let mark = StudyMarksAPI.mark(study, from: block.pageFrom, to: block.pageTo) { studyTag(mark) }
                 Spacer()
-                Button { translateText = block.paragraphs.first?.plain } label: {
-                    Text(t("translate")).font(KFont.ui(12, lang: lang)).foregroundStyle(paper.ink)
-                        .padding(.horizontal, 14).frame(height: 30)
-                        .overlay(Capsule().stroke(paper.line, lineWidth: 1))
+                if block.unreadable != true {
+                    Button { translateText = block.paragraphs.first?.plain } label: {
+                        Text(t("translate")).font(KFont.ui(12, lang: lang)).foregroundStyle(paper.ink)
+                            .padding(.horizontal, 14).frame(height: 30)
+                            .overlay(Capsule().stroke(paper.line, lineWidth: 1))
+                    }
                 }
             }
             ForEach(marks.filter { $0.page >= block.pageFrom && $0.page <= max(block.pageFrom, block.pageTo) }) { m in lectureMark(m) }

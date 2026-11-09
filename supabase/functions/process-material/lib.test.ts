@@ -66,6 +66,7 @@ check('recognised text of a page is readable', !unreadablePage(real, true));
 check('empty result of a page with text is unreadable', unreadablePage('  ', true));
 check('empty result of a picture-only page is just empty', !unreadablePage('', false));
 check('mostly [?] words is unreadable', unreadablePage('[?] [?] kan [?] [?]', true));
+check('only [?] marks is unreadable', unreadablePage('[?]', true) && unreadablePage('[?] • [?]', false));
 check('a few [?] words are fine', !unreadablePage('Kan basıncı [?] ile ölçülür ve kaydedilir.', true));
 check('nonsense left after recognition is unreadable', unreadablePage(shift(real), true));
 check('page has letters', hasLetters(real) && !hasLetters('12 34') && hasLetters('فیزیولوژی علم مطالعه عملکرد'));

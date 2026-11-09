@@ -1087,9 +1087,11 @@ function Block({ doc, block, terms, fontSize, term, onTerm, selPara, highlights,
         <span className={tagStyle === 'red' ? `${s.tag} ${s.tagRed}` : s.tag}>{t(tagKey)}</span>
         {study && <StudyTag mark={study} />}
         <span className={s.grow} />
-        <button className={s.translate} onClick={onTranslate}>
-          {t('translate')}
-        </button>
+        {!block.unreadable && (
+          <button className={s.translate} onClick={onTranslate}>
+            {t('translate')}
+          </button>
+        )}
       </div>
       <LectureNotes marks={marks} />
       {block.heading && (
