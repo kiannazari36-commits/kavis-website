@@ -15,6 +15,7 @@ import { usePanelPref } from '../hooks/usePanelPref';
 import { COURSE_COLOR } from './courseColors';
 import Wordmark from './Wordmark';
 import TrialCard from '../trial/TrialCard';
+import { AudioMini } from '../audio/AudioPlayer';
 import Icon, { type IconName } from './Icon';
 import s from './AppShell.module.css';
 
@@ -166,6 +167,9 @@ export default function AppShell() {
       <div className={s.content}>
         <Outlet context={{ focus, setFocus } satisfies ShellContext} />
       </div>
+
+      {/* "Sesli anlatım" goes on while the student is on other pages; the assistant shows the big player. */}
+      {location.pathname !== '/assistant' && <AudioMini onOpen={() => navigate('/assistant')} className={wide ? s.miniWide : s.miniRail} />}
 
       {deleteOn && !focus && (
         <div className={s.delBanner} role="status">

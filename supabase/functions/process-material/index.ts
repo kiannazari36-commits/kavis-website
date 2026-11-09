@@ -10,13 +10,15 @@
 // An identical PDF (same SHA-256, computed here) that another student already has "ready" is copied by the SQL
 // function copy_shared_lesson instead (no AI call); see reuseShared.
 // Photos of pages and scanned PDFs (POST { material_id, ocr: true }) first go through text recognition (ocr.ts):
-// the AI copies each page's text exactly, in batches of 4 pages, then the same steps follow.
+// the AI copies each page's text exactly, in batches of 4 pages, then the same steps follow. A PDF with even one page
+// of nonsense letters (a font without a text map) is read that way too. A page that still cannot be read becomes a
+// block with `unreadable: true` (the apps say so) and gives no hard words, cards, questions or search pieces.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 import { extractText, getDocumentProxy } from 'npm:unpdf';
 import { PDFDocument } from 'npm:pdf-lib@1.17.1';
 import { OCR_SCHEMA, OCR_SYSTEM, pageTexts, toBase64, type OcrBatch } from './ocr.ts';
-import { batches, cleanHints, costUsd, looksGarbled, markTerms, paragraphsOf, readyNotice } from './lib.ts';
+import { batches, cleanHints, costUsd, hasLetters, looksGarbled, markTerms, pageGarbled, paragraphsOf, readyNotice, unreadablePage } from './lib.ts';
 import { SCHEMA, SYSTEM, contentLanguage, styleNote, userMessage, type AiBatch } from './ai.ts';
 
 declare const EdgeRuntime: { waitUntil(p: Promise<unknown>): void };
@@ -133,20 +135,18 @@ async function download(db: SupabaseClient, path: string) {
 async function readLesson(db: SupabaseClient, materialId: string, kind: string, ocr: boolean) {
   const { data: files } = await db.from('material_files').select('storage_path, mime_type').eq('material_id', materialId).order('sort_order');
   if (!files?.length) throw new Error('file row missing');
-  if (kind === 'photo') return { totalPages: files.length, text: [] as string[], files: files as FileRow[], pdf: null, cached: true };
+  // Every photo is a page with text; for a PDF, `layer` = the pages whose own text had letters (for text recognition:
+  // an empty result there means the page could not be read, not a picture-only page).
+  if (kind === 'photo') return { totalPages: files.length, text: [] as string[], layer: files.map(() => 'x'.repeat(20)), files: files as FileRow[], pdf: null, cached: true };
   // The page texts read before (pages.json next to the PDF): no need to open the PDF again.
-  if (!ocr) {
-    const { data: saved } = await db.storage.from('materials').download(pagesPath(files[0].storage_path));
-    if (saved) {
-      const p = JSON.parse(await saved.text()) as { totalPages: number; text: string[] };
-      return { totalPages: p.totalPages, text: p.text, files: files as FileRow[], pdf: null, cached: true };
-    }
-  }
+  const { data: saved } = await db.storage.from('materials').download(pagesPath(files[0].storage_path));
+  const p = saved ? (JSON.parse(await saved.text()) as { totalPages: number; text: string[] }) : null;
+  if (p && !ocr) return { totalPages: p.totalPages, text: p.text, layer: p.text, files: files as FileRow[], pdf: null, cached: true };
   const bytes = await download(db, files[0].storage_path);
   const doc = await getDocumentProxy(bytes.slice());
-  if (ocr) return { totalPages: doc.numPages, text: [] as string[], files: files as FileRow[], pdf: bytes, cached: true };
+  if (ocr) return { totalPages: doc.numPages, text: [] as string[], layer: p?.text ?? [], files: files as FileRow[], pdf: bytes, cached: true };
   const { totalPages, text } = await extractText(doc, { mergePages: false });
-  return { totalPages, text: text as string[], files: files as FileRow[], pdf: null, cached: false };
+  return { totalPages, text: text as string[], layer: text as string[], files: files as FileRow[], pdf: null, cached: false };
 }
 
 /** Where the lesson's page texts are kept: next to the PDF. */
@@ -236,7 +236,7 @@ async function runBatch(db: SupabaseClient, materialId: string, batchNo: number,
   if (!m) return;
   const uid = m.user_id as string;
   try {
-    const { totalPages, text, files, pdf, cached } = await readLesson(db, materialId, m.kind, ocr);
+    const { totalPages, text, layer, files, pdf, cached } = await readLesson(db, materialId, m.kind, ocr);
     // The PDF was just opened and read: keep its page texts, and do the AI part in a fresh run.
     if (!cached) {
       const up = await db.storage
@@ -249,8 +249,9 @@ async function runBatch(db: SupabaseClient, materialId: string, batchNo: number,
 
     if (batchNo === 0) {
       await clearOutput(db, materialId);
-      // A PDF whose font gives nonsense letters instead of words is read by text recognition from the page images.
-      if (!ocr && looksGarbled(text)) {
+      // A PDF whose font gives nonsense letters instead of words (on all pages or only some) is read by text
+      // recognition from the page images.
+      if (!ocr && (looksGarbled(text) || text.some(pageGarbled))) {
         await runAgain(materialId, 0, true);
         return;
       }
@@ -280,8 +281,14 @@ async function runBatch(db: SupabaseClient, materialId: string, batchNo: number,
       await saveUsage(db, uid, seen.usage.input, seen.usage.output);
       seen.texts.forEach((t, i) => (text[from - 1 + i] = t));
     }
+    // Pages we could not turn into real text: shown as "could not be read", never sent to the AI.
     const pages = [];
-    for (let p = from; p <= to; p++) pages.push({ page: p, paragraphs: paragraphsOf(text[p - 1] ?? '') });
+    const unreadable: number[] = [];
+    for (let p = from; p <= to; p++) {
+      const t = text[p - 1] ?? '';
+      if (ocr ? unreadablePage(t, hasLetters(layer[p - 1] ?? '')) : pageGarbled(t)) unreadable.push(p);
+      else pages.push({ page: p, paragraphs: paragraphsOf(t) });
+    }
 
     // Settings for the content language and the course name.
     const [{ data: course }, { data: settings }, { data: profile }, { data: style }] = await Promise.all([
@@ -293,16 +300,21 @@ async function runBatch(db: SupabaseClient, materialId: string, batchNo: number,
     const choice = (course?.content_lang_override ?? settings?.content_lang ?? 'pdf') as string;
     const langText = contentLanguage(course?.content_lang_override ?? null, settings?.content_lang ?? 'pdf', profile?.app_lang ?? 'tr');
 
-    const ai = await askClaude(m.title, course?.name ?? '', langText, pages, styleNote(style));
-    await saveUsage(db, uid, ai.usage.input, ai.usage.output);
-    const out = ai.data;
-    const docLang = out.language === 'other' ? 'en' : out.language;
-    const contentLang = choice === 'pdf' ? docLang : choice === 'app' ? (profile?.app_lang ?? 'tr') : choice;
-
     // Reading page so far.
     const { data: existing } = await db.from('material_content').select('reader_doc, stats').eq('material_id', materialId).maybeSingle();
     type Doc = { language: string; sections: { title: string; blocks: unknown[] }[] };
-    const doc: Doc = (existing?.reader_doc as Doc) ?? { language: docLang, sections: [] };
+    const prev = existing?.reader_doc as Doc | undefined;
+
+    let out: AiBatch = { language: (prev?.language ?? 'other') as AiBatch['language'], pages: [], terms: [], topics: [], cards: [], questions: [] };
+    if (pages.some((p) => p.paragraphs.length)) {
+      const ai = await askClaude(m.title, course?.name ?? '', langText, pages, styleNote(style));
+      await saveUsage(db, uid, ai.usage.input, ai.usage.output);
+      out = ai.data;
+    }
+    const docLang = out.language === 'other' ? 'en' : out.language;
+    const contentLang = choice === 'pdf' ? docLang : choice === 'app' ? (profile?.app_lang ?? 'tr') : choice;
+
+    const doc: Doc = prev ?? { language: docLang, sections: [] };
     const stats = (existing?.stats as Record<string, number>) ?? {};
 
     // Hard words: saved with explanations, then marked in the text (first place only).
@@ -314,7 +326,16 @@ async function runBatch(db: SupabaseClient, materialId: string, batchNo: number,
       );
     }
     const used = new Set<string>();
-    for (const pg of pages) {
+    const addBlock = (block: unknown, title?: string) => {
+      if (title || !doc.sections.length) doc.sections.push({ title: title || m.title, blocks: [] });
+      doc.sections[doc.sections.length - 1].blocks.push(block);
+    };
+    for (let p = from; p <= to; p++) {
+      if (unreadable.includes(p)) {
+        addBlock({ pageFrom: p, pageTo: p, tag: 'general', unreadable: true, paragraphs: [] });
+        continue;
+      }
+      const pg = pages.find((x) => x.page === p)!;
       const info = out.pages.find((x) => x.page === pg.page);
       let paragraphs = pg.paragraphs;
       const heading = info?.heading && paragraphs.includes(info.heading) ? info.heading : undefined;
@@ -328,8 +349,7 @@ async function runBatch(db: SupabaseClient, materialId: string, batchNo: number,
         ...(heading ? { heading } : {}),
         paragraphs: paragraphs.map((x) => markTerms(x, pageTerms, used)),
       };
-      if (info?.section_title || !doc.sections.length) doc.sections.push({ title: info?.section_title || m.title, blocks: [] });
-      doc.sections[doc.sections.length - 1].blocks.push(block);
+      addBlock(block, info?.section_title);
     }
 
     // Topics (with ids, so questions and search pieces can point to them).
@@ -396,9 +416,10 @@ async function runBatch(db: SupabaseClient, materialId: string, batchNo: number,
       questions: (stats.questions ?? 0) + out.questions.length,
       done_pages: to,
       ocr: ocr ? 1 : 0,
+      unreadable: (stats.unreadable ?? 0) + unreadable.length,
     };
     await db.from('material_content').upsert({ material_id: materialId, user_id: uid, reader_doc: doc, stats: newStats });
-    await db.from('materials').update({ language: docLang }).eq('id', materialId);
+    if (out.language !== 'other' || !prev) await db.from('materials').update({ language: docLang }).eq('id', materialId);
 
     if (batchNo + 1 < all.length) {
       // Next 8 pages in a fresh run of this function (each run has its own time limit).

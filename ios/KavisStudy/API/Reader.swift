@@ -36,6 +36,8 @@ struct ReaderBlock: Decodable {
     let paragraphs: [Paragraph]
     let molecule: Bool?
     let audio: Bool?
+    /// true: the page's text could not be read (a broken font or an unreadable scan); no paragraphs, the reader says so.
+    let unreadable: Bool?
 
     /// Label (key in the reader texts) and colour of the block kind, as on the web.
     var tagLabel: (key: String, red: Bool) {
