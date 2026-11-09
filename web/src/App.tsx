@@ -6,6 +6,7 @@ import { ToastProvider } from './components/Toast';
 import { SettingsProvider } from './settings/SettingsProvider';
 import PrefsSync from './settings/PrefsSync';
 import { TrialProvider } from './trial/TrialProvider';
+import { AudioLessonProvider } from './audio/AudioLesson';
 import AppShell from './components/AppShell';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
@@ -46,6 +47,7 @@ export default function App() {
           <ToastProvider>
             <BrowserRouter>
               <TrialProvider>
+              <AudioLessonProvider>
                 {/* Pages other than the first two load when they are opened (smaller first download). */}
                 <Suspense fallback={null}>
                 <Routes>
@@ -85,6 +87,7 @@ export default function App() {
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
                 </Suspense>
+              </AudioLessonProvider>
               </TrialProvider>
             </BrowserRouter>
           </ToastProvider>

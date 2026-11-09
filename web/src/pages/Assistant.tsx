@@ -8,7 +8,6 @@ import {
   latestThread,
   listAssistantTopics,
   photoForAssistant,
-  weakTopicsOf,
   type AssistantTopic,
   type ChatMessage,
   type QuestionPhoto,
@@ -23,6 +22,8 @@ import ActNotes from '../components/ActNotes';
 import AnswerText from '../components/AnswerText';
 import Thinking from '../components/Thinking';
 import { useTrial } from '../trial/TrialProvider';
+import { useAudioLesson } from '../audio/AudioLesson';
+import { AudioCard } from '../audio/AudioPlayer';
 import s from './Assistant.module.css';
 
 // Design: design/NewIPad.dc.html, screens "ai" (start + message box) and "aichat" (answer view).
@@ -41,6 +42,7 @@ export default function Assistant() {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const { guard } = useTrial();
+  const audio = useAudioLesson();
   const topics = useAsync(() => listAssistantTopics(t('asAllName'), t('asAllSub')), [lang]);
 
   const [course, setCourse] = useState(params.get('q') ? 'all' : (params.get('course') ?? ''));
@@ -112,11 +114,11 @@ export default function Assistant() {
     guard('question', () => setChat({ topic: sel.id, q: draft.trim(), photo }));
     setDraft('');
   };
-  const explainWeak = async () => {
+  // "Önemli ve zayıf konularımı anlat" = "Sesli anlatım": the lesson read last in this course is read aloud,
+  // weak topics first (no assistant question used).
+  const explainWeak = () => {
     if (needCourse()) return;
-    const weak = await weakTopicsOf(sel!.courseId);
-    const q = weak.length ? t('qkWeakQ').replace('{list}', weak.join(', ')) : t('qkWeakQNone');
-    guard('question', () => setChat({ topic: sel!.id, q }));
+    if (!audio.loading) audio.start(sel!.courseId);
   };
   const teach = () => {
     if (needCourse()) return;
@@ -151,7 +153,8 @@ export default function Assistant() {
     <main className={s.page}>
       <div className={s.stage}>
         <span className={s.grow} />
-        {panel !== 'menu' && (
+        {panel !== 'menu' && audio.lesson && <AudioCard />}
+        {panel !== 'menu' && !audio.lesson && (
           <>
             <span className={s.glow} aria-hidden="true" />
             <h1 className={s.hero}>

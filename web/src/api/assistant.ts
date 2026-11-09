@@ -163,17 +163,3 @@ export async function photoForAssistant(file: File): Promise<QuestionPhoto> {
   img.close();
   return { media_type: 'image/jpeg', data: canvas.toDataURL('image/jpeg', 0.85).split(',')[1] };
 }
-
-/** "Önemli ve zayıf konularımı anlat": the student's weak topics (from quiz results) in a course, or in all. */
-export async function weakTopicsOf(courseId: string | null): Promise<string[]> {
-  type Row = { material_topics: { title: string; materials: { course_id: string | null } } };
-  const { data, error } = await supabase
-    .from('topic_progress')
-    .select('material_topics(title, materials(course_id))')
-    .eq('state', 'weak')
-    .order('mastery')
-    .limit(20)
-    .returns<Row[]>();
-  if (error) console.error('weakTopicsOf', error);
-  return [...new Set((data ?? []).filter((r) => !courseId || r.material_topics.materials.course_id === courseId).map((r) => r.material_topics.title))].slice(0, 6);
-}
