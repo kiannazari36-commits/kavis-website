@@ -33,13 +33,15 @@ Bu dosya Kian için: ne bitti, ne bekliyor, kim ne yapacak. Ayrıntı için `TOD
 - **Okuyucuda çalışılacak sayfalar ve PDF üstünde hoca notları (web yayında, iPhone/iPad kodu `main`'de, 7 Kasım; yerelde denendi):** seviye testi ya da quiz sonucuna göre her konunun sayfasında küçük bir etiket var: "Çalışılacak" (kırmızı), "Zayıf · tekrar et" (sarı), "Biliyorsun" (yeşil). Hiç test edilmemiş konuda etiket yok. Derste bir kez üstte "PDF'te çalışman gereken sayfalar işaretlendi" yazıyor (kapatınca bir daha çıkmaz). Hoca notları ("sınavda çıkar", "3 dk durdu") ve molekül düğmesi artık Orijinal PDF'te de görünüyor: webde sayfanın üstünde/altında, iPhone ve iPad'de üstteki ince şeritte (ekrandaki sayfaya göre değişir). Web, iPhone 18 Pro Max ve iPad Pro 11'de sahte hesapla denendi; sunucuda değişiklik yok.
 - **E-postayla veri indirme ve hesap silme (9 Kasım; sunucu canlıda, web `main`'e gönderilince yayında):** "Hesap bilgilerimi iste" artık dosyayı indirmiyor; 7 gün geçerli bir indirme bağlantısını e-postana gönderiyor. "Hesabı sil" şifre sormuyor; e-postana tek kullanımlık, 24 saat geçerli bir bağlantı gidiyor. Bağlantı web'de bir sayfa açıyor, oradaki "Hesabı sil" düğmesine basınca 30 günlük bekleme başlıyor (eskisi gibi "Vazgeç" var). Böylece Apple / Google ile giriş yapanlar da silebiliyor. Saatte en fazla 3 e-posta. Web ve iPhone'da sahte hesapla, e-postalar yerel posta kutusunda (Mailpit) denendi.
 
+- **Apple ve Google ile giriş iPhone/iPad'de (kodda, 9 Kasım; `main`'e henüz gönderilmedi):** Apple düğmesi Apple'ın kendi penceresini açıyor, Google düğmesi güvenli tarayıcı penceresini. Vazgeçince hata çıkmıyor. Simülatörde iki pencere de açıldı; tam giriş için senin Supabase ayarın (aşağıda 3. ve 5. madde) ve gerçek iPhone (TestFlight) gerekiyor. Paylaşım linkleri artık `kavis.study` adresiyle yapılıyor; sitedeki yeni `apple-app-site-association` dosyası bu linklerin uygulamayı açmasını sağlayacak (web yayına girince).
+
 ## Senin yapacakların
 **Bitenler:** Apple Developer hesabı (7 Kasım'dan beri aktif), alan adı (kavis.study canlı), e-posta sağlayıcısı (Resend, kavis.study), Google ile giriş.
 
 **Apple tarafı**
 1. App Store Connect'te Premium ürünlerini aç (`study.kavis.premium.year`, `.month`, `.term`) ve kimlikte (Identifiers) `study.kavis.app` için Push, Associated Domains, In-App Purchase'ı aç.
 2. Bildirim anahtarı (APNs) al; bildirimleri açmak için ben Supabase'e koyarım.
-3. Apple ile giriş (iPhone'da şart): Services ID + anahtar.
+3. Apple ile giriş (iPhone'da şart): Supabase → Authentication → Sign In / Providers → Apple → Enable, Client IDs: `study.kavis.app` (Secret Key boş). Supabase → Authentication → URL Configuration → Redirect URLs'e `kavis://login-callback` ekle (Google iPhone'da bunu kullanır). Services ID ve anahtar sadece web'de Apple girişi istersen gerekir.
 4. App Store metinleri ve inceleme listesi hazır: `docs/APP_STORE.md`.
 
 **Panel ve hesaplar**

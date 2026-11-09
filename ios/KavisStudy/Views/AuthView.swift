@@ -335,6 +335,8 @@ struct AuthView: View {
         guard !busy else { return }
         do {
             await finish(try await AuthAPI.socialLogIn(provider))
+        } catch AuthFailure.cancel {
+            return
         } catch {
             toast.show(t((error as? AuthFailure ?? .other).textKey))
         }

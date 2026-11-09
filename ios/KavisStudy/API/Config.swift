@@ -1,8 +1,8 @@
 import Foundation
 
 enum Config {
-    /// Test deploy of the web app (no custom domain yet). Share links open `<webBaseURL>/s/<id>`.
-    static let webBaseURL = "https://kavis-website.vercel.app"
+    /// The web app (kavis.study, same Vercel project as kavis-website.vercel.app). Share links open `<webBaseURL>/s/<id>`.
+    static let webBaseURL = "https://kavis.study"
 
     /// The local Supabase copy on the Mac (`supabase start`) instead of the live project: launch argument
     /// `-kavis.server local` (simulator tests with fake accounts; removed before launch with the other switches).

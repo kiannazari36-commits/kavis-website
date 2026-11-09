@@ -78,7 +78,10 @@ targets:
       properties:
         # Xcode switches this to `production` by itself when the archive is signed for TestFlight / App Store.
         aps-environment: development
-        com.apple.developer.associated-domains: ["applinks:kavis-website.vercel.app"]
+        # Share links on the web open the app (file web/public/.well-known/apple-app-site-association).
+        com.apple.developer.associated-domains: ["applinks:kavis.study", "applinks:kavis-website.vercel.app"]
+        # Sign in with Apple (Apple's rule 4.8: required because Google sign-in is offered).
+        com.apple.developer.applesignin: [Default]
     settings:
       base:
         # Bundle id registered in the Apple Developer account (Identifiers) must be exactly this.

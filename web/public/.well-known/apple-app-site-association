@@ -1,0 +1,10 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["TFTPYS8XHV.study.kavis.app"],
+        "components": [{ "/": "/s/*", "comment": "Share links open the iPhone / iPad app" }]
+      }
+    ]
+  }
+}
