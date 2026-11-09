@@ -1,4 +1,4 @@
--- Behaviour tests: deletion confirmed by an email link (confirm_account_delete, migration 20261109120000).
+-- Behaviour tests: deletion confirmed by an email link (confirm_account_delete, migration 20261109124753).
 -- Runs on the local Supabase copy inside a transaction that is rolled back:
 --   docker exec -i supabase_db_kavis-study psql -U postgres < supabase/tests/40_account_email.sql
 \set ON_ERROR_STOP 1
