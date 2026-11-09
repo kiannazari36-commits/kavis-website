@@ -48,6 +48,8 @@ targets:
         # The local test copy (http://127.0.0.1) in the simulator; real servers stay https only.
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
+        # Only standard HTTPS encryption: Apple's export question is answered once here.
+        ITSAppUsesNonExemptEncryption: false
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         # iPad turns every way (the iPad design is landscape first).
         UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
@@ -81,8 +83,8 @@ targets:
       base:
         # Bundle id registered in the Apple Developer account (Identifiers) must be exactly this.
         PRODUCT_BUNDLE_IDENTIFIER: study.kavis.app
-        # TODO(TestFlight): put the 10-character Team ID here (developer.apple.com > Membership details). Empty until the account is active.
-        DEVELOPMENT_TEAM: ""
+        # Apple Developer Team ID (developer.apple.com > Membership details), account active since 7 Nov 2026.
+        DEVELOPMENT_TEAM: TFTPYS8XHV
         CODE_SIGN_STYLE: Automatic
         TARGETED_DEVICE_FAMILY: "1,2" # iPhone and iPad
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
