@@ -1,7 +1,9 @@
-// Edge Function export-data: "Hesap bilgilerimi iste". Returns everything the signed-in student has in Kavis as one
-// JSON file (the web downloads it at once; by email later, once an email service is set up).
+// Edge Function export-data: "Hesap bilgilerimi iste". Puts everything the signed-in student has in Kavis in one
+// JSON file in the private bucket 'exports' and emails a download link valid for 7 days (the nightly purge in
+// delete-account removes the file afterwards). → { sent: true } | 429 { error: 'limit' } (3 per hour)
 // PDFs are not copied in: each original file comes as a download link valid for 7 days.
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { asLang, MAILS_PER_HOUR, newToken, publicLink, sendAccountMail } from '../_shared/mail.ts';
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -38,6 +40,11 @@ Deno.serve(async (req) => {
   const { data: who } = await db.auth.getUser(token);
   if (!who?.user) return json({ error: 'not signed in' }, 401);
   const uid = who.user.id;
+  const email = who.user.email;
+  if (!email) return json({ error: 'no_email' }, 400);
+  const since = new Date(Date.now() - 3_600_000).toISOString();
+  const { count } = await db.from('account_requests').select('id', { count: 'exact', head: true }).eq('user_id', uid).eq('kind', 'export').gte('created_at', since);
+  if ((count ?? 0) >= MAILS_PER_HOUR) return json({ error: 'limit' }, 429);
 
   try {
     const { data: profile } = await db.from('profiles').select('*').eq('id', uid).single();
@@ -57,16 +64,25 @@ Deno.serve(async (req) => {
     const pdfs = [];
     for (const f of files) {
       const { data: link } = await db.storage.from('materials').createSignedUrl(f.storage_path, LINK_DAYS * 86400);
-      pdfs.push({ material_id: f.material_id, path: f.storage_path, link: link?.signedUrl ?? null });
+      pdfs.push({ material_id: f.material_id, path: f.storage_path, link: link ? publicLink(link.signedUrl) : null });
     }
-    return json({
+    const file = JSON.stringify({
       app: 'Kavis Study',
       exported_at: new Date().toISOString(),
-      account: { id: uid, email: who.user.email, created_at: who.user.created_at },
+      account: { id: uid, email, created_at: who.user.created_at },
       profile,
       files: { links_valid_days: LINK_DAYS, pdfs },
       data,
-    });
+    }, null, 2);
+    // A random file name, so a link cannot be guessed from another one.
+    const path = `${uid}/kavis-study-${new Date().toISOString().slice(0, 10)}-${(await newToken()).token.slice(0, 16)}.json`;
+    const { error: up } = await db.storage.from('exports').upload(path, new Blob([file], { type: 'application/json' }), { contentType: 'application/json' });
+    if (up) throw up;
+    const { data: link, error: le } = await db.storage.from('exports').createSignedUrl(path, LINK_DAYS * 86400, { download: true });
+    if (le || !link) throw le ?? new Error('link');
+    await sendAccountMail('export', email, asLang((profile as { app_lang?: string } | null)?.app_lang), publicLink(link.signedUrl));
+    await db.from('account_requests').insert({ user_id: uid, kind: 'export', status: 'done', done_at: new Date().toISOString(), file_path: path });
+    return json({ sent: true });
   } catch (e) {
     console.error('export-data', e);
     return json({ error: 'export' }, 500);

@@ -23,7 +23,6 @@ struct SettingsView: View {
     @State private var manageOffline = false
     private var sync: OfflineSync { OfflineSync.shared }
     @State private var deleteOpen = false
-    @State private var exportFile: ExportFile?
     @State private var timeOpen = false
     /// The day the account will be deleted, when a deletion was asked for.
     @State private var deletionDate: Date?
@@ -150,15 +149,18 @@ struct SettingsView: View {
             if deleteOpen {
                 DeleteAccountSheet(onClose: { deleteOpen = false }) { date in
                     deleteOpen = false
-                    deletionDate = date
-                    toast.show(prefs.t("delScheduled", ["date": dayText(date)]))
+                    if let date {
+                        deletionDate = date
+                        toast.show(prefs.t("delScheduled", ["date": dayText(date)]))
+                    } else {
+                        toast.show(prefs.t("delSent"))
+                    }
                 }
                 .transition(.opacity)
             }
         }
         .animation(.easeInOut(duration: 0.2), value: deleteOpen)
         .animation(.easeInOut(duration: 0.2), value: timeOpen)
-        .sheet(item: $exportFile) { ShareSheet(items: [$0.url]) }
         .sheet(isPresented: $manageOffline) { OfflineLessonsView { offline = OfflineStore.lessons() }.presentationDetents([.large]) }
         .task { await load() }
         .onChange(of: sync.revision) { offline = OfflineStore.lessons() }
@@ -792,7 +794,11 @@ struct SettingsView: View {
             plainRow(d("Hesap bilgilerimi iste")) {
                 toast.show(prefs.t("expMaking"))
                 Task {
-                    if let url = await AccountAPI.requestMyData() { exportFile = ExportFile(url: url) } else { toast.show(prefs.t("expFailed")) }
+                    switch await AccountAPI.requestMyData() {
+                    case .sent: toast.show(prefs.t("expSent"))
+                    case .limit: toast.show(prefs.t("mailLimit"))
+                    case .failed: toast.show(prefs.t("expFailed"))
+                    }
                 }
             }
             divider
@@ -828,26 +834,13 @@ struct SettingsView: View {
     }
 }
 
-/// The exported data file, shown in the share sheet.
-private struct ExportFile: Identifiable {
-    let url: URL
-    var id: String { url.path }
-}
-
-private struct ShareSheet: UIViewControllerRepresentable {
-    let items: [Any]
-    func makeUIViewController(context: Context) -> UIActivityViewController { UIActivityViewController(activityItems: items, applicationActivities: nil) }
-    func updateUIViewController(_ controller: UIActivityViewController, context: Context) {}
-}
-
-/// "Hesabın silinsin mi?" (design ScrSettings dialog). The password once more, like the web, so nobody deletes the
-/// account from a phone left open. The account is deleted after 30 days; until then the student can change their mind.
+/// "Hesabın silinsin mi?" (design ScrSettings dialog). No password (Apple / Google accounts have none): a one-time
+/// confirmation link goes to the account's email, like the web. onDone(nil) = email sent, onDone(date) = already scheduled.
 private struct DeleteAccountSheet: View {
     @Environment(AppPrefs.self) private var prefs
     var onClose: () -> Void
-    var onDone: (Date) -> Void
+    var onDone: (Date?) -> Void
 
-    @State private var password = ""
     @State private var error = ""
     @State private var busy = false
 
@@ -869,14 +862,7 @@ private struct DeleteAccountSheet: View {
                     .padding(.horizontal, 14).padding(.vertical, 12)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(Color.pair(0xF4EFE6, 0x2B2520), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-                Text(prefs.t("delWait")).font(KFont.ui(13, lang: lang)).kLineHeight(1.45, size: 13, lang: lang).foregroundStyle(KPhone.text2)
-                SecureField(prefs.t("delPassHint"), text: $password)
-                    .textContentType(.password)
-                    .font(KFont.ui(15, lang: lang)).foregroundStyle(KPhone.text)
-                    .padding(.horizontal, 20).frame(height: 52)
-                    .background(KPhone.card, in: Capsule())
-                    .overlay(Capsule().stroke(error.isEmpty ? KPhone.line : Self.bad, lineWidth: 1))
-                    .onChange(of: password) { error = "" }
+                Text(prefs.t("delMail")).font(KFont.ui(13, lang: lang)).kLineHeight(1.45, size: 13, lang: lang).foregroundStyle(KPhone.text2)
                 if !error.isEmpty {
                     Text(error).font(KFont.ui(13, lang: lang)).foregroundStyle(Self.bad)
                 }
@@ -904,14 +890,14 @@ private struct DeleteAccountSheet: View {
     }
 
     private func confirm() async {
-        guard !password.isEmpty else { return error = prefs.t("delPassHint") }
         busy = true
-        let r = await AccountAPI.deleteAccount(password: password)
+        let r = await AccountAPI.deleteAccount()
         busy = false
         switch r {
-        case .success(let date): onDone(date)
-        case .failure(.password): error = prefs.t("delPassWrong")
-        case .failure: error = prefs.t("delFailed")
+        case .sent: onDone(nil)
+        case .scheduled(let date): onDone(date)
+        case .limit: error = prefs.t("mailLimit")
+        case .failed: error = prefs.t("delFailed")
         }
     }
 }

@@ -39,40 +39,43 @@ export function clearProfile() {
   cache = null;
 }
 
+/** HTTP status of a failed Edge Function call (429 = too many emails this hour). */
+const statusOf = (error: unknown) => (error as { context?: { status?: number } }).context?.status;
+
 /**
- * "Hesap bilgilerimi iste": the server (Edge Function export-data) puts all the student's data in one JSON file,
- * with 7-day download links for the PDFs; it is downloaded at once (by email later, once email is set up).
+ * "Hesap bilgilerimi iste": the server (Edge Function export-data) puts all the student's data in one JSON file
+ * and emails a download link valid for 7 days (with 7-day links for the PDFs inside).
  */
-export async function requestMyData() {
-  const { data, error } = await supabase.functions.invoke('export-data', { body: {} });
-  if (error) {
-    console.error('export-data', error);
-    return false;
-  }
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `kavis-study-${new Date().toISOString().slice(0, 10)}.json`;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  return true;
+export async function requestMyData(): Promise<'sent' | 'limit' | 'error'> {
+  const { error } = await supabase.functions.invoke('export-data', { body: {} });
+  if (!error) return 'sent';
+  console.error('export-data', error);
+  return statusOf(error) === 429 ? 'limit' : 'error';
 }
 
 /** Told to the menu bar when the deletion date changes (asked for or cancelled). */
 export const DELETION_EVENT = 'kavis:deletion';
 
 /**
- * "Hesabı sil": the password is checked once more by the server (Edge Function delete-account), then the account
- * is deleted in 30 days; until then it works as before and the deletion can be cancelled.
+ * "Hesabı sil": the server (Edge Function delete-account) emails a one-time confirmation link (24 h); the deletion
+ * starts only when the link's page is confirmed (confirmDeletion). Already scheduled → its date comes back.
  */
-export async function deleteAccount(password: string): Promise<{ scheduledFor: string } | { error: 'password' | 'other' }> {
-  const { data, error } = await supabase.functions.invoke('delete-account', { body: { action: 'request', password } });
-  if (error) {
-    const status = (error as { context?: { status?: number } }).context?.status;
-    return { error: status === 403 ? 'password' : 'other' };
+export async function deleteAccount(): Promise<'sent' | { scheduledFor: string } | { error: 'limit' | 'other' }> {
+  const { data, error } = await supabase.functions.invoke('delete-account', { body: { action: 'request' } });
+  if (error) return { error: statusOf(error) === 429 ? 'limit' : 'other' };
+  const r = data as { sent?: boolean; scheduled_for?: string };
+  return r.scheduled_for ? { scheduledFor: r.scheduled_for } : 'sent';
+}
+
+/** The page behind the email link: the account is deleted in 30 days. No login needed, the token is the proof. */
+export async function confirmDeletion(token: string): Promise<{ scheduledFor: string } | { error: 'invalid' | 'expired' | 'other' }> {
+  const { data, error } = await supabase.functions.invoke('delete-account', { body: { action: 'confirm', token } });
+  if (!error) {
+    window.dispatchEvent(new Event(DELETION_EVENT));
+    return { scheduledFor: (data as { scheduled_for: string }).scheduled_for };
   }
-  window.dispatchEvent(new Event(DELETION_EVENT));
-  return { scheduledFor: (data as { scheduled_for: string }).scheduled_for };
+  const body = await ((error as { context?: Response }).context?.json?.().catch(() => null) ?? null);
+  return { error: body?.error === 'expired' ? 'expired' : body?.error === 'invalid' ? 'invalid' : 'other' };
 }
 
 export async function cancelDeletion() {

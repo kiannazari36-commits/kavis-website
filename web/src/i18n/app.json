@@ -375,7 +375,10 @@
   "cf_cardsByPdf": "PDF’e göre kartlar",
   "cf_recNew": "Ders ses kaydı ekle",
   "cf_recEmpty": "Bu derste henüz ses kaydı yok.",
-  "smp_pickFirst": "Soru örneklerinin doğru derse gitmesi için önce yukarıdan dersi seç."
+  "smp_pickFirst": "Soru örneklerinin doğru derse gitmesi için önce yukarıdan dersi seç.",
+  "delLinkBad": "Bu bağlantının süresi dolmuş ya da kullanılmış. Uygulamada Ayarlar → Hesabı sil'den yeni bir bağlantı iste.",
+  "delDoneSub": "30 gün içinde uygulamada \"Vazgeç\"e basarak hesabını geri alabilirsin.",
+  "mailLimit": "Bir saatte en fazla 3 e-posta gönderebiliriz. Biraz sonra tekrar dene."
  },
  "en": {
   "pdfs": "PDFs",
@@ -753,7 +756,10 @@
   "cf_cardsByPdf": "Cards by PDF",
   "cf_recNew": "Add a lecture recording",
   "cf_recEmpty": "No recordings in this course yet.",
-  "smp_pickFirst": "Pick the course above first, so the samples go to the right course."
+  "smp_pickFirst": "Pick the course above first, so the samples go to the right course.",
+  "delLinkBad": "This link has expired or was already used. Ask for a new one in the app: Settings → Delete account.",
+  "delDoneSub": "Within 30 days you can keep your account by pressing \"Cancel deletion\" in the app.",
+  "mailLimit": "We can send at most 3 emails an hour. Try again a bit later."
  },
  "fa": {
   "pdfs": "PDFها",
@@ -1131,7 +1137,10 @@
   "cf_cardsByPdf": "کارت‌ها بر اساس PDF",
   "cf_recNew": "افزودن صدای کلاس",
   "cf_recEmpty": "هنوز صدای کلاسی در این درس نیست.",
-  "smp_pickFirst": "اول درس را از بالا انتخاب کن تا نمونه‌سؤال‌ها به درس درست بروند."
+  "smp_pickFirst": "اول درس را از بالا انتخاب کن تا نمونه‌سؤال‌ها به درس درست بروند.",
+  "delLinkBad": "این لینک منقضی یا استفاده شده است. از برنامه، تنظیمات ← حذف حساب، لینک تازه بخواه.",
+  "delDoneSub": "تا ۳۰ روز می‌توانی با زدن «منصرف شدم» در برنامه حسابت را نگه داری.",
+  "mailLimit": "در هر ساعت حداکثر ۳ ایمیل می‌فرستیم. کمی بعد دوباره امتحان کن."
  },
  "ar": {
   "pdfs": "ملفات PDF",
@@ -1509,6 +1518,9 @@
   "cf_cardsByPdf": "البطاقات حسب PDF",
   "cf_recNew": "إضافة تسجيل محاضرة",
   "cf_recEmpty": "لا توجد تسجيلات في هذه المادة بعد.",
-  "smp_pickFirst": "اختر المادة من الأعلى أولًا حتى تذهب نماذج الأسئلة إلى المادة الصحيحة."
+  "smp_pickFirst": "اختر المادة من الأعلى أولًا حتى تذهب نماذج الأسئلة إلى المادة الصحيحة.",
+  "delLinkBad": "انتهت صلاحية هذا الرابط أو استُخدم. اطلب رابطًا جديدًا من التطبيق: الإعدادات ← حذف الحساب.",
+  "delDoneSub": "خلال 30 يومًا يمكنك الاحتفاظ بحسابك بالضغط على «تراجع عن الحذف» في التطبيق.",
+  "mailLimit": "نرسل 3 رسائل بريد كحد أقصى في الساعة. حاول بعد قليل."
  }
 }

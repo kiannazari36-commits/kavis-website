@@ -80,18 +80,19 @@ enum AccountAPI {
     /// Forget the phone's copy (after logging out).
     static func clear() { UserDefaults.standard.removeObject(forKey: profileKey) }
 
-    /// "Hesap bilgilerimi iste": the account's data from the server (Edge Function export-data, the same as the web),
-    /// saved as a JSON file the student can keep or send (share sheet). nil when it could not be made.
-    static func requestMyData() async -> URL? {
-        guard let data: Data = try? await supabase.functions.invoke("export-data", options: FunctionInvokeOptions(body: [String: String]()), decode: { data, _ in data })
-        else { return nil }
-        let f = DateFormatter()
-        f.locale = Locale(identifier: "en_US_POSIX")
-        f.dateFormat = "yyyy-MM-dd"
-        let day = f.string(from: Date())
-        let url = FileManager.default.temporaryDirectory.appendingPathComponent("kavis-study-\(day).json")
-        guard (try? data.write(to: url)) != nil else { return nil }
-        return url
+    enum MailResult { case sent, limit, failed }
+
+    /// "Hesap bilgilerimi iste": the server (Edge Function export-data, the same as the web) puts all the account's
+    /// data in one JSON file and emails a download link valid for 7 days. Max 3 emails an hour (429 → .limit).
+    static func requestMyData() async -> MailResult {
+        do {
+            try await supabase.functions.invoke("export-data", options: FunctionInvokeOptions(body: [String: String]()))
+            return .sent
+        } catch FunctionsError.httpError(code: 429, _) {
+            return .limit
+        } catch {
+            return .failed
+        }
     }
 
     /// The day the account will be deleted (a deletion was asked for), or nil.
@@ -114,23 +115,24 @@ enum AccountAPI {
         return r?.cancelled == true
     }
 
-    enum DeleteError: Error { case password, other }
+    enum DeleteResult { case sent, scheduled(Date), limit, failed }
 
-    /// "Hesabı sil": the password is checked once more by the server (Edge Function delete-account), then the account
-    /// is deleted in 30 days; until then it works as before and the deletion can be cancelled (the same as the web).
-    /// Deleting the account does not cancel an Apple subscription; the student cancels it in the App Store.
-    static func deleteAccount(password: String) async -> Result<Date, DeleteError> {
-        struct Body: Encodable { let action = "request"; let password: String }
-        struct Done: Decodable { let scheduled_for: String }
+    /// "Hesabı sil": the server (Edge Function delete-account) emails a one-time confirmation link (24 h, works for
+    /// Apple / Google sign-in too); the web page behind the link starts the 30 days (the same as the web).
+    /// Already scheduled → that date. Deleting the account does not cancel an Apple subscription.
+    static func deleteAccount() async -> DeleteResult {
+        struct Body: Encodable { let action = "request" }
+        struct Done: Decodable { let sent: Bool?; let scheduled_for: String? }
         do {
-            let r: Done = try await supabase.functions.invoke("delete-account", options: FunctionInvokeOptions(body: Body(password: password)))
+            let r: Done = try await supabase.functions.invoke("delete-account", options: FunctionInvokeOptions(body: Body()))
+            guard let iso = r.scheduled_for else { return .sent }
             let f = ISO8601DateFormatter()
             f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-            return .success(f.date(from: r.scheduled_for) ?? Date().addingTimeInterval(30 * 86_400))
-        } catch FunctionsError.httpError(code: 403, _) {
-            return .failure(.password)
+            return .scheduled(f.date(from: iso) ?? ISO8601DateFormatter().date(from: iso) ?? Date().addingTimeInterval(30 * 86_400))
+        } catch FunctionsError.httpError(code: 429, _) {
+            return .limit
         } catch {
-            return .failure(.other)
+            return .failed
         }
     }
 }
