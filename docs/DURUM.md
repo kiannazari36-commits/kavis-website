@@ -1,4 +1,4 @@
-# Kavis Study: Durum (28 Ekim 2026)
+# Kavis Study: Durum (9 Kasım 2026)
 
 Bu dosya Kian için: ne bitti, ne bekliyor, kim ne yapacak. Ayrıntı için `TODO.md`.
 
@@ -34,23 +34,25 @@ Bu dosya Kian için: ne bitti, ne bekliyor, kim ne yapacak. Ayrıntı için `TOD
 - **E-postayla veri indirme ve hesap silme (9 Kasım; sunucu canlıda, web `main`'e gönderilince yayında):** "Hesap bilgilerimi iste" artık dosyayı indirmiyor; 7 gün geçerli bir indirme bağlantısını e-postana gönderiyor. "Hesabı sil" şifre sormuyor; e-postana tek kullanımlık, 24 saat geçerli bir bağlantı gidiyor. Bağlantı web'de bir sayfa açıyor, oradaki "Hesabı sil" düğmesine basınca 30 günlük bekleme başlıyor (eskisi gibi "Vazgeç" var). Böylece Apple / Google ile giriş yapanlar da silebiliyor. Saatte en fazla 3 e-posta. Web ve iPhone'da sahte hesapla, e-postalar yerel posta kutusunda (Mailpit) denendi.
 
 ## Senin yapacakların
-**Yarın alacağın hesaplar**
-1. Apple Developer hesabı (99 $/yıl): Apple ile giriş, App Store Premium ürünleri, TestFlight, bildirim anahtarı (APNs).
-2. Google Cloud OAuth anahtarı (Google ile giriş kodu hazır, anahtar yok).
-3. E-posta sağlayıcısı (6 haneli kod için).
-4. Supabase Pro planı (50 MB üstü PDF).
+**Bitenler:** Apple Developer hesabı (7 Kasım'dan beri aktif), alan adı (kavis.study canlı), e-posta sağlayıcısı (Resend, kavis.study), Google ile giriş.
 
-**Panelde yapılacak**
-5. Supabase → Authentication → URL Configuration: Site URL'yi alan adına çevir, Redirect URLs'e yeni ve eski adresi ekle (alan adını aldığında).
-6. Alan adı satın al (ör. kavis.study) ve Vercel'e bağla.
+**Apple tarafı**
+1. App Store Connect'te Premium ürünlerini aç (`study.kavis.premium.year`, `.month`, `.term`) ve kimlikte (Identifiers) `study.kavis.app` için Push, Associated Domains, In-App Purchase'ı aç.
+2. Bildirim anahtarı (APNs) al; bildirimleri açmak için ben Supabase'e koyarım.
+3. Apple ile giriş (iPhone'da şart): Services ID + anahtar.
+4. App Store metinleri ve inceleme listesi hazır: `docs/APP_STORE.md`.
+
+**Panel ve hesaplar**
+5. Supabase → Authentication → URL Configuration: Site URL'yi `https://kavis.study` yap (alan adı artık var).
+6. Supabase Pro planı (50 MB üstü PDF için), yayından önce.
 
 **Yayından önce**
 7. Avukat kontrolü: kullanım şartları, gizlilik/KVKK, Premium ve deneme metinleri.
 8. Farsça, Arapça ve İngilizce metinleri ana dili olan biri okusun.
-9. Gerçek iPhone'da ses kaydını yazıya çevirmeyi dene (simülatörde çalışmıyor).
+9. Gerçek iPhone'da ses kaydını yazıya çevirmeyi ve eller serbest modu dene (simülatörde çalışmıyor).
 10. Anthropic anahtarı ~22 Ocak 2027'de bitiyor, yenile.
 
-## Son canlıya alınanlar (28 Ekim 2026)
+## Son canlıya alınanlar (28 Ekim - 6 Kasım 2026)
 - **Hatalarım kartları PDF'ine bağlandı** (30 Ekim 2026, Kian'ın evetiyle canlıya alındı): migration `20261029225801_mistake_cards_material` (kartlara `material_id`, PDF silinince kart da gider; PDF'i silinmiş 4 eski kart temizlendi) + `grade-quiz` v9. Bugünün planında göreve tıklayınca göreve gitme de yayında.
 
 - **Önbellek (prompt caching) + sahip harcama tablosu** — 28 Ekim 2026'da canlıya alındı: migration `20261028133745_usage_cache_tokens`, fonksiyonlar `assistant` v10, `more-questions` v3, `lesson-summary` v3, `generate-quiz` v4, `owner-overview` v2. Ücretli yapay zekâ testi yapılmadı; ilk gerçek sorularda sahip sayfasında önbellek oranı görünür.
@@ -63,7 +65,7 @@ Bu dosya Kian için: ne bitti, ne bekliyor, kim ne yapacak. Ayrıntı için `TOD
 
 ## Benim yapacaklarım
 **Hesaplar gelmeden:** hepsi bitti (iPhone arayüz testleri yeniden yazıldı, çevrimdışı kopya yapıldı). Önceden indirme de yapıldı (5 Kasım).
-**Hesaplar gelince:** Apple ve Google ile giriş, App Store ürünleri ve satın alma denemesi, bildirimleri açmak (anahtar + iki fonksiyon), e-posta kodu, TestFlight.
+**Apple hesabı aktif, şimdi sırada:** Apple ile giriş, App Store ürünleri ve satın alma denemesi, bildirimleri açmak (anahtar + iki fonksiyon), TestFlight.
 **Yayın günü:** test anahtarlarını ve örnek veriyi silmek, sitenin Google'da görünmesini açmak, App Store linklerini koymak.
 **Sonra:** iPad'in kalan küçük işleri, Android.
 
