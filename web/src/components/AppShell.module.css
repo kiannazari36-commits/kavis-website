@@ -472,3 +472,18 @@
     display: none;
   }
 }
+
+/* Place of the "Sesli anlatım" mini player: next to the menu on desktop, at the side on phones */
+.miniWide,
+.miniRail {
+  inset-inline-start: 16px;
+}
+
+@media (min-width: 901px) {
+  .miniWide {
+    inset-inline-start: 264px;
+  }
+  .miniRail {
+    inset-inline-start: 104px;
+  }
+}

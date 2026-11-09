@@ -1,0 +1,349 @@
+/* Big card on the assistant screen (design NewIPad "ai", Sesli anlatım) */
+.card {
+  width: 100%;
+  max-width: 720px;
+  box-sizing: border-box;
+  border-radius: 30px;
+  background: var(--chrome);
+  border: 1px solid var(--line);
+  box-shadow: 0 16px 40px rgba(42, 36, 32, 0.1);
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  color: var(--text);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.star {
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  flex: none;
+  background: url(/star_btn.png) center/88% no-repeat, radial-gradient(circle at 50% 30%, #b8404d 0%, #9c2f3a 45%, #7a2230 100%);
+  transition: box-shadow 0.4s;
+}
+
+.ring {
+  animation: ring 2s ease-in-out infinite;
+}
+
+@keyframes ring {
+  0%,
+  100% {
+    box-shadow: 0 0 0 6px var(--pri-soft);
+  }
+  50% {
+    box-shadow: 0 0 0 12px var(--pri-soft);
+  }
+}
+
+.headText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.kicker {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.headText b {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.headText > span:last-child {
+  font-size: 12px;
+  color: var(--text2);
+}
+
+.ghost {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  cursor: pointer;
+}
+
+.parts {
+  display: grid;
+  gap: 6px;
+}
+
+.parts button {
+  min-height: 70px;
+  box-sizing: border-box;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  font-family: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.parts button span {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.parts button small {
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.parts .partOn {
+  border: 1.5px solid #9c2f3a;
+  background: var(--pri-soft);
+}
+
+.parts .partOn span {
+  font-weight: 600;
+}
+
+.parts .partDone {
+  background: var(--bg);
+}
+
+.tagWeak {
+  color: var(--pri-t);
+}
+
+.tagImp {
+  color: var(--amb-t);
+}
+
+.caption {
+  margin: 0;
+  font-family: var(--font-read);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.track {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--text2);
+}
+
+.track > span:first-child,
+.track > span:last-child {
+  min-width: 34px;
+}
+
+.track > span:last-child {
+  text-align: end;
+}
+
+.bar,
+.miniBar {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--seg);
+  display: flex;
+  overflow: hidden;
+}
+
+.bar span,
+.miniBar span {
+  background: #9c2f3a;
+  border-radius: 3px;
+  transition: width 1s linear;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.side,
+.speed {
+  width: 46px;
+  height: 46px;
+  border-radius: 23px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.speed {
+  width: auto;
+  min-width: 46px;
+  padding: 0 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.play {
+  width: 62px;
+  height: 62px;
+  border-radius: 31px;
+  border: 0;
+  background: #9c2f3a;
+  color: #fffcf6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 24px rgba(156, 47, 58, 0.28);
+  cursor: pointer;
+}
+
+.note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 18px;
+  background: var(--amb-soft);
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.note svg {
+  flex: none;
+  color: var(--amb-t);
+}
+
+.note b {
+  font-weight: 600;
+}
+
+/* Small player at the bottom left of the other pages */
+.mini {
+  position: fixed;
+  bottom: 24px;
+  z-index: 30;
+  width: 330px;
+  max-width: calc(100vw - 32px);
+  box-sizing: border-box;
+  border-radius: 26px;
+  background: var(--chrome);
+  border: 1px solid var(--line);
+  box-shadow: 0 14px 34px rgba(42, 36, 32, 0.18);
+  padding: 8px 8px 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+  color: var(--text);
+}
+
+.miniStar {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  border: 0;
+  flex: none;
+  cursor: pointer;
+  background: url(/star_btn.png) center/88% no-repeat, radial-gradient(circle at 50% 30%, #b8404d 0%, #9c2f3a 45%, #7a2230 100%);
+}
+
+.miniText {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-family: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.miniText > span:first-child {
+  font-size: 10px;
+  color: var(--text2);
+}
+
+.miniText b {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.miniBar {
+  flex: none;
+  height: 3px;
+  margin-top: 3px;
+}
+
+.miniPlay {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  border: 0;
+  background: #9c2f3a;
+  color: #fffcf6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  cursor: pointer;
+}
+
+.miniClose {
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  border: 0;
+  background: transparent;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  cursor: pointer;
+}
+
+@media (max-width: 700px) {
+  .card {
+    padding: 18px 16px;
+  }
+  .parts {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .head .star {
+    width: 48px;
+    height: 48px;
+  }
+}
