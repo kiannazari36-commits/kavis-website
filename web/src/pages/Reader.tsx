@@ -18,7 +18,7 @@ import MicButton from '../components/MicButton';
 import { sectionCheckCounter } from '../api/quiz';
 import { addTermCard } from '../api/cards';
 import { lectureMarks, recordingsOf, type LectureMark } from '../api/recording';
-import { blockOrdinals, inkKey, loadInk, saveInk, type InkSurface, type PageInk, type Stroke } from '../api/ink';
+import { blockOrdinals, inkKey, loadInk, saveInk, shownColor, type InkSurface, type PageInk, type Stroke } from '../api/ink';
 import { pdfBytes, pdfPath } from '../api/pdfFile';
 import { lessonStatus, retryLesson } from '../api/upload';
 import { studyMarks, studyStateOf, type StudyMark } from '../api/placement';
@@ -1081,7 +1081,7 @@ function Block({ doc, block, terms, fontSize, term, onTerm, selPara, highlights,
 
   return (
     <article className={s.page} data-from={block.pageFrom} data-to={block.pageTo}>
-      <InkLayer strokes={ink} pen={pen} onDone={(st) => onInk([...ink, st])} />
+      <InkLayer card strokes={ink} pen={pen} onDone={(st) => onInk([...ink, st])} />
       <div className={s.pageTop}>
         <span className="mono">{pageLabel}</span>
         <span className={tagStyle === 'red' ? `${s.tag} ${s.tagRed}` : s.tag}>{t(tagKey)}</span>
@@ -1574,7 +1574,9 @@ function AssistantPanel({ materialId, title, pages, asked, onClose }: PanelProps
  * Lines drawn over a page. With the pen on, the page catches the mouse / finger / Apple Pencil and draws;
  * a finished line is given back to be saved. Points are parts of the page's width and height (0–1).
  */
-function InkLayer({ strokes, pen, onDone }: { strokes: Stroke[]; pen: string | null; onDone: (s: Stroke) => void }) {
+function InkLayer({ strokes, pen, onDone, card }: { strokes: Stroke[]; pen: string | null; onDone: (s: Stroke) => void; card?: boolean }) {
+  const { theme } = useTheme();
+  const onDark = !!card && theme === 'dark';
   const box = useRef<SVGSVGElement>(null);
   // The line being drawn: kept in a ref too, so fast pointer events never see an old value.
   const [live, setLive] = useState<Stroke | null>(null);
@@ -1601,7 +1603,7 @@ function InkLayer({ strokes, pen, onDone }: { strokes: Stroke[]; pen: string | n
       key={i}
       points={st.points.map(([x, y]) => `${x},${y}`).join(' ')}
       fill="none"
-      stroke={st.color}
+      stroke={shownColor(st.color, onDark)}
       strokeOpacity={st.tool === 'marker' ? 0.35 : st.tool === 'pencil' ? 0.85 : 1}
       strokeWidth={st.w && width ? Math.max(1, st.w * width) : 3}
       strokeLinecap={st.tool === 'marker' ? 'butt' : 'round'}

@@ -41,3 +41,16 @@ export function groupInk(rows: InkRow[], surface: InkSurface): Record<string, Pa
   }
   return out;
 }
+
+/** The colour a stored line is shown in on a card. The file keeps the colour as drawn (theme-free); only the
+ *  screen changes it: on a dark card a very dark line (the iOS paper ink, black) is lifted toward white so it can
+ *  be read. The original PDF page is always white, so it is never changed. Same rule on iOS (`InkFormat.shown`). */
+export function shownColor(hex: string, onDark: boolean): string {
+  const v = parseInt(hex.replace('#', '').slice(0, 6), 16);
+  if (!onDark || Number.isNaN(v)) return hex;
+  const c = [v >> 16, (v >> 8) & 0xff, v & 0xff];
+  const lum = (0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]) / 255;
+  if (lum >= 0.2) return hex;
+  const k = 0.65; // how far toward white
+  return '#' + c.map((x) => Math.round(x + (255 - x) * k).toString(16).padStart(2, '0')).join('').toUpperCase();
+}

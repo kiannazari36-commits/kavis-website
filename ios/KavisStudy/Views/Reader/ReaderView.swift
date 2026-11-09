@@ -978,7 +978,7 @@ struct ReaderView: View {
             InkCanvas(
                 page: ink[key] ?? InkPage(),
                 writing: noteMode,
-                inkColor: UIColor(paper.ink),
+                inkColor: InkFormat.cardPen,
                 onChange: { ink[key] = InkPage(strokes: $0); saveInk(key, strokes: $0) }
             )
         }
