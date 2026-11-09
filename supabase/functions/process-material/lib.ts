@@ -159,3 +159,46 @@ export function looksGarbled(pages: string[]): boolean {
   const odd = (sample.match(/[\\\]\[^_`{}|~¡¢£¤¥¦§¨©ª¬®¯°±²³´¶·¸¹º¼½¾¿\u0000-\u0008\u000e-\u001f�□]/g) ?? []).length;
   return vowels / letters.length < 0.2 || odd / nonSpace > 0.04;
 }
+
+const LETTER = /[a-zA-ZçğıöşüÇĞİÖŞÜâîû]/;
+const VOWEL = /[aeiıioöuüAEIİOÖUÜâîû]/;
+const ODD = /[\\\]\[^_`{}|~¡¢£¤¥¦§¨©ª¬®¯°±²³´¶·¸¹º¼½¾¿\u0000-\u0008\u000e-\u001f�□]/g;
+const vowelShare = (letters: string[]) => letters.filter((c) => VOWEL.test(c)).length / (letters.length || 1);
+
+/**
+ * One page of nonsense letters (a font without a text map), judged on its own: for a PDF where only some pages
+ * use such a font. Only strong signs count here (so a page of formulas or units is not taken for nonsense): many
+ * symbols between the letters, or few vowels while moving every character back by a fixed number gives words.
+ */
+export function pageGarbled(text: string): boolean {
+  const s = text.slice(0, 4000);
+  if (/\p{Script=Arabic}/u.test(s)) return false;
+  const letters = [...s].filter((c) => LETTER.test(c));
+  if (letters.length < 40) return false;
+  const nonSpace = s.replace(/\s/g, '').length || 1;
+  if ((s.match(ODD) ?? []).length / nonSpace > 0.04) return true;
+  if (vowelShare(letters) >= 0.3) return false;
+  // Printable ASCII characters moved back by k: do they become letters with a normal share of vowels?
+  const ascii = [...s].map((c) => c.charCodeAt(0)).filter((n) => n > 32 && n < 127);
+  for (let k = 1; k <= 40; k++) {
+    const moved = ascii.map((n) => String.fromCharCode(n + k)).filter((c) => /[a-zA-Z]/.test(c));
+    if (moved.length >= 0.85 * ascii.length && vowelShare(moved) >= 0.33) return true;
+  }
+  return false;
+}
+
+/**
+ * A page the student cannot read from our text: still nonsense, mostly unreadable words ([?] from text recognition),
+ * or empty although the page has text (`hadText`: the PDF's own text layer had letters, or it is a photo of a page).
+ * Such a page is shown as "could not be read" and gives no hard words, cards or questions.
+ */
+export function unreadablePage(text: string, hadText: boolean): boolean {
+  const t = text.trim();
+  if (!t) return hadText;
+  const words = t.split(/\s+/).length;
+  const unknown = (t.match(/\[\?\]/g) ?? []).length;
+  return (words >= 3 && unknown / words > 0.3) || pageGarbled(t);
+}
+
+/** True when the page's own text has enough letters to call it a page with text. */
+export const hasLetters = (text: string) => [...(text ?? '')].filter((c) => LETTER.test(c) || /\p{L}/u.test(c)).length >= 20;

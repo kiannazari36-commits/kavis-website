@@ -947,6 +947,12 @@ struct ReaderView: View {
                 Text(heading).font(KFont.reading(CGFloat(fontSize) - 2, .semibold, lang: docLang)).foregroundStyle(paper.ink)
                     .environment(\.layoutDirection, docLang.layoutDirection)
             }
+            if block.unreadable == true {
+                Text(t("pageUnreadable")).font(KFont.ui(14, lang: lang)).foregroundStyle(paper.muted)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 18).padding(.vertical, 14)
+                    .overlay(RoundedRectangle(cornerRadius: 18).stroke(paper.line, style: StrokeStyle(lineWidth: 1, dash: [5, 4])))
+            }
             ForEach(Array(block.paragraphs.enumerated()), id: \.offset) { _, paragraph in
                 paragraphView(paragraph, paper: paper, docLang: docLang)
             }

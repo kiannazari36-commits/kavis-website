@@ -369,6 +369,15 @@
   line-height: 1.75;
 }
 
+.unreadable {
+  margin: 0;
+  padding: 14px 18px;
+  border: 1px dashed var(--line);
+  border-radius: 18px;
+  font-size: 14px;
+  color: var(--text2);
+}
+
 .text p {
   margin: 0 0 14px;
 }

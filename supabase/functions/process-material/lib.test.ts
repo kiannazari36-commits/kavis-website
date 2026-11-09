@@ -1,5 +1,5 @@
 // Run: node --experimental-strip-types supabase/functions/process-material/lib.test.ts
-import { batches, cleanHints, costUsd, looksGarbled, markTerms, paragraphsOf, plain, readyNotice } from './lib.ts';
+import { batches, cleanHints, costUsd, hasLetters, looksGarbled, markTerms, pageGarbled, paragraphsOf, plain, readyNotice, unreadablePage } from './lib.ts';
 
 let fails = 0;
 const check = (name: string, ok: boolean) => {
@@ -54,4 +54,19 @@ check('garbled font text is detected', looksGarbled([garbled.repeat(3)]));
 check('normal Turkish text is not garbled', !looksGarbled([page.repeat(4)]));
 check('short text is never judged', !looksGarbled(['xyz\\]']));
 check('Persian text is not judged', !looksGarbled(['فیزیولوژی علم مطالعه عملکرد موجودات زنده است و '.repeat(12)]));
+// One page at a time (a PDF where only some pages use the broken font).
+const real = 'Fizyoloji Nedir? Canlı organizmalardaki yapısal ve fonksiyonel işleyişi inceleyen bilim dalıdır. Hücre zarı seçici geçirgendir.';
+check('one garbled page is found on its own', pageGarbled(shift(real)));
+check('garbled page with real spaces is found (letters move back to words)', pageGarbled([...real].map((c) => (c === ' ' ? c : String.fromCharCode(c.charCodeAt(0) - 3))).join('')));
+check('a normal page is not garbled', !pageGarbled(real) && !pageGarbled(page));
+check('a page of formulas is not garbled', !pageGarbled('NaCl KCl CaCl2 MgSO4 NaHCO3 Na2HPO4 KH2PO4 C6H12O6 CH3COOH H2SO4 HCl NH4Cl mg/dL mmol/L mEq/L ng/mL'.repeat(2)));
+check('a page of abbreviations is not garbled', !pageGarbled('ACE ARB CCB NSAID SSRI SNRI TCA MAOI PPI H2RA DMARD TNF IL6 JAK SGLT2 GLP1 DPP4 HMG CoA LDL HDL VLDL TG'.repeat(2)));
+check('an English page is not garbled', !pageGarbled('The kidney regulates fluid balance and blood pressure through the renin angiotensin system. '.repeat(2)));
+check('recognised text of a page is readable', !unreadablePage(real, true));
+check('empty result of a page with text is unreadable', unreadablePage('  ', true));
+check('empty result of a picture-only page is just empty', !unreadablePage('', false));
+check('mostly [?] words is unreadable', unreadablePage('[?] [?] kan [?] [?]', true));
+check('a few [?] words are fine', !unreadablePage('Kan basıncı [?] ile ölçülür ve kaydedilir.', true));
+check('nonsense left after recognition is unreadable', unreadablePage(shift(real), true));
+check('page has letters', hasLetters(real) && !hasLetters('12 34') && hasLetters('فیزیولوژی علم مطالعه عملکرد'));
 if (fails) process.exit(1);

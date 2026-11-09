@@ -1119,6 +1119,7 @@ function Block({ doc, block, terms, fontSize, term, onTerm, selPara, highlights,
           </table>
         </div>
       )}
+      {block.unreadable && <p className={s.unreadable}>{t('pageUnreadable')}</p>}
       <div className={`reading ${s.text}`} style={{ fontSize }} lang={doc.language} dir="auto" hidden={!!block.table}>
         {block.paragraphs.map((p, i) =>
           Array.isArray(p) ? (

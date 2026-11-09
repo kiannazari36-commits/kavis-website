@@ -63,6 +63,12 @@ The app never writes AI output, scores, usage counters, subscriptions or shares 
    then `material_files` rows (one PDF, several photos, or one audio file).
 3. App calls Edge `process-material`. The server:
    - reads the PDF text (OCR when the pages are scans → status `needs_ocr` first, retry does not use a trial lesson),
+   - a PDF whose font has no text map (nonsense letters, e.g. "Fizyoloji" → ")L]\RORML") on ANY page (`pageGarbled` /
+     `looksGarbled` in `process-material/lib.ts`) is read with OCR automatically; a page that still cannot be read
+     (empty although the PDF had text there, mostly `[?]`, or still nonsense) becomes a reader block
+     `{ pageFrom, pageTo, tag: 'general', unreadable: true, paragraphs: [] }` (web and iOS show "Bu sayfanın yazısı
+     okunamadı…" and point to the Original PDF view); it is never sent to the AI, so it gives no terms, cards,
+     questions or `material_chunks`; `material_content.stats.unreadable` counts them,
    - over 100 pages → status `too_long`; the app shows "Bölümlere ayır / Sayfa aralığı seç";
      Edge `split-material` creates child lessons (`parent_id`) of ≤ 100 pages,
    - writes `material_content.reader_doc` (the teacher's text unchanged), `material_topics`, `material_chunks`

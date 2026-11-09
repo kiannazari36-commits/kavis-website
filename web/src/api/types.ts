@@ -60,6 +60,8 @@ export type ReaderBlock = {
   links?: { pdf: string; page: number; label: string }[];
   /** true: the server marked a molecule; the viewer finds which one from the text (components/molecules.ts). */
   molecule?: boolean;
+  /** true: the page's text could not be read (a broken font or an unreadable scan); no paragraphs, the reader says so. */
+  unreadable?: boolean;
 };
 
 export type ReaderSection = { title: string; blocks: ReaderBlock[] };
