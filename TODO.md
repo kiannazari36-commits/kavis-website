@@ -274,7 +274,7 @@ Technical notes and decisions:
 - [ ] Native-speaker check of the English, Persian and Arabic translations (some design translations were wrong and were fixed)
 
 ## Release
-- [x] Apple Developer membership paid 7 Nov 2026 (order W1878192326, support case 103010787684, individual enrolment); waiting for Apple's confirmation email (up to 48 h). Then: team ID into `ios/project.yml`, Sign in with Apple, APNs key, App Store Connect products, Paid Applications Agreement (bank + tax), TestFlight
+- [x] Apple Developer membership paid and active 7 Nov 2026 (Team ID `TFTPYS8XHV` is in `ios/project.yml`) (order W1878192326, support case 103010787684, individual enrolment); waiting for Apple's confirmation email (up to 48 h). Then: team ID into `ios/project.yml`, Sign in with Apple, APNs key, App Store Connect products, Paid Applications Agreement (bank + tax), TestFlight
 - [x] App Store texts, keywords, privacy-label answers and review notes drafted: `docs/APP_STORE.md` (tr + en; fa/ar later)
 - [ ] Before submitting: reviewer demo account on the live server (ask Kian first), iPhone + iPad screenshots, Sign in with Apple on iOS (Google is offered, so Apple's rule 4.8 requires it), check the Restore Purchases button on the paywall, lawyer check of the legal texts, support URL on the real domain
 - [x] Static build ready for Vercel (`web/vercel.json`: page routing + noindex header)
