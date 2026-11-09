@@ -11,7 +11,7 @@ import s from './Cards.module.css';
 
 // Design: design/NewIPad.dc.html, screen "cards": flip a card, then rate it (next review time).
 // Keyboard: Space flips, 1 / 2 / 3 rate. Card text is in its deck's language (the content language, CLAUDE.md).
-// The cards due now form today's round; "Didn't know" and "Hard" come back at the end of the round.
+// The cards due now form today's round: every card is asked once. "Didn't know" and "Hard" are only scheduled sooner (rateCard).
 const RATES: [CardRating, string, string][] = [
   ['again', 'rateNo', 'rateNoT'],
   ['hard', 'rateHard', 'rateHardT'],
@@ -45,10 +45,8 @@ export default function Cards() {
     const rating = RATES[k][0];
     rateCard(card, rating);
     setStats(stats.map((n, j) => (j === k ? n + 1 : n)));
-    if (rating === 'good') {
-      setQueue(rest);
-      setDone(done + 1);
-    } else setQueue([...rest, { ...card, reps: 0, intervalDays: rating === 'again' ? 0 : card.intervalDays }]);
+    setQueue(rest);
+    setDone(done + 1);
     setBack(false);
   };
 
