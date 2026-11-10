@@ -5,7 +5,7 @@
 //     { done: true, thread_id, answer, sources: [{ material_id, lesson, page }], links: [{ url, title }], acts, outside_pdf }, or { error }.
 // One chosen lesson (material_id): Claude gets the whole lesson (cached for 5 minutes, so follow-up questions are
 // cheap) and is told which pages are open. Otherwise, or for a very long lesson, it gets the best text pieces (the
-// open pages first, then material_chunks full-text search). Claude Sonnet 5.5 answers; the function saves the
+// open pages first, then material_chunks full-text search). Claude Haiku 5.5 answers (Sonnet 5.5 for photos and "AI + research"); the function saves the
 // thread and both messages, counts a trial question and the AI cost.
 // "AI + research" (mode 'ai') may add general knowledge and search the web (at most 3 searches, ~$0.01 each), marked
 // outside_pdf; the web pages it used come back as links. Apps never write answers themselves.
@@ -15,7 +15,10 @@ import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 import { costUsd, lessonText, queryTerms, rankChunks, splitTail, tsQuery } from './lib.ts';
 
-const MODEL = 'claude-sonnet-5-5';
+// Haiku 5.5 answers normal lesson questions (tested 10 Nov 2026: as faithful to the PDF as Sonnet, ~16x cheaper).
+// Sonnet 5.5 stays for solving a photo of a question and for "AI + research" (web search), which were not compared.
+const FAST_MODEL = 'claude-haiku-5-5';
+const STRONG_MODEL = 'claude-sonnet-5-5';
 const MONTHLY_BUDGET_USD = 3;
 const PIECES = 6;
 // About 35,000 tokens: the first question on a lesson costs at most ~$0.09, follow-ups read it from the cache.
@@ -132,6 +135,7 @@ Deno.serve(async (req) => {
   const { data: use } = await db.from('usage_monthly').select('cost_usd').eq('user_id', uid).eq('month', month).maybeSingle();
   if (use && Number(use.cost_usd) >= MONTHLY_BUDGET_USD) return json({ error: 'budget' }, 429);
 
+  const MODEL = image || mode === 'ai' ? STRONG_MODEL : FAST_MODEL;
   const client = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')!.trim() });
   const usage = { input: 0, output: 0, cacheWrite: 0, cacheRead: 0, searches: 0 };
 
@@ -290,7 +294,7 @@ Deno.serve(async (req) => {
           : out.sources.map((n) => pieces[n - 1]).filter(Boolean).map((p) => ({ material_id: p.material_id, page: p.page }));
         const outside = mode === 'ai' && (out.outside || links.length > 0);
         const saved = await save(db, uid, threadId, courseId, materialId, question, out.answer, mode, [...used, ...links, ...acts.map((a) => ({ act: a.kind, title: a.title }))], outside);
-        await count(db, uid, month, usage);
+        await count(db, uid, month, usage, MODEL);
         send({ done: true, thread_id: saved, answer: out.answer, sources: used.map((p) => ({ ...p, lesson: titles.get(p.material_id) ?? '' })), links, acts, outside_pdf: outside });
       } catch (e) {
         console.error('assistant', e);
@@ -421,7 +425,7 @@ async function act(db: SupabaseClient, uid: string, name: string, input: Record<
 }
 
 /** A trial question (not for Premium) and the month's AI cost. */
-async function count(db: SupabaseClient, uid: string, month: string, u: { input: number; output: number; cacheWrite: number; cacheRead: number; searches: number }) {
+async function count(db: SupabaseClient, uid: string, month: string, u: { input: number; output: number; cacheWrite: number; cacheRead: number; searches: number }, model: string) {
   const { data: premium } = await db.rpc('is_premium', { uid });
   if (!premium) {
     const { data: t } = await db.from('trial_usage').select('assistant_questions').eq('user_id', uid).maybeSingle();
@@ -433,7 +437,7 @@ async function count(db: SupabaseClient, uid: string, month: string, u: { input:
     month,
     input_tokens: Number(m?.input_tokens ?? 0) + u.input + u.cacheWrite + u.cacheRead,
     output_tokens: Number(m?.output_tokens ?? 0) + u.output,
-    cost_usd: Number(m?.cost_usd ?? 0) + costUsd(u.input, u.output, u.cacheWrite, u.cacheRead) + u.searches * 0.01,
+    cost_usd: Number(m?.cost_usd ?? 0) + costUsd(u.input, u.output, u.cacheWrite, u.cacheRead, model) + u.searches * 0.01,
     assistant_questions: Number(m?.assistant_questions ?? 0) + 1,
     cache_write_tokens: Number(m?.cache_write_tokens ?? 0) + u.cacheWrite,
     cache_read_tokens: Number(m?.cache_read_tokens ?? 0) + u.cacheRead,

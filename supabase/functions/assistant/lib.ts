@@ -45,11 +45,17 @@ export function lessonText(chunks: { page: number | null; text: string }[], maxC
 }
 
 /**
- * Claude Sonnet 5.5 list price in US dollars: input $2, output $10 per million tokens; cache writes (5 minutes)
- * $2.50, cache reads $0.20.
+ * List price in US dollars per million tokens: input, output, cache write (5 minutes), cache read.
+ * Sonnet 5.5: $2 / $10 / $2.50 / $0.20. Haiku 5.5: $0.10 / $0.50 / $0.125 / $0.01.
  */
-export const costUsd = (input: number, output: number, cacheWrite = 0, cacheRead = 0) =>
-  Math.round(((input * 2 + output * 10 + cacheWrite * 2.5 + cacheRead * 0.2) / 1_000_000) * 10000) / 10000;
+const PRICES: Record<string, [number, number, number, number]> = {
+  'claude-sonnet-5-5': [2, 10, 2.5, 0.2],
+  'claude-haiku-5-5': [0.1, 0.5, 0.125, 0.01],
+};
+export const costUsd = (input: number, output: number, cacheWrite = 0, cacheRead = 0, model = 'claude-sonnet-5-5') => {
+  const [i, o, w, r] = PRICES[model] ?? PRICES['claude-sonnet-5-5'];
+  return Math.round(((input * i + output * o + cacheWrite * w + cacheRead * r) / 1_000_000) * 10000) / 10000;
+};
 
 /**
  * The streamed answer ends with one line "SOURCES: [2, 5] OUTSIDE: no". This splits it off: the answer text, the

@@ -18,6 +18,7 @@ check('empty question → no words', queryTerms('ne?').length === 0);
 const doc = lessonText([{ page: 2, text: 'İki' }, { page: 1, text: ' Bir ' }], 1000);
 check('whole lesson in page order', doc === '[Page 1]\nBir\n\n[Page 2]\nİki');
 check('too long lesson → null', lessonText([{ page: 1, text: 'x'.repeat(50) }], 20) === null);
+check('haiku cost with cache', costUsd(1_000_000, 100_000, 1_000_000, 1_000_000, 'claude-haiku-5-5') === 0.285);
 check('cost with cache', costUsd(1_000_000, 100_000, 1_000_000, 1_000_000) === 2 + 1 + 2.5 + 0.2);
 const tail = splitTail('Cevap burada.\nİkinci satır.\nSOURCES: [2, 5, 2] OUTSIDE: no');
 check('tail split off', tail.answer === 'Cevap burada.\nİkinci satır.' && tail.sources.join() === '2,5' && !tail.outside);
