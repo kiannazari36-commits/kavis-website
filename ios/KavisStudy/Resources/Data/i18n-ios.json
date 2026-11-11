@@ -87,7 +87,10 @@
   "codeErr_rate_limited": "Çok fazla yanlış deneme. Bir saat sonra tekrar dene.",
   "codeErr_failed": "Kod şu an kullanılamadı. Biraz sonra tekrar dene.",
   "padStepDept": "Bölüm",
-  "padSideDept": "Bölümünü"
+  "padSideDept": "Bölümünü",
+  "hpFaqMore": "Cevabı bulamadın mı? Bize yaz",
+  "hpFaqNotif": "Ayarlar › Bildirimler bölümünden izin ver; iPhone Ayarları › Kavis Study › Bildirimler de açık olmalı.",
+  "hpDevNote": "Uygulama sürümü {v}, {dev} ve cihaz bilgisi e-postaya eklenir. Ders PDF'lerin paylaşılmaz."
  },
  "en": {
   "remindTitle": "Study time",
@@ -177,7 +180,10 @@
   "codeErr_rate_limited": "Too many wrong tries. Try again in an hour.",
   "codeErr_failed": "The code could not be used right now. Try again soon.",
   "padStepDept": "Department",
-  "padSideDept": "Your department,"
+  "padSideDept": "Your department,",
+  "hpFaqMore": "Didn't find the answer? Write to us",
+  "hpFaqNotif": "Allow it in Settings › Notifications; iPhone Settings › Kavis Study › Notifications must also be on.",
+  "hpDevNote": "The app version {v}, {dev} and device are added to the e-mail. Your course PDFs aren't shared."
  },
  "fa": {
   "remindTitle": "وقت مطالعه",
@@ -267,7 +273,10 @@
   "codeErr_rate_limited": "تلاش اشتباه زیاد بود. یک ساعت دیگر دوباره امتحان کن.",
   "codeErr_failed": "فعلاً نمی‌شود کد را استفاده کرد. کمی بعد دوباره امتحان کن.",
   "padStepDept": "رشته",
-  "padSideDept": "رشته‌ات را"
+  "padSideDept": "رشته‌ات را",
+  "hpFaqMore": "جواب را پیدا نکردی؟ برایمان بنویس",
+  "hpFaqNotif": "از تنظیمات › اعلان‌ها اجازه بده؛ تنظیمات iPhone › Kavis Study › اعلان‌ها هم باید روشن باشد.",
+  "hpDevNote": "نسخه برنامه {v}, {dev} و دستگاه به ایمیل اضافه می‌شود. PDFهای درست به اشتراک گذاشته نمی‌شوند."
  },
  "ar": {
   "remindTitle": "وقت الدراسة",
@@ -357,6 +366,9 @@
   "codeErr_rate_limited": "محاولات خاطئة كثيرة. حاول مرة أخرى بعد ساعة.",
   "codeErr_failed": "تعذر استخدام الرمز الآن. حاول بعد قليل.",
   "padStepDept": "التخصص",
-  "padSideDept": "تخصصك،"
+  "padSideDept": "تخصصك،",
+  "hpFaqMore": "لم تجد الإجابة؟ راسلنا",
+  "hpFaqNotif": "اسمح بها من الإعدادات › الإشعارات؛ ويجب تفعيل إعدادات iPhone › Kavis Study › الإشعارات أيضًا.",
+  "hpDevNote": "يُضاف إصدار التطبيق {v}, {dev} والجهاز إلى البريد. لا تتم مشاركة ملفات PDF الخاصة بموادك."
  }
 }

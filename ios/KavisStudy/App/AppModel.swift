@@ -64,6 +64,8 @@ enum Route: Equatable {
     case recording(String, at: Double = 0)
     /// "Soru örneklerim" (the lecturer's sample questions of a course).
     case samples(String?)
+    /// "Yardım ve destek": help chat and frequently asked questions (design NewSupport).
+    case support
     /// "Bugünün tekrarı" of the daily planner (review_sessions id).
     case review(String)
     case assistant
@@ -119,6 +121,7 @@ final class AppModel {
         case "placement": route = .placement(MockFlag.value("material") ?? "")
         case "summary": route = .lessonSummary(MockFlag.value("material") ?? "")
         case "samples": route = .samples(nil)
+        case "support": route = .support
         case "quiz": route = .quiz(QuizTarget(materialId: "", kind: .exam, quizId: MockFlag.value("material")))
         case "review": route = .review(MockFlag.value("material") ?? "")
         case "recording": route = .recording(MockFlag.value("material") ?? "")

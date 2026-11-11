@@ -26,11 +26,6 @@ struct ProfileView: View {
     private func d(_ turkish: String) -> String { prefs.d(turkish) }
     private func soon() { toast.show(prefs.t("k165")) }
 
-    /// "Yardım ve geri bildirim": the web's help page (questions answered by the help chat, e-mail button).
-    private func openHelp() {
-        if let url = URL(string: "\(Config.webBaseURL)/help?lang=\(lang.rawValue)") { openURL(url) }
-    }
-
     var body: some View {
         VStack(spacing: 0) {
             header
@@ -299,7 +294,7 @@ struct ProfileView: View {
             MenuRow(title: "Soru örneklerim", sub: prefs.d("35 soru · hocanın tarzı çıkarıldı", numbers: [("35", st.sampleQuestions)]), icon: .help, chip: vio.0, fg: vio.1, action: { app.go(.samples(nil)) }),
             MenuRow(title: "Bildirimler", sub: prefs.d("Hatırlatma 09:00 · 1 saat önce").components(separatedBy: " · ")[0].replacingOccurrences(of: "09:00", with: Format.num(notifyTime, lang)), icon: .bellSmall, chip: gray.0, fg: gray.1, action: { app.go(.settings) }),
             MenuRow(title: "Ayarlar", sub: d("Çalışma planı, dil, tema"), icon: .sliders, chip: gray.0, fg: gray.1, action: { app.go(.settings) }),
-            MenuRow(title: "Yardım ve geri bildirim", sub: d("Sık sorulanlar, bize yaz"), icon: .chat, chip: gray.0, fg: gray.1, action: { openHelp() }),
+            MenuRow(title: "Yardım ve geri bildirim", sub: d("Sık sorulanlar, bize yaz"), icon: .chat, chip: gray.0, fg: gray.1, action: { app.go(.support) }),
         ]
         return VStack(spacing: 0) {
             ForEach(Array(rows.enumerated()), id: \.offset) { i, row in
