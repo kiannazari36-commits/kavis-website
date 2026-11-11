@@ -6,6 +6,7 @@
 
 .search {
   flex: 1;
+  min-width: 0;
   max-width: 420px;
   height: 44px;
   border-radius: 22px;
