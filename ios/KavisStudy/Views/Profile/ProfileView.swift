@@ -287,14 +287,12 @@ struct ProfileView: View {
 
     private var menu: some View {
         let red = (Color.pair(0xF5E3E2, 0x3A2224), Color.pair(0x9C2F3A, 0xF09AA3))
-        let amb = (Color.pair(0xFBEBC8, 0x3A2E18), Color.pair(0xA86F0E, 0xF2C66D))
         let vio = (Color.pair(0xE8E6F6, 0x2C2A3A), Color.pair(0x4A3F9A, 0xB9B4F0))
         let grn = (Color.pair(0xE3F1E7, 0x1F3328), Color.pair(0x2E7D4F, 0x8FD3A8))
         let gray = (Color.pair(0xEFE8DC, 0x2B2520), Color.pair(0x6E645A, 0xBDB2A4))
         let st = profileStats ?? ProfileStats()
         let rows = [
             MenuRow(title: "Hesap bilgilerim", sub: d("Ad, e-posta, üniversite, sınıf"), icon: .person, chip: red.0, fg: red.1, action: { enterEdit() }),
-            MenuRow(title: "Derslerim klasörü", sub: prefs.d("Bu dönem 5 ders · 13 PDF", numbers: [("13", st.pdfs), ("5", st.courses)]), icon: .folder, chip: amb.0, fg: amb.1, action: { app.go(.courses) }),
             MenuRow(title: "İlerleme ve takvim", sub: d("Haftalık süre, seviye, sınav haftası"), icon: .chart, chip: grn.0, fg: grn.1, action: { app.go(.progress) }),
             MenuRow(title: "Soru örneklerim", sub: prefs.d("35 soru · hocanın tarzı çıkarıldı", numbers: [("35", st.sampleQuestions)]), icon: .help, chip: vio.0, fg: vio.1, action: { app.go(.samples(nil)) }),
             MenuRow(title: "Bildirimler", sub: prefs.d("Hatırlatma 09:00 · 1 saat önce").components(separatedBy: " · ")[0].replacingOccurrences(of: "09:00", with: Format.num(notifyTime, lang)), icon: .bellSmall, chip: gray.0, fg: gray.1, action: { app.go(.settings) }),
