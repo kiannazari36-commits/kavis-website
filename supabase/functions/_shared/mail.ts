@@ -27,18 +27,19 @@ const TEXTS = {
     ar: { subject: 'Kavis Study · تأكيد حذف الحساب', hi: 'طلبت حذف حسابك في Kavis Study.', body: 'اضغط الزر أدناه للتأكيد. يُحذف حسابك بعد 30 يومًا، ويمكنك التراجع من التطبيق حتى ذلك الحين. يعمل الرابط 24 ساعة ومرة واحدة فقط.', button: 'تأكيد الحذف', ignore: 'إن لم تطلب ذلك فتجاهل هذه الرسالة؛ يبقى حسابك كما هو.' },
   },
   export: {
-    tr: { subject: 'Kavis Study · Hesap bilgilerin hazır', hi: 'İstediğin hesap bilgilerin hazır.', body: 'Tüm bilgilerin tek bir dosyada. Dosya ve içindeki PDF bağlantıları 7 gün geçerli; sonra dosya sunucudan silinir. Gerekirse uygulamadan yeniden isteyebilirsin.', button: 'Dosyayı indir', ignore: 'Bunu sen istemediysen bize kavisstudy@gmail.com adresinden yaz.' },
-    en: { subject: 'Kavis Study · Your account data is ready', hi: 'The account data you asked for is ready.', body: 'All your data is in one file. The file and the PDF links in it work for 7 days; then the file is deleted from the server. You can ask again in the app any time.', button: 'Download the file', ignore: "If you didn't ask for this, write to us at kavisstudy@gmail.com." },
-    fa: { subject: 'Kavis Study · اطلاعات حسابت آماده است', hi: 'اطلاعات حسابی که خواسته بودی آماده است.', body: 'همه‌ی اطلاعاتت در یک فایل است. فایل و لینک‌های PDF داخل آن ۷ روز معتبرند و بعد فایل از سرور حذف می‌شود. هر وقت خواستی می‌توانی دوباره از برنامه درخواست کنی.', button: 'دانلود فایل', ignore: 'اگر این درخواست از طرف تو نبوده، به kavisstudy@gmail.com بنویس.' },
-    ar: { subject: 'Kavis Study · بيانات حسابك جاهزة', hi: 'بيانات الحساب التي طلبتها جاهزة.', body: 'كل بياناتك في ملف واحد. يعمل الملف وروابط ملفات PDF فيه 7 أيام، ثم يُحذف الملف من الخادم. يمكنك طلبه مرة أخرى من التطبيق في أي وقت.', button: 'تنزيل الملف', ignore: 'إن لم تطلب ذلك فراسلنا على kavisstudy@gmail.com.' },
+    tr: { subject: 'Kavis Study · Hesap bilgilerin hazır', hi: 'İstediğin hesap bilgilerin hazır.', body: 'Tüm bilgilerin okunabilir bir rapor olarak hazır: profilin, derslerin, notların, kartların, sınavların ve daha fazlası. Rapor ve içindeki PDF bağlantıları 7 gün geçerli; sonra dosyalar sunucudan silinir. Gerekirse uygulamadan yeniden isteyebilirsin.', button: 'Raporu aç', second: 'Makine tarafından okunabilir kopya (JSON)', ignore: 'Bunu sen istemediysen bize kavisstudy@gmail.com adresinden yaz.' },
+    en: { subject: 'Kavis Study · Your account data is ready', hi: 'The account data you asked for is ready.', body: 'All your data is ready as a readable report: your profile, lessons, notes, cards, quizzes and more. The report and the PDF links in it work for 7 days; then the files are deleted from the server. You can ask again in the app any time.', button: 'Open the report', second: 'Machine-readable copy (JSON)', ignore: "If you didn't ask for this, write to us at kavisstudy@gmail.com." },
+    fa: { subject: 'Kavis Study · اطلاعات حسابت آماده است', hi: 'اطلاعات حسابی که خواسته بودی آماده است.', body: 'همه‌ی اطلاعاتت به‌صورت یک گزارش خوانا آماده است: پروفایل، درس‌ها، یادداشت‌ها، کارت‌ها، آزمون‌ها و بیشتر. گزارش و لینک‌های PDF داخل آن ۷ روز معتبرند و بعد فایل‌ها از سرور حذف می‌شوند. هر وقت خواستی می‌توانی دوباره از برنامه درخواست کنی.', button: 'باز کردن گزارش', second: 'نسخه‌ی قابل‌خواندن برای ماشین (JSON)', ignore: 'اگر این درخواست از طرف تو نبوده، به kavisstudy@gmail.com بنویس.' },
+    ar: { subject: 'Kavis Study · بيانات حسابك جاهزة', hi: 'بيانات الحساب التي طلبتها جاهزة.', body: 'كل بياناتك جاهزة في تقرير مقروء: ملفك الشخصي ودروسك وملاحظاتك وبطاقاتك واختباراتك والمزيد. يعمل التقرير وروابط ملفات PDF فيه 7 أيام، ثم تُحذف الملفات من الخادم. يمكنك طلبه مرة أخرى من التطبيق في أي وقت.', button: 'فتح التقرير', second: 'نسخة قابلة للقراءة آليًا (JSON)', ignore: 'إن لم تطلب ذلك فراسلنا على kavisstudy@gmail.com.' },
   },
 } as const;
 
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
-/** Sends one of the two emails with a button to `link`. Throws when it could not be sent. */
-export async function sendAccountMail(kind: keyof typeof TEXTS, to: string, lang: Lang, link: string) {
+/** Sends one of the two emails with a button to `link` (and, for the export, a small second link). Throws when it could not be sent. */
+export async function sendAccountMail(kind: keyof typeof TEXTS, to: string, lang: Lang, link: string, secondLink?: string) {
   const t = TEXTS[kind][lang];
+  const second = secondLink && 'second' in t ? t.second : '';
   const dir = lang === 'fa' || lang === 'ar' ? 'rtl' : 'ltr';
   const font = lang === 'fa' || lang === 'ar' ? 'Vazirmatn, Tahoma, Arial, sans-serif' : 'Poppins, Helvetica, Arial, sans-serif';
   const html = `<!doctype html><html lang="${lang}" dir="${dir}"><body style="margin:0;background:#F1E9DA;font-family:${font};color:#2A2420">
@@ -48,10 +49,11 @@ export async function sendAccountMail(kind: keyof typeof TEXTS, to: string, lang
 <p style="font-size:16px;font-weight:600;margin:0 0 12px">${esc(t.hi)}</p>
 <p style="font-size:14px;line-height:1.6;color:#6E645A;margin:0 0 24px">${esc(t.body)}</p>
 <a href="${esc(link)}" style="display:inline-block;background:#9C2F3A;color:#FBF6EC;text-decoration:none;font-weight:600;font-size:15px;padding:12px 24px;border-radius:999px">${esc(t.button)}</a>
+${second ? `<p style="font-size:12px;margin:16px 0 0"><a href="${esc(secondLink!)}" style="color:#6E645A">${esc(second)}</a></p>` : ''}
 <p style="font-size:12px;line-height:1.5;color:#6E645A;margin:24px 0 0">${esc(t.ignore)}</p>
 </div><div style="font-size:11px;color:#6E645A;text-align:center;margin-top:16px">Kavis Study · Always Improve More</div>
 </div></body></html>`;
-  const text = `${t.hi}\n\n${t.body}\n\n${t.button}: ${link}\n\n${t.ignore}`;
+  const text = `${t.hi}\n\n${t.body}\n\n${t.button}: ${link}\n\n${second ? `${second}: ${secondLink}\n\n` : ''}${t.ignore}`;
   const from = Deno.env.get('MAIL_FROM') ?? 'Kavis Study <kod@kavis.study>';
 
   const key = Deno.env.get('RESEND_API_KEY');

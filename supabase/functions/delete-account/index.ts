@@ -124,7 +124,7 @@ async function purge(db: SupabaseClient) {
   const old = new Date(Date.now() - EXPORT_DAYS * 86_400_000).toISOString();
   const { data: exports } = await db.from('account_requests').select('id, file_path').eq('kind', 'export').not('file_path', 'is', null).lte('created_at', old);
   for (const x of exports ?? []) {
-    const { error } = await db.storage.from('exports').remove([x.file_path]);
+    const { error } = await db.storage.from('exports').remove([x.file_path, x.file_path.replace(/\.json$/, '.html')]); // the JSON copy and the readable report (removing a missing file is no error)
     if (!error) await db.from('account_requests').update({ file_path: null }).eq('id', x.id);
   }
   return { deleted, exports_removed: exports?.length ?? 0 };

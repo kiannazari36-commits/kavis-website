@@ -34,6 +34,7 @@ const Paywall = lazy(() => import('./pages/Paywall'));
 const DeviceLimit = lazy(() => import('./pages/DeviceLimit'));
 const ShareLink = lazy(() => import('./pages/ShareLink'));
 const ConfirmDelete = lazy(() => import('./pages/ConfirmDelete'));
+const ExportView = lazy(() => import('./pages/ExportView'));
 const Legal = lazy(() => import('./pages/Legal'));
 const Help = lazy(() => import('./pages/Help'));
 const Exam = lazy(() => import('./pages/Exam'));
@@ -86,6 +87,7 @@ export default function App() {
                   <Route path="/privacy" element={<Legal kind="privacy" />} />
                   <Route path="/s/:shareId" element={<ShareLink />} />
                   <Route path="/account/delete" element={<ConfirmDelete />} />
+                  <Route path="/export" element={<ExportView />} />
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
                 </Suspense>

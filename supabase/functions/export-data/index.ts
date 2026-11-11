@@ -1,9 +1,12 @@
 // Edge Function export-data: "Hesap bilgilerimi iste". Puts everything the signed-in student has in Kavis in one
-// JSON file in the private bucket 'exports' and emails a download link valid for 7 days (the nightly purge in
-// delete-account removes the file afterwards). → { sent: true } | 429 { error: 'limit' } (3 per hour)
+// JSON file (machine-readable copy) AND a readable HTML report in the private bucket 'exports' and emails a link
+// valid for 7 days (the nightly purge in delete-account removes both files afterwards). Storage serves .html as
+// text/plain, so the report link goes through the web page /export (it fetches the file and shows it); the
+// report file itself stays one self-contained HTML file. → { sent: true } | 429 { error: 'limit' } (3 per hour)
 // PDFs are not copied in: each original file comes as a download link valid for 7 days.
 import { createClient } from 'npm:@supabase/supabase-js@2';
-import { asLang, MAILS_PER_HOUR, newToken, publicLink, sendAccountMail } from '../_shared/mail.ts';
+import { asLang, MAILS_PER_HOUR, newToken, publicLink, sendAccountMail, siteUrl } from '../_shared/mail.ts';
+import { buildReport } from '../_shared/report.ts';
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -75,12 +78,21 @@ Deno.serve(async (req) => {
       data,
     }, null, 2);
     // A random file name, so a link cannot be guessed from another one.
-    const path = `${uid}/kavis-study-${new Date().toISOString().slice(0, 10)}-${(await newToken()).token.slice(0, 16)}.json`;
+    const base = `${uid}/kavis-study-${new Date().toISOString().slice(0, 10)}-${(await newToken()).token.slice(0, 16)}`;
+    const path = `${base}.json`;
+    const reportPath = `${base}.html`;
+    const lang = asLang((profile as { app_lang?: string } | null)?.app_lang);
+    const report = buildReport({ lang, exportedAt: new Date(), email, createdAt: who.user.created_at, profile, data: data as Record<string, Record<string, unknown>[]>, pdfs, linkDays: LINK_DAYS });
     const { error: up } = await db.storage.from('exports').upload(path, new Blob([file], { type: 'application/json' }), { contentType: 'application/json' });
     if (up) throw up;
+    const { error: up2 } = await db.storage.from('exports').upload(reportPath, new Blob([report], { type: 'text/html' }), { contentType: 'text/html' });
+    if (up2) throw up2;
     const { data: link, error: le } = await db.storage.from('exports').createSignedUrl(path, LINK_DAYS * 86400, { download: true });
     if (le || !link) throw le ?? new Error('link');
-    await sendAccountMail('export', email, asLang((profile as { app_lang?: string } | null)?.app_lang), publicLink(link.signedUrl));
+    const { data: rlink, error: re } = await db.storage.from('exports').createSignedUrl(reportPath, LINK_DAYS * 86400);
+    if (re || !rlink) throw re ?? new Error('link');
+    const viewer = `${siteUrl()}/export#u=${encodeURIComponent(publicLink(rlink.signedUrl))}`;
+    await sendAccountMail('export', email, lang, viewer, publicLink(link.signedUrl));
     await db.from('account_requests').insert({ user_id: uid, kind: 'export', status: 'done', done_at: new Date().toISOString(), file_path: path });
     return json({ sent: true });
   } catch (e) {
