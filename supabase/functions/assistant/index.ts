@@ -5,7 +5,7 @@
 //     { done: true, thread_id, answer, sources: [{ material_id, lesson, page }], links: [{ url, title }], acts, outside_pdf }, or { error }.
 // One chosen lesson (material_id): Claude gets the whole lesson (cached for 5 minutes, so follow-up questions are
 // cheap) and is told which pages are open. Otherwise, or for a very long lesson, it gets the best text pieces (the
-// open pages first, then material_chunks full-text search). Claude Haiku 5.5 answers (Sonnet 5.5 for photos and "AI + research"); the function saves the
+// open pages first, then material_chunks full-text search). Claude Haiku 5.5 answers (Sonnet 5.5 only for "AI + research", where Haiku did not run the web search); the function saves the
 // thread and both messages, counts a trial question and the AI cost.
 // "AI + research" (mode 'ai') may add general knowledge and search the web (at most 3 searches, ~$0.01 each), marked
 // outside_pdf; the web pages it used come back as links. Apps never write answers themselves.
@@ -16,7 +16,8 @@ import Anthropic from 'npm:@anthropic-ai/sdk';
 import { costUsd, lessonText, queryTerms, rankChunks, splitTail, tsQuery } from './lib.ts';
 
 // Haiku 5.5 answers normal lesson questions (tested 10 Nov 2026: as faithful to the PDF as Sonnet, ~16x cheaper).
-// Sonnet 5.5 stays for solving a photo of a question and for "AI + research" (web search), which were not compared.
+// Photos of questions also go to Haiku (tested 11 Nov 2026: same right answer as Sonnet). "AI + research" stays on Sonnet:
+// in a test Haiku did not run the web search (0 searches, said search was not working).
 const FAST_MODEL = 'claude-haiku-5-5';
 const STRONG_MODEL = 'claude-sonnet-5-5';
 const MONTHLY_BUDGET_USD = 3;
@@ -135,7 +136,7 @@ Deno.serve(async (req) => {
   const { data: use } = await db.from('usage_monthly').select('cost_usd').eq('user_id', uid).eq('month', month).maybeSingle();
   if (use && Number(use.cost_usd) >= MONTHLY_BUDGET_USD) return json({ error: 'budget' }, 429);
 
-  const MODEL = image || mode === 'ai' ? STRONG_MODEL : FAST_MODEL;
+  const MODEL = mode === 'ai' ? STRONG_MODEL : FAST_MODEL;
   const client = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')!.trim() });
   const usage = { input: 0, output: 0, cacheWrite: 0, cacheRead: 0, searches: 0 };
 
