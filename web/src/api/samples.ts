@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { currentUser } from './auth';
+import { normalizeImage } from './heic';
 import type { QuestionKind } from './types';
 
 // "Soru örneklerim": the lecturer's old or class questions per course (table question_samples, files in the private
@@ -35,7 +36,9 @@ export async function listSamples(courseId: string): Promise<Sample[]> {
 export async function addSampleFiles(courseId: string, files: File[]) {
   const user = currentUser();
   if (!user) return false;
-  for (const f of files) {
+  for (const original of files) {
+    // iPhone photos (HEIC) become JPEG first; PDFs and other images stay as they are.
+    const f = await normalizeImage(original).catch(() => original);
     const pdf = f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf');
     const ext = pdf ? 'pdf' : f.type === 'image/png' ? 'png' : f.type === 'image/webp' ? 'webp' : 'jpg';
     const path = `${user.id}/${courseId}/${crypto.randomUUID()}.${ext}`;
@@ -44,7 +47,7 @@ export async function addSampleFiles(courseId: string, files: File[]) {
       console.error('sample upload', up.error);
       return false;
     }
-    const row = await supabase.from('question_samples').insert({ user_id: user.id, course_id: courseId, kind: pdf ? 'pdf' : 'photo', title: f.name, storage_path: path });
+    const row = await supabase.from('question_samples').insert({ user_id: user.id, course_id: courseId, kind: pdf ? 'pdf' : 'photo', title: original.name, storage_path: path });
     if (row.error) {
       console.error('question_samples', row.error);
       await supabase.storage.from('question-samples').remove([path]);

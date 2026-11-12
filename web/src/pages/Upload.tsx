@@ -30,7 +30,7 @@ import s from './Upload.module.css';
 
 // Design: design/ScrUpload.dc.html — choose the PDF, name and course, "Dersi hazırla", then the preparing steps;
 // scanned PDFs (no text) show the error card with "Metin tanıma ile dene". Photos of pages (?mode=photo, "PDF yok
-// mu? Fotoğraf çek") become a lesson by text recognition on the server. Recordings come later (toast).
+// mu? Fotoğraf çek") become a lesson by text recognition on the server. Recordings have their own page (/record).
 
 type Stage = 'pick' | 'noText' | 'processing';
 type Photo = { file: File; url: string };
