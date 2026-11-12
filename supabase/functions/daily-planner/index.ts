@@ -3,14 +3,16 @@
 //   1. makes this week's Kavis plan again (same rules as build-plan, plan_mode 'aim' only),
 //   2. makes today's short review ("Bugünün tekrarı", review_sessions) for the lesson that needs it most,
 //   3. writes the day's reminder at the student's notification time: 'review_day' (review_reminder on) or
-//      'start_now' (today's plan), and on Monday the 'weekly_report' of last week (weekly_report on).
+//      'start_now' (today's plan), and on Monday the 'weekly_report' of last week (weekly_report on),
+//   4. writes 'class_tomorrow' (class_remind_day_before on, tomorrow has classes with the bell on) to go out
+//      this evening at class_remind_time (skipped when that time is already past, e.g. 03:00).
 // Every step skips what already exists for today, so a second run does nothing new.
 // POST {} with header x-cron-key (private.app_secrets 'cron_key'); { force: true, user_id?, weekday? } runs now,
 // whatever the hour (for tests). Writes with the service role only.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import { build } from '../build-plan/build.ts';
 import { addDays, daysBetween, mondayOf } from '../build-plan/planner.ts';
-import { localNow, pickReview, planNotice, PLANNER_HOUR, reviewNotice, safeZone, weeklyNotice, zonedToUtc, type Lang, type ReviewLesson, type ReviewTopic } from './jobs.ts';
+import { classTomorrowNotice, localNow, pickReview, planNotice, PLANNER_HOUR, reviewNotice, safeZone, weeklyNotice, zonedToUtc, type Lang, type ReviewLesson, type ReviewTopic } from './jobs.ts';
 
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 
@@ -32,6 +34,8 @@ type Student = {
   notify_time: string;
   review_reminder: boolean;
   weekly_report: boolean;
+  class_remind_day_before: boolean;
+  class_remind_time: string;
   profiles: { app_lang: string; created_at: string } | null;
 };
 
@@ -50,7 +54,7 @@ Deno.serve(async (req) => {
   for (let from = 0; ; from += 1000) {
     let q = db
       .from('user_settings')
-      .select('user_id, time_zone, plan_mode, notify_time, review_reminder, weekly_report, profiles(app_lang, created_at)')
+      .select('user_id, time_zone, plan_mode, notify_time, review_reminder, weekly_report, class_remind_day_before, class_remind_time, profiles(app_lang, created_at)')
       .order('user_id')
       .range(from, from + 999);
     if (typeof body.user_id === 'string') q = q.eq('user_id', body.user_id);
@@ -67,7 +71,7 @@ Deno.serve(async (req) => {
       done.students++;
       try {
         // Tests may ask for Monday's weekly report on another day ({ force: true, weekday: 1 }).
-        const r = await runStudent(db, s, tz, local.date, force && body.weekday ? Number(body.weekday) : local.weekday);
+        const r = await runStudent(db, s, tz, local.date, force && body.weekday ? Number(body.weekday) : local.weekday, force ? 0 : now.getTime());
         done.plans += r.plan;
         done.reviews += r.review;
         done.notices += r.notices;
@@ -82,7 +86,8 @@ Deno.serve(async (req) => {
   return json(done);
 });
 
-async function runStudent(db: SupabaseClient, s: Student, tz: string, today: string, weekday: number) {
+/** `notBefore`: a reminder whose time is already past is not written (0 = write it anyway, for tests). */
+async function runStudent(db: SupabaseClient, s: Student, tz: string, today: string, weekday: number, notBefore: number) {
   const uid = s.user_id;
   const lang = (LANGS.includes(s.profiles?.app_lang ?? '') ? s.profiles!.app_lang : 'tr') as Lang;
   const out = { plan: 0, review: 0, notices: 0 };
@@ -124,6 +129,22 @@ async function runStudent(db: SupabaseClient, s: Student, tz: string, today: str
     const w = await lastWeek(db, uid, today, tz);
     if (w.minutes >= 1 || w.avg !== null) {
       rows.push({ kind: 'weekly_report', ...weeklyNotice(lang, w.minutes, w.days, w.avg), data: { to: '/progress', day: today }, send_at: sendAt });
+    }
+  }
+
+  if (s.class_remind_day_before && !had.has('class_tomorrow')) {
+    const classSendAt = zonedToUtc(today, s.class_remind_time ?? '20:00', tz);
+    if (Date.parse(classSendAt) >= notBefore) {
+      const { data: classes } = await db
+        .from('timetable_entries')
+        .select('title, start_time')
+        .eq('user_id', uid)
+        .eq('weekday', (weekday % 7) + 1)
+        .eq('remind', true)
+        .order('start_time');
+      if (classes?.length) {
+        rows.push({ kind: 'class_tomorrow', ...classTomorrowNotice(lang, classes), data: { to: '/schedule', day: today }, send_at: classSendAt });
+      }
     }
   }
 

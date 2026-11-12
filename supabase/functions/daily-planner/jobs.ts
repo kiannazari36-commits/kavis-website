@@ -150,3 +150,19 @@ export function weeklyNotice(lang: Lang, minutes: number, days: number, avg: num
     default: return { title: 'Haftalık raporun hazır', body: `Geçen hafta: ${hm(lang, minutes)} · ${days} gün${a !== '' ? ` · sınav ortalaman %${a}` : ''}` };
   }
 }
+
+export type TomorrowClass = { title: string; start_time: string };
+
+/** "Yarın N dersin var" — tomorrow's classes from the school timetable (first three with their start time). */
+export function classTomorrowNotice(lang: Lang, classes: TomorrowClass[]) {
+  const n = classes.length;
+  const list = classes.slice(0, 3).map((c) => `${c.title} ${c.start_time.slice(0, 5)}`).join(' · ');
+  const more = n > 3 ? ` · +${n - 3}` : '';
+  const body = list + more;
+  switch (lang) {
+    case 'en': return { title: n === 1 ? 'You have 1 class tomorrow' : `You have ${n} classes tomorrow`, body };
+    case 'fa': return { title: `فردا ${n} کلاس داری`, body };
+    case 'ar': return { title: n === 1 ? 'لديك محاضرة واحدة غداً' : `لديك ${n} محاضرات غداً`, body };
+    default: return { title: `Yarın ${n} dersin var`, body };
+  }
+}

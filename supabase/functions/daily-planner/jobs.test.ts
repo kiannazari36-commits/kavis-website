@@ -1,5 +1,5 @@
 // Run: node --experimental-strip-types supabase/functions/daily-planner/jobs.test.ts
-import { localNow, pickReview, planNotice, reviewNotice, safeZone, weeklyNotice, zonedToUtc, type ReviewLesson, type ReviewTopic } from './jobs.ts';
+import { classTomorrowNotice, localNow, pickReview, planNotice, reviewNotice, safeZone, weeklyNotice, zonedToUtc, type ReviewLesson, type ReviewTopic } from './jobs.ts';
 
 let fails = 0;
 const check = (name: string, ok: boolean) => {
@@ -38,5 +38,11 @@ check('plan text tr', planNotice('tr', 3, 95, 'Diyabet').body === '3 görev · 1
 check('review text en', reviewNotice('en', 'Diabetes', 8, 6, 3).title === 'Review day today');
 check('weekly without quizzes', weeklyNotice('tr', 200, 4, null).body === 'Geçen hafta: 3 sa 20 dk · 4 gün');
 check('weekly with quizzes', weeklyNotice('en', 45, 2, 77.6).body.endsWith('quiz average 78%'));
+
+const cl = (t: string, h: string) => ({ title: t, start_time: h });
+check('class text tr', classTomorrowNotice('tr', [cl('Farmakoloji', '09:00:00'), cl('Biyokimya', '11:00:00')]).title === 'Yarın 2 dersin var');
+check('class body shows time', classTomorrowNotice('tr', [cl('Farmakoloji', '09:00:00')]).body === 'Farmakoloji 09:00');
+check('class body 3 + more', classTomorrowNotice('en', [cl('A', '08:00'), cl('B', '09:00'), cl('C', '10:00'), cl('D', '11:00'), cl('E', '12:00')]).body.endsWith('· +2'));
+check('class text en singular', classTomorrowNotice('en', [cl('A', '08:00')]).title === 'You have 1 class tomorrow');
 
 if (fails) process.exit(1);
