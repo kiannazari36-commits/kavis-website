@@ -54,12 +54,13 @@ enum ExamsAPI {
     enum BuildResult { case ok(String), empty, failed }
 
     /// Puts an exam together: one course or several, `count` questions, half on weak topics when `weakFocus`.
-    static func build(courseIds: [String], count: Int, weakFocus: Bool) async -> BuildResult {
-        struct Body: Encodable { let action = "build"; let course_ids: [String]; let count: Int; let weak_focus: Bool }
+    /// `types`: the question kinds the student chose (multiple_choice / fill_blank / written).
+    static func build(courseIds: [String], count: Int, weakFocus: Bool, types: [String] = ["multiple_choice"]) async -> BuildResult {
+        struct Body: Encodable { let action = "build"; let course_ids: [String]; let count: Int; let weak_focus: Bool; let types: [String] }
         struct Res: Decodable { let quiz_id: String }
         do {
             let r: Res = try await supabase.functions.invoke("build-exam", options: FunctionInvokeOptions(
-                body: Body(course_ids: courseIds, count: count, weak_focus: weakFocus)))
+                body: Body(course_ids: courseIds, count: count, weak_focus: weakFocus, types: types)))
             return .ok(r.quiz_id)
         } catch FunctionsError.httpError(404, _) {
             return .empty

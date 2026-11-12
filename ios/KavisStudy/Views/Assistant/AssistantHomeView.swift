@@ -9,6 +9,7 @@ struct AssistantHomeView: View {
     @Environment(AppModel.self) private var app
     @Environment(ToastCenter.self) private var toast
     @Environment(TrialModel.self) private var trial
+    @Environment(AudioLessonModel.self) private var audio
     @Environment(\.colorScheme) private var scheme
     /// iPad (design NewIPad, "ai"): the page is one rounded card next to the rail, the composer at most 720 pt wide.
     @Environment(\.padRail) private var wide
@@ -39,7 +40,11 @@ struct AssistantHomeView: View {
     var body: some View {
         VStack(spacing: 0) {
             topBar
-            hero
+            if audio.lesson != nil {
+                ScrollView { AudioCard().padding(.horizontal, 16).padding(.top, 4).frame(maxWidth: 720) .frame(maxWidth: .infinity) }
+            } else {
+                hero
+            }
             VStack(spacing: 10) {
                 switch panel {
                 case .menu: menuPanel
@@ -316,6 +321,31 @@ struct AssistantHomeView: View {
     private func send() { ask(draft.trimmingCharacters(in: .whitespacesAndNewlines)) }
 
     /// Opens the chat with the question (a quick action sends its own words as the question).
+    /// "Sesli anlatım": reads aloud the lesson the student read last in the chosen course (no question is asked).
+    private func startAudio() {
+        guard let topic else {
+            panel = .menu
+            toast.show(d("Önce sorunun hangi dersle ilgili olduğunu seç"))
+            return
+        }
+        guard !audio.loading else { return }
+        toast.show(prefs.t("auPreparing"))
+        audio.onDone = { n in toast.show(prefs.t("auDone", ["n": Format.num(n, lang)])) }
+        Task {
+            let settings = SettingsAPI.loadNow()
+            let failure = await audio.start(courseId: topic.courseId, appLang: lang, rate: settings.ttsRate, female: settings.ttsVoice == .female)
+            switch failure {
+            case nil:
+                let minutes = max(1, Int((Double(audio.total) / 60).rounded()))
+                toast.show(prefs.t("auStarted", ["n": Format.num(audio.lesson?.chapters.count ?? 0, lang), "min": Format.num(minutes, lang)]))
+            case .noLesson: toast.show(prefs.t("auNoLesson"))
+            case .locked: toast.show(prefs.t("trialLocked"))
+            case .budget: toast.show(prefs.t("askBudget"))
+            case .failed: toast.show(prefs.t("auFailed"))
+            }
+        }
+    }
+
     private func ask(_ question: String) {
         guard let topic else {
             panel = .menu
@@ -428,7 +458,7 @@ struct AssistantHomeView: View {
     private var quickPanel: some View {
         let items: [(KIconName, String, () -> Void)] = [
             // These ask the assistant in the student's own words (the server answers from their lessons).
-            (.headphones, "Önemli ve zayıf konularımı anlat", { panel = .none; ask(d("Önemli ve zayıf konularımı anlat")) }),
+            (.headphones, "Önemli ve zayıf konularımı anlat", { panel = .none; startAudio() }),
             (.lines, "Bu konuyu özetle", { panel = .none; ask(d("Bu konuyu özetle")) }),
             (.checklist, "Bana 5 soru sor", { panel = .none; ask(d("Bana 5 soru sor")) }),
             (.target, "Zayıf konularım", { panel = .none; ask(d("Zayıf konularım")) }),

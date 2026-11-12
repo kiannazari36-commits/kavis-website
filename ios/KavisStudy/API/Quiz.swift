@@ -13,10 +13,14 @@ struct QuizQuestion: Identifiable, Equatable {
     let hints: [String]
     /// The lesson the question is from, when the quiz mixes lessons (exam center).
     var materialId: String? = nil
-    /// A written question (design ScrQuiz "YAZILI SORU"): the student writes the answer; it is not graded (same as
-    /// the web and grade-quiz), the model answer from the PDF is shown to compare.
+    /// A written question (design ScrQuiz "YAZILI SORU"): the student writes the answer; the server judges it against
+    /// the model answer from the PDF (grade-quiz, same as the web), and the model answer is shown to compare.
     var written = false
+    /// A fill-in-the-blank question: one short answer in a single line, judged the same way.
+    var fillBlank = false
     var modelAnswer = ""
+    /// Typed answer (written or fill in the blank).
+    var typedKind: Bool { written || fillBlank }
 }
 
 /// A quiz ready to play: its questions in the language of the lesson (the content language).
@@ -44,11 +48,12 @@ enum QuizAPI {
 
     private static let columns = "id, text, kind, options, answer_index, model_answer, explanation, source_page, hints"
 
-    /// Multiple choice needs at least 2 options; written questions need nothing else.
+    /// Multiple choice needs at least 2 options; written and fill-in-the-blank questions need a model answer.
     static func question(_ r: QRow, materialId: String? = nil) -> QuizQuestion? {
-        if r.kind == "written" {
+        if r.kind == "written" || r.kind == "fill_blank" {
+            guard let model = r.model_answer, !model.isEmpty else { return nil }
             return QuizQuestion(id: r.id, text: r.text, options: [], answer: -1, why: r.explanation ?? "", page: r.source_page,
-                                hints: r.hints ?? [], materialId: materialId, written: true, modelAnswer: r.model_answer ?? "")
+                                hints: r.hints ?? [], materialId: materialId, written: r.kind == "written", fillBlank: r.kind == "fill_blank", modelAnswer: model)
         }
         guard let options = r.options, options.count > 1 else { return nil }
         return QuizQuestion(id: r.id, text: r.text, options: options, answer: r.answer_index ?? 0, why: r.explanation ?? "",
@@ -127,10 +132,29 @@ enum QuizAPI {
 
     struct Answer {
         let questionId: String; let chosen: Int?; let hints: Int; let confidence: Confidence?
-        /// The text of a written answer (saved, not graded).
+        /// The text of a typed answer (written / fill in the blank), saved; the server judges it again when the try is graded.
         var written: String? = nil
+        /// The verdict the server gave when the answer was sent (nil for multiple choice).
+        var verdict: Bool? = nil
         /// "Bilmiyorum" (placement test), graded as wrong.
         var dontKnow = false
+    }
+
+    enum Judged { case verdict(correct: Bool, feedback: String), limit, failed }
+
+    /// Judges one typed answer right away (Edge Function grade-quiz with `question_id`): the verdict and a short
+    /// feedback in the content language. Nothing is saved; the finished try is graded again. 200 a day per student.
+    static func judge(questionId: String, answer: String) async -> Judged {
+        struct Body: Encodable { let question_id: String; let answer: String }
+        struct Res: Decodable { let correct: Bool; let feedback: String? }
+        do {
+            let r: Res = try await supabase.functions.invoke("grade-quiz", options: FunctionInvokeOptions(body: Body(question_id: questionId, answer: answer)))
+            return .verdict(correct: r.correct, feedback: r.feedback ?? "")
+        } catch FunctionsError.httpError(429, _) {
+            return .limit
+        } catch {
+            return .failed
+        }
     }
 
     /// Saves a finished try, then the server grades it (right/wrong, score, topic mastery, wrong "sure" answers to
