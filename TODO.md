@@ -385,3 +385,5 @@ Technical notes and decisions:
 ## App Review demo account (13 Nov 2026, live)
 - [x] Account `kiannazari36+inceleme@gmail.com` made by Kian on kavis.study (password only Kian knows; never in git). Its trial was moved on the live database so it ends 13 Dec 2026 (`profiles.trial_started_at` = 10 Dec 2026). It is NOT Premium on purpose (the reviewer must be able to test the sandbox purchase). Not Premium and trial end date: move it again if review takes longer.
 - [ ] Kian uploads one small PDF (2-3 pages, ≈ $0.05-0.15) with this account so there is a finished lesson; then put the login in App Store Connect → App Review → Sign-in required.
+- [ ] Small fix (13 Nov 2026, seen on live with the demo lesson): right after a lesson became ready, the web reader's "Orijinal PDF" showed "PDF şu an açılamadı." and stayed so; a page reload opened it fine (file and pdf.js worker were fine, console clean afterwards). Make the reader try once more by itself and/or show a "Tekrar dene" button.
+- [x] Demo lesson uploaded on live by Kian (3 pages, `docs/demo/Demo-Ders-Antihipertansifler.pdf`): status ready, 3 pages, original PDF in storage; opens in both modes.
