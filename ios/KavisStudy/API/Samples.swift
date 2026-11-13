@@ -117,11 +117,11 @@ enum SamplesAPI {
     }
 
     /// "Bu tarzda yeni sorular üret": a new exam pack for the course (Edge generate-quiz, AI). Returns the quiz.
-    static func makeExamPack(courseId: String, types: [String] = []) async -> Result<(quizId: String, questions: Int), Failure> {
+    static func makeExamPack(courseId: String, types: [String] = [], count: Int = 10) async -> Result<(quizId: String, questions: Int), Failure> {
         struct Body: Encodable { let course_id: String; let count: Int; let styles: [String]; let types: [String] }
         struct Made: Decodable { let quiz_id: String; let questions: Int }
         do {
-            let r: Made = try await supabase.functions.invoke("generate-quiz", options: FunctionInvokeOptions(body: Body(course_id: courseId, count: 10, styles: [], types: types)))
+            let r: Made = try await supabase.functions.invoke("generate-quiz", options: FunctionInvokeOptions(body: Body(course_id: courseId, count: count, styles: [], types: types)))
             return .success((r.quiz_id, r.questions))
         } catch {
             return .failure(failure(error))

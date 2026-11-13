@@ -7,6 +7,7 @@ struct KavisStudyApp: App {
     @State private var app = AppModel()
     @State private var toast = ToastCenter()
     @State private var trial = TrialModel()
+    @State private var audio = AudioLessonModel()
     @State private var network = NetworkMonitor()
 
     var body: some Scene {
@@ -16,6 +17,7 @@ struct KavisStudyApp: App {
                 .environment(app)
                 .environment(toast)
                 .environment(trial)
+                .environment(audio)
                 .environment(network)
                 .environment(\.layoutDirection, prefs.lang.layoutDirection)
                 .environment(\.locale, prefs.lang.locale)

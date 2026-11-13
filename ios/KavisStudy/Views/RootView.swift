@@ -4,6 +4,7 @@ import SwiftUI
 struct RootView: View {
     @Environment(AppModel.self) private var app
     @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(AudioLessonModel.self) private var audio
 
     /// iPad (full width): the left rail of design/NewIPad.dc.html around the app's screens.
     private var rail: Bool { sizeClass == .regular && app.route.showsPadRail }
@@ -17,7 +18,23 @@ struct RootView: View {
                 if rail { PadRail().transition(.move(edge: .leading)) }
             }
         .animation(.easeInOut(duration: 0.25), value: rail)
+        // "Sesli anlatım" keeps reading while the student moves around: the small player sits over every screen
+        // except the assistant, which shows the big one.
+        .overlay(alignment: .bottom) {
+            if audio.lesson != nil, showsMiniPlayer {
+                AudioMini().padding(.bottom, rail ? 12 : 96).padding(.leading, rail ? 88 : 0).transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .animation(.easeOut(duration: 0.2), value: audio.lesson != nil)
         .modifier(RootTasks())
+    }
+
+    /// The small "Sesli anlatım" player: not where it would cover the screen's own bottom controls.
+    private var showsMiniPlayer: Bool {
+        switch app.route {
+        case .home, .courses, .course, .progress, .weekPlan, .settings, .profile, .timetable, .notifications, .lessonSummary, .samples, .cards, .lessonCards, .examCenter: true
+        default: false
+        }
     }
 
     /// iPad (full width): the first steps sit next to the design's brand panel; the phone shows them as they are.

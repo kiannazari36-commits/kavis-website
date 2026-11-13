@@ -40,6 +40,10 @@ struct QuizView: View {
     @State private var gettingNew = false
     /// The answer of a written question while it is typed (at most 800 characters, as in the design).
     @State private var typed = ""
+    /// A typed answer is sent to the server (grade-quiz) after "how sure": its verdict and short feedback, and the wait.
+    @State private var verdict: Bool?
+    @State private var feedback = ""
+    @State private var judging = false
     @FocusState private var typing: Bool
 
     private var lang: Lang { prefs.lang }
@@ -173,7 +177,7 @@ struct QuizView: View {
     // MARK: Question
 
     private func body(_ q: QuizQuestion) -> some View {
-        Group { if q.written { writtenBody(q) } else { choiceBody(q) } }
+        Group { if q.typedKind { typedBody(q) } else { choiceBody(q) } }
     }
 
     private func choiceBody(_ q: QuizQuestion) -> some View {
@@ -201,19 +205,31 @@ struct QuizView: View {
         }
     }
 
-    /// Design ScrQuiz "YAZILI SORU": write the answer, send it, then compare it with the model answer from the PDF.
-    /// Like the web and the server (grade-quiz), a written answer is saved but not scored.
-    private func writtenBody(_ q: QuizQuestion) -> some View {
+    /// Design ScrQuiz "YAZILI SORU" (and the same for fill in the blank): write the answer, send it, say how sure you
+    /// are; the server judges it against the model answer from the PDF (grade-quiz, like the web) and it is scored.
+    private func typedBody(_ q: QuizQuestion) -> some View {
         VStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
-                    Text(d("YAZILI SORU")).font(KFont.mono(10, .regular)).tracking(lang.isRTL ? 0 : 1)
+                    Text(q.fillBlank ? t("kind_fill_blank").uppercased(with: lang.locale) : d("YAZILI SORU")).font(KFont.mono(10, .regular)).tracking(lang.isRTL ? 0 : 1)
                         .foregroundStyle(C.ambText).padding(.horizontal, 8).padding(.vertical, 4)
                         .background(C.ambSoft, in: RoundedRectangle(cornerRadius: 5))
                     Text(q.text).font(KFont.ui(20, .semibold, lang: qLang)).kLineHeight(1.4, size: 20, lang: qLang)
                         .foregroundStyle(KPhone.text).environment(\.layoutDirection, qLang.layoutDirection)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    if phase == .ask {
+                    if phase != .reveal && q.fillBlank {
+                        TextField(t("blankPlaceholder"), text: $typed)
+                            .font(KFont.reading(18, lang: qLang)).foregroundStyle(KPhone.text)
+                            .focused($typing).disabled(judging)
+                            .submitLabel(.send)
+                            .onSubmit { sendTyped(q) }
+                            .onChange(of: typed) { _, v in if v.count > 200 { typed = String(v.prefix(200)) } }
+                            .environment(\.layoutDirection, qLang.layoutDirection)
+                            .padding(.horizontal, 16).frame(height: 56)
+                            .background(C.card, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                            .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(C.pri, lineWidth: 2))
+                            .padding(.top, 6)
+                    } else if phase != .reveal {
                         ZStack(alignment: .topLeading) {
                             if typed.isEmpty {
                                 Text(d("Cevabını yaz ya da sesle anlat…")).font(KFont.reading(17, lang: qLang)).foregroundStyle(C.text3)
@@ -222,7 +238,7 @@ struct QuizView: View {
                             TextEditor(text: $typed)
                                 .font(KFont.reading(17, lang: qLang)).foregroundStyle(KPhone.text)
                                 .scrollContentBackground(.hidden)
-                                .focused($typing)
+                                .focused($typing).disabled(judging)
                                 .padding(10)
                                 .onChange(of: typed) { _, v in if v.count > 800 { typed = String(v.prefix(800)) } }
                                 .accessibilityLabel(d("Cevabını yaz ya da sesle anlat…"))
@@ -232,6 +248,9 @@ struct QuizView: View {
                         .background(C.card, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                         .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(C.pri, lineWidth: 2))
                         .padding(.top, 6)
+                        if judging {
+                            Text(t("judging")).font(KFont.ui(13, lang: lang)).foregroundStyle(C.text3)
+                        }
                         HStack(spacing: 10) {
                             Button { toast.show(t("k165")) } label: {
                                 HStack(spacing: 8) {
@@ -246,6 +265,13 @@ struct QuizView: View {
                             Text("\(Format.num(typed.count, lang)) / \(Format.num(800, lang))").font(KFont.mono(11, .regular)).foregroundStyle(C.text3)
                         }
                     } else {
+                        let right = verdict == true
+                        if !right && confidence == .sure { danger } else { banner(right) }
+                        if !feedback.isEmpty {
+                            Text(feedback).font(KFont.ui(14, lang: qLang)).kLineHeight(1.5, size: 14, lang: qLang).foregroundStyle(KPhone.text)
+                                .environment(\.layoutDirection, qLang.layoutDirection)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
                         VStack(alignment: .leading, spacing: 6) {
                             Text(d("SENİN CEVABIN")).font(KFont.mono(10, .regular)).tracking(lang.isRTL ? 0 : 1).foregroundStyle(C.text3)
                             Text(typed).font(KFont.reading(14, italic: true, lang: qLang)).kLineHeight(1.55, size: 14, lang: qLang).foregroundStyle(C.text2)
@@ -254,13 +280,6 @@ struct QuizView: View {
                         .padding(.horizontal, 14).padding(.vertical, 12)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(C.sub, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                        HStack(alignment: .top, spacing: 10) {
-                            KIcon(name: .info, size: 18, width: 1.8).foregroundStyle(C.ambText)
-                            Text(t("quizWrittenNote")).font(KFont.ui(13, lang: lang)).kLineHeight(1.5, size: 13, lang: lang).foregroundStyle(KPhone.text)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        .padding(.horizontal, 14).padding(.vertical, 12)
-                        .background(C.ambSoft, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                         if !q.modelAnswer.isEmpty {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text(d("MODEL CEVAP · PDF'TEN")).font(KFont.mono(10, .regular)).tracking(lang.isRTL ? 0 : 1).foregroundStyle(C.ok)
@@ -408,19 +427,19 @@ struct QuizView: View {
     }
 
     private func footer(_ q: QuizQuestion) -> some View {
-        let empty = q.written ? typed.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty : selected == nil
-        let disabled = phase == .ask && empty
+        let empty = q.typedKind ? typed.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty : selected == nil
+        let disabled = phase == .ask && (empty || judging)
         let last = index >= total - 1
         return Button {
             switch phase {
-            // A written answer has no "how sure" step: it is not scored.
-            case .ask where q.written: if !empty { typing = false; phase = .reveal }
+            // A typed answer: first "how sure", then the server judges it.
+            case .ask where q.typedKind: if !empty { typing = false; phase = .conf }
             case .ask: if selected != nil { phase = .conf }
             case .reveal: next(q)
             default: break
             }
         } label: {
-            Text(phase == .reveal ? d(last ? "Sınavı bitir" : "Sonraki soru") : d(q.written ? "Gönder" : "Cevapla"))
+            Text(phase == .reveal ? d(last ? "Sınavı bitir" : "Sonraki soru") : judging ? t("judging") : q.typedKind ? t("sendAnswer") : d("Cevapla"))
                 .font(KFont.ui(16, .semibold, lang: lang)).foregroundStyle(disabled ? C.text3 : KPhone.ctaText)
                 .frame(maxWidth: .infinity, minHeight: 52)
                 .background(disabled ? C.line : C.pri, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
@@ -445,7 +464,7 @@ struct QuizView: View {
                 ForEach([(Confidence.sure, "Eminim", KIconName.check, C.okSoft, C.ok), (.unsure, "Emin değilim", .help, C.ambSoft, C.ambText), (.guess, "Tahmin ettim", .plus, C.blueSoft, C.blue)], id: \.1) { c, label, icon, bg, fg in
                     Button {
                         confidence = c
-                        phase = .reveal
+                        if let q = question, q.typedKind { phase = .ask; judge(q) } else { phase = .reveal }
                     } label: {
                         HStack(spacing: 12) {
                             KIcon(name: icon, size: 16, width: 2).foregroundStyle(fg)
@@ -472,8 +491,8 @@ struct QuizView: View {
 
     private func next(_ q: QuizQuestion) {
         let text = typed.trimmingCharacters(in: .whitespacesAndNewlines)
-        answers.append(.init(questionId: q.id, chosen: q.written ? nil : selected, hints: min(hintsShown, q.hints.count), confidence: q.written ? nil : confidence,
-                             written: q.written ? text : nil))
+        answers.append(.init(questionId: q.id, chosen: q.typedKind ? nil : selected, hints: min(hintsShown, q.hints.count), confidence: confidence,
+                             written: q.typedKind ? text : nil, verdict: q.typedKind ? verdict : nil))
         if index >= total - 1 {
             phase = .result
             let quizId = quiz?.id ?? ""
@@ -485,22 +504,54 @@ struct QuizView: View {
             confidence = nil
             hintsShown = 0
             typed = ""
+            verdict = nil
+            feedback = ""
             phase = .ask
         }
     }
 
-    /// Multiple-choice answers only: written ones are not scored.
-    private var gradable: [QuizAPI.Answer] { answers.filter { $0.written == nil } }
+    /// "Gönder" on the keyboard: next comes "how sure" (the same as the footer button).
+    private func sendTyped(_ q: QuizQuestion) {
+        guard !judging, !typed.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        typing = false
+        phase = .conf
+    }
+
+    /// After "how sure": the server judges the typed answer against the model answer (right / wrong + short feedback).
+    private func judge(_ q: QuizQuestion) {
+        let text = typed.trimmingCharacters(in: .whitespacesAndNewlines)
+        judging = true
+        Task {
+            let r = await QuizAPI.judge(questionId: q.id, answer: text)
+            judging = false
+            switch r {
+            case .verdict(let correct, let note):
+                verdict = correct
+                feedback = note
+                phase = .reveal
+            case .limit:
+                confidence = nil
+                toast.show(t("askBudget"))
+            case .failed:
+                confidence = nil
+                toast.show(t("judgeFailed"))
+            }
+        }
+    }
+
+    /// Every answer counts: a typed one by the server's verdict.
+    private var gradable: [QuizAPI.Answer] { answers }
 
     private var rightCount: Int {
         guard let quiz else { return 0 }
-        return gradable.filter { a in quiz.questions.first { $0.id == a.questionId }?.answer == a.chosen }.count
+        return gradable.filter { a in
+            if let v = a.verdict { return v }
+            return quiz.questions.first { $0.id == a.questionId }?.answer == a.chosen
+        }.count
     }
 
     private var result: some View {
         let wrong = gradable.count - rightCount
-        let writtenCount = answers.count - gradable.count
-        // Only written questions: nothing to score, the ring stays full.
         let pct = gradable.isEmpty ? 100 : score ?? Int((Double(rightCount) / Double(max(gradable.count, 1)) * 100).rounded())
         return VStack(spacing: 18) {
             Spacer()
@@ -517,10 +568,6 @@ if !gradable.isEmpty {
                             Text(wrong == 0 ? t("allGood") : "\(Format.num(wrong, lang))\(t("wrongsA").components(separatedBy: ".").first ?? "").")
                 .font(KFont.ui(17, .semibold, lang: lang)).foregroundStyle(KPhone.text).multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
-            }
-            if writtenCount > 0 {
-                Text("\(prefs.t("quizWrittenCount", ["n": Format.num(writtenCount, lang)])) · \(t("quizWrittenNote"))")
-                    .font(KFont.ui(13, lang: lang)).foregroundStyle(C.text2).multilineTextAlignment(.center).padding(.horizontal, 32)
             }
             Spacer()
             VStack(spacing: 10) {
@@ -580,6 +627,8 @@ if !gradable.isEmpty {
             hintsShown = 0
             score = nil
             typed = ""
+            verdict = nil
+            feedback = ""
             phase = .ask
         }
     }

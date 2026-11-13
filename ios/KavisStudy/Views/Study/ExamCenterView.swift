@@ -22,6 +22,8 @@ struct ExamCenterView: View {
     @State private var allSelected: Set<String> = []
     @State private var count = 40
     @State private var weakFocus = true
+    /// Which kinds of questions this exam has (the student's choice; at least one, like the web).
+    @State private var kinds: Set<String> = ["multiple_choice"]
     @State private var building = false
     @State private var weekOpen = false
 
@@ -342,6 +344,25 @@ struct ExamCenterView: View {
                 .background(C.sub, in: RoundedRectangle(cornerRadius: 10))
             }
             Rectangle().fill(C.line).frame(height: 1)
+            VStack(alignment: .leading, spacing: 8) {
+                Text(prefs.t("pickKinds")).font(KFont.ui(14, lang: lang)).foregroundStyle(C.text)
+                FlowLayout(spacing: 6, rowSpacing: 6) {
+                    ForEach(["multiple_choice", "fill_blank", "written"], id: \.self) { k in
+                        let on = kinds.contains(k)
+                        Button {
+                            if on { if kinds.count > 1 { kinds.remove(k) } } else { kinds.insert(k) }
+                        } label: {
+                            Text(prefs.t("kind_\(k)")).font(KFont.ui(13, on ? .semibold : .regular, lang: lang)).foregroundStyle(on ? C.onDark : C.text2)
+                                .padding(.horizontal, 12).frame(height: 34)
+                                .background(on ? C.pri : C.sub, in: Capsule())
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityAddTraits(on ? [.isSelected] : [])
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            Rectangle().fill(C.line).frame(height: 1)
             HStack(spacing: 10) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(d("Zayıf konulara ağırlık ver")).font(KFont.ui(14, lang: lang)).foregroundStyle(C.text)
@@ -388,13 +409,28 @@ struct ExamCenterView: View {
         .disabled(building || chosenIds.isEmpty)
     }
 
+    /// Goes straight to the exam. When there are no questions of the chosen kinds yet, they are written first (AI,
+    /// Edge generate-quiz, like the pack maker; needs the trial or Premium), then the exam is built again.
     private func start() async {
         building = true
         defer { building = false }
-        switch await ExamsAPI.build(courseIds: chosenIds, count: count, weakFocus: weakFocus) {
+        let types = ["multiple_choice", "fill_blank", "written"].filter(kinds.contains)
+        var r = await ExamsAPI.build(courseIds: chosenIds, count: count, weakFocus: weakFocus, types: types)
+        if case .empty = r {
+            let withPdf = courses.filter { chosenIds.contains($0.id) && !$0.pdfs.isEmpty }
+            guard !withPdf.isEmpty else { return toast.show(prefs.t("exNoPdf")) }
+            let each = min(20, max(5, Int((Double(count) / Double(withPdf.count)).rounded(.up))))
+            for c in withPdf {
+                if case .failure(let f) = await SamplesAPI.makeExamPack(courseId: c.id, types: types, count: each) {
+                    return toast.show(prefs.t(f == .locked ? "trialQFull" : f == .budget ? "askBudget" : "exFailed"))
+                }
+            }
+            r = await ExamsAPI.build(courseIds: chosenIds, count: count, weakFocus: weakFocus, types: types)
+        }
+        switch r {
         case .ok(let id): app.go(.quiz(QuizTarget(materialId: "", kind: .exam, quizId: id)))
-        case .empty: toast.show(prefs.t("quiz.none"))
-        case .failed: toast.show(prefs.t("errOther"))
+        case .empty: toast.show(prefs.t("exNone"))
+        case .failed: toast.show(prefs.t("exFailed"))
         }
     }
 }
