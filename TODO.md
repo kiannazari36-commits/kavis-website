@@ -366,8 +366,8 @@ Technical notes and decisions:
 ## Apple App Review check (13 Nov 2026, read from developer.apple.com/app-store/review/guidelines; page was cut after 5.2 — Kian to send the rest if needed)
 - [x] Already fine: account deletion in the app (5.1.1(v)), Restore Purchases code exists (3.1.1), privacy policy + terms pages exist (5.1.1(i)), privacy text names Anthropic as the AI processor and the EU/transfer (5.1.2(i) disclosure), web has no purchase links (3.1.1(a)), no push needed to use the app (4.5.4), `ITSAppUsesNonExemptEncryption` false.
 - [ ] Sign in with Apple button in the iOS app (4.8, because Google sign-in is offered) — see `docs/APP_STORE.md`.
-- [ ] Add `PrivacyInfo.xcprivacy` (privacy manifest) to the iOS app: none exists. Required reason APIs (UserDefaults, file timestamps…) + collected data types.
-- [ ] 5.1.2(i): sign-up must ask EXPLICIT permission for sending lesson content to a third-party AI (Anthropic) — check the sign-up consent text says it, else add one sentence/checkbox (4 languages).
+- [x] (13 Nov 2026, not built in Xcode yet: check the Release build includes it; collected types must match `docs/APP_STORE.md` privacy label) Add `PrivacyInfo.xcprivacy` (privacy manifest) to the iOS app: none exists. Required reason APIs (UserDefaults, file timestamps…) + collected data types.
+- [x] (13 Nov 2026: sentence added to the sign-up consent in 4 languages, web + iOS) 5.1.2(i): sign-up must ask EXPLICIT permission for sending lesson content to a third-party AI (Anthropic) — check the sign-up consent text says it, else add one sentence/checkbox (4 languages).
 - [ ] Paywall (3.1.2(c)): show the plan, the period and "Price in the App Store" clearly; Restore Purchases button visible; link to terms + privacy on the paywall.
 - [ ] Our own 3-day trial is not an Apple trial: explain it in review notes (no purchase needed, free limits) so it is not read as a 3.1.1 trial.
 - [ ] 5.2 (copyright): students upload teachers' PDFs — review notes must say content stays private, sharing never includes the original PDF.
