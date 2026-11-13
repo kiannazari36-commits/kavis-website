@@ -2,7 +2,7 @@
   "identifier": "4B6F7A21",
   "nonRenewingSubscriptions": [
     {
-      "displayPrice": "44",
+      "displayPrice": "2190",
       "familyShareable": false,
       "internalID": "6740000003",
       "localizations": [
@@ -22,8 +22,8 @@
     "_applicationInternalID": "6740000000",
     "_developerTeamID": "TEST",
     "_failTransactionsEnabled": false,
-    "_locale": "en_US",
-    "_storefront": "USA",
+    "_locale": "tr_TR",
+    "_storefront": "TUR",
     "_storeKitErrors": []
   },
   "subscriptionGroups": [
@@ -35,7 +35,7 @@
         {
           "adHocOffers": [],
           "codeOffers": [],
-          "displayPrice": "90",
+          "displayPrice": "4490",
           "familyShareable": false,
           "groupNumber": 1,
           "internalID": "6740000001",
@@ -56,7 +56,7 @@
         {
           "adHocOffers": [],
           "codeOffers": [],
-          "displayPrice": "10",
+          "displayPrice": "499",
           "familyShareable": false,
           "groupNumber": 2,
           "internalID": "6740000002",
