@@ -362,3 +362,15 @@ Technical notes and decisions:
 - [x] `daily-planner` v2 live 5 Nov 2026 (Kian's yes): the nightly plan also skips the pages of known topics
 - [x] 6 Nov 2026: the reader marks pages by topic state (`topic_progress`, from the placement test and quizzes): "Çalışılacak" (red), "Zayıf · tekrar et" (amber), "Biliyorsun" (green), on reading-mode cards and over PDF pages; untested topics get nothing. Once per lesson the line "PDF'te çalışman gereken sayfalar işaretlendi" shows above the pages (closed = not again on that device). The web placement result shows the design line again. Web `studyMarks` (`api/placement.ts`), iOS `StudyMarksAPI` (`API/StudyMarks.swift`, phone copy `study-<id>.json`). No server change. Tried locally with a fake account (readergaps1, fake 3-page PDF with 3 topics and a fake recording). The iOS placement result shows the design line too. On `main` 7 Nov 2026 (Kian's yes), web live
 - [x] iOS / iPad screen (6 Nov 2026, see the iOS list)
+
+## Apple App Review check (13 Nov 2026, read from developer.apple.com/app-store/review/guidelines; page was cut after 5.2 — Kian to send the rest if needed)
+- [x] Already fine: account deletion in the app (5.1.1(v)), Restore Purchases code exists (3.1.1), privacy policy + terms pages exist (5.1.1(i)), privacy text names Anthropic as the AI processor and the EU/transfer (5.1.2(i) disclosure), web has no purchase links (3.1.1(a)), no push needed to use the app (4.5.4), `ITSAppUsesNonExemptEncryption` false.
+- [ ] Sign in with Apple button in the iOS app (4.8, because Google sign-in is offered) — see `docs/APP_STORE.md`.
+- [ ] Add `PrivacyInfo.xcprivacy` (privacy manifest) to the iOS app: none exists. Required reason APIs (UserDefaults, file timestamps…) + collected data types.
+- [ ] 5.1.2(i): sign-up must ask EXPLICIT permission for sending lesson content to a third-party AI (Anthropic) — check the sign-up consent text says it, else add one sentence/checkbox (4 languages).
+- [ ] Paywall (3.1.2(c)): show the plan, the period and "Price in the App Store" clearly; Restore Purchases button visible; link to terms + privacy on the paywall.
+- [ ] Our own 3-day trial is not an Apple trial: explain it in review notes (no purchase needed, free limits) so it is not read as a 3.1.1 trial.
+- [ ] 5.2 (copyright): students upload teachers' PDFs — review notes must say content stays private, sharing never includes the original PDF.
+- [ ] AI chatbot (4.7 / 1.2): keep a way to report a wrong/offensive AI answer and say AI can be wrong (terms §6 does).
+- [ ] Age rating 4+ vs AI-generated content: answer Apple's new age-rating questionnaire honestly (AI chat feature).
+- [ ] Review notes: demo account (Apple needs one), how to reach every feature, that Premium unlocks through App Store purchase only.
