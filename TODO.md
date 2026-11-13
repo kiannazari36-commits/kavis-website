@@ -374,3 +374,7 @@ Technical notes and decisions:
 - [ ] AI chatbot (4.7 / 1.2): keep a way to report a wrong/offensive AI answer and say AI can be wrong (terms §6 does).
 - [ ] Age rating 4+ vs AI-generated content: answer Apple's new age-rating questionnaire honestly (AI chat feature).
 - [ ] Review notes: demo account (Apple needs one), how to reach every feature, that Premium unlocks through App Store purchase only.
+
+## App Store products (13 Nov 2026)
+- [x] Auto-renewable group "Premium" (group name `Kavis Premium`): monthly `study.kavis.premium.month` (TRY 499.99) and yearly `study.kavis.premium.year` (TRY 4,399.99) made in App Store Connect with Turkish name/description, availability Turkey only, review screenshot + notes. Both still "Prepare for Submission": they go in with the first app version (do NOT press "Add for Review" on them alone). Family Sharing left off.
+- [ ] The 5-month term (`study.kavis.premium.term`, non-renewing) is NOT created: the In-App Purchase type list in App Store Connect shows only Consumable and Non-Consumable (no Non-Renewing Subscription). Launch with monthly + yearly; the app and server already work without it (paywall shows only the products the App Store returns). Re-check later whether the type appears; if not, drop it or use a 6-month auto-renewable plan (then change the code and paywall texts).
