@@ -381,3 +381,7 @@ Technical notes and decisions:
 
 ## Found 13 Nov 2026 while making the App Review demo account
 - [ ] LIVE Supabase sent an 8-digit email code, but web (`Login.tsx`, `code.length === 6`) and iPhone (`AuthView.swift`, `code.count == 6`) expect 6 digits. The local config has `otp_length = 6`, so tests never saw it. Fix: Supabase dashboard → Authentication → Providers → Email → "Email OTP Length" = 6 (Kian does it), then send a new code. Check afterwards that a live sign-up works end to end on web and iPhone. Must be done before any real user signs up.
+
+## App Review demo account (13 Nov 2026, live)
+- [x] Account `kiannazari36+inceleme@gmail.com` made by Kian on kavis.study (password only Kian knows; never in git). Its trial was moved on the live database so it ends 13 Dec 2026 (`profiles.trial_started_at` = 10 Dec 2026). It is NOT Premium on purpose (the reviewer must be able to test the sandbox purchase). Not Premium and trial end date: move it again if review takes longer.
+- [ ] Kian uploads one small PDF (2-3 pages, ≈ $0.05-0.15) with this account so there is a finished lesson; then put the login in App Store Connect → App Review → Sign-in required.
