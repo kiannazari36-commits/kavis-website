@@ -112,9 +112,9 @@ Not collected: location, contacts, health, financial info, browsing history.
 ```text
 Kavis Study turns a student's own uploaded PDF (or slide photo or lecture transcript) into an interactive study lesson, with summaries, flash cards, quizzes and an AI assistant that only uses the student's own material.
 
-SIGN IN: use the demo account in the Sign-in fields (email + password; no code needed). It has an active Premium state and one finished lesson ("Demo lesson") so every screen can be tried. A new account gets our own 3-day free trial (no card).
+SIGN IN: use the demo account in the Sign-in fields (email + password; no code needed). It is a normal account on our own free trial (extended so it does not run out during review) with one finished lesson, so every screen can be tried and you can test the purchase in the sandbox. A new account gets our own 3-day free trial (no card).
 
-PREMIUM: sold only through Apple in-app purchase (auto-renewable monthly and yearly, in the subscription group "Kavis Premium"). To see the paywall: sign in with a trial-ended or new account and tap "Premium'a geç" on the home screen, or Settings > Premium. Restore Purchases, Terms of Use and Privacy Policy links are on the paywall. Premium unlocks all of the user's devices through our server.
+PREMIUM: sold only through Apple in-app purchase (auto-renewable monthly and yearly, in the subscription group "Kavis Premium"). To see the paywall and test a purchase: sign in with the demo account and tap "Premium'a geç" on the home screen, or Settings > Premium. Restore Purchases, Terms of Use and Privacy Policy links are on the paywall. Premium unlocks all of the user's devices through our server.
 
 AI: lesson text is sent to a third-party AI service (Anthropic) only to write answers, summaries and quizzes; this is disclosed at sign-up and in the privacy policy, and the user agrees to it when creating an account.
 
