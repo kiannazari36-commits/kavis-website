@@ -387,3 +387,16 @@ Technical notes and decisions:
 - [ ] Kian uploads one small PDF (2-3 pages, ≈ $0.05-0.15) with this account so there is a finished lesson; then put the login in App Store Connect → App Review → Sign-in required.
 - [ ] Small fix (13 Nov 2026, seen on live with the demo lesson): right after a lesson became ready, the web reader's "Orijinal PDF" showed "PDF şu an açılamadı." and stayed so; a page reload opened it fine (file and pdf.js worker were fine, console clean afterwards). Make the reader try once more by itself and/or show a "Tekrar dene" button.
 - [x] Demo lesson uploaded on live by Kian (3 pages, `docs/demo/Demo-Ders-Antihipertansifler.pdf`): status ready, 3 pages, original PDF in storage; opens in both modes.
+
+## App Store submission: where we stopped (13 Nov 2026, evening) — continue here
+Done in App Store Connect (Kian): subscription group "Kavis Premium" with monthly (TRY 499.99) and yearly (TRY 4,399.99), Turkish names/descriptions, review screenshot + notes, Turkey only; app price Free, app availability Turkey only; App Review Information (sign-in required with the demo account, contact, review notes) saved on the iOS 1.0 version page. Done by Claude: privacy manifest, AI-consent sentence at sign-up, review notes text (`docs/APP_STORE.md`), demo lesson PDF, trial of the demo account moved to 13 Dec 2026, live Edge Functions redeployed with the $4 AI budget, Apple guideline check (see section above). Live Supabase email code length changed to 6 by Kian.
+Still open, in this order:
+1. Version page: set "Manually release this version" (it was on automatic) and save. Do NOT press "Add for Review" yet.
+2. Version page top part (not checked yet): screenshots for the iPhone sizes, app description, keywords, support URL, privacy policy URL, "What's new", age rating questionnaire, App Privacy (privacy label from `docs/APP_STORE.md`, must match `PrivacyInfo.xcprivacy`), category, copyright.
+3. A build must be uploaded from Xcode (Product > Archive > Distribute > App Store Connect) and chosen on the version page. Needs the Apple developer team/signing set up; Release build must use the LIVE server (check `Secrets.xcconfig`, `kavis.server` default) and `aps-environment` production when push is turned on.
+4. Lawyer check of terms + privacy drafts, then fill the `[PLACEHOLDERS]` and remove the "draft" banner; privacy policy must also say how long data is kept and how to ask for deletion (guideline 5.1.1).
+5. Apple Small Business Program application (15% instead of 30%) — Kian.
+6. Sign-in with Apple already in the app; check Apple/Google sign-in work on the Release build.
+7. Re-take the paywall screenshot if prices change; the phone build used the StoreKit test file (Turkey/TRY), real prices come from App Store Connect.
+8. Fix the small PDF-view retry (section above) and renew the Anthropic API key before ~22 Jan 2027.
+9. Network/other: the commits of this work are on the branch `claude/fervent-yalow-da4060` (not pushed, not merged into main yet).
