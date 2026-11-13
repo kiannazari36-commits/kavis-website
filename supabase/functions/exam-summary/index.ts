@@ -13,7 +13,7 @@ import Anthropic from 'npm:@anthropic-ai/sdk';
 import { buildDoc, citedPages, mismatch, pageTexts, pickPages, searchTerms, tsQuery, WORDS, type Lang, type StyleKey, type Topic } from './lib.ts';
 
 const MODEL = 'claude-sonnet-5-5';
-const MONTHLY_BUDGET_USD = 3;
+const MONTHLY_BUDGET_USD = 4;
 const MAX_FILE_BYTES = 15 * 1024 * 1024;
 /** Lesson text sent per topic (about 5,000 tokens). */
 const PAGE_CHARS = 16000;

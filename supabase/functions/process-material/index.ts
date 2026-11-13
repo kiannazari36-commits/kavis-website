@@ -31,7 +31,7 @@ const MAX_PAGES = 100;
 /** A "processing" lesson not touched for this long was stopped; asking again continues it. */
 const STALE_MS = 5 * 60 * 1000;
 /** AI spending per student per month (US dollars); above it new lessons are not prepared. */
-const MONTHLY_BUDGET_USD = 3;
+const MONTHLY_BUDGET_USD = 4;
 
 const cors = {
   'Access-Control-Allow-Origin': '*',

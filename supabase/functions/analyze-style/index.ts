@@ -6,7 +6,7 @@ import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 
 const MODEL = 'claude-sonnet-5-5';
-const MONTHLY_BUDGET_USD = 3;
+const MONTHLY_BUDGET_USD = 4;
 const MAX_FILE_BYTES = 15 * 1024 * 1024;
 
 const cors = {

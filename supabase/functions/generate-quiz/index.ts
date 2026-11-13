@@ -11,7 +11,7 @@ import Anthropic from 'npm:@anthropic-ai/sdk';
 import { cleanHints, costUsd, pickPages, type Page } from './lib.ts';
 
 const MODEL = 'claude-sonnet-5-5';
-const MONTHLY_BUDGET_USD = 3;
+const MONTHLY_BUDGET_USD = 4;
 /** Lecture text sent to the AI (about 8,000 tokens). */
 const MAX_CHARS = 26000;
 

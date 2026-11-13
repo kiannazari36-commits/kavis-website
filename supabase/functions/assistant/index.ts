@@ -20,7 +20,7 @@ import { costUsd, lessonText, queryTerms, rankChunks, splitTail, tsQuery } from 
 // in a test Haiku did not run the web search (0 searches, said search was not working).
 const FAST_MODEL = 'claude-haiku-5-5';
 const STRONG_MODEL = 'claude-sonnet-5-5';
-const MONTHLY_BUDGET_USD = 3;
+const MONTHLY_BUDGET_USD = 4;
 const PIECES = 6;
 // About 35,000 tokens: the first question on a lesson costs at most ~$0.09, follow-ups read it from the cache.
 const LESSON_MAX_CHARS = 120_000;

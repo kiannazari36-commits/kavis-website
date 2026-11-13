@@ -11,7 +11,7 @@ import { cleanSegments, costUsd, transcriptLines, type Segment } from './lib.ts'
 declare const EdgeRuntime: { waitUntil(p: Promise<unknown>): void };
 
 const MODEL = 'claude-sonnet-5-5';
-const MONTHLY_BUDGET_USD = 3;
+const MONTHLY_BUDGET_USD = 4;
 /** PDF text sent per page (enough to recognise it). */
 const PAGE_CHARS = 1200;
 

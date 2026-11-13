@@ -2,7 +2,7 @@
   "identifier": "4B6F7A21",
   "nonRenewingSubscriptions": [
     {
-      "displayPrice": "1200",
+      "displayPrice": "44",
       "familyShareable": false,
       "internalID": "6740000003",
       "localizations": [
@@ -35,7 +35,7 @@
         {
           "adHocOffers": [],
           "codeOffers": [],
-          "displayPrice": "2000",
+          "displayPrice": "90",
           "familyShareable": false,
           "groupNumber": 1,
           "internalID": "6740000001",
@@ -56,7 +56,7 @@
         {
           "adHocOffers": [],
           "codeOffers": [],
-          "displayPrice": "300",
+          "displayPrice": "10",
           "familyShareable": false,
           "groupNumber": 2,
           "internalID": "6740000002",

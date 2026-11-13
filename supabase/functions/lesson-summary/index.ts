@@ -10,7 +10,7 @@ import Anthropic from 'npm:@anthropic-ai/sdk';
 import { costUsd } from './lib.ts';
 
 const MODEL = 'claude-sonnet-5-5';
-const MONTHLY_BUDGET_USD = 3;
+const MONTHLY_BUDGET_USD = 4;
 const MAX_CHARS = 30000;
 
 const cors = {
