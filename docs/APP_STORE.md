@@ -100,7 +100,7 @@ Tracking: **No** (no ads, no analytics SDK, no data sold; confirm no SDK was add
 | Email address | Sign-in, account |
 | Name (if set in profile) | Profile |
 | User content: uploaded PDFs, photos, notes, transcripts | The app's main function |
-| Audio data: **not collected** (speech-to-text runs on the device; only the transcript is sent) | n/a |
+| Audio data: **not collected** (speech-to-text runs on the device; only the transcript is sent; `PrivacyInfo.xcprivacy` matches this) | n/a |
 | Purchases | Premium status |
 | Device ID / push token | Device limit, notifications |
 | Usage data: study progress | Plan, streak |
@@ -108,8 +108,20 @@ Not collected: location, contacts, health, financial info, browsing history.
 
 ## App Review information
 - **Demo account is required** (Apple will not enter an email code from a real inbox). Make a reviewer account in the **live** Supabase (ask Kian first, it writes to the live database) with a fixed login Apple can use, a trial that does not expire during review, and one finished lesson inside. Put the login in the "Sign-in required" fields and describe the code flow in the notes. Never put this login in git.
-- Notes for the reviewer (English):
-  `Kavis Study turns a student's own PDF into a study lesson. Sign in with the demo account. Premium is sold only through Apple in-app purchase; the free trial is our own (3 days, no card). Lecture recording uses on-device speech recognition and only the transcript is uploaded. Account deletion: Settings > Delete account. Sharing exports only app-generated content, never the original PDF.`
+- Notes for the reviewer (English, paste into App Review > Notes):
+```text
+Kavis Study turns a student's own uploaded PDF (or slide photo or lecture transcript) into an interactive study lesson, with summaries, flash cards, quizzes and an AI assistant that only uses the student's own material.
+
+SIGN IN: use the demo account in the Sign-in fields (email + password; no code needed). It has an active Premium state and one finished lesson ("Demo lesson") so every screen can be tried. A new account gets our own 3-day free trial (no card).
+
+PREMIUM: sold only through Apple in-app purchase (auto-renewable monthly and yearly, in the subscription group "Kavis Premium"). To see the paywall: sign in with a trial-ended or new account and tap "Premium'a geç" on the home screen, or Settings > Premium. Restore Purchases, Terms of Use and Privacy Policy links are on the paywall. Premium unlocks all of the user's devices through our server.
+
+AI: lesson text is sent to a third-party AI service (Anthropic) only to write answers, summaries and quizzes; this is disclosed at sign-up and in the privacy policy, and the user agrees to it when creating an account.
+
+ACCOUNT DELETION: Settings > Delete account.
+LECTURE RECORDING: speech-to-text runs on the device; only the transcript is uploaded.
+SHARING (Premium): shares only app-made quizzes/summaries/cards, never the original PDF.
+```
 - Contact: Kian's phone and email (Apple needs a real person).
 
 ## Things Apple checks that we must have ready
