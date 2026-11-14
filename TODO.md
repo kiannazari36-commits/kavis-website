@@ -403,5 +403,5 @@ Still open, in this order:
 
 ## Launch offer (14 Nov 2026)
 - [x] Code (iOS paywall `introOffer`, 4-language text `pwIntro`, StoreKit test file with the intro offer): monthly shows "İlk 3 ay ₺399,99, sonra ayda ₺499,99" when Apple says the account is eligible. Built OK; not seen on a screen yet (needs a run from Xcode with the StoreKit file). Server needs no change (the intro price does not change `expiresDate`).
-- [ ] Kian in App Store Connect: monthly product → Subscription Prices (+) → Create Introductory Offer → Pay As You Go, Türkiye, TRY 399.99, 3 periods, start now, no end date. Then check on a TestFlight/real build that the paywall shows it.
+- [x] (14 Nov 2026, Kian; checked: Türkiye, TRY 399.99, pay as you go every month for 3 months, 14 Nov 2026 to no end date) Kian in App Store Connect: monthly product → Subscription Prices (+) → Create Introductory Offer → Pay As You Go, Türkiye, TRY 399.99, 3 periods, start now, no end date. Still to do: check on a TestFlight/real build that the paywall shows it (the offer only goes live with the first app version).
 - [ ] Web: the web never sells Premium and shows no price (CLAUDE.md), so nothing to change there.
