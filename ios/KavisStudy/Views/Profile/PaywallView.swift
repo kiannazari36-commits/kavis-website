@@ -18,6 +18,8 @@ struct PaywallView: View {
 
     @State private var rows: [CompareRow] = []
     @State private var products: [Product] = []
+    /// Plans whose introductory price (launch offer) this Apple account can still get.
+    @State private var introFor: Set<String> = []
     @State private var loaded = false
     @State private var selected = StoreAPI.productIds[0]
     @State private var busy = false
@@ -71,6 +73,11 @@ struct PaywallView: View {
             loaded = true
             rows = await PremiumAPI.getOffer().rows
             products = await StoreAPI.products()
+            var eligible: Set<String> = []
+            for p in products {
+                if let sub = p.subscription, sub.introductoryOffer != nil, await sub.isEligibleForIntroOffer { eligible.insert(p.id) }
+            }
+            introFor = eligible
             await trial.refresh()
         }
     }
@@ -146,7 +153,16 @@ struct PaywallView: View {
 
     private var monthly: Product? { products.first { $0.id.hasSuffix(".month") } }
 
+    /// The launch price of a plan ("first 3 months cheaper"), only for accounts that can still get it.
+    private func introOffer(_ p: Product) -> Product.SubscriptionOffer? {
+        guard introFor.contains(p.id), let o = p.subscription?.introductoryOffer, o.paymentMode == .payAsYouGo, o.period.unit == .month else { return nil }
+        return o
+    }
+
     private func note(_ p: Product) -> String {
+        if let o = introOffer(p) {
+            return t("pwIntro", ["n": Format.num(o.periodCount * o.period.value, lang), "p": o.displayPrice, "r": p.displayPrice])
+        }
         if p.id.hasSuffix(".month") { return t("pwMonthNote") }
         let months: Decimal = p.id.hasSuffix(".year") ? 12 : 5
         let perMonth = p.price / months
@@ -184,7 +200,7 @@ struct PaywallView: View {
                             Text(note(p)).font(KFont.ui(12, lang: lang)).foregroundStyle(C.text3).multilineTextAlignment(.leading)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        Text(p.displayPrice).font(KFont.ui(18, .bold, lang: .en)).foregroundStyle(C.text).lineLimit(1).fixedSize()
+                        Text(introOffer(p)?.displayPrice ?? p.displayPrice).font(KFont.ui(18, .bold, lang: .en)).foregroundStyle(C.text).lineLimit(1).fixedSize()
                     }
                     .padding(.horizontal, 16).padding(.vertical, 12)
                     .frame(minHeight: 70)

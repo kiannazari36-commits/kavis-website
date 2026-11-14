@@ -8,7 +8,7 @@
       "localizations": [
         {
           "description": "Premium for 5 months (one term)",
-          "displayName": "Premium \u00b7 term",
+          "displayName": "Premium · term",
           "locale": "en_US"
         }
       ],
@@ -35,7 +35,7 @@
         {
           "adHocOffers": [],
           "codeOffers": [],
-          "displayPrice": "4490",
+          "displayPrice": "4399.99",
           "familyShareable": false,
           "groupNumber": 1,
           "internalID": "6740000001",
@@ -43,7 +43,7 @@
           "localizations": [
             {
               "description": "Premium for one year",
-              "displayName": "Premium \u00b7 yearly",
+              "displayName": "Premium · yearly",
               "locale": "en_US"
             }
           ],
@@ -56,15 +56,21 @@
         {
           "adHocOffers": [],
           "codeOffers": [],
-          "displayPrice": "499",
+          "displayPrice": "499.99",
           "familyShareable": false,
           "groupNumber": 2,
           "internalID": "6740000002",
-          "introductoryOffer": null,
+          "introductoryOffer": {
+            "displayPrice": "399.99",
+            "internalID": "6740000011",
+            "numberOfPeriods": 3,
+            "paymentMode": "payAsYouGo",
+            "subscriptionPeriod": "P1M"
+          },
           "localizations": [
             {
               "description": "Premium for one month",
-              "displayName": "Premium \u00b7 monthly",
+              "displayName": "Premium · monthly",
               "locale": "en_US"
             }
           ],

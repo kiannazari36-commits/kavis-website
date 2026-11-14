@@ -400,3 +400,8 @@ Still open, in this order:
 7. Re-take the paywall screenshot if prices change; the phone build used the StoreKit test file (Turkey/TRY), real prices come from App Store Connect.
 8. Fix the small PDF-view retry (section above) and renew the Anthropic API key before ~22 Jan 2027.
 9. Network/other: the commits of this work are on the branch `claude/fervent-yalow-da4060` (not pushed, not merged into main yet).
+
+## Launch offer (14 Nov 2026)
+- [x] Code (iOS paywall `introOffer`, 4-language text `pwIntro`, StoreKit test file with the intro offer): monthly shows "İlk 3 ay ₺399,99, sonra ayda ₺499,99" when Apple says the account is eligible. Built OK; not seen on a screen yet (needs a run from Xcode with the StoreKit file). Server needs no change (the intro price does not change `expiresDate`).
+- [ ] Kian in App Store Connect: monthly product → Subscription Prices (+) → Create Introductory Offer → Pay As You Go, Türkiye, TRY 399.99, 3 periods, start now, no end date. Then check on a TestFlight/real build that the paywall shows it.
+- [ ] Web: the web never sells Premium and shows no price (CLAUDE.md), so nothing to change there.
