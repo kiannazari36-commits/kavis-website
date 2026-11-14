@@ -1,22 +1,6 @@
 {
   "identifier": "4B6F7A21",
-  "nonRenewingSubscriptions": [
-    {
-      "displayPrice": "2190",
-      "familyShareable": false,
-      "internalID": "6740000003",
-      "localizations": [
-        {
-          "description": "Premium for 5 months (one term)",
-          "displayName": "Premium · term",
-          "locale": "en_US"
-        }
-      ],
-      "productID": "study.kavis.premium.term",
-      "referenceName": "Premium term (5 months)",
-      "type": "NonRenewingSubscription"
-    }
-  ],
+  "nonRenewingSubscriptions": [],
   "products": [],
   "settings": {
     "_applicationInternalID": "6740000000",
