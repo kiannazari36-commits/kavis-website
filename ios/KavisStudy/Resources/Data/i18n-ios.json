@@ -2,7 +2,7 @@
  "tr": {
   "remindTitle": "Çalışma vakti",
   "remindBody": "Bugünün planın hazır. Birkaç dakika bile yeter.",
-  "pwStoreNote": "Ödeme Apple hesabından alınır. Abonelik, dönem bitmeden en az 24 saat önce iptal edilmezse kendiliğinden yenilenir. Ayarlar > Apple hesabı > Abonelikler'den istediğin zaman iptal edebilirsin. Dönemlik plan 5 ay sürer ve yenilenmez.",
+  "pwStoreNote": "Ödeme Apple hesabından alınır. Abonelik, dönem bitmeden en az 24 saat önce iptal edilmezse kendiliğinden yenilenir. Ayarlar > Apple hesabı > Abonelikler'den istediğin zaman iptal edebilirsin.",
   "pwPerMonth": "Ayda yaklaşık {p}",
   "pwSave": "aylığa göre %{n} tasarruf",
   "pwMonthNote": "İstediğin ay iptal et",
@@ -124,7 +124,7 @@
  "en": {
   "remindTitle": "Study time",
   "remindBody": "Today's plan is ready. Even a few minutes help.",
-  "pwStoreNote": "Payment is charged to your Apple Account. The subscription renews automatically unless cancelled at least 24 hours before the end of the period. Cancel anytime in Settings > Apple Account > Subscriptions. The term plan lasts 5 months and does not renew.",
+  "pwStoreNote": "Payment is charged to your Apple Account. The subscription renews automatically unless cancelled at least 24 hours before the end of the period. Cancel anytime in Settings > Apple Account > Subscriptions.",
   "pwPerMonth": "About {p} a month",
   "pwSave": "save {n}% vs monthly",
   "pwMonthNote": "Cancel any month",
@@ -246,7 +246,7 @@
  "fa": {
   "remindTitle": "وقت مطالعه",
   "remindBody": "برنامهٔ امروزت آماده است. چند دقیقه هم کافی است.",
-  "pwStoreNote": "پرداخت از حساب Apple تو انجام می‌شود. اشتراک اگر دست‌کم ۲۴ ساعت پیش از پایان دوره لغو نشود، خودکار تمدید می‌شود. هر زمان خواستی از تنظیمات > حساب Apple > اشتراک‌ها لغوش کن. طرح ترمی ۵ ماه است و تمدید نمی‌شود.",
+  "pwStoreNote": "پرداخت از حساب Apple تو انجام می‌شود. اشتراک اگر دست‌کم ۲۴ ساعت پیش از پایان دوره لغو نشود، خودکار تمدید می‌شود. هر زمان خواستی از تنظیمات > حساب Apple > اشتراک‌ها لغوش کن.",
   "pwPerMonth": "حدود {p} در ماه",
   "pwSave": "{n}٪ صرفه‌جویی نسبت به ماهانه",
   "pwMonthNote": "هر ماه می‌توانی لغو کنی",
@@ -368,7 +368,7 @@
  "ar": {
   "remindTitle": "وقت الدراسة",
   "remindBody": "خطة اليوم جاهزة. حتى بضع دقائق تكفي.",
-  "pwStoreNote": "يُدفع المبلغ من حساب Apple الخاص بك. يتجدد الاشتراك تلقائيًا ما لم يُلغَ قبل 24 ساعة على الأقل من نهاية الفترة. ألغِه متى شئت من الإعدادات > حساب Apple > الاشتراكات. الخطة الفصلية مدتها 5 أشهر ولا تتجدد.",
+  "pwStoreNote": "يُدفع المبلغ من حساب Apple الخاص بك. يتجدد الاشتراك تلقائيًا ما لم يُلغَ قبل 24 ساعة على الأقل من نهاية الفترة. ألغِه متى شئت من الإعدادات > حساب Apple > الاشتراكات.",
   "pwPerMonth": "حوالي {p} شهريًا",
   "pwSave": "توفير {n}% مقارنة بالشهري",
   "pwMonthNote": "ألغِ في أي شهر",
