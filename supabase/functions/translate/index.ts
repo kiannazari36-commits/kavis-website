@@ -4,9 +4,9 @@
 // POST { material_id, text, target_lang: 'tr' | 'en' | 'fa' | 'ar', style: 'literal' | 'natural' } → { text }
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
+import { addUsage, overBudget } from '../_shared/budget.ts';
 
 const MODEL = 'claude-sonnet-5-5';
-const MONTHLY_BUDGET_USD = 4;
 const MAX_CHARS = 6000;
 
 const cors = {
@@ -68,8 +68,7 @@ Deno.serve(async (req) => {
   const { data: allowed } = await db.rpc('can_use', { feature: 'generate', uid });
   if (!allowed) return json({ error: 'locked' }, 403);
   const month = new Date().toISOString().slice(0, 7) + '-01';
-  const { data: use } = await db.from('usage_monthly').select('input_tokens, output_tokens, cost_usd, generations').eq('user_id', uid).eq('month', month).maybeSingle();
-  if (use && Number(use.cost_usd) >= MONTHLY_BUDGET_USD) return json({ error: 'budget' }, 429);
+  if (await overBudget(db, uid, month)) return json({ error: 'budget' }, 429);
 
   try {
     const client = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')!.trim() });
@@ -91,14 +90,7 @@ Deno.serve(async (req) => {
       { material_id: body.material_id, user_id: uid, source_hash: hash, target_lang: target, style, text: out },
       { onConflict: 'material_id,source_hash,target_lang,style' },
     );
-    await db.from('usage_monthly').upsert({
-      user_id: uid,
-      month,
-      input_tokens: Number(use?.input_tokens ?? 0) + res.usage.input_tokens,
-      output_tokens: Number(use?.output_tokens ?? 0) + res.usage.output_tokens,
-      cost_usd: Number(use?.cost_usd ?? 0) + costUsd(res.usage.input_tokens, res.usage.output_tokens),
-      generations: Number(use?.generations ?? 0) + 1,
-    });
+    await addUsage(db, uid, { input: res.usage.input_tokens, output: res.usage.output_tokens, cost: costUsd(res.usage.input_tokens, res.usage.output_tokens), generations: 1 });
     return json({ text: out });
   } catch (e) {
     console.error('translate', e);

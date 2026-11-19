@@ -7,10 +7,10 @@
 // Writes (service role): quiz_questions, usage_monthly. Needs the trial or Premium ("generate").
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
+import { addUsage, overBudget } from '../_shared/budget.ts';
 import { cleanHints, costUsd } from './lib.ts';
 
 const MODEL = 'claude-sonnet-5-5';
-const MONTHLY_BUDGET_USD = 4;
 const MAX_CHARS = 12000;
 
 const cors = {
@@ -71,8 +71,7 @@ Deno.serve(async (req) => {
   const { data: allowed } = await db.rpc('can_use', { feature: 'generate', uid });
   if (!allowed) return json({ error: 'locked' }, 403);
   const month = new Date().toISOString().slice(0, 7) + '-01';
-  const { data: use } = await db.from('usage_monthly').select('input_tokens, output_tokens, cost_usd, generations, cache_read_tokens, cache_write_tokens').eq('user_id', uid).eq('month', month).maybeSingle();
-  if (use && Number(use.cost_usd) >= MONTHLY_BUDGET_USD) return json({ error: 'budget' }, 429);
+  if (await overBudget(db, uid, month)) return json({ error: 'budget' }, 429);
 
   type Topic = { id: string; title: string; page_from: number | null; page_to: number | null; topic_progress: { state: string; mastery: number | null }[] };
   const [{ data: chunks }, { data: quiz }, { data: topicRows }] = await Promise.all([
@@ -136,16 +135,7 @@ Deno.serve(async (req) => {
     if (error) throw error;
     const cw = res.usage.cache_creation_input_tokens ?? 0;
     const cr = res.usage.cache_read_input_tokens ?? 0;
-    await db.from('usage_monthly').upsert({
-      user_id: uid,
-      month,
-      input_tokens: Number(use?.input_tokens ?? 0) + res.usage.input_tokens + cw + cr,
-      output_tokens: Number(use?.output_tokens ?? 0) + res.usage.output_tokens,
-      cost_usd: Number(use?.cost_usd ?? 0) + costUsd(res.usage.input_tokens, res.usage.output_tokens, cw, cr),
-      cache_write_tokens: Number(use?.cache_write_tokens ?? 0) + cw,
-      cache_read_tokens: Number(use?.cache_read_tokens ?? 0) + cr,
-      generations: Number(use?.generations ?? 0) + 1,
-    });
+    await addUsage(db, uid, { input: res.usage.input_tokens + cw + cr, output: res.usage.output_tokens, cost: costUsd(res.usage.input_tokens, res.usage.output_tokens, cw, cr), cacheWrite: cw, cacheRead: cr, generations: 1 });
     return json({ quiz_id: quiz.id, ids: (saved ?? []).map((r) => r.id) });
   } catch (e) {
     console.error('more-questions', e);

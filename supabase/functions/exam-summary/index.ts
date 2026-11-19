@@ -10,10 +10,10 @@
 // Writes (service role): materials, material_content, material_chunks, material_topics, usage_monthly.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
+import { addUsage, overBudget } from '../_shared/budget.ts';
 import { buildDoc, citedPages, mismatch, pageTexts, pickPages, searchTerms, tsQuery, WORDS, type Lang, type StyleKey, type Topic } from './lib.ts';
 
 const MODEL = 'claude-sonnet-5-5';
-const MONTHLY_BUDGET_USD = 4;
 const MAX_FILE_BYTES = 15 * 1024 * 1024;
 /** Lesson text sent per topic (about 5,000 tokens). */
 const PAGE_CHARS = 16000;
@@ -106,8 +106,7 @@ Deno.serve(async (req) => {
   const { data: allowed } = await db.rpc('can_use', { feature: 'generate', uid });
   if (!allowed) return json({ error: 'locked' }, 403);
   const month = new Date().toISOString().slice(0, 7) + '-01';
-  const { data: use } = await db.from('usage_monthly').select('input_tokens, output_tokens, cost_usd, generations').eq('user_id', uid).eq('month', month).maybeSingle();
-  if (use && Number(use.cost_usd) >= MONTHLY_BUDGET_USD) return json({ error: 'budget' }, 429);
+  if (await overBudget(db, uid, month)) return json({ error: 'budget' }, 429);
 
   const [{ data: samples }, { data: lessons }, { data: settings }, { data: profile }] = await Promise.all([
     db.from('question_samples').select('id, kind, title, storage_path, text').eq('course_id', courseId).order('created_at'),
@@ -178,11 +177,15 @@ Deno.serve(async (req) => {
     // Most topics not in the course's PDFs: the samples belong to another course. Stop before the explanations;
     // only step 1 is counted (about a cent), no summary is written.
     if (mismatch(located.map((x) => x.place))) {
-      await count(db, uid, month, use, input, output, false);
+      await count(db, uid, input, output, false);
       return json({ error: 'mismatch' }, 422);
     }
 
-    // Step 3: every topic explained from its pages only, in parallel.
+    // Step 3: every topic explained from its pages only, in parallel. (Budget checked again: other jobs may have spent meanwhile.)
+    if (await overBudget(db, uid, month)) {
+      await count(db, uid, input, output, false);
+      return json({ error: 'budget' }, 429);
+    }
     const topics: Topic[] = await Promise.all(
       located.map(async ({ t, guessed, guess, place }) => {
         // Nothing found by search: the AI's guess, which the explanation step may still refuse (found = false).
@@ -243,7 +246,7 @@ Deno.serve(async (req) => {
     }
     await db.from('materials').delete().eq('course_id', courseId).eq('kind', kind).neq('id', mat.id);
 
-    await count(db, uid, month, use, input, output, true);
+    await count(db, uid, input, output, true);
     return json({ material_id: mat.id, topics: topics.length });
   } catch (e) {
     console.error('exam-summary', e);
@@ -252,15 +255,8 @@ Deno.serve(async (req) => {
 });
 
 /** Adds this call's AI use to the month (a stopped call is not counted as a generation). */
-async function count(db: SupabaseClient, uid: string, month: string, use: { input_tokens: unknown; output_tokens: unknown; cost_usd: unknown; generations: unknown } | null, input: number, output: number, made: boolean) {
-  await db.from('usage_monthly').upsert({
-    user_id: uid,
-    month,
-    input_tokens: Number(use?.input_tokens ?? 0) + input,
-    output_tokens: Number(use?.output_tokens ?? 0) + output,
-    cost_usd: Number(use?.cost_usd ?? 0) + costUsd(input, output),
-    generations: Number(use?.generations ?? 0) + (made ? 1 : 0),
-  });
+async function count(db: SupabaseClient, uid: string, input: number, output: number, made: boolean) {
+  await addUsage(db, uid, { input, output, cost: costUsd(input, output), generations: made ? 1 : 0 });
 }
 
 /** Each sample as a numbered block: text as it is, a photo as an image, a PDF as a document (same as analyze-style). */

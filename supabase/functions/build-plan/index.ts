@@ -45,7 +45,10 @@ Deno.serve(async (req) => {
 
   try {
     if (body.action === 'light_day') return json(await light(db, uid, today));
-    if (body.action === 'add_mistakes') return json(await addMistakes(db, uid, today, lang, body.course_id ?? null, Number(body.count) || 0));
+    if (body.action === 'add_mistakes') {
+      const r = await addMistakes(db, uid, today, lang, typeof body.course_id === 'string' ? body.course_id : null, Number(body.count) || 0);
+      return 'error' in r ? json(r, 404) : json(r);
+    }
     return json(await build(db, uid, today, lang, profile?.created_at ?? null));
   } catch (e) {
     console.error('build-plan', e);
@@ -69,6 +72,11 @@ async function light(db: SupabaseClient, uid: string, today: string) {
 }
 
 async function addMistakes(db: SupabaseClient, uid: string, today: string, lang: Lang, courseId: string | null, count: number) {
+  // The course must be the caller's own (the service role skips RLS, so check here).
+  if (courseId) {
+    const { data: own } = await db.from('courses').select('id').eq('id', courseId).eq('user_id', uid).maybeSingle();
+    if (!own) return { error: 'not found' };
+  }
   const day = addDays(today, 1);
   const planId = await planFor(db, uid, mondayOf(day));
   const { data: last } = await db.from('plan_items').select('sort_order').eq('plan_id', planId).eq('day', day).order('sort_order', { ascending: false }).limit(1);

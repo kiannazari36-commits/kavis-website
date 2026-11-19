@@ -7,10 +7,10 @@
 // Writes (service role): summaries, usage_monthly.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
+import { addUsage, overBudget } from '../_shared/budget.ts';
 import { costUsd } from './lib.ts';
 
 const MODEL = 'claude-sonnet-5-5';
-const MONTHLY_BUDGET_USD = 4;
 const MAX_CHARS = 30000;
 
 const cors = {
@@ -75,8 +75,7 @@ Deno.serve(async (req) => {
   // After the trial a new one cannot be made: the saved one stays.
   if (!allowed) return saved ? json({ points: savedContent?.points ?? [], lang: saved.lang }) : json({ error: 'locked' }, 403);
   const month = new Date().toISOString().slice(0, 7) + '-01';
-  const { data: use } = await db.from('usage_monthly').select('input_tokens, output_tokens, cost_usd, generations, cache_read_tokens, cache_write_tokens').eq('user_id', uid).eq('month', month).maybeSingle();
-  if (use && Number(use.cost_usd) >= MONTHLY_BUDGET_USD) return json({ error: 'budget' }, 429);
+  if (await overBudget(db, uid, month)) return json({ error: 'budget' }, 429);
 
   const [{ data: chunks }, { data: quiz }] = await Promise.all([
     db.from('material_chunks').select('page, text').eq('material_id', materialId).order('page'),
@@ -112,16 +111,7 @@ Deno.serve(async (req) => {
     await db.from('summaries').insert({ user_id: uid, course_id: m.course_id, material_id: materialId, lang, kind: 'lesson', content: { points, weakKey } });
     const cw = res.usage.cache_creation_input_tokens ?? 0;
     const cr = res.usage.cache_read_input_tokens ?? 0;
-    await db.from('usage_monthly').upsert({
-      user_id: uid,
-      month,
-      input_tokens: Number(use?.input_tokens ?? 0) + res.usage.input_tokens + cw + cr,
-      output_tokens: Number(use?.output_tokens ?? 0) + res.usage.output_tokens,
-      cost_usd: Number(use?.cost_usd ?? 0) + costUsd(res.usage.input_tokens, res.usage.output_tokens, cw, cr),
-      cache_write_tokens: Number(use?.cache_write_tokens ?? 0) + cw,
-      cache_read_tokens: Number(use?.cache_read_tokens ?? 0) + cr,
-      generations: Number(use?.generations ?? 0) + 1,
-    });
+    await addUsage(db, uid, { input: res.usage.input_tokens + cw + cr, output: res.usage.output_tokens, cost: costUsd(res.usage.input_tokens, res.usage.output_tokens, cw, cr), cacheWrite: cw, cacheRead: cr, generations: 1 });
     return json({ points, lang });
   } catch (e) {
     console.error('lesson-summary', e);

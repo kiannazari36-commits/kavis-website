@@ -4,9 +4,9 @@
 // POST { course_id } → the style. Writes (service role): teacher_styles, question_samples.question_count.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
+import { addUsage, overBudget } from '../_shared/budget.ts';
 
 const MODEL = 'claude-sonnet-5-5';
-const MONTHLY_BUDGET_USD = 4;
 const MAX_FILE_BYTES = 15 * 1024 * 1024;
 
 const cors = {
@@ -79,8 +79,7 @@ Deno.serve(async (req) => {
   const { data: allowed } = await db.rpc('can_use', { feature: 'generate', uid });
   if (!allowed) return json({ error: 'locked' }, 403);
   const month = new Date().toISOString().slice(0, 7) + '-01';
-  const { data: use } = await db.from('usage_monthly').select('input_tokens, output_tokens, cost_usd, generations').eq('user_id', uid).eq('month', month).maybeSingle();
-  if (use && Number(use.cost_usd) >= MONTHLY_BUDGET_USD) return json({ error: 'budget' }, 429);
+  if (await overBudget(db, uid, month)) return json({ error: 'budget' }, 429);
 
   const { data: samples } = await db.from('question_samples').select('id, kind, title, storage_path, text').eq('course_id', courseId).order('created_at');
   if (!samples?.length) return json({ error: 'no samples' }, 400);
@@ -121,14 +120,7 @@ Deno.serve(async (req) => {
       analyzed_at: new Date().toISOString(),
     };
     await db.from('teacher_styles').upsert(style, { onConflict: 'course_id' });
-    await db.from('usage_monthly').upsert({
-      user_id: uid,
-      month,
-      input_tokens: Number(use?.input_tokens ?? 0) + res.usage.input_tokens,
-      output_tokens: Number(use?.output_tokens ?? 0) + res.usage.output_tokens,
-      cost_usd: Number(use?.cost_usd ?? 0) + costUsd(res.usage.input_tokens, res.usage.output_tokens),
-      generations: Number(use?.generations ?? 0) + 1,
-    });
+    await addUsage(db, uid, { input: res.usage.input_tokens, output: res.usage.output_tokens, cost: costUsd(res.usage.input_tokens, res.usage.output_tokens), generations: 1 });
     return json(style);
   } catch (e) {
     console.error('analyze-style', e);

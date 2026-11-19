@@ -5,9 +5,9 @@
 // Claude Sonnet 5.5 reads it (about 1-2 cents); the cost counts in the month's AI budget.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
+import { addUsage, overBudget } from '../_shared/budget.ts';
 
 const MODEL = 'claude-sonnet-5-5';
-const MONTHLY_BUDGET_USD = 4;
 const TYPES = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
 
 const cors = {
@@ -68,8 +68,7 @@ Deno.serve(async (req) => {
   if (!file || !TYPES.includes(file.media_type) || typeof file.data !== 'string' || file.data.length > 14_000_000) return json({ error: 'file' }, 400);
 
   const month = new Date().toISOString().slice(0, 7) + '-01';
-  const { data: use } = await db.from('usage_monthly').select('input_tokens, output_tokens, cost_usd').eq('user_id', uid).eq('month', month).maybeSingle();
-  if (use && Number(use.cost_usd) >= MONTHLY_BUDGET_USD) return json({ error: 'budget' }, 429);
+  if (await overBudget(db, uid, month)) return json({ error: 'budget' }, 429);
 
   const client = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')!.trim() });
   const source = { type: 'base64', media_type: file.media_type, data: file.data };
@@ -102,13 +101,7 @@ Deno.serve(async (req) => {
 
   // The month's AI cost (Sonnet 5.5: $2 / $10 per million tokens).
   const cost = Math.round(((usage.input_tokens * 2 + usage.output_tokens * 10) / 1_000_000) * 10000) / 10000;
-  await db.from('usage_monthly').upsert({
-    user_id: uid,
-    month,
-    input_tokens: Number(use?.input_tokens ?? 0) + usage.input_tokens,
-    output_tokens: Number(use?.output_tokens ?? 0) + usage.output_tokens,
-    cost_usd: Number(use?.cost_usd ?? 0) + cost,
-  });
+  await addUsage(db, uid, { input: usage.input_tokens, output: usage.output_tokens, cost });
 
   const classes = entries
     .filter((e) => Number.isInteger(e.weekday) && e.weekday >= 1 && e.weekday <= 7 && hhmm(e.start) && e.title.trim())

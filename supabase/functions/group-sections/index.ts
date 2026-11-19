@@ -4,6 +4,7 @@
 // finished lesson with too many sections. Only the section list changes: every block of the teacher's text stays,
 // in the same order. Claude Sonnet 5.5 gets only the section titles and pages (cheap, about half a cent).
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { addUsage, overBudget } from '../_shared/budget.ts';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 import { applyParts, maxSections, outline, pagesOf, targetParts, type Part, type Section } from './lib.ts';
 
@@ -66,7 +67,6 @@ Deno.serve(async (req) => {
     return json({ sections: doc.sections.length, grouped: false });
   }
 
-  const month = new Date().toISOString().slice(0, 7) + '-01';
   const client = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')!.trim() });
   let parts: Part[];
   let usage = { input_tokens: 0, output_tokens: 0 };
@@ -93,14 +93,7 @@ Deno.serve(async (req) => {
   const grouped = applyParts(doc.sections, parts);
   // The month's AI cost (Sonnet 5.5: $2 / $10 per million tokens).
   const cost = (usage.input_tokens * 2 + usage.output_tokens * 10) / 1_000_000;
-  const { data: u } = await db.from('usage_monthly').select('input_tokens, output_tokens, cost_usd').eq('user_id', uid).eq('month', month).maybeSingle();
-  await db.from('usage_monthly').upsert({
-    user_id: uid,
-    month,
-    input_tokens: Number(u?.input_tokens ?? 0) + usage.input_tokens,
-    output_tokens: Number(u?.output_tokens ?? 0) + usage.output_tokens,
-    cost_usd: Number(u?.cost_usd ?? 0) + Math.round(cost * 10000) / 10000,
-  });
+  await addUsage(db, uid, { input: usage.input_tokens, output: usage.output_tokens, cost });
   if (!grouped) {
     // A grouping that would lose text is not used; the lesson keeps its sections and is not asked again.
     await db.from('material_content').update({ reader_doc: { ...doc, grouped: true } }).eq('material_id', material_id);

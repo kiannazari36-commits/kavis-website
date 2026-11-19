@@ -8,10 +8,10 @@
 // Writes (service role): quizzes (kind exam_prep) + quiz_questions, summaries (kind exam_prep), usage_monthly.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
+import { addUsage, overBudget } from '../_shared/budget.ts';
 import { cleanHints, costUsd, pickPages, type Page } from './lib.ts';
 
 const MODEL = 'claude-sonnet-5-5';
-const MONTHLY_BUDGET_USD = 4;
 /** Lecture text sent to the AI (about 8,000 tokens). */
 const MAX_CHARS = 26000;
 
@@ -90,8 +90,7 @@ Deno.serve(async (req) => {
   const { data: allowed } = await db.rpc('can_use', { feature: 'generate', uid });
   if (!allowed) return json({ error: 'locked' }, 403);
   const month = new Date().toISOString().slice(0, 7) + '-01';
-  const { data: use } = await db.from('usage_monthly').select('input_tokens, output_tokens, cost_usd, generations, cache_read_tokens, cache_write_tokens').eq('user_id', uid).eq('month', month).maybeSingle();
-  if (use && Number(use.cost_usd) >= MONTHLY_BUDGET_USD) return json({ error: 'budget' }, 429);
+  if (await overBudget(db, uid, month)) return json({ error: 'budget' }, 429);
 
   const { data: lessons } = await db.from('materials').select('id, title, language').eq('course_id', courseId).eq('status', 'ready').in('kind', ['pdf', 'photo']).order('created_at');
   if (!lessons?.length) return json({ error: 'no lessons' }, 400);
@@ -228,16 +227,7 @@ Deno.serve(async (req) => {
     await db.from('summaries').insert({ user_id: uid, course_id: courseId, lang, kind: 'exam_prep', content: { topics: summaryTopics } });
     const cw = res.usage.cache_creation_input_tokens ?? 0;
     const cr = res.usage.cache_read_input_tokens ?? 0;
-    await db.from('usage_monthly').upsert({
-      user_id: uid,
-      month,
-      input_tokens: Number(use?.input_tokens ?? 0) + res.usage.input_tokens + cw + cr,
-      output_tokens: Number(use?.output_tokens ?? 0) + res.usage.output_tokens,
-      cost_usd: Number(use?.cost_usd ?? 0) + costUsd(res.usage.input_tokens, res.usage.output_tokens, cw, cr),
-      cache_write_tokens: Number(use?.cache_write_tokens ?? 0) + cw,
-      cache_read_tokens: Number(use?.cache_read_tokens ?? 0) + cr,
-      generations: Number(use?.generations ?? 0) + 1,
-    });
+    await addUsage(db, uid, { input: res.usage.input_tokens + cw + cr, output: res.usage.output_tokens, cost: costUsd(res.usage.input_tokens, res.usage.output_tokens, cw, cr), cacheWrite: cw, cacheRead: cr, generations: 1 });
     return json({ quiz_id: quiz.id, questions: questions.length });
   } catch (e) {
     console.error('generate-quiz', e);

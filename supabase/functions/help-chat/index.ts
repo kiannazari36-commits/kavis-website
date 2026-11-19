@@ -6,6 +6,7 @@
 // Daily limit per user (no table needed): a counter in the user's auth app_metadata, written only by this function.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
+import { addUsage } from '../_shared/budget.ts';
 
 const MODEL = 'claude-haiku-5-5';
 const DAILY_LIMIT = 30;
@@ -120,6 +121,8 @@ Deno.serve(async (req) => {
   try {
     const client = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')!.trim() });
     const res = await client.messages.create({ model: MODEL, max_tokens: 500, system: system(lang), messages });
+    // The help chat counts in the month's AI budget too (Haiku 5.5: $0.1 / $0.5 per million tokens). It is never blocked by it.
+    await addUsage(db, user.id, { input: res.usage.input_tokens, output: res.usage.output_tokens, cost: (res.usage.input_tokens * 0.1 + res.usage.output_tokens * 0.5) / 1_000_000 });
     let answer = res.content.filter((b) => b.type === 'text').map((b) => (b as { text: string }).text).join('').trim();
     const escalate = answer.includes(NO_ANSWER) || res.stop_reason === 'refusal';
     answer = answer.replaceAll(NO_ANSWER, '').trim();

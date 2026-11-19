@@ -15,6 +15,7 @@
 // block with `unreadable: true` (the apps say so) and gives no hard words, cards, questions or search pieces.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
+import { addUsage, overBudget } from '../_shared/budget.ts';
 import { extractText, getDocumentProxy } from 'npm:unpdf';
 import { PDFDocument } from 'npm:pdf-lib@1.17.1';
 import { OCR_SCHEMA, OCR_SYSTEM, pageTexts, toBase64, type OcrBatch } from './ocr.ts';
@@ -30,8 +31,8 @@ const OCR_BATCH_PAGES = 4;
 const MAX_PAGES = 100;
 /** A "processing" lesson not touched for this long was stopped; asking again continues it. */
 const STALE_MS = 5 * 60 * 1000;
-/** AI spending per student per month (US dollars); above it new lessons are not prepared. */
-const MONTHLY_BUDGET_USD = 4;
+/** At most this many of one student's lessons are prepared at the same time (the others are refused with 'busy'). */
+const MAX_PARALLEL = 2;
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -66,7 +67,7 @@ Deno.serve(async (req) => {
   const token = (req.headers.get('Authorization') ?? '').replace('Bearer ', '');
   const { data: who } = await db.auth.getUser(token);
   if (!who?.user) return json({ error: 'not signed in' }, 401);
-  const { data: m } = await db.from('materials').select('user_id, status, kind, counted_in_trial, updated_at').eq('id', id).maybeSingle();
+  const { data: m } = await db.from('materials').select('user_id, status, kind, title, counted_in_trial, updated_at').eq('id', id).maybeSingle();
   if (!m || m.user_id !== who.user.id) return json({ error: 'not found' }, 404);
   // A run that was stopped: go on from the last finished batch (nothing done is made again).
   if (m.status === 'processing' && Date.now() - new Date(m.updated_at).getTime() > STALE_MS) {
@@ -92,7 +93,9 @@ Deno.serve(async (req) => {
     const shared = await reuseShared(db, id, m.title);
     if (shared) return json({ status: 'ready', shared: true });
   }
-  await db.from('materials').update({ status: 'processing', error: null }).eq('id', id);
+  // At most MAX_PARALLEL lessons of one student at the same time (atomic in SQL); the lesson stays as it was.
+  const { data: claimed } = await db.rpc('claim_processing_slot', { p_material: id, p_uid: who.user.id, p_max: MAX_PARALLEL });
+  if (!claimed) return json({ error: 'busy' }, 429);
   EdgeRuntime.waitUntil(runBatch(db, id, 0, ocr));
   return json({ status: 'processing' }, 202);
 });
@@ -266,11 +269,11 @@ async function runBatch(db: SupabaseClient, materialId: string, batchNo: number,
         await db.from('materials').update({ status: 'too_long', page_count: totalPages }).eq('id', materialId);
         return;
       }
-      const month = new Date().toISOString().slice(0, 7) + '-01';
-      const { data: use } = await db.from('usage_monthly').select('cost_usd').eq('user_id', uid).eq('month', month).maybeSingle();
-      if (use && Number(use.cost_usd) >= MONTHLY_BUDGET_USD) throw new Error('monthly AI budget reached');
       await db.from('materials').update({ page_count: totalPages }).eq('id', materialId);
     }
+
+    // The monthly AI budget is checked before EVERY batch (spending by other jobs counts too).
+    if (await overBudget(db, uid)) throw new Error('monthly AI budget reached');
 
     const all = batches(totalPages, ocr ? OCR_BATCH_PAGES : BATCH_PAGES);
     // A resumed lesson whose last batch was already done.
@@ -475,14 +478,5 @@ async function askClaude(title: string, course: string, contentLang: string, pag
 
 /** Adds tokens and cost to this month's usage (cost limits read it). */
 async function saveUsage(db: SupabaseClient, uid: string, input: number, output: number) {
-  const month = new Date().toISOString().slice(0, 7) + '-01';
-  const { data: u } = await db.from('usage_monthly').select('input_tokens, output_tokens, cost_usd, generations').eq('user_id', uid).eq('month', month).maybeSingle();
-  await db.from('usage_monthly').upsert({
-    user_id: uid,
-    month,
-    input_tokens: Number(u?.input_tokens ?? 0) + input,
-    output_tokens: Number(u?.output_tokens ?? 0) + output,
-    cost_usd: Number(u?.cost_usd ?? 0) + costUsd(input, output),
-    generations: Number(u?.generations ?? 0) + 1,
-  });
+  await addUsage(db, uid, { input, output, cost: costUsd(input, output), generations: 1 });
 }

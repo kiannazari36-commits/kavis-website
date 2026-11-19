@@ -13,6 +13,7 @@
 // the weak-topic lists) or make a flash card in the lesson's deck. Each action is sent as { act: { kind, title } }.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
+import { addUsage, overBudget } from '../_shared/budget.ts';
 import { costUsd, lessonText, queryTerms, rankChunks, splitTail, tsQuery } from './lib.ts';
 
 // Haiku 5.5 answers normal lesson questions (tested 10 Nov 2026: as faithful to the PDF as Sonnet, ~16x cheaper).
@@ -20,7 +21,6 @@ import { costUsd, lessonText, queryTerms, rankChunks, splitTail, tsQuery } from 
 // in a test Haiku did not run the web search (0 searches, said search was not working).
 const FAST_MODEL = 'claude-haiku-5-5';
 const STRONG_MODEL = 'claude-sonnet-5-5';
-const MONTHLY_BUDGET_USD = 4;
 const PIECES = 6;
 // About 35,000 tokens: the first question on a lesson costs at most ~$0.09, follow-ups read it from the cache.
 const LESSON_MAX_CHARS = 120_000;
@@ -133,8 +133,7 @@ Deno.serve(async (req) => {
   const { data: allowed } = await db.rpc('can_use', { feature: 'ask', uid });
   if (!allowed) return json({ error: 'locked' }, 403);
   const month = new Date().toISOString().slice(0, 7) + '-01';
-  const { data: use } = await db.from('usage_monthly').select('cost_usd').eq('user_id', uid).eq('month', month).maybeSingle();
-  if (use && Number(use.cost_usd) >= MONTHLY_BUDGET_USD) return json({ error: 'budget' }, 429);
+  if (await overBudget(db, uid, month)) return json({ error: 'budget' }, 429);
 
   const MODEL = mode === 'ai' ? STRONG_MODEL : FAST_MODEL;
   const client = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')!.trim() });
@@ -154,6 +153,7 @@ Deno.serve(async (req) => {
       question = [question, text].filter(Boolean).join('\n').slice(0, 2000);
     } catch (e) {
       console.error('assistant photo', e);
+      await count(db, uid, usage, MODEL);
       return json({ error: 'ai' }, 502);
     }
   }
@@ -241,6 +241,7 @@ Deno.serve(async (req) => {
   const stream = new ReadableStream({
     async start(ctrl) {
       const send = (x: unknown) => ctrl.enqueue(enc.encode(`data: ${JSON.stringify(x)}\n\n`));
+      let counted = false;
       try {
         type Page = { url?: string; title?: string };
         type Block = { type: string; id?: string; name?: string; input?: Record<string, unknown>; text?: string; citations?: Page[] | null; content?: Page[] | { error_code: string } };
@@ -254,6 +255,8 @@ Deno.serve(async (req) => {
         };
         // The answer, with at most MAX_TURNS rounds of actions (the tools run here, then Claude goes on).
         for (let turn = 0; turn < MAX_TURNS; turn++) {
+          // Budget again before every further round (other jobs may have spent meanwhile).
+          if (turn > 0 && (await overBudget(db, uid, month))) break;
           // deno-lint-ignore no-explicit-any
           const s = client.beta.messages.stream(params as any);
           s.on('text', write);
@@ -295,13 +298,19 @@ Deno.serve(async (req) => {
           : out.sources.map((n) => pieces[n - 1]).filter(Boolean).map((p) => ({ material_id: p.material_id, page: p.page }));
         const outside = mode === 'ai' && (out.outside || links.length > 0);
         const saved = await save(db, uid, threadId, courseId, materialId, question, out.answer, mode, [...used, ...links, ...acts.map((a) => ({ act: a.kind, title: a.title }))], outside);
-        await count(db, uid, month, usage, MODEL);
+        counted = true;
+        await count(db, uid, usage, MODEL);
         send({ done: true, thread_id: saved, answer: out.answer, sources: used.map((p) => ({ ...p, lesson: titles.get(p.material_id) ?? '' })), links, acts, outside_pdf: outside });
       } catch (e) {
         console.error('assistant', e);
         send({ error: 'ai' });
+      } finally {
+        // Money spent is always counted, even when the connection dropped or an error came in the middle.
+        if (!counted) await count(db, uid, usage, MODEL).catch((e) => console.error('assistant count', e));
       }
-      ctrl.close();
+      try {
+        ctrl.close();
+      } catch { /* already closed (the client left) */ }
     },
   });
   return new Response(stream, { headers: { ...cors, 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache' } });
@@ -425,22 +434,17 @@ async function act(db: SupabaseClient, uid: string, name: string, input: Record<
   return { text: 'Unknown action.' };
 }
 
-/** A trial question (not for Premium) and the month's AI cost. */
-async function count(db: SupabaseClient, uid: string, month: string, u: { input: number; output: number; cacheWrite: number; cacheRead: number; searches: number }, model: string) {
+/** A trial question (not for Premium) and the month's AI cost, both atomic. Nothing is counted when no AI call ran. */
+async function count(db: SupabaseClient, uid: string, u: { input: number; output: number; cacheWrite: number; cacheRead: number; searches: number }, model: string) {
+  if (!(u.input || u.output || u.cacheWrite || u.cacheRead)) return;
   const { data: premium } = await db.rpc('is_premium', { uid });
-  if (!premium) {
-    const { data: t } = await db.from('trial_usage').select('assistant_questions').eq('user_id', uid).maybeSingle();
-    await db.from('trial_usage').upsert({ user_id: uid, assistant_questions: (t?.assistant_questions ?? 0) + 1 });
-  }
-  const { data: m } = await db.from('usage_monthly').select('input_tokens, output_tokens, cost_usd, assistant_questions, cache_read_tokens, cache_write_tokens').eq('user_id', uid).eq('month', month).maybeSingle();
-  await db.from('usage_monthly').upsert({
-    user_id: uid,
-    month,
-    input_tokens: Number(m?.input_tokens ?? 0) + u.input + u.cacheWrite + u.cacheRead,
-    output_tokens: Number(m?.output_tokens ?? 0) + u.output,
-    cost_usd: Number(m?.cost_usd ?? 0) + costUsd(u.input, u.output, u.cacheWrite, u.cacheRead, model) + u.searches * 0.01,
-    assistant_questions: Number(m?.assistant_questions ?? 0) + 1,
-    cache_write_tokens: Number(m?.cache_write_tokens ?? 0) + u.cacheWrite,
-    cache_read_tokens: Number(m?.cache_read_tokens ?? 0) + u.cacheRead,
+  if (!premium) await db.rpc('add_trial_question', { p_uid: uid });
+  await addUsage(db, uid, {
+    input: u.input + u.cacheWrite + u.cacheRead,
+    output: u.output,
+    cost: costUsd(u.input, u.output, u.cacheWrite, u.cacheRead, model) + u.searches * 0.01,
+    questions: 1,
+    cacheWrite: u.cacheWrite,
+    cacheRead: u.cacheRead,
   });
 }

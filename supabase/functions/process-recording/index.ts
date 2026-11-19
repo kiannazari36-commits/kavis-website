@@ -6,12 +6,12 @@
 // material_topics.teacher_* of the PDF lesson, materials.status, usage_monthly.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
+import { addUsage, overBudget } from '../_shared/budget.ts';
 import { cleanSegments, costUsd, transcriptLines, type Segment } from './lib.ts';
 
 declare const EdgeRuntime: { waitUntil(p: Promise<unknown>): void };
 
 const MODEL = 'claude-sonnet-5-5';
-const MONTHLY_BUDGET_USD = 4;
 /** PDF text sent per page (enough to recognise it). */
 const PAGE_CHARS = 1200;
 
@@ -77,8 +77,7 @@ Deno.serve(async (req) => {
   if (!pdf || pdf.user_id !== uid || pdf.status !== 'ready') return json({ error: 'lesson not ready' }, 409);
 
   const month = new Date().toISOString().slice(0, 7) + '-01';
-  const { data: use } = await db.from('usage_monthly').select('cost_usd').eq('user_id', uid).eq('month', month).maybeSingle();
-  if (use && Number(use.cost_usd) >= MONTHLY_BUDGET_USD) return json({ error: 'budget' }, 429);
+  if (await overBudget(db, uid, month)) return json({ error: 'budget' }, 429);
 
   await db.from('materials').update({ status: 'processing', error: null, duration_sec: duration }).eq('id', id);
   EdgeRuntime.waitUntil(run(db, uid, id, m.linked_material_id, pdf.title, pdf.language, segments, duration));
@@ -148,14 +147,5 @@ async function run(db: SupabaseClient, uid: string, id: string, pdfId: string, t
 }
 
 async function saveUsage(db: SupabaseClient, uid: string, input: number, output: number) {
-  const month = new Date().toISOString().slice(0, 7) + '-01';
-  const { data: u } = await db.from('usage_monthly').select('input_tokens, output_tokens, cost_usd, generations').eq('user_id', uid).eq('month', month).maybeSingle();
-  await db.from('usage_monthly').upsert({
-    user_id: uid,
-    month,
-    input_tokens: Number(u?.input_tokens ?? 0) + input,
-    output_tokens: Number(u?.output_tokens ?? 0) + output,
-    cost_usd: Number(u?.cost_usd ?? 0) + costUsd(input, output),
-    generations: Number(u?.generations ?? 0) + 1,
-  });
+  await addUsage(db, uid, { input, output, cost: costUsd(input, output), generations: 1 });
 }

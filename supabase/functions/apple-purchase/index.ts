@@ -6,9 +6,12 @@
 // POST { signedPayload } (no login) → App Store Server Notifications V2 (renewal, failed payment, expiry, refund):
 //   the subscription with that original transaction id is updated. → 200
 // verify_jwt is off because Apple's notifications have no login; 'purchase' checks the student's login itself.
+// Sandbox / TestFlight / Xcode transactions give Premium only to the user ids in the secret SANDBOX_ALLOWED_USER_IDS
+// (comma-separated: the App Review demo account, the owner's test accounts); for everyone else they are refused.
 // Writes (service role): subscriptions.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import { AppleSignatureError, verifyApple } from './apple.ts';
+import { environmentAllowed } from './environment.ts';
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -86,6 +89,9 @@ function checkTransaction(t: Transaction) {
   if (!PRODUCTS.includes(t.productId)) throw new AppleSignatureError('product');
 }
 
+/** A non-production (free) transaction counts only for the accounts listed in SANDBOX_ALLOWED_USER_IDS. */
+const envOk = (t: Transaction, uid: string | undefined | null) => environmentAllowed(t.environment, uid, Deno.env.get('SANDBOX_ALLOWED_USER_IDS'), allowXcode());
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'method' }, 405);
@@ -102,6 +108,7 @@ Deno.serve(async (req) => {
       const { data: sub } = await db.from('subscriptions').select('user_id').eq('provider', 'apple').eq('original_transaction_id', t.originalTransactionId).maybeSingle();
       const uid = sub?.user_id ?? t.appAccountToken?.toLowerCase();
       if (!uid) return json({ ok: true }); // not one of ours yet; the app sends it after the purchase
+      if (!envOk(t, uid)) return json({ ok: true }); // a sandbox transaction of an account that may not use sandbox
       const status =
         n.notificationType === 'DID_FAIL_TO_RENEW' ? (n.subtype === 'GRACE_PERIOD' ? 'grace' : 'billing_retry')
         : n.notificationType === 'GRACE_PERIOD_EXPIRED' || n.notificationType === 'EXPIRED' ? 'expired'
@@ -120,6 +127,7 @@ Deno.serve(async (req) => {
       checkTransaction(t);
       // The app buys with appAccountToken = the student's id, so a purchase cannot be moved to another account.
       if (t.appAccountToken?.toLowerCase() !== who.user.id) return json({ error: 'account' }, 403);
+      if (!envOk(t, who.user.id)) return json({ error: 'sandbox' }, 403);
       const row = await save(db, who.user.id, t);
       const { data: premium } = await db.rpc('is_premium', { uid: who.user.id });
       return json({ premium: !!premium, expires_at: row.expires_at, status: row.status });
