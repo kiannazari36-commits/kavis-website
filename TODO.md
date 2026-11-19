@@ -393,7 +393,7 @@ Done in App Store Connect (Kian): subscription group "Kavis Premium" with monthl
 Still open, in this order:
 1. Version page: set "Manually release this version" (it was on automatic) and save. Do NOT press "Add for Review" yet.
 2. Version page top part (not checked yet): screenshots for the iPhone sizes, app description, keywords, support URL, privacy policy URL, "What's new", age rating questionnaire, App Privacy (privacy label from `docs/APP_STORE.md`, must match `PrivacyInfo.xcprivacy`), category, copyright.
-3. A build must be uploaded from Xcode (Product > Archive > Distribute > App Store Connect) and chosen on the version page. Needs the Apple developer team/signing set up; Release build must use the LIVE server (check `Secrets.xcconfig`, `kavis.server` default) and `aps-environment` production when push is turned on.
+3. (Release build checked 19 Nov 2026, guide in `docs/RELEASE_BUILD.md`; version 1.0 build 1; live server confirmed.) A build must be uploaded from Xcode (Product > Archive > Distribute > App Store Connect) and chosen on the version page. Needs the Apple developer team/signing set up; Release build must use the LIVE server (check `Secrets.xcconfig`, `kavis.server` default) and `aps-environment` production when push is turned on.
 4. Lawyer check of terms + privacy drafts, then fill the `[PLACEHOLDERS]` and remove the "draft" banner; privacy policy must also say how long data is kept and how to ask for deletion (guideline 5.1.1).
 5. Apple Small Business Program application (15% instead of 30%) — Kian.
 6. Sign-in with Apple already in the app; check Apple/Google sign-in work on the Release build.

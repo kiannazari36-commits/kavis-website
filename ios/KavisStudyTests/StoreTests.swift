@@ -16,10 +16,11 @@ final class StoreTests: XCTestCase {
 
     func testThePlansComeFromTheStoreInPaywallOrder() async throws {
         let products = await StoreAPI.products()
-        XCTAssertEqual(products.map(\.id), StoreAPI.productIds)
+        // The 5-month term is not sold (not in App Store Connect), so only year and month come back.
+        XCTAssertEqual(products.map(\.id), ["study.kavis.premium.year", "study.kavis.premium.month"])
         // Prices are the store's (displayPrice), never written in the app.
         XCTAssertTrue(products.allSatisfy { !$0.displayPrice.isEmpty })
-        XCTAssertEqual(products[1].type, .nonRenewable) // the 5-month term
+        XCTAssertTrue(products.allSatisfy { $0.type == .autoRenewable })
     }
 
     /// A purchase carries the account id. With TEST_RUNNER_KAVIS_UID / TEST_RUNNER_KAVIS_JWS_OUT set, the signed
