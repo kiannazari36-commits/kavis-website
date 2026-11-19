@@ -417,3 +417,12 @@ Still open, in this order:
 - [x] `build-plan` `add_mistakes` checks the course belongs to the student (404 otherwise); `promo_*` tables: all grants removed from anon/authenticated; assistant web links only `http(s)`.
 - [ ] Live steps (Kian's yes): apply migration `20261119120000_security_hardening.sql`; deploy Edge Functions (list in the report); set secret `SANDBOX_ALLOWED_USER_IDS`; push web (headers).
 - [ ] Web/iOS: show a message for `busy` (429) from `process-material`.
+
+## Security fixes LIVE (20 Nov 2026, Kian's yes)
+- [x] Migration `security_hardening` applied live (`add_usage`, `add_trial_question`, `claim_processing_slot`, trial-limit lock, `promo_*` grants removed; checked: the 3 functions run only for service_role). Live version number differs from the file name `20261119120000`.
+- [x] 14 Edge Functions deployed (process-material, assistant, help-chat, translate, generate-quiz, lesson-summary, more-questions, exam-summary, analyze-style, import-timetable, group-sections, process-recording, build-plan, apple-purchase); `apple-purchase` still answers without a login (400 on empty body), `assistant` needs one (401).
+- [x] Secret `SANDBOX_ALLOWED_USER_IDS` = review demo account (`kiannazari36+inceleme@`) + Kian's test account. Sandbox purchases of anyone else get 403 `sandbox`. **If a new reviewer/test account is needed, add its user id there.**
+- [x] Web security headers (`web/vercel.json`) pushed to main with this note.
+- [ ] Show a message in web + iOS for the new `busy` (429) answer: "Başka derslerin işlenmesi bitsin, sonra yeniden dene".
+- [ ] Kian: Supabase Dashboard → leaked password protection on, check email rate limit and Redirect URLs; Anthropic Console monthly spend limit; captcha on sign-up.
+- [ ] Not tried live yet: one small real lesson upload to see the budget counter and slot logic work end to end.
