@@ -64,7 +64,7 @@ Gizlilik Politikası: https://kavis.study/privacy
 
 Kavis Study eczacılık öğrencileri için yola çıktı, ama her bölümden öğrenci için tasarlandı.
 ```
-**Keywords (100)** — 98 characters
+**Keywords (100)** — 97 characters
 ```text
 pdf,ders,çalışma,sınav,kart,özet,not,eczacılık,tıp,üniversite,asistan,tekrar,test,okuma,flashcard
 ```
@@ -111,7 +111,7 @@ Privacy Policy: https://kavis.study/privacy
 
 Kavis Study started with pharmacy students, and is built for students of every field.
 ```
-**Keywords (100)** — 95 characters
+**Keywords (100)** — 97 characters
 ```text
 study,pdf,flashcards,quiz,notes,summary,lecture,exam,university,medical,pharmacy,assistant,reader
 ```
