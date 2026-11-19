@@ -1,2 +1,13 @@
 .DS_Store
 node_modules/
+
+# Secrets: never commit (Apple keys, env files, signing files, local test accounts)
+.env
+.env.*
+!.env.example
+*.p8
+*.p12
+*.pem
+*.mobileprovision
+AuthKey_*
+*.local.md
