@@ -38,6 +38,9 @@ targets:
       path: KavisStudy/Info.plist
       properties:
         CFBundleDisplayName: Kavis Study
+        # XcodeGen would write a fixed "1" / "1.0" here and ignore the project settings (build 2 went out as build 1).
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleDevelopmentRegion: tr
         CFBundleLocalizations: [tr, en, fa, ar]
         UILaunchScreen: {}
