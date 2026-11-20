@@ -22,7 +22,7 @@ Everything below is ready to paste. Turkish is the main language (Turkey-only re
 | Marketing URL (optional) | `https://kavis.study` |
 | Privacy Policy URL (App Information page) | `https://kavis.study/privacy` |
 | Terms of Use (EULA) | Either leave Apple's standard EULA, or paste `https://kavis.study/terms` into the description (done below) and the license agreement field. Both pages exist (`web/src/App.tsx`). They are still drafts: lawyer check pending (`TODO.md`) |
-| Copyright | `2026 Kian Nazari` (use the legal name of the Apple account holder; no © sign, Apple adds it) |
+| Copyright | `2026 Melisa Ferahani` (legal name of the Apple account holder = publisher in the legal texts; no © sign, Apple adds it) |
 | Version | `1.0` (project.yml still says 0.1.0: set `MARKETING_VERSION: "1.0"` before archiving) |
 | Release | "Manually release this version" |
 
