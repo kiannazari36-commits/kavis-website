@@ -177,7 +177,7 @@ scheduled jobs: none left (`daily-planner`, `send-notifications` built — see a
 ## Decisions (23 Oct 2026)
 
 - **Region:** stays Ireland (eu-west-1). KVKK wording about EU hosting goes in the privacy notice (lawyer check).
-- **Lecture recordings:** speech-to-text on the device (no server transcription cost).
+- **Lecture recordings:** speech-to-text on the device (no server transcription cost); only the transcript goes to the AI; the sound file (up to 50 MB) is stored in the private `materials` bucket for playback.
 - **Trial:** only the app's own trial (no bank card, 3 days, 2 lessons, 60 questions). No Apple free-trial offer.
   → The Paywall text "After the 3-day trial, your plan is charged to your Apple / Google Play account" must be changed.
 

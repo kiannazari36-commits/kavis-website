@@ -39,7 +39,7 @@ Signing in
 Sign up or log in with an email and a 6-digit code sent to that email, or with Apple or Google.
 
 Uploading
-Upload a PDF (a lesson). The text stays exactly as the lecturer wrote it; the app only adds help around it. In the iPhone app a student can also upload slide photos (taken with the camera or from the photo library) and lecture recordings. For recordings, speech-to-text runs on the device and only the text transcript is sent to the server. Preparing a lesson takes a little while after upload.
+Upload a PDF (a lesson). The text stays exactly as the lecturer wrote it; the app only adds help around it. In the iPhone app a student can also upload slide photos (taken with the camera or from the photo library) and lecture recordings. For recordings, speech-to-text runs on the device and only the text transcript is sent to the AI; the sound file (up to 50 MB) is kept only in the student's own private account for playback and is deleted with the lesson or account. Preparing a lesson takes a little while after upload.
 
 Free trial
 The free trial is our own: no bank card needed. It lasts 3 days and includes at most 2 lessons (PDFs), 60 assistant questions, and each PDF can have at most 100 pages. The remaining limits are shown during the trial. After the trial the student keeps: reading old PDFs, own notes, highlights, existing flash cards and summaries, and offline use. Premium is needed for: uploading new PDFs, new assistant questions, generating new quizzes and cards, and sharing.

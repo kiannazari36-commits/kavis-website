@@ -4,7 +4,7 @@ Everything that is not finished yet. Updated after every step.
 
 ## Decisions (23 Oct 2026 — do not reopen)
 - Supabase region stays eu-west-1 (Ireland); the EU-hosting sentence goes in the privacy notice
-- Lecture recordings: speech-to-text runs on the device; the app sends only the transcript to the server
+- Lecture recordings: speech-to-text runs on the device; only the transcript goes to the AI; the sound file (up to 50 MB) is kept in the student's private account for playback, deleted with the lesson/account
 - Trial: only our own app trial (3 days, 2 lessons, 60 questions, 100 pages per lesson, no bank card). No Apple free-trial offer
 - Payments: only Apple in-app purchase. Premium unlocks every device through the server. Prices are never hardcoded
 - Max 2 devices (the web counts as one). Offline use in every plan. Sharing is Premium only and never includes the PDF

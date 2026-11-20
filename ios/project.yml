@@ -18,7 +18,7 @@ settings:
   base:
     SWIFT_VERSION: "5.0"
     MARKETING_VERSION: "1.0"
-    CURRENT_PROJECT_VERSION: "1"
+    CURRENT_PROJECT_VERSION: "2"
 targets:
   KavisStudy:
     type: application
@@ -57,7 +57,7 @@ targets:
         NSCameraUsageDescription: Ders sayfalarının, slaytların ve notlarının fotoğrafını çekip okunabilir derse çevirmek için.
         NSPhotoLibraryUsageDescription: Galerindeki ders sayfası ve slayt fotoğraflarını derse eklemek için.
         NSMicrophoneUsageDescription: Derste hocanın anlattıklarını kaydetmek için. Kayıt yalnızca senin hesabında saklanır.
-        NSSpeechRecognitionUsageDescription: Ders kaydını bu telefonda metne çevirmek için. Sunucuya sadece metin gider.
+        NSSpeechRecognitionUsageDescription: Ders kaydını bu telefonda metne çevirmek için. Yapay zekâya yalnızca metin gider.
         # A live lecture recording goes on while the screen is off.
         UIBackgroundModes: [audio]
         # `kavis://s/<slug>` opens a share link (also used for tests; the web address opens it as a universal link).

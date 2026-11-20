@@ -7,7 +7,7 @@ Bu dosya, kapatılan Claude oturumlarının kısa kaydı: ne yaptılar, ne kald�
 **iPhone / iPad**
 - **Ayarlar ekranı:** çalışma planı, uygulama ve içerik dili, çeviri tarzı, ses, bildirim saati, açık/koyu/sistem tema, çevrimdışı, "Cihazlarım" (çıkış), verilerimi indir, hesabı sil, çıkış yap. Hesabın dili ve teması girişten sonra uygulanıyor; günlük çalışma hatırlatması; silme isteğini geri alma; 3. cihaz ekranı.
 - **Profil ve Genel özet:** profil gerçek veriyle; ders özeti ekranına "Genel özet" sekmesi.
-- **Yükleme:** slayt fotoğrafı (kamera / galeri) ve ders kaydı. Kayıt cihazda yazıya çevriliyor, sunucuya sadece metin gidiyor.
+- **Yükleme:** slayt fotoğrafı (kamera / galeri) ve ders kaydı. Kayıt cihazda yazıya çevriliyor; yapay zekâya yalnızca metin gidiyor, ses dosyası (en fazla 50 MB) senin özel hesabında dinlemek için saklanıyor.
 - **Kalan çalışma ekranları:** ders kaydı sayfası, "Bugünün tekrarı" akışı, asistanda "Soruyu çözdür", soru fotoğrafı ve sohbet geçmişi, yazılı sorular, "Soru örneklerim", gerçek şifre sıfırlama e-postası.
 - **Okuyucu ve asistan ekstraları:** molekül görüntüleyici (3 boyutlu), Apple Pencil ile not, sesli okuma, "Ben anlatayım", mikrofonla yazdırma, ilerleme ekranının eksik parçaları, paylaşım linkini uygulamada açma, bildirim adresi kaydı.
 - **Küçük işler:** ders klasörü menüsü (ad değiştir, sınav günü, sil), cihazdaki dersler (çevrimdışı kopya), yükleme ekranındaki deneme sınırı ve adil kullanım pencereleri, iPad dikey modda asistan paneli, 14 arayüz testi (yerel sunucuyla), cihazın gerçek adı.

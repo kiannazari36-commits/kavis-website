@@ -2,7 +2,7 @@ import Foundation
 import Supabase
 
 /// Lecture recordings, the same steps as the web (`web/src/api/recording.ts`): the phone turns the sound into text
-/// (Transcriber, on the device); only the text goes to the server (Edge Function process-recording), which matches it
+/// (Transcriber, on the device); only the text goes to the AI (Edge Function process-recording), which matches it
 /// to the PDF lesson's pages and finds what the lecturer stressed. The sound file is kept in the student's private
 /// folder when it fits (50 MB), for listening. Recordings do not use a trial lesson.
 enum RecordingAPI {

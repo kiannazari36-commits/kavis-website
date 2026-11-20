@@ -49,7 +49,7 @@ NEDEN FARKLI
 • PDF'in kendi dilinde kalır; çeviri düğmesi var
 • Türkçe, İngilizce, Farsça ve Arapça arayüz (Farsça ve Arapça sağdan sola)
 • İnternetsiz çalışma: indirdiğin dersler her planda çevrimdışı açılır
-• Ders kayıtları telefonunda metne çevrilir; sunucuya yalnızca metin gider
+• Ders kayıtları telefonunda metne çevrilir; yapay zekâya yalnızca metin gider, ses dosyan sadece senin özel hesabında kalır
 
 YAPAY ZEKÂ HAKKINDA
 Cevaplar, özetler ve sorular yapay zekâ ile hazırlanır ve hata içerebilir. Önemli bilgileri her zaman kendi ders materyalinle karşılaştır. Kavis Study bir çalışma aracıdır; tıbbi, klinik veya hukuki tavsiye vermez ve hasta bakımında kullanılmak için tasarlanmamıştır.
@@ -96,7 +96,7 @@ WHY IT IS DIFFERENT
 • Your PDF stays in its own language, with a translate button
 • Turkish, English, Persian and Arabic interface (Persian and Arabic right-to-left)
 • Offline use on every plan: downloaded lessons open without internet
-• Lecture recordings are turned into text on your phone; only the text is sent to the server
+• Lecture recordings are turned into text on your phone; only the text goes to the AI, and the sound file stays only in your own private account
 
 ABOUT THE AI
 Answers, summaries and questions are written by AI and can contain mistakes. Always check important facts against your own course material. Kavis Study is a study tool; it does not give medical, clinical or legal advice and is not designed for patient care.
@@ -169,7 +169,7 @@ Must match `ios/KavisStudy/PrivacyInfo.xcprivacy`. First question "Do you or you
 | Identifiers > Device ID | yes | Device list and the 2-device limit |
 | User Content > Photos or Videos | yes | Slide / page photos the student uploads |
 | User Content > Other User Content | yes | Uploaded PDFs, notes, highlights, lecture transcripts, quiz answers |
-| User Content > Audio Data | **NO, add it** | The lecture recording file is stored in the student's own folder (`materials`, `recording.m4a`; `ios/KavisStudy/API/Recording.swift`), only the transcript is used by the AI. Declare Audio Data too, and add `NSPrivacyCollectedDataTypeAudioData` to the manifest (same flags) before the Release build so label and manifest agree |
+| User Content > Audio Data | **yes** (answer it in App Store Connect; manifest has it since build 2) | The lecture recording sound file (up to 50 MB) is stored in the student's own private folder (`materials` bucket, RLS own-folder only; `ios/KavisStudy/API/Recording.swift`) for playback and deleted with the lesson/account. The AI gets only the transcript. Linked yes, tracking no, purpose App Functionality |
 | Purchases > Purchase History | yes | Premium status and Apple transaction id |
 Not collected: location, contacts, health and fitness, financial info (Apple handles the card), browsing history, search history, diagnostics, advertising data. Study progress and streaks are stored in the account as part of the user content above; if Apple's review wants it separate, add Usage Data > Product Interaction (App Functionality, linked, no tracking). Push token: not collected now (`aps-environment` is still `development`); if push is turned on, Device ID already covers it.
 Required-reason API answers in the manifest (already set): UserDefaults `CA92.1`, disk space `E174.1`.
@@ -188,7 +188,7 @@ PREMIUM: sold only through Apple in-app purchase (auto-renewable monthly and yea
 AI: lesson text is sent to a third-party AI service (Anthropic) only to write answers, summaries and quizzes; this is disclosed at sign-up and in the privacy policy, and the user agrees to it when creating an account.
 
 ACCOUNT DELETION: Settings > Delete account.
-LECTURE RECORDING: speech-to-text runs on the device; only the transcript is uploaded.
+LECTURE RECORDING: speech-to-text runs on the device; only the transcript is sent to the AI. The sound file (up to 50 MB) is also uploaded to the user's own private storage folder (not readable by others) for playback, and is deleted with the lesson or account.
 SHARING (Premium): shares only app-made quizzes/summaries/cards, never the original PDF.
 ```
 - Contact: Kian's phone and email (Apple needs a real person).

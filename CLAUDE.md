@@ -47,7 +47,7 @@ A student uploads the teacher's PDF, a slide photo or a lecture recording. The a
 - Devices: max 2 devices per account; the web counts as one. On a 3rd device show "You're signed in on 2 devices. Choose one to sign out." with the device list. Settings has "My devices" with the list and a sign-out button for each. Enforced on the server by the RPC `register_device`.
 - Sharing (Premium only): only what the app made (quizzes, summaries, flash cards), never the original PDF. A share link opens a web page "To open this, download the Kavis Study app" with an App Store button and no preview. In the app, a non-Premium receiver sees "This lesson can only be opened with Premium."
 - Android: no Android app yet. Android users use the web with the free trial; Premium for them comes later (Google Play or a web payment).
-- Lecture recordings: speech-to-text runs on the device; the app sends only the transcript to the server.
+- Lecture recordings: speech-to-text runs on the device; only the transcript goes to the AI (process-recording). The sound file itself (up to 50 MB) is uploaded to the student's own private `materials` bucket for playback and deleted with the lesson/account (corrected 20 Nov 2026; never say "only the text goes to the server").
 - iPhone: bottom tab bar has 3 tabs; the assistant button stays at the top right.
 - `TODO.md` lists everything not finished yet (server, real payments, Android payment, device limit on the server, legal check of texts, …). Update it after every step.
 
