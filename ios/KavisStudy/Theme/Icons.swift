@@ -66,6 +66,8 @@ enum KIconName: String {
     case folder = "M3 6.5A1.5 1.5 0 0 1 4.5 5H9l2 2.5h8.5A1.5 1.5 0 0 1 21 9v9.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z"
     case close = "M6 6l12 12 M18 6L6 18"
     case send = "M5 12h14 M13 6l6 6-6 6"
+    /// Paper plane of the help chat's send button (design NewSupport).
+    case plane = "M21 3L10 14 M21 3l-7 18-4-7-7-4z"
     case clock = "M12 7v5l3 2 M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"
     case calendar = "M4 6h16v14H4z M4 10h16 M8 3v4 M16 3v4"
     case trash = "M4 7h16 M9 7V4h6v3 M6 7l1 13h10l1-13"

@@ -119,7 +119,10 @@
   "auDone": "Anlatım bitti · {n} bölümü dinledin",
   "auNoLesson": "Bu derste önce bir PDF yükle",
   "auNoVoice": "Bu cihazda sesli okuma kullanılamıyor",
-  "auFailed": "Anlatım hazırlanamadı, biraz sonra tekrar dene"
+  "auFailed": "Anlatım hazırlanamadı, biraz sonra tekrar dene",
+  "hpFaqMore": "Cevabı bulamadın mı? Bize yaz",
+  "hpFaqNotif": "Ayarlar › Bildirimler bölümünden izin ver; iPhone Ayarları › Kavis Study › Bildirimler de açık olmalı.",
+  "hpDevNote": "Uygulama sürümü {v}, {dev} ve cihaz bilgisi e-postaya eklenir. Ders PDF'lerin paylaşılmaz."
  },
  "en": {
   "remindTitle": "Study time",
@@ -241,7 +244,10 @@
   "auDone": "Finished · you listened to {n} parts",
   "auNoLesson": "Upload a PDF to this course first",
   "auNoVoice": "Reading aloud is not available on this device",
-  "auFailed": "Could not prepare the audio lesson, try again later"
+  "auFailed": "Could not prepare the audio lesson, try again later",
+  "hpFaqMore": "Didn't find the answer? Write to us",
+  "hpFaqNotif": "Allow it in Settings › Notifications; iPhone Settings › Kavis Study › Notifications must also be on.",
+  "hpDevNote": "The app version {v}, {dev} and device are added to the e-mail. Your course PDFs aren't shared."
  },
  "fa": {
   "remindTitle": "وقت مطالعه",
@@ -363,7 +369,10 @@
   "auDone": "تمام شد · به {n} بخش گوش دادی",
   "auNoLesson": "اول یک PDF در این درس آپلود کن",
   "auNoVoice": "این مرورگر نمی‌تواند با صدا بخواند",
-  "auFailed": "توضیح صوتی آماده نشد، کمی بعد دوباره امتحان کن"
+  "auFailed": "توضیح صوتی آماده نشد، کمی بعد دوباره امتحان کن",
+  "hpFaqMore": "جواب را پیدا نکردی؟ برایمان بنویس",
+  "hpFaqNotif": "از تنظیمات › اعلان‌ها اجازه بده؛ تنظیمات iPhone › Kavis Study › اعلان‌ها هم باید روشن باشد.",
+  "hpDevNote": "نسخه برنامه {v}, {dev} و دستگاه به ایمیل اضافه می‌شود. PDFهای درست به اشتراک گذاشته نمی‌شوند."
  },
  "ar": {
   "remindTitle": "وقت الدراسة",
@@ -485,6 +494,9 @@
   "auDone": "انتهى · استمعت إلى {n} أجزاء",
   "auNoLesson": "ارفع ملف PDF في هذه المادة أولًا",
   "auNoVoice": "هذا المتصفح لا يستطيع القراءة بصوت",
-  "auFailed": "تعذّر تحضير الشرح الصوتي، حاول لاحقًا"
+  "auFailed": "تعذّر تحضير الشرح الصوتي، حاول لاحقًا",
+  "hpFaqMore": "لم تجد الإجابة؟ راسلنا",
+  "hpFaqNotif": "اسمح بها من الإعدادات › الإشعارات؛ ويجب تفعيل إعدادات iPhone › Kavis Study › الإشعارات أيضًا.",
+  "hpDevNote": "يُضاف إصدار التطبيق {v}, {dev} والجهاز إلى البريد. لا تتم مشاركة ملفات PDF الخاصة بموادك."
  }
 }

@@ -108,6 +108,8 @@ struct RootView: View {
                 PlacementView(materialId: id)
             case .lessonSummary(let id):
                 LessonSummaryView(materialId: id)
+            case .support:
+                SupportView()
             case .samples(let course):
                 SamplesView(courseId: course)
             case .review(let id):

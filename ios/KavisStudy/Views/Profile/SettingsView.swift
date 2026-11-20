@@ -776,7 +776,7 @@ struct SettingsView: View {
                 if let url = c.url { openURL(url) }
             }
             divider
-            plainRow(d("Sık sorulanlar")) { if let url = URL(string: "\(Config.webBaseURL)/help?lang=\(lang.rawValue)") { openURL(url) } }
+            plainRow(d("Sık sorulanlar")) { app.go(.support) }
         }
     }
 
