@@ -498,7 +498,7 @@ struct ReaderView: View {
                         retrying = false
                         switch r {
                         case .success: toast.show(t("up_procT")); prep = nil; prepRound += 1
-                        case .failure(let f): toast.show(t(f == .trial ? "trialPdfFull" : "up_failed"))
+                        case .failure(let f): toast.show(t(f == .busy ? "up_busy" : f == .trial ? "trialPdfFull" : "up_failed"))
                         }
                     }
                 } label: {

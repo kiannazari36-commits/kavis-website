@@ -816,6 +816,8 @@ struct UploadView: View {
                     .accessibilityAddTraits(.isHeader)
                 if serverStatus == .failed {
                     Text(prefs.t(status?.budget == true ? "up_budget" : "up_processFailed")).font(KFont.ui(14, lang: lang)).foregroundStyle(KOnb.bad)
+                } else if status?.waiting == true {
+                    Text(prefs.t("up_busy")).font(KFont.ui(14, lang: lang)).foregroundStyle(KOnb.bad)
                 } else if !ready {
                     Text(d("Yaklaşık 2 dakika sürer. Uygulamayı kapatabilirsin; hazır olunca bildirim göndeririz."))
                         .font(KFont.ui(14, lang: lang)).kLineHeight(1.5, size: 14, lang: lang).foregroundStyle(KPhone.text2)
@@ -850,7 +852,7 @@ struct UploadView: View {
                 Text(Format.percent(progress, lang)).font(KFont.mono(12, .regular)).foregroundStyle(KPhone.text2)
             }
             Spacer(minLength: 0)
-            if serverStatus == .failed, let lessonId {
+            if serverStatus == .failed || status?.waiting == true, let lessonId {
                 Button { Task { await retryFailed(lessonId) } } label: {
                     Text(prefs.t("up_retry")).font(KFont.ui(16, .semibold, lang: lang)).foregroundStyle(KPhone.ctaText)
                         .frame(maxWidth: .infinity, minHeight: 52)
@@ -1003,7 +1005,7 @@ struct UploadView: View {
         busy = false
         switch r {
         case .success: status = nil; mode = .processing; followRound += 1
-        case .failure(let f): toast.show(prefs.t(f == .trial ? "trialPdfFull" : "up_failed"))
+        case .failure(let f): toast.show(prefs.t(f == .busy ? "up_busy" : f == .trial ? "trialPdfFull" : "up_failed"))
         }
     }
 
@@ -1016,7 +1018,7 @@ struct UploadView: View {
             busy = false
             switch r {
             case .success: status = nil; mode = .processing
-            case .failure(let f): toast.show(prefs.t(f == .trial ? "trialPdfFull" : "up_failed"))
+            case .failure(let f): toast.show(prefs.t(f == .busy ? "up_busy" : f == .trial ? "trialPdfFull" : "up_failed"))
             }
         } else if let pickedData {
             trial.perform(.pdf) { Task { await upload([pickedData], ocr: true) } }
@@ -1026,9 +1028,15 @@ struct UploadView: View {
     /// While preparing: ask the server every 4 seconds; a lesson stopped on the server is asked to go on.
     private func follow() async {
         guard let lessonId, MockFlag.value("uploadMode") != "processing" else { return }
+        var lastTry = Date()
         while !Task.isCancelled {
             if let st = await UploadAPI.lessonStatus(lessonId) {
                 status = st
+                // Waiting for a free place (2 other lessons are being prepared): ask again every 20 seconds.
+                if st.waiting, Date().timeIntervalSince(lastTry) >= 20 {
+                    lastTry = Date()
+                    _ = await UploadAPI.retry(lessonId)
+                }
                 if st.status == .needs_ocr { mode = .error; return }
                 if st.status == .ready || st.status == .failed || st.status == .too_long { return }
                 if st.status == .processing, let at = st.updatedAt, Date().timeIntervalSince(at) > 5 * 60 { await UploadAPI.resumeStuckLessons() }

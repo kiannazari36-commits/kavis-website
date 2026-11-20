@@ -381,7 +381,7 @@ export default function Reader() {
               className={s.checkNext}
               onClick={async () => {
                 const r = await retryLesson(pdfId);
-                toast(t(r === 'ok' ? 'up_procT' : r === 'trial' ? 'trialPdfFull' : 'up_failed'));
+                toast(t(r === 'ok' ? 'up_procT' : r === 'busy' ? 'up_busy' : r === 'trial' ? 'trialPdfFull' : 'up_failed'));
                 setRetried((n) => n + 1);
               }}
             >

@@ -11,7 +11,19 @@ enum UploadAPI {
     /// Largest file the storage accepts (Supabase free plan: 50 MB per file).
     static let maxMB = 50.0
 
-    enum Failure: Error { case trial, network, tooBig }
+    enum Failure: Error { case trial, network, tooBig, busy }
+
+    /// Lessons the server could not start yet because 2 other lessons of the student are being prepared (HTTP 429
+    /// "busy"); they stay "uploaded" and are asked again (same idea as the web).
+    private final class Waiting: @unchecked Sendable {
+        private let lock = NSLock()
+        private var ids = Set<String>()
+        func add(_ id: String) { lock.lock(); ids.insert(id); lock.unlock() }
+        func remove(_ id: String) { lock.lock(); ids.remove(id); lock.unlock() }
+        func has(_ id: String) -> Bool { lock.lock(); defer { lock.unlock() }; return ids.contains(id) }
+    }
+    private static let waiting = Waiting()
+    static func isWaiting(_ id: String) -> Bool { waiting.has(id) }
 
     /// How many lessons a long PDF becomes: parts of at most 100 pages.
     static func partsFor(_ pages: Int) -> Int { Int((Double(pages) / Double(TrialLimits.pagesPerPdf)).rounded(.up)) }
@@ -66,7 +78,7 @@ enum UploadAPI {
             .insert(File(material_id: id, user_id: uid, storage_path: path, mime_type: "application/pdf", size_bytes: data.count))
             .execute()
 
-        Task { try? await process(id, ocr: ocr) }
+        Task { try? await process(id, ocr: ocr) }  // 'busy' is remembered by process()
         return id
     }
 
@@ -121,7 +133,16 @@ enum UploadAPI {
     private struct ProcessBody: Encodable { let material_id: String; let ocr: Bool? }
 
     private static func process(_ id: String, ocr: Bool? = nil) async throws {
-        try await supabase.functions.invoke("process-material", options: FunctionInvokeOptions(body: ProcessBody(material_id: id, ocr: ocr)))
+        do {
+            try await supabase.functions.invoke("process-material", options: FunctionInvokeOptions(body: ProcessBody(material_id: id, ocr: ocr)))
+            waiting.remove(id)
+        } catch FunctionsError.httpError(let code, let data) {
+            if code == 429, String(data: data, encoding: .utf8)?.contains("busy") == true {
+                waiting.add(id)
+                throw Failure.busy
+            }
+            throw FunctionsError.httpError(code: code, data: data)
+        }
     }
 
     /// "Tekrar dene" for a lesson that failed, and "Metin tanıma ile dene" (ocr) for one the server found scanned.
@@ -131,6 +152,8 @@ enum UploadAPI {
         do {
             try await process(id, ocr: ocr)
             return .success(())
+        } catch Failure.busy {
+            return .failure(.busy)
         } catch FunctionsError.httpError(let code, _) {
             return .failure(code == 403 ? .trial : .network)
         } catch {
@@ -149,6 +172,8 @@ enum UploadAPI {
         let updatedAt: Date?
         /// Why a failed lesson stopped: the student's monthly AI budget is used up.
         let budget: Bool
+        /// The server said "busy" (2 other lessons are being prepared): this lesson waits and is asked again.
+        var waiting = false
     }
 
     /// Where the server is with a lesson (the processing screen asks every 4 seconds).
@@ -166,7 +191,8 @@ enum UploadAPI {
             .select("status, page_count, course_id, updated_at, error, material_content(stats)")
             .eq("id", value: id).single().execute().value else { return nil }
         return LessonStatus(status: r.status, pages: r.page_count, courseId: r.course_id, stats: r.material_content?.first?.stats ?? [:], updatedAt: r.updated_at,
-                            budget: r.status == .failed && (r.error ?? "").localizedCaseInsensitiveContains("budget"))
+                            budget: r.status == .failed && (r.error ?? "").localizedCaseInsensitiveContains("budget"),
+                            waiting: r.status == .uploaded && isWaiting(id))
     }
 
     /// Lessons whose preparation was stopped on the server (still "processing" after 5 minutes): asking again makes
