@@ -50,7 +50,7 @@ export const TERMS: Record<Lang, LegalDoc> = {
     title: 'Kullanım koşulları',
     sections: [
       { h: '1. Taraflar ve hizmet', p: [
-        'Kavis Study (“Kavis”), Melisa Ferahani, Çendere Caddesi, Seba Rezidans A4, Kağıthane / İstanbul, Türkiye tarafından sunulur. İletişim: ' + M + '.',
+        'Kavis Study (“Kavis”), Melisa Ferahani, Merkez Mahallesi, Çendere Caddesi, Seba Rezidans A4, Kapı No: 4, 34406 Kağıthane / İstanbul, Türkiye tarafından sunulur. İletişim: ' + M + '.',
         'Kavis, öğrencinin yüklediği PDF, slayt fotoğrafı veya ders kaydını; öğretmenin metnini değiştirmeden okuma sayfasına, özetlere, sesli anlatıma, kartlara, sınavlara, çalışma planına ve bir yapay zekâ asistanına dönüştüren bir çalışma uygulamasıdır. Uygulamayı kullanarak bu koşulları kabul etmiş olursun.',
       ] },
       { h: '2. Hesap ve cihazlar', p: [
@@ -91,7 +91,7 @@ export const TERMS: Record<Lang, LegalDoc> = {
     title: 'Terms of use',
     sections: [
       { h: '1. Who we are and the service', p: [
-        'Kavis Study (“Kavis”) is provided by Melisa Ferahani, Çendere Caddesi, Seba Rezidans A4, Kağıthane, Istanbul, Türkiye. Contact: ' + M + '.',
+        'Kavis Study (“Kavis”) is provided by Melisa Ferahani, Merkez Mahallesi, Çendere Caddesi, Seba Rezidans A4, Kapı No: 4, 34406 Kağıthane, Istanbul, Türkiye. Contact: ' + M + '.',
         'Kavis is a study app that turns the PDF, slide photo or lecture recording you upload into a reading page (without changing your teacher’s text), summaries, audio narration, flash cards, quizzes, a study plan and an AI assistant. By using the app you accept these terms.',
       ] },
       { h: '2. Account and devices', p: [
@@ -132,7 +132,7 @@ export const TERMS: Record<Lang, LegalDoc> = {
     title: 'شرایط استفاده',
     sections: [
       { h: '۱. ارائه‌دهنده و خدمت', p: [
-        'Kavis Study («کاویس») توسط Melisa Ferahani، Çendere Caddesi, Seba Rezidans A4, Kağıthane, Istanbul, Türkiye ارائه می‌شود. تماس: ' + M + '.',
+        'Kavis Study («کاویس») توسط Melisa Ferahani، Merkez Mahallesi, Çendere Caddesi, Seba Rezidans A4, Kapı No: 4, 34406 Kağıthane, Istanbul, Türkiye ارائه می‌شود. تماس: ' + M + '.',
         'کاویس یک برنامه مطالعه است که PDF، عکس اسلاید یا ضبط کلاسی را که بارگذاری می‌کنی بدون تغییر متن استاد به صفحه مطالعه، خلاصه، روخوانی صوتی، فلش‌کارت، آزمون، برنامه مطالعه و دستیار هوش مصنوعی تبدیل می‌کند. با استفاده از برنامه، این شرایط را می‌پذیری.',
       ] },
       { h: '۲. حساب و دستگاه‌ها', p: [
@@ -173,7 +173,7 @@ export const TERMS: Record<Lang, LegalDoc> = {
     title: 'شروط الاستخدام',
     sections: [
       { h: '1. الجهة المقدّمة والخدمة', p: [
-        'تقدّم Melisa Ferahani، Çendere Caddesi, Seba Rezidans A4, Kağıthane, Istanbul, Türkiye تطبيق Kavis Study («كافيس»). للتواصل: ' + M + '.',
+        'تقدّم Melisa Ferahani، Merkez Mahallesi, Çendere Caddesi, Seba Rezidans A4, Kapı No: 4, 34406 Kağıthane, Istanbul, Türkiye تطبيق Kavis Study («كافيس»). للتواصل: ' + M + '.',
         'كافيس تطبيق للدراسة يحوّل ملف PDF أو صورة الشريحة أو تسجيل المحاضرة الذي ترفعه إلى صفحة قراءة (دون تغيير نص أستاذك) وملخصات وسرد صوتي وبطاقات واختبارات وخطة دراسة ومساعد بالذكاء الاصطناعي. باستخدامك التطبيق فأنت توافق على هذه الشروط.',
       ] },
       { h: '2. الحساب والأجهزة', p: [
@@ -217,7 +217,7 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
     title: 'Gizlilik politikası ve KVKK aydınlatma metni',
     sections: [
       { h: '1. Veri sorumlusu', p: [
-        'Veri sorumlusu: Melisa Ferahani, Çendere Caddesi, Seba Rezidans A4, Kağıthane / İstanbul, Türkiye. İletişim: ' + M + '. [VERBİS / AB temsilcisi bilgisi – avukat belirleyecek]',
+        'Veri sorumlusu: Melisa Ferahani, Merkez Mahallesi, Çendere Caddesi, Seba Rezidans A4, Kapı No: 4, 34406 Kağıthane / İstanbul, Türkiye. İletişim: ' + M + '. [VERBİS / AB temsilcisi bilgisi – avukat belirleyecek]',
       ] },
       { h: '2. Hangi verileri işliyoruz', p: [
         'Hesap: e-posta adresi, adın (isteğe bağlı), giriş yöntemi (e-posta kodu, Apple veya Google), dil ve tema tercihlerin.',
@@ -246,7 +246,7 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
         'Web sitesi oturum, dil ve tema tercihini tarayıcında saklar. Reklam çerezi kullanmıyoruz. Uygulama, çevrimdışı kullanım için içeriğini cihazında önbelleğe alır.',
       ] },
       { h: '9. Güvenlik ve çocuklar', p: [
-        'Verileri aktarım sırasında şifreleriz, erişimi hesap bazında kısıtlarız. Hizmet 13 yaşından küçükler için tasarlanmamıştır.',
+        'Verileri aktarım sırasında şifreleriz, erişimi hesap bazında kısıtlarız. Hizmet 18 yaşından küçükler için tasarlanmamıştır.',
       ] },
       { h: '10. Değişiklikler', p: [
         'Bu metni güncelleyebiliriz; önemli değişiklikleri uygulama veya e-posta ile duyururuz. Sorular için: ' + M + '.',
@@ -257,7 +257,7 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
     title: 'Privacy policy (GDPR / KVKK notice)',
     sections: [
       { h: '1. Controller', p: [
-        'Data controller: Melisa Ferahani, Çendere Caddesi, Seba Rezidans A4, Kağıthane, Istanbul, Türkiye. Contact: ' + M + '. [Registration / EU representative details – to be set by a lawyer]',
+        'Data controller: Melisa Ferahani, Merkez Mahallesi, Çendere Caddesi, Seba Rezidans A4, Kapı No: 4, 34406 Kağıthane, Istanbul, Türkiye. Contact: ' + M + '. [Registration / EU representative details – to be set by a lawyer]',
       ] },
       { h: '2. What data we process', p: [
         'Account: email address, your name (optional), sign-in method (email code, Apple or Google), language and theme preferences.',
@@ -286,7 +286,7 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
         'The website stores your session, language and theme choice in your browser. We use no advertising cookies. The app caches your content on the device for offline use.',
       ] },
       { h: '9. Security and children', p: [
-        'Data is encrypted in transit and access is restricted per account. The service is not designed for people under 13.',
+        'Data is encrypted in transit and access is restricted per account. The service is not designed for people under 18.',
       ] },
       { h: '10. Changes', p: [
         'We may update this text and will announce important changes in the app or by email. Questions: ' + M + '.',
@@ -297,7 +297,7 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
     title: 'سیاست حریم خصوصی (اطلاعیه GDPR / KVKK)',
     sections: [
       { h: '۱. مسئول داده', p: [
-        'مسئول داده: Melisa Ferahani، Çendere Caddesi, Seba Rezidans A4, Kağıthane, Istanbul, Türkiye. تماس: ' + M + '. [اطلاعات ثبت / نماینده در اتحادیه اروپا – وکیل تعیین کند]',
+        'مسئول داده: Melisa Ferahani، Merkez Mahallesi, Çendere Caddesi, Seba Rezidans A4, Kapı No: 4, 34406 Kağıthane, Istanbul, Türkiye. تماس: ' + M + '. [اطلاعات ثبت / نماینده در اتحادیه اروپا – وکیل تعیین کند]',
       ] },
       { h: '۲. چه داده‌هایی را پردازش می‌کنیم', p: [
         'حساب: نشانی ایمیل، نام (اختیاری)، روش ورود (کد ایمیل، Apple یا Google)، ترجیح زبان و حالت نمایش.',
@@ -326,7 +326,7 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
         'وب‌سایت نشست، زبان و حالت نمایش تو را در مرورگرت نگه می‌دارد. از کوکی تبلیغاتی استفاده نمی‌کنیم. برنامه برای استفاده آفلاین محتوایت را روی دستگاه ذخیره می‌کند.',
       ] },
       { h: '۹. امنیت و کودکان', p: [
-        'داده‌ها هنگام انتقال رمزگذاری می‌شوند و دسترسی برای هر حساب محدود است. این خدمت برای افراد زیر ۱۳ سال طراحی نشده است.',
+        'داده‌ها هنگام انتقال رمزگذاری می‌شوند و دسترسی برای هر حساب محدود است. این خدمت برای افراد زیر ۱۸ سال طراحی نشده است.',
       ] },
       { h: '۱۰. تغییرات', p: [
         'ممکن است این متن را به‌روز کنیم و تغییرات مهم را در برنامه یا با ایمیل اعلام می‌کنیم. پرسش‌ها: ' + M + '.',
@@ -337,7 +337,7 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
     title: 'سياسة الخصوصية (إشعار GDPR / KVKK)',
     sections: [
       { h: '1. المسؤول عن البيانات', p: [
-        'المسؤول عن البيانات: Melisa Ferahani، Çendere Caddesi, Seba Rezidans A4, Kağıthane, Istanbul, Türkiye. للتواصل: ' + M + '. [بيانات التسجيل / ممثل الاتحاد الأوروبي – يحددها المحامي]',
+        'المسؤول عن البيانات: Melisa Ferahani، Merkez Mahallesi, Çendere Caddesi, Seba Rezidans A4, Kapı No: 4, 34406 Kağıthane, Istanbul, Türkiye. للتواصل: ' + M + '. [بيانات التسجيل / ممثل الاتحاد الأوروبي – يحددها المحامي]',
       ] },
       { h: '2. ما البيانات التي نعالجها', p: [
         'الحساب: البريد الإلكتروني، اسمك (اختياري)، طريقة الدخول (رمز البريد أو Apple أو Google)، تفضيلات اللغة والمظهر.',
@@ -366,7 +366,7 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
         'يحفظ الموقع جلستك واختيار اللغة والمظهر في متصفحك. لا نستخدم ملفات ارتباط إعلانية. يخزّن التطبيق محتواك على جهازك مؤقتًا للاستخدام دون اتصال.',
       ] },
       { h: '9. الأمان والأطفال', p: [
-        'تُشفَّر البيانات أثناء النقل ويُقيَّد الوصول لكل حساب. الخدمة غير مصممة لمن هم دون 13 عامًا.',
+        'تُشفَّر البيانات أثناء النقل ويُقيَّد الوصول لكل حساب. الخدمة غير مصممة لمن هم دون 18 عامًا.',
       ] },
       { h: '10. التغييرات', p: [
         'قد نحدّث هذا النص وسنعلن التغييرات المهمة في التطبيق أو بالبريد الإلكتروني. للاستفسار: ' + M + '.',
