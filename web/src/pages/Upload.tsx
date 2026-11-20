@@ -14,7 +14,7 @@ import {
   splitPdf,
   MAX_PHOTOS,
   resumeStuckLessons,
-  retryLesson, retryWithOcr,
+  isWaiting, retryLesson, retryWithOcr,
   shrinkPhoto,
   uploadLesson,
   uploadPhotos,
@@ -57,6 +57,8 @@ export default function Upload() {
   const [over, setOver] = useState(false);
   const [lessonId, setLessonId] = useState<string | null>(null);
   const [status, setStatus] = useState<LessonStatus | null>(null);
+  // The server said 'busy' (2 other lessons are being prepared): this lesson waits and tries again by itself.
+  const [queued, setQueued] = useState(false);
   // A long PDF uploaded as several lessons (0 = one lesson).
   const [partCount, setPartCount] = useState(0);
 
@@ -64,10 +66,18 @@ export default function Upload() {
   useEffect(() => {
     if (stage !== 'processing' || !lessonId) return;
     let alive = true;
+    let lastTry = Date.now();
     const tick = async () => {
       const st = await lessonStatus(lessonId);
       if (!alive || !st) return;
       setStatus(st);
+      const wait = st.status === 'uploaded' && isWaiting(lessonId);
+      setQueued(wait);
+      // Try again every 20 seconds while waiting for a free place.
+      if (wait && Date.now() - lastTry >= 20000) {
+        lastTry = Date.now();
+        retryLesson(lessonId);
+      }
       if (st.status === 'needs_ocr') setStage('noText');
       // Stopped on the server (no progress for 5 minutes): ask it to go on.
       if (st.status === 'processing' && st.updatedAt && Date.now() - new Date(st.updatedAt).getTime() > 5 * 60 * 1000) resumeStuckLessons();
@@ -185,6 +195,7 @@ export default function Upload() {
   const tryOcr = async () => {
     if (lessonId) {
       const r = await retryWithOcr(lessonId);
+      if (r === 'busy') return toast(t('up_busy'));
       if (r !== 'ok') return toast(t(r === 'trial' ? 'trialPdfFull' : 'up_failed'));
       setStatus(null);
       return setStage('processing');
@@ -263,6 +274,7 @@ export default function Upload() {
       setBusy(true);
       const r = await retryLesson(lessonId);
       setBusy(false);
+      if (r === 'busy') return toast(t('up_busy'));
       if (r !== 'ok') return toast(t(r === 'trial' ? 'trialPdfFull' : 'up_failed'));
       setStatus(null);
     };
@@ -287,7 +299,7 @@ export default function Upload() {
             </span>
           </div>
           <h2>{ready ? t('up_ready') : failed ? t('up_failedT') : t('up_procT')}</h2>
-          {failed ? <p className={s.warn}>{t(status?.failure === 'budget' ? 'up_budget' : 'up_processFailed')}</p> : !ready && <p>{t('up_procS')}</p>}
+          {failed ? <p className={s.warn}>{t(status?.failure === 'budget' ? 'up_budget' : 'up_processFailed')}</p> : queued ? <p className={s.warn}>{t('up_busy')}</p> : !ready && <p>{t('up_procS')}</p>}
           {partCount > 1 && <p>{t('up_partsNote').replace('{k}', num(partCount, lang))}</p>}
           <ol className={s.steps} aria-live="polite">
             {STEPS.map((k, i) => {
@@ -306,7 +318,7 @@ export default function Upload() {
           <div className={s.bar}>
             <span style={{ width: `${pct}%` }} />
           </div>
-          {failed && lessonId && (
+          {(failed || queued) && lessonId && (
             <button className={s.pri} aria-busy={busy} onClick={retry}>
               {t('up_retry')}
             </button>

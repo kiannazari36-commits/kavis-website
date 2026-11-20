@@ -82,8 +82,28 @@ export async function uploadLesson(file: File, title: string, courseId: string |
     .insert({ material_id: id, user_id: user.id, storage_path: path, mime_type: 'application/pdf', size_bytes: file.size });
   if (f.error) console.error('material_files', f.error);
 
-  supabase.functions.invoke('process-material', { body: { material_id: id, ocr } }).then(({ error }) => error && console.error('process-material', error));
+  void startProcessing(id, ocr);
   return id;
+}
+
+/** Lessons the server could not start yet because 2 others of the student are being prepared (HTTP 429 'busy'). */
+const waiting = new Set<string>();
+export const isWaiting = (id: string) => waiting.has(id);
+
+/** Asks the server to prepare a lesson. 'busy' = 2 other lessons are being prepared; the lesson stays "uploaded". */
+async function startProcessing(id: string, ocr?: boolean): Promise<'ok' | 'busy' | 'trial' | 'failed'> {
+  const { error } = await supabase.functions.invoke('process-material', { body: ocr === undefined ? { material_id: id } : { material_id: id, ocr } });
+  if (!error) {
+    waiting.delete(id);
+    return 'ok';
+  }
+  const status = (error as { context?: { status?: number } }).context?.status;
+  if (status === 429) {
+    waiting.add(id);
+    return 'busy';
+  }
+  console.error('process-material', error);
+  return status === 403 ? 'trial' : 'failed';
 }
 
 /** Photos of one lesson at most (each photo is one page). */
@@ -131,7 +151,7 @@ export async function uploadPhotos(photos: Blob[], title: string, courseId: stri
     photos.map((p, i) => ({ material_id: id, user_id: user.id, storage_path: paths[i], mime_type: 'image/jpeg', size_bytes: p.size, sort_order: i })),
   );
   if (f.error) console.error('material_files', f.error);
-  supabase.functions.invoke('process-material', { body: { material_id: id } }).then(({ error }) => error && console.error('process-material', error));
+  void startProcessing(id);
   return id;
 }
 
@@ -141,11 +161,8 @@ export function retryWithOcr(id: string) {
 }
 
 /** Asks the server to prepare a lesson again (after it failed, e.g. the monthly AI budget was full). */
-export async function retryLesson(id: string, ocr = false): Promise<'ok' | 'trial' | 'failed'> {
-  const { error } = await supabase.functions.invoke('process-material', { body: { material_id: id, ocr } });
-  if (!error) return 'ok';
-  const status = (error as { context?: { status?: number } }).context?.status;
-  return status === 403 ? 'trial' : 'failed';
+export function retryLesson(id: string, ocr = false) {
+  return startProcessing(id, ocr);
 }
 
 export type LessonStatus = {
