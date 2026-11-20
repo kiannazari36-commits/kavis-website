@@ -45,3 +45,9 @@ Eski oturumlardan kalan (bu liste dışı, `git log` ile bulunur): ink-shared-fo
 
 ## Bekleyen (Kian'ın işleri)
 Sürüm sayfası metinleri + ekran görüntüleri, Xcode Archive, avukat ve mali müşavir, Small Business Program, Paid Applications Agreement kontrolü, Dashboard "leaked password protection", Anthropic aylık limit, kayıtta captcha, 22 Ocak 2027'den önce Anthropic anahtarı yenileme.
+
+## Arşivleme (20 Kasım 2026)
+- Biten ~45 oturum arşivlendi (silinmedi; Arşiv listesinden geri açılabilir). Hepsinin dalı `main`'de, kod git'te.
+- Arşivlenen ama birleşmemiş iş: **iPhone/iPad Yardım ekranı** (oturum "iPhone/iPad: uygulama içi Yardım ekranı", dal `claude/practical-cori-35594e`). Üst oturumuyla birlikte arşivlendi; dal git'te duruyor, geri açılabilir.
+- Açık bırakılan: "Terms and conditions Persian translation" (dal `claude/terms-conditions-persian-a7fe4f`, birleşmemiş iş, `legal.ts` çakışması var).
+- Arşivleme sırasında `git worktree` klasörleri de temizlendi; dallar silinmedi.
