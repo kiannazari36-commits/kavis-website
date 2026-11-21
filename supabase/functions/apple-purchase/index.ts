@@ -4,7 +4,12 @@
 //   a renewal, "Satın alımları geri yükle"). Checked with Apple's certificates; the transaction's appAccountToken must
 //   be the student's user id. → { premium, expires_at, status }
 // POST { signedPayload } (no login) → App Store Server Notifications V2 (renewal, failed payment, expiry, refund):
-//   the subscription with that original transaction id is updated. → 200
+//   the subscription with that original transaction id is updated. → 200. A message older than the stored one is
+//   ignored (Apple can deliver out of order). During the grace period (failed payment, Apple keeps access on) the
+//   subscription counts as Premium until Apple's gracePeriodExpiresDate.
+// POST { action: 'restore', signed_transactions: [...] } (signed in) → "Satın alımları geri yükle": the transactions the app
+//   found (may be none). → { premium, expires_at, status } | 404 { error: 'no_subscription' } (nothing to restore for this
+//   account) | 403 { error: 'account' } (the Apple subscription belongs to another Kavis account) | 403 { error: 'sandbox' }
 // verify_jwt is off because Apple's notifications have no login; 'purchase' checks the student's login itself.
 // Sandbox / TestFlight / Xcode transactions give Premium only to the user ids in the secret SANDBOX_ALLOWED_USER_IDS
 // (comma-separated: the App Review demo account, the owner's test accounts); for everyone else they are refused.
@@ -12,6 +17,7 @@
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import { AppleSignatureError, verifyApple } from './apple.ts';
 import { environmentAllowed } from './environment.ts';
+import { graceUntil, isStale, restoreOutcome, statusForNotification } from './order.ts';
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -37,11 +43,12 @@ const allowXcode = () => Deno.env.get('APPLE_ALLOW_XCODE') === '1';
 type Transaction = {
   bundleId: string; productId: string; transactionId: string; originalTransactionId: string; type: string;
   purchaseDate: number; expiresDate?: number; revocationDate?: number; revocationReason?: number;
-  appAccountToken?: string; environment: string;
+  appAccountToken?: string; environment: string; signedDate?: number;
 };
+type RenewalInfo = { gracePeriodExpiresDate?: number; isInBillingRetryPeriod?: boolean };
 type Notification = {
-  notificationType: string; subtype?: string;
-  data?: { bundleId: string; environment: string; signedTransactionInfo?: string };
+  notificationType: string; subtype?: string; signedDate?: number;
+  data?: { bundleId: string; environment: string; signedTransactionInfo?: string; signedRenewalInfo?: string };
 };
 
 function expiry(t: Transaction): Date | null {
@@ -61,8 +68,11 @@ function statusOf(t: Transaction, exp: Date | null): string {
   return 'active';
 }
 
-async function save(db: SupabaseClient, uid: string, t: Transaction, status?: string) {
-  const exp = expiry(t);
+async function save(db: SupabaseClient, uid: string, t: Transaction, status?: string, opts: { signedDate?: number; renewal?: RenewalInfo | null } = {}) {
+  let exp = expiry(t);
+  // Grace period: Apple keeps the subscriber's access on while it retries the payment, so Premium runs to that date.
+  if (status === 'grace') exp = graceUntil(opts.renewal, t.expiresDate, t.purchaseDate);
+  const signedDate = opts.signedDate ?? t.signedDate;
   const row = {
     user_id: uid,
     provider: 'apple',
@@ -72,12 +82,14 @@ async function save(db: SupabaseClient, uid: string, t: Transaction, status?: st
     started_at: new Date(t.purchaseDate).toISOString(),
     expires_at: exp?.toISOString() ?? null,
     environment: t.environment === 'Production' ? 'production' : 'sandbox',
-    raw: t,
+    raw: { ...t, signedDate },
   };
   // A renewal keeps the first start day (the fair-use month starts on the purchase day).
-  const { data: old } = await db.from('subscriptions').select('user_id, started_at').eq('provider', 'apple').eq('original_transaction_id', t.originalTransactionId).maybeSingle();
+  const { data: old } = await db.from('subscriptions').select('user_id, started_at, status, expires_at, raw').eq('provider', 'apple').eq('original_transaction_id', t.originalTransactionId).maybeSingle();
   // A purchase stays with the account that bought it.
   if (old && old.user_id !== uid) throw new AppleSignatureError('another account');
+  // An older message than the stored one changes nothing (out-of-order delivery).
+  if (old && isStale(old, signedDate)) return { ...row, status: old.status, expires_at: old.expires_at, stale: true };
   if (old) row.started_at = old.started_at;
   const { error } = await db.from('subscriptions').upsert(row, { onConflict: 'provider,original_transaction_id' });
   if (error) throw error;
@@ -109,13 +121,10 @@ Deno.serve(async (req) => {
       const uid = sub?.user_id ?? t.appAccountToken?.toLowerCase();
       if (!uid) return json({ ok: true }); // not one of ours yet; the app sends it after the purchase
       if (!envOk(t, uid)) return json({ ok: true }); // a sandbox transaction of an account that may not use sandbox
-      const status =
-        n.notificationType === 'DID_FAIL_TO_RENEW' ? (n.subtype === 'GRACE_PERIOD' ? 'grace' : 'billing_retry')
-        : n.notificationType === 'GRACE_PERIOD_EXPIRED' || n.notificationType === 'EXPIRED' ? 'expired'
-        : n.notificationType === 'REFUND' ? 'refunded'
-        : n.notificationType === 'REVOKE' ? 'revoked'
-        : undefined;
-      await save(db, uid, t, status);
+      const status = statusForNotification(n.notificationType, n.subtype);
+      let renewal: RenewalInfo | null = null;
+      if (status === 'grace' && n.data.signedRenewalInfo) renewal = await verifyApple<RenewalInfo>(n.data.signedRenewalInfo, allowXcode());
+      await save(db, uid, t, status, { signedDate: n.signedDate, renewal });
       return json({ ok: true });
     }
 
@@ -131,6 +140,29 @@ Deno.serve(async (req) => {
       const row = await save(db, who.user.id, t);
       const { data: premium } = await db.rpc('is_premium', { uid: who.user.id });
       return json({ premium: !!premium, expires_at: row.expires_at, status: row.status });
+    }
+
+    if (body.action === 'restore') {
+      const token = (req.headers.get('Authorization') ?? '').replace('Bearer ', '');
+      const { data: who } = await db.auth.getUser(token);
+      if (!who?.user) return json({ error: 'not signed in' }, 401);
+      const list: unknown[] = Array.isArray(body.signed_transactions) ? body.signed_transactions.slice(0, 20) : [];
+      let matched = 0;
+      let foreign = 0;
+      for (const jws of list) {
+        const t = await verifyApple<Transaction>(String(jws ?? ''), allowXcode());
+        checkTransaction(t);
+        if (t.appAccountToken?.toLowerCase() !== who.user.id) { foreign++; continue; }
+        if (!envOk(t, who.user.id)) return json({ error: 'sandbox' }, 403);
+        await save(db, who.user.id, t);
+        matched++;
+      }
+      const { data: mine } = await db.from('subscriptions').select('status, expires_at').eq('user_id', who.user.id).eq('provider', 'apple').order('expires_at', { ascending: false, nullsFirst: true }).limit(1).maybeSingle();
+      const outcome = restoreOutcome(matched, foreign, !!mine);
+      if (outcome === 'no_subscription') return json({ error: 'no_subscription' }, 404);
+      if (outcome === 'account') return json({ error: 'account' }, 403);
+      const { data: premium } = await db.rpc('is_premium', { uid: who.user.id });
+      return json({ premium: !!premium, expires_at: mine?.expires_at ?? null, status: mine?.status ?? null });
     }
     return json({ error: 'action' }, 400);
   } catch (e) {
