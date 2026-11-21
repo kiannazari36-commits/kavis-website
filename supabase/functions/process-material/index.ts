@@ -16,6 +16,7 @@
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 import { addUsage, overBudget } from '../_shared/budget.ts';
+import { safeStoragePath } from '../_shared/paths.ts';
 import { extractText, getDocumentProxy } from 'npm:unpdf';
 import { PDFDocument } from 'npm:pdf-lib@1.17.1';
 import { OCR_SCHEMA, OCR_SYSTEM, pageTexts, toBase64, type OcrBatch } from './ocr.ts';
@@ -107,9 +108,10 @@ Deno.serve(async (req) => {
  */
 async function reuseShared(db: SupabaseClient, materialId: string, title: string) {
   try {
-    const { data: file } = await db.from('material_files').select('storage_path').eq('material_id', materialId).order('sort_order').limit(1).maybeSingle();
-    if (!file) return false;
-    const digest = await crypto.subtle.digest('SHA-256', await download(db, file.storage_path));
+    const { data: file } = await db.from('material_files').select('storage_path, user_id').eq('material_id', materialId).order('sort_order').limit(1).maybeSingle();
+    const safe = file ? safeStoragePath(file.user_id, file.storage_path) : null;
+    if (!safe) return false;
+    const digest = await crypto.subtle.digest('SHA-256', await download(db, safe));
     const hash = Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, '0')).join('');
     await db.from('materials').update({ content_hash: hash }).eq('id', materialId);
     const { data: copied, error } = await db.rpc('copy_shared_lesson', { dst: materialId });
@@ -136,8 +138,14 @@ async function download(db: SupabaseClient, path: string) {
  * count (their text comes from text recognition, batch by batch).
  */
 async function readLesson(db: SupabaseClient, materialId: string, kind: string, ocr: boolean) {
-  const { data: files } = await db.from('material_files').select('storage_path, mime_type').eq('material_id', materialId).order('sort_order');
-  if (!files?.length) throw new Error('file row missing');
+  const { data: rows } = await db.from('material_files').select('storage_path, mime_type, user_id').eq('material_id', materialId).order('sort_order');
+  if (!rows?.length) throw new Error('file row missing');
+  // Paths come from the student's app: only the student's own folder is read (no "..", no other folder).
+  const files = rows.map((r: { storage_path: string; mime_type: string | null; user_id: string }) => {
+    const p = safeStoragePath(r.user_id, r.storage_path);
+    if (!p) throw new Error('bad file path');
+    return { storage_path: p, mime_type: r.mime_type };
+  });
   // Every photo is a page with text; for a PDF, `layer` = the pages whose own text had letters (for text recognition:
   // an empty result there means the page could not be read, not a picture-only page).
   if (kind === 'photo') return { totalPages: files.length, text: [] as string[], layer: files.map(() => 'x'.repeat(20)), files: files as FileRow[], pdf: null, cached: true };

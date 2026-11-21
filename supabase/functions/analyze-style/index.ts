@@ -5,6 +5,7 @@
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 import { addUsage, overBudget } from '../_shared/budget.ts';
+import { safeStoragePath } from '../_shared/paths.ts';
 
 const MODEL = 'claude-sonnet-5-5';
 const MAX_FILE_BYTES = 15 * 1024 * 1024;
@@ -85,7 +86,7 @@ Deno.serve(async (req) => {
   if (!samples?.length) return json({ error: 'no samples' }, 400);
 
   try {
-    const blocks = await sampleBlocks(db, samples);
+    const blocks = await sampleBlocks(db, uid, samples);
     const { data: topics } = await db.from('material_topics').select('title, materials!inner(course_id)').eq('materials.course_id', courseId).limit(60);
     const { data: profile } = await db.from('profiles').select('app_lang').eq('id', uid).single();
     const langName = { tr: 'Turkish', en: 'English', fa: 'Persian', ar: 'Arabic' }[profile?.app_lang as string] ?? 'Turkish';
@@ -129,7 +130,7 @@ Deno.serve(async (req) => {
 });
 
 /** Each sample as a numbered block: text as it is, a photo as an image, a PDF as a document. */
-async function sampleBlocks(db: SupabaseClient, samples: { kind: string; title: string | null; storage_path: string | null; text: string | null }[]) {
+async function sampleBlocks(db: SupabaseClient, uid: string, samples: { kind: string; title: string | null; storage_path: string | null; text: string | null }[]) {
   const blocks: unknown[] = [];
   for (const [i, s] of samples.entries()) {
     blocks.push({ type: 'text', text: `S${i + 1}${s.title ? ` (${s.title})` : ''}:` });
@@ -137,7 +138,8 @@ async function sampleBlocks(db: SupabaseClient, samples: { kind: string; title: 
       blocks.push({ type: 'text', text: (s.text ?? '').slice(0, 20000) || '(empty)' });
       continue;
     }
-    const { data: blob } = await db.storage.from('question-samples').download(s.storage_path);
+    const path = safeStoragePath(uid, s.storage_path); // the path comes from the app: only the student's own folder
+    const { data: blob } = path ? await db.storage.from('question-samples').download(path) : { data: null };
     if (!blob || blob.size > MAX_FILE_BYTES) {
       blocks.push({ type: 'text', text: '(file could not be read)' });
       continue;
