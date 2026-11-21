@@ -319,8 +319,8 @@ struct OnboardingView: View {
     // MARK: Step 3: department
 
     /// Departments as the design writes them in Turkish; the same words are stored in the profile.
-    static let departments = ["Eczacılık", "Tıp", "Diş Hekimliği", "Hemşirelik", "Sağlık Bilimleri", "Diğer"]
-    private static let departmentIcons: [KIconName] = [.flask, .stethoscope, .tooth, .cross, .pulse, .dots]
+    static let departments = ["Eczacılık", "Tıp", "Diş Hekimliği", "Hemşirelik", "Sağlık Bilimleri", "Hukuk", "Mühendislik", "Sosyal Bilimler", "Diğer"]
+    private static let departmentIcons: [KIconName] = [.flask, .stethoscope, .tooth, .cross, .pulse, .book, .sliders, .globe, .dots]
 
     private var departmentStep: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -345,7 +345,7 @@ struct OnboardingView: View {
                                 .frame(width: 44, height: 44)
                                 .background(on ? KOnb.pri : KPhone.sub, in: Circle())
                             Spacer(minLength: 0)
-                            Text(d(name)).font(KFont.ui(16, .semibold, lang: lang)).foregroundStyle(KPhone.text)
+                            Text(prefs.dept(name)).font(KFont.ui(16, .semibold, lang: lang)).foregroundStyle(KPhone.text)
                                 .kLineHeight(1.2, size: 16, lang: lang)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)

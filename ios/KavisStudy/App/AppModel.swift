@@ -190,6 +190,7 @@ final class AppModel {
         await AuthAPI.logOut(localOnly: true)
         ReminderService.clear()
         OfflineStore.removeAll()
+        TrialAPI.clearCache()
         user = nil
         reset(to: .welcome)
     }
@@ -200,6 +201,7 @@ final class AppModel {
         await AuthAPI.logOut()
         ReminderService.clear()
         OfflineStore.removeAll()
+        TrialAPI.clearCache()
         user = nil
         reset(to: .welcome)
     }

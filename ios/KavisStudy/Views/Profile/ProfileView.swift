@@ -185,7 +185,7 @@ struct ProfileView: View {
                 .padding(.top, 10)
             Text(profile.email).font(KFont.ui(13, lang: lang)).foregroundStyle(KPhone.text2)
             FlowLayout(spacing: 6, rowSpacing: 6, alignment: .center) {
-                let dept = [profile.department.isEmpty ? nil : d(profile.department), profile.year.map { Format.yearLabel($0, lang) }].compactMap { $0 }
+                let dept = [profile.department.isEmpty ? nil : prefs.dept(profile.department), profile.year.map { Format.yearLabel($0, lang) }].compactMap { $0 }
                 if !dept.isEmpty { chip(dept.joined(separator: " · ")) }
                 if !profile.school.isEmpty { chip(profile.school) }
             }

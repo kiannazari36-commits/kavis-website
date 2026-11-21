@@ -218,7 +218,7 @@ struct PadFlowFrame<Content: View>: View {
                     .shadow(color: Color(hex: 0x7A5208, opacity: 0.32), radius: 17, y: 20)
                     .padding(.top, 40)
                     .accessibilityHidden(true)
-                (Text(i == 3 ? prefs.t("padSideDept") : prefs.d(Self.titles[i].0)) + Text("\n") + Text(prefs.d(Self.titles[i].1)).foregroundColor(KPhone.brand).fontWeight(.regular))
+                (Text(i == 3 ? prefs.t("padSideDept") : prefs.d(Self.titles[i].0)) + Text("\n") + Text(i == 5 ? prefs.t("padAddEnd") : prefs.d(Self.titles[i].1)).foregroundColor(KPhone.brand).fontWeight(.regular))
                     .font(KFont.ui(30, .medium, lang: lang)).kTracking(-0.03, size: 30, lang: lang)
                     .foregroundStyle(KPhone.text)
                     .padding(.top, 28)

@@ -465,7 +465,7 @@ struct SettingsView: View {
                 HStack(spacing: 10) {
                     Text(d("Bölüm")).font(KFont.ui(15, lang: lang)).foregroundStyle(C.text)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    Text(profile.department.isEmpty ? "—" : d(profile.department)).font(KFont.ui(14, lang: lang)).foregroundStyle(C.text3)
+                    Text(profile.department.isEmpty ? "—" : prefs.dept(profile.department)).font(KFont.ui(14, lang: lang)).foregroundStyle(C.text3)
                     chevron()
                 }
                 .frame(minHeight: 52)

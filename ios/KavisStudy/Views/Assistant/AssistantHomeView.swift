@@ -342,6 +342,7 @@ struct AssistantHomeView: View {
             case .locked: toast.show(prefs.t("trialLocked"))
             case .budget: toast.show(prefs.t("askBudget"))
             case .failed: toast.show(prefs.t("auFailed"))
+            case .noVoice: toast.show(prefs.t("audioNoVoice"))
             }
         }
     }

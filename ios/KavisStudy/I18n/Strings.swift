@@ -37,7 +37,7 @@ enum Strings {
     static func text(_ key: String, _ lang: Lang, _ vars: [String: String] = [:]) -> String {
         var s = dicts[lang]?[key] ?? dicts[.en]?[key] ?? key
         for (name, value) in vars { s = s.replacingOccurrences(of: "{\(name)}", with: value) }
-        return s
+        return Bidi.fix(s, lang)
     }
 
     /// Design texts by their Turkish wording: `{ "Hesap bilgilerim": { "tr": …, "en": …, "fa": …, "ar": … } }`.
@@ -58,6 +58,19 @@ enum Strings {
     static func design(_ turkish: String, _ lang: Lang) -> String {
         if lang == .tr { return turkish }
         guard let entry = designTable[turkish] else { return turkish }
-        return entry[lang.rawValue] ?? entry["en"] ?? turkish
+        return Bidi.fix(entry[lang.rawValue] ?? entry["en"] ?? turkish, lang)
+    }
+}
+
+
+/// Base direction of Persian / Arabic texts. A text that begins with a Latin word ("PDF …", "Kavis …") would get a
+/// left-to-right base direction and its words end up in the wrong order. A leading U+200F (right-to-left mark) fixes
+/// the base direction; it is invisible and changes nothing else.
+enum Bidi {
+    static let rlm = "\u{200F}"
+
+    static func fix(_ s: String, _ lang: Lang) -> String {
+        guard lang == .fa || lang == .ar, !s.hasPrefix(rlm), let first = s.first(where: { $0.isLetter }), first.isASCII else { return s }
+        return rlm + s
     }
 }

@@ -14,18 +14,58 @@ enum StoreAPI {
         return productIds.compactMap { id in list.first { $0.id == id } }
     }
 
-    enum BuyResult { case premium, pending, cancelled, failed }
+    enum BuyResult: Equatable { case premium, pending, cancelled, failed, refused(Refusal) }
+
+    /// Why the server will not give Premium for a transaction (HTTP 403 of `apple-purchase`), shown as a plain message.
+    enum Refusal: Equatable {
+        /// The purchase belongs to another Kavis account (403 `account`).
+        case account
+        /// Test (sandbox) purchases are not allowed for this account (403 `sandbox`).
+        case sandbox
+        /// The account has no active subscription (`no_subscription`).
+        case noSubscription
+
+        /// Text key of the message (i18n-ios.json).
+        var messageKey: String {
+            switch self {
+            case .account: "pwRefusedAccount"
+            case .sandbox: "pwRefusedSandbox"
+            case .noSubscription: "pwNoSubscription"
+            }
+        }
+    }
+
+    /// What the server said about one transaction.
+    enum Sent: Equatable {
+        /// Accepted; `premium` tells whether the account is Premium now (false after a refund or an expiry).
+        case accepted(premium: Bool)
+        /// Refused for good (retrying will never help).
+        case refused(Refusal)
+        /// Rejected for good with a code we do not know (bad signature …): not retried either.
+        case rejected
+        /// Offline or a server error: try again later.
+        case retryLater
+
+        var isFinal: Bool { self != .retryLater }
+        var premium: Bool { if case .accepted(true) = self { true } else { false } }
+    }
 
     /// Buys a plan. The purchase carries the student's account id (appAccountToken), so the server can only give it
-    /// to this account.
+    /// to this account. The transaction is finished only after the server has answered for good.
     static func buy(_ product: Product) async -> BuyResult {
         guard let uid = supabase.auth.currentUser?.id else { return .failed }
         do {
             switch try await product.purchase(options: [.appAccountToken(uid)]) {
             case .success(let result):
-                guard case .verified(let t) = result, await send(result.jwsRepresentation) else { return .failed }
-                await t.finish()
-                return .premium
+                guard case .verified(let t) = result else { return .failed }
+                let sent = await send(result.jwsRepresentation)
+                // A failed send keeps the transaction open: the next launch (or `listen`) sends it again.
+                if sent.isFinal { await t.finish() }
+                switch sent {
+                case .accepted(let premium): return premium ? .premium : .failed
+                case .refused(let r): return .refused(r)
+                case .rejected, .retryLater: return .failed
+                }
             case .pending: return .pending
             case .userCancelled: return .cancelled
             @unknown default: return .failed
@@ -35,35 +75,69 @@ enum StoreAPI {
         }
     }
 
-    /// Sends a signed transaction to the server; true when the account is Premium after it.
-    @discardableResult
-    static func send(_ signedTransaction: String) async -> Bool {
+    /// Sends a signed transaction to the server and maps the answer.
+    static func send(_ signedTransaction: String) async -> Sent {
         struct Body: Encodable { let action = "purchase"; let signed_transaction: String }
-        struct Res: Decodable { let premium: Bool }
-        let r: Res? = try? await supabase.functions.invoke("apple-purchase", options: FunctionInvokeOptions(body: Body(signed_transaction: signedTransaction)))
-        return r?.premium == true
+        struct Res: Decodable { let premium: Bool?; let error: String? }
+        do {
+            let r: Res = try await supabase.functions.invoke("apple-purchase", options: FunctionInvokeOptions(body: Body(signed_transaction: signedTransaction)))
+            if let refusal = refusal(code: r.error) { return .refused(refusal) }
+            return .accepted(premium: r.premium == true)
+        } catch FunctionsError.httpError(let status, let data) {
+            struct Err: Decodable { let error: String? }
+            let code = (try? JSONDecoder().decode(Err.self, from: data))?.error
+            if let refusal = refusal(code: code) { return .refused(refusal) }
+            // 4xx = the server looked at it and said no; 5xx = try again later.
+            return status >= 400 && status < 500 && status != 401 && status != 429 ? .rejected : .retryLater
+        } catch {
+            return .retryLater
+        }
     }
+
+    /// Known refusal codes; unknown codes are handled as a general failure.
+    static func refusal(code: String?) -> Refusal? {
+        switch code {
+        case "account": .account
+        case "sandbox": .sandbox
+        case "no_subscription": .noSubscription
+        default: nil
+        }
+    }
+
+    enum RestoreResult: Equatable { case premium, none, refused(Refusal), noStore, failed }
 
     /// "Satın alımları geri yükle": asks the App Store for this Apple Account's purchases and sends them to the server.
-    /// nil = the App Store could not be reached; false = nothing to restore.
-    static func restore() async -> Bool? {
-        guard (try? await AppStore.sync()) != nil else { return nil }
-        var premium = false
+    static func restore() async -> RestoreResult {
+        guard (try? await AppStore.sync()) != nil else { return .noStore }
+        var premium = false, found = false, refused: Refusal?, failed = false
         for await result in Transaction.currentEntitlements {
-            if case .verified = result, await send(result.jwsRepresentation) { premium = true }
+            guard case .verified = result else { continue }
+            found = true
+            switch await send(result.jwsRepresentation) {
+            case .accepted(let p): if p { premium = true }
+            case .refused(let r): refused = r
+            case .rejected, .retryLater: failed = true
+            }
         }
-        return premium
+        if premium { return .premium }
+        if let refused { return .refused(refused) }
+        if failed { return .failed }
+        return found ? .refused(.noSubscription) : .none
     }
 
-    /// Renewals, purchases approved later ("Ask to Buy") and purchases made on another device arrive here while the
-    /// app runs; each goes to the server, then `onChange` refreshes the Premium status.
+    /// Renewals, refunds, purchases approved later ("Ask to Buy") and purchases made on another device arrive here
+    /// while the app runs; each goes to the server, then `onChange` refreshes the Premium status (also after a refund,
+    /// when the answer is "not Premium"). A transaction is finished only after the server answered for good; a failed
+    /// send stays open and is tried again on the next launch (`Transaction.unfinished`).
     static func listen(onChange: @escaping @Sendable () async -> Void) -> Task<Void, Never> {
         Task.detached {
-            for await result in Transaction.updates {
-                guard case .verified(let t) = result else { continue }
-                if supabase.auth.currentUser != nil, await send(result.jwsRepresentation) { await onChange() }
-                await t.finish()
+            func handle(_ result: VerificationResult<Transaction>) async {
+                guard case .verified(let t) = result, supabase.auth.currentUser != nil else { return }
+                let sent = await send(result.jwsRepresentation)
+                if sent.isFinal { await t.finish(); await onChange() }
             }
+            for await result in Transaction.unfinished { await handle(result) }
+            for await result in Transaction.updates { await handle(result) }
         }
     }
 }

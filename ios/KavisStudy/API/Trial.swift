@@ -9,7 +9,7 @@ enum TrialLimits {
     static let fairLessons = 40
 }
 
-struct TrialStatus: Equatable {
+struct TrialStatus: Equatable, Codable {
     var premium: Bool
     var ended: Bool
     var daysLeft: Int
@@ -41,7 +41,25 @@ enum TrialAPI {
     ]
 
     /// Shown until the server answers: the last known status, or a fresh trial.
-    private(set) static var last = TrialStatus(premium: false, ended: false, daysLeft: TrialLimits.days, pdfsUsed: 0, questionsUsed: 0)
+    private(set) static var last = cached() ?? TrialStatus(premium: false, ended: false, daysLeft: TrialLimits.days, pdfsUsed: 0, questionsUsed: 0)
+
+    // The last answer of the server is kept on the device (per account), so a Premium student who opens the app
+    // offline is not shown the fresh-trial state. The server stays the authority as soon as it can be reached.
+    private static let cacheKey = "kavis.accessStatus"
+    private struct Cache: Codable { let uid: String; let status: TrialStatus }
+
+    private static func cached() -> TrialStatus? {
+        guard let data = UserDefaults.standard.data(forKey: cacheKey),
+              let c = try? JSONDecoder().decode(Cache.self, from: data) else { return nil }
+        if let uid = supabase.auth.currentUser?.id.uuidString, uid.lowercased() != c.uid.lowercased() { return nil }
+        return c.status
+    }
+
+    /// Forgets the saved status (sign-out, account deletion) and goes back to the fresh-trial state.
+    static func clearCache() {
+        UserDefaults.standard.removeObject(forKey: cacheKey)
+        last = TrialStatus(premium: false, ended: false, daysLeft: TrialLimits.days, pdfsUsed: 0, questionsUsed: 0)
+    }
 
     static func statusNow() -> TrialStatus {
         if let flag = MockFlag.value("trial"), let mock = mocks[flag] { return mock }
@@ -61,6 +79,9 @@ enum TrialAPI {
         last = TrialStatus(premium: a.premium, ended: a.trial_ended, daysLeft: a.days_left, pdfsUsed: a.lessons_used, questionsUsed: a.questions_used,
                            fairUsed: a.fair_use?.used ?? 0, fairResetsOn: a.fair_use?.resets_on,
                            premiumUntil: a.premium_until.flatMap(PromoAPI.parseDate), premiumSource: a.premium_source)
+        if let uid = supabase.auth.currentUser?.id.uuidString, let data = try? JSONEncoder().encode(Cache(uid: uid, status: last)) {
+            UserDefaults.standard.set(data, forKey: cacheKey)
+        }
         return last
     }
 }

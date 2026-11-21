@@ -47,10 +47,15 @@ final class AIConsent {
         }
     }
 
-    @MainActor func answer(_ accepted: Bool, userId: String) {
+    /// `adult` = the "I am over 18" box of the one-time sheet; nil when the answer comes from Settings (no age box).
+    @MainActor func answer(_ accepted: Bool, userId: String, adult: Bool? = nil) {
         state = accepted ? .accepted : .declined
         sheet = nil
         UserDefaults.standard.set(accepted ? "accepted" : "declined", forKey: localKey(userId))
+        if let adult {
+            // Proof of consent for the server; a failed call is repeated at the next launch.
+            Task { await ConsentSync.record(adult: adult, ai: accepted, userId: userId) }
+        }
         Task {
             let stamp = ISO8601DateFormatter().string(from: Date())
             _ = try? await supabase.auth.update(user: UserAttributes(data: [

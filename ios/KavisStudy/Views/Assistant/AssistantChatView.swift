@@ -577,6 +577,6 @@ struct AssistantChatView: View {
 
     private func speak(_ text: String) {
         speaker.stop()
-        speaker.speak(text, language: lang.rawValue, rate: Float(Self.speeds[speedIndex]), female: femaleVoice)
+        if !speaker.speak(text, language: lang.rawValue, rate: Float(Self.speeds[speedIndex]), female: femaleVoice) { toast.show(prefs.t("audioNoVoice")) }
     }
 }

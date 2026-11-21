@@ -51,6 +51,7 @@ struct PaywallView: View {
                     KIcon(name: .close, size: 18, width: 2).foregroundStyle(C.text2)
                         .frame(width: 44, height: 44).background(C.card, in: Circle())
                 }
+                .disabled(busy)
                 .accessibilityLabel(d("Kapat"))
             }
             .padding(.horizontal, 12).padding(.top, KLayout.top(54, minimum: 6))
@@ -224,7 +225,7 @@ struct PaywallView: View {
                 .background(Color(hex: 0xF2B33D), in: RoundedRectangle(cornerRadius: 8))
                 .shadow(color: Color(hex: 0x2A2420, opacity: 0.22), radius: 4, y: 3)
                 .rotationEffect(.degrees(-4)).offset(x: -14, y: -10)
-        } else if p.id.hasSuffix(".month") {
+        } else if p.id.hasSuffix(".month"), introOffer(p) != nil {
             Text(d("Lansmana özel")).font(KFont.ui(11, .bold, lang: lang)).foregroundStyle(C.onPri)
                 .padding(.horizontal, 9).padding(.vertical, 3)
                 .background(C.pri, in: RoundedRectangle(cornerRadius: 6))
@@ -278,6 +279,7 @@ struct PaywallView: View {
             Button(action: close) {
                 Text(d("Ücretsiz planla devam et")).font(KFont.ui(14, .semibold, lang: lang)).foregroundStyle(C.priText).frame(minHeight: 36)
             }
+            .disabled(busy)
         }
         .padding(.horizontal, 20).padding(.top, 12).padding(.bottom, 8)
         .background(C.bg)
@@ -308,6 +310,7 @@ struct PaywallView: View {
         case .pending: toast.show(t("pwPending"))
         case .cancelled: break
         case .failed: toast.show(t("pwFailed"))
+        case .refused(let r): toast.show(t(r.messageKey))
         }
     }
 
@@ -315,11 +318,13 @@ struct PaywallView: View {
         busy = true
         defer { busy = false }
         switch await StoreAPI.restore() {
-        case .some(true):
+        case .premium:
             await trial.refresh()
             toast.show(t("pwRestored"))
-        case .some(false): toast.show(d("Bu hesapta önceki satın alım bulunamadı"))
-        case .none: toast.show(t("pwNoStore"))
+        case .none: toast.show(t("pwNoSubscription"))
+        case .refused(let r): toast.show(t(r.messageKey))
+        case .noStore: toast.show(t("pwNoStore"))
+        case .failed: toast.show(t("pwFailed"))
         }
     }
 }

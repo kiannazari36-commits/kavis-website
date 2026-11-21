@@ -165,6 +165,7 @@ private struct RootTasks: ViewModifier {
         .task(id: app.user?.id) {
             guard let user = app.user else { return }
             AIConsent.shared.load(userId: user.id)
+            await ConsentSync.flush(userId: user.id)
             PushService.start()
             if let l = await AccountAPI.fetchLang() { prefs.lang = l }
             if let s = await SettingsAPI.fetch() {

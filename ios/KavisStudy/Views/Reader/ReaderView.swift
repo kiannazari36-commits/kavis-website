@@ -1152,16 +1152,16 @@ struct ReaderView: View {
         if speaker.speaking { speaker.stop(); return }
         if pdfMode {
             guard let text = pdfDoc?.page(at: pdfPage - 1)?.string, !text.isEmpty else { return }
-            speaker.speak(text, language: doc?.language ?? "tr", rate: Float(settings.ttsRate), female: settings.ttsVoice == .female)
-            toast.show(t("pageAloud"))
+            let ok = speaker.speak(text, language: doc?.language ?? "tr", rate: Float(settings.ttsRate), female: settings.ttsVoice == .female)
+            toast.show(t(ok ? "pageAloud" : "audioNoVoice"))
             return
         }
         guard let doc, let section else { return }
         let text = section.blocks.flatMap { block in
             [block.heading].compactMap { $0 } + block.paragraphs.map(\.plain)
         }.joined(separator: " ")
-        speaker.speak(text, language: doc.language, rate: Float(settings.ttsRate), female: settings.ttsVoice == .female)
-        toast.show(t("pageAloud"))
+        let ok = speaker.speak(text, language: doc.language, rate: Float(settings.ttsRate), female: settings.ttsVoice == .female)
+        toast.show(t(ok ? "pageAloud" : "audioNoVoice"))
     }
 
     // MARK: Term explanation
@@ -1184,7 +1184,7 @@ struct ReaderView: View {
                 }
                 Text(ex?.text ?? "").font(KFont.ui(14, lang: lang)).kLineHeight(1.5, size: 14, lang: lang)
                 FlowLayout(spacing: 8, rowSpacing: 8) {
-                    popButton(t("listen"), icon: .play) { speaker.speak("\(name). \(ex?.text ?? "")", language: lang.rawValue) }
+                    popButton(t("listen"), icon: .play) { if !speaker.speak("\(name). \(ex?.text ?? "")", language: lang.rawValue) { toast.show(t("audioNoVoice")) } }
                     popButton(t("addToCards")) { Task { await addCard(term, name: name) } }
                     popButton(t("translate"), primary: true) {
                         openTerm = nil
@@ -1355,17 +1355,17 @@ final class Speaker: NSObject, AVSpeechSynthesizerDelegate {
     }
 
     /// `rate` is a speed factor (1 = normal); `female` picks a female voice when the phone has one.
-    func speak(_ text: String, language: String, rate: Float = 0.95, female: Bool? = nil) {
+    /// False when the phone has no voice for the language (nothing is spoken; the caller tells the student).
+    @discardableResult
+    func speak(_ text: String, language: String, rate: Float = 0.95, female: Bool? = nil) -> Bool {
         synthesizer.stopSpeaking(at: .immediate)
+        guard let voice = SpeechVoices.voice(language: language, female: female) else { speaking = false; return false }
         let utterance = AVSpeechUtterance(string: text)
-        let tags = ["tr": "tr-TR", "en": "en-US", "fa": "fa-IR", "ar": "ar-SA"]
-        let code = tags[language] ?? language
-        let voices = AVSpeechSynthesisVoice.speechVoices().filter { $0.language == code }
-        let wanted: AVSpeechSynthesisVoiceGender? = female.map { $0 ? .female : .male }
-        utterance.voice = voices.first { wanted != nil && $0.gender == wanted } ?? AVSpeechSynthesisVoice(language: code)
+        utterance.voice = voice
         utterance.rate = AVSpeechUtteranceDefaultSpeechRate * rate
         speaking = true
         synthesizer.speak(utterance)
+        return true
     }
 
     func stop() {
