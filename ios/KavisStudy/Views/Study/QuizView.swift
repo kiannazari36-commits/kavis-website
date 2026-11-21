@@ -45,6 +45,8 @@ struct QuizView: View {
     @State private var feedback = ""
     @State private var judging = false
     @FocusState private var typing: Bool
+    /// "Yanlışlarımı gör": the wrong questions of the finished try, with the right answer and why.
+    @State private var wrongOpen = false
 
     private var lang: Lang { prefs.lang }
     private func d(_ turkish: String) -> String { prefs.d(turkish) }
@@ -578,14 +580,57 @@ if !gradable.isEmpty {
                     }
                     .disabled(gettingNew)
                 } else if target.kind == .exam {
-                    Button { app.back() } label: { primaryLabel(t("k47")) }
+                    if wrong > 0 {
+                        Button { wrongOpen = true } label: { secondaryLabel(t("quizSeeWrong")) }
+                        Button { app.reset(to: .home); app.go(.cards(nil)) } label: { secondaryLabel(t("quizMyMistakes")) }
+                    }
+                    // "Ana sayfa" really goes home (it used to return to the exam center).
+                    Button { app.reset(to: .home) } label: { primaryLabel(t("k47")) }
                 } else {
                     // After the end-of-lesson exam: this lesson's summary ("Ders özeti"), as on the web.
                     Button { app.replace(.lessonSummary(target.materialId)) } label: { primaryLabel(t("lessonSummary")) }
-                    Button { app.back() } label: { secondaryLabel(t("k47")) }
+                    Button { app.reset(to: .home) } label: { secondaryLabel(t("k47")) }
                 }
             }
             .padding(.horizontal, 16).padding(.bottom, 12)
+        }
+        .sheet(isPresented: $wrongOpen) { wrongSheet }
+    }
+
+    /// The questions answered wrong in this try: the question, the student's answer, the right one and the reason.
+    private var wrongSheet: some View {
+        let wrongs: [(QuizQuestion, QuizAPI.Answer)] = answers.compactMap { a in
+            guard let q = quiz?.questions.first(where: { $0.id == a.questionId }) else { return nil }
+            let right = a.verdict ?? (q.answer == a.chosen)
+            return right ? nil : (q, a)
+        }
+        return NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 12) {
+                    ForEach(Array(wrongs.enumerated()), id: \.offset) { _, pair in
+                        let (q, a) = pair
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(q.text).font(KFont.ui(15, .semibold, lang: lang)).foregroundStyle(KPhone.text)
+                            if q.typedKind {
+                                if let w = a.written, !w.isEmpty { Text("\(t("quizYours")): \(w)").font(KFont.ui(13, lang: lang)).foregroundStyle(C.bad) }
+                                Text("\(t("quizRight")): \(q.modelAnswer)").font(KFont.ui(13, lang: lang)).foregroundStyle(C.ok)
+                            } else {
+                                if let c = a.chosen, q.options.indices.contains(c) { Text("\(t("quizYours")): \(q.options[c])").font(KFont.ui(13, lang: lang)).foregroundStyle(C.bad) }
+                                if q.options.indices.contains(q.answer) { Text("\(t("quizRight")): \(q.options[q.answer])").font(KFont.ui(13, lang: lang)).foregroundStyle(C.ok) }
+                            }
+                            if !q.why.isEmpty { Text(q.why).font(KFont.ui(13, lang: lang)).kLineHeight(1.5, size: 13, lang: lang).foregroundStyle(C.text2) }
+                            if let p = q.page { Text(prefs.t("pageLabel", ["n": Format.num(p, lang)])).font(KFont.mono(11, .regular)).foregroundStyle(C.text3) }
+                        }
+                        .padding(14).frame(maxWidth: .infinity, alignment: .leading)
+                        .background(C.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    }
+                }
+                .padding(16)
+            }
+            .background(C.bg)
+            .navigationTitle(t("quizSeeWrong"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .confirmationAction) { Button(t("quizClose")) { wrongOpen = false } } }
         }
     }
 

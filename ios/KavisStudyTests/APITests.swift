@@ -103,7 +103,8 @@ final class TrialRulesTests: XCTestCase {
         for action in [TrialAction.pdf, .question, .generate, .share] { XCTAssertNil(premium.lockReason(for: action)) }
     }
 
-    func testPerformRunsOnlyWhenAllowed() {
+    @MainActor func testPerformRunsOnlyWhenAllowed() {
+        AIConsent.shared.answer(true, userId: "test")
         var ran = 0
         let ended = TrialModel(status: TrialStatus(premium: false, ended: true, daysLeft: 0, pdfsUsed: 2, questionsUsed: 41))
         ended.perform(.pdf) { ran += 1 }

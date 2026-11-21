@@ -428,7 +428,11 @@ struct ExamCenterView: View {
             r = await ExamsAPI.build(courseIds: chosenIds, count: count, weakFocus: weakFocus, types: types)
         }
         switch r {
-        case .ok(let id): app.go(.quiz(QuizTarget(materialId: "", kind: .exam, quizId: id)))
+        case .ok(let id):
+            if let s = ExamsAPI.lastShortfall {
+                toast.show(prefs.t("exShort", ["r": Format.num(s.requested, lang), "b": Format.num(s.built, lang)]))
+            }
+            app.go(.quiz(QuizTarget(materialId: "", kind: .exam, quizId: id)))
         case .empty: toast.show(prefs.t("exNone"))
         case .failed: toast.show(prefs.t("exFailed"))
         }

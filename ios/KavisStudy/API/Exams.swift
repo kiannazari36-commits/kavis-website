@@ -51,16 +51,21 @@ enum ExamsAPI {
         return Dictionary(uniqueKeysWithValues: r.courses.map { ($0.course_id, $0.questions) })
     }
 
+    /// Set by `build` when fewer questions than asked were ready (build-exam: requested / built / short).
+    nonisolated(unsafe) static var lastShortfall: (requested: Int, built: Int)?
+
     enum BuildResult { case ok(String), empty, failed }
 
     /// Puts an exam together: one course or several, `count` questions, half on weak topics when `weakFocus`.
     /// `types`: the question kinds the student chose (multiple_choice / fill_blank / written).
     static func build(courseIds: [String], count: Int, weakFocus: Bool, types: [String] = ["multiple_choice"]) async -> BuildResult {
         struct Body: Encodable { let action = "build"; let course_ids: [String]; let count: Int; let weak_focus: Bool; let types: [String] }
-        struct Res: Decodable { let quiz_id: String }
+        struct Res: Decodable { let quiz_id: String; let requested: Int?; let built: Int?; let short: Int? }
+        lastShortfall = nil
         do {
             let r: Res = try await supabase.functions.invoke("build-exam", options: FunctionInvokeOptions(
                 body: Body(course_ids: courseIds, count: count, weak_focus: weakFocus, types: types)))
+            if let q = r.requested, let b = r.built, (r.short ?? 0) > 0 { lastShortfall = (q, b) }
             return .ok(r.quiz_id)
         } catch FunctionsError.httpError(404, _) {
             return .empty

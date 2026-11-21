@@ -257,6 +257,8 @@ struct AssistantChatView: View {
         }
     }
 
+    @Environment(\.openURL) private var openURL
+
     private func bubble(_ message: ChatMessage) -> some View {
         let mine = message.role == .user
         return VStack(alignment: mine ? .trailing : .leading, spacing: 6) {
@@ -285,9 +287,25 @@ struct AssistantChatView: View {
                 .frame(maxWidth: mine ? 300 : 340, alignment: mine ? .trailing : .leading)
                 .onTapGesture { if !mine { speak(message.text) } }
                 .accessibilityHint(mine ? "" : d("Dinle"))
-            if !mine { extras(message) }
+            if !mine { extras(message); reportButton(message) }
         }
         .frame(maxWidth: .infinity, alignment: mine ? .trailing : .leading)
+    }
+
+    /// "Bildir": the student reports a wrong or inappropriate answer by email, with the answer text (Apple review 1.2).
+    private func reportButton(_ m: ChatMessage) -> some View {
+        Button {
+            var c = URLComponents()
+            c.scheme = "mailto"
+            c.path = "kavisstudy@gmail.com"
+            c.queryItems = [URLQueryItem(name: "subject", value: prefs.t("reportSubject")),
+                            URLQueryItem(name: "body", value: "\(prefs.t("reportIntro"))\n\n\(prefs.t("reportAnswer")):\n\(String(m.text.prefix(1500)))")]
+            if let url = c.url { openURL(url) }
+        } label: {
+            Text(prefs.t("reportBtn")).font(KFont.ui(11, lang: lang)).underline().foregroundStyle(KPhone.text3)
+                .frame(minHeight: 28)
+        }
+        .accessibilityLabel(prefs.t("reportBtn"))
     }
 
     /// Where the answer came from ("↗ FARMAKOLOJİ · S. 13"), web pages it used, and what the assistant did.

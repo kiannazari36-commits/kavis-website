@@ -57,7 +57,8 @@ enum AuthAPI {
             let r = try await supabase.auth.signUp(
                 email: email.trimmingCharacters(in: .whitespaces),
                 password: password,
-                data: ["full_name": .string(name.trimmingCharacters(in: .whitespaces)), "app_lang": .string(lang.rawValue)],
+                data: ["full_name": .string(name.trimmingCharacters(in: .whitespaces)), "app_lang": .string(lang.rawValue),
+                       "ai_consent": .string("accepted"), "ai_consent_at": .string(ISO8601DateFormatter().string(from: Date()))],
                 redirectTo: URL(string: "\(Config.webBaseURL)/home")
             )
             // An email that already has a confirmed account comes back without identities, and no email is sent.
@@ -119,6 +120,11 @@ enum AuthAPI {
                 session = try await supabase.auth.signInWithIdToken(
                     credentials: OpenIDConnectCredentials(provider: .apple, idToken: apple.idToken, nonce: nonce)
                 )
+                // Apple's one-time code goes to the server so the account can be revoked at Apple on deletion.
+                // Silent: a failure here never blocks sign-in.
+                if let code = apple.authorizationCode {
+                    Task { await AppleLink.send(code) }
+                }
                 // Apple gives the name only the first time; keep it like the web's `full_name`.
                 if let name = apple.name, !name.isEmpty, (session.user.userMetadata["full_name"]?.stringValue ?? "").isEmpty {
                     _ = try? await supabase.auth.update(user: UserAttributes(data: ["full_name": .string(name)]))
@@ -157,7 +163,7 @@ enum AuthAPI {
 /// against the plain nonce we send with the token.
 @MainActor
 final class AppleSignIn: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
-    struct Result { let idToken: String; let name: String? }
+    struct Result { let idToken: String; let name: String?; let authorizationCode: String? }
 
     private var continuation: CheckedContinuation<Result, Error>?
     private static var running: AppleSignIn?
@@ -192,7 +198,7 @@ final class AppleSignIn: NSObject, ASAuthorizationControllerDelegate, ASAuthoriz
             return
         }
         let name = credential.fullName.map { PersonNameComponentsFormatter().string(from: $0) }
-        continuation?.resume(returning: Result(idToken: token, name: name))
+        continuation?.resume(returning: Result(idToken: token, name: name, authorizationCode: credential.authorizationCode.flatMap { String(data: $0, encoding: .utf8) }))
         continuation = nil
     }
 
@@ -204,5 +210,14 @@ final class AppleSignIn: NSObject, ASAuthorizationControllerDelegate, ASAuthoriz
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
         let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
         return scenes.flatMap(\.windows).first(where: \.isKeyWindow) ?? ASPresentationAnchor()
+    }
+}
+
+/// `apple-link` Edge Function: hands Apple's authorization code to the server (it keeps a refresh token for revoking).
+enum AppleLink {
+    static func send(_ code: String) async {
+        struct Body: Encodable { let authorization_code: String }
+        struct Res: Decodable { let linked: Bool? }
+        let _: Res? = try? await supabase.functions.invoke("apple-link", options: FunctionInvokeOptions(body: Body(authorization_code: code)))
     }
 }

@@ -256,23 +256,24 @@ struct AuthView: View {
     private var footer: some View {
         VStack(spacing: 10) {
             if signup {
-                Button { consent.toggle() } label: {
-                    HStack(alignment: .top, spacing: 10) {
+                HStack(alignment: .top, spacing: 10) {
+                    Button { consent.toggle() } label: {
                         ZStack {
                             Circle().fill(consent ? KPhone.cta : .clear)
                             Circle().stroke(consent ? .clear : KPhone.text3, lineWidth: 1.5)
                             if consent { KIcon(name: .check, size: 13, width: 3).foregroundStyle(KPhone.ctaText) }
                         }
                         .frame(width: 22, height: 22)
-                        consentText
-                            .font(KFont.ui(12, lang: lang))
-                            .kLineHeight(1.5, size: 12, lang: lang)
-                            .multilineTextAlignment(.leading)
-                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .padding(.horizontal, 4)
+                    .accessibilityAddTraits(consent ? [.isSelected] : [])
+                    // The words "Kullanım koşulları" and "KVKK aydınlatma metni" open the web pages (Apple review 5.1.1(i)).
+                    consentText
+                        .font(KFont.ui(12, lang: lang))
+                        .kLineHeight(1.5, size: 12, lang: lang)
+                        .multilineTextAlignment(.leading)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .accessibilityAddTraits(consent ? [.isSelected] : [])
+                .padding(.horizontal, 4)
             }
             Button { Task { await submit() } } label: {
                 let blocked = signup && !consent
@@ -298,9 +299,16 @@ struct AuthView: View {
     }
 
     private var consentText: Text {
-        let strong = { (key: String) in Text(t(key)).fontWeight(.medium).foregroundStyle(KPhone.text) }
+        func legal(_ key: String, _ page: String) -> Text {
+            var a = AttributedString(t(key))
+            a.link = URL(string: "\(Config.webBaseURL)/\(page)?lang=\(lang.rawValue)")
+            a.underlineStyle = .single
+            a.font = KFont.ui(12, .medium, lang: lang)
+            a.foregroundColor = KPhone.text
+            return Text(a)
+        }
         let plain = { (key: String) in Text(t(key)).foregroundStyle(KPhone.text2) }
-        return strong("signup.k1372") + Text(" ") + plain("signup.k2434") + Text(" ") + strong("signup.k1297") + Text(" ") + plain("signup.k2389")
+        return legal("signup.k1372", "terms") + Text(" ") + plain("signup.k2434") + Text(" ") + legal("signup.k1297", "privacy") + Text(" ") + plain("signup.k2389")
     }
 
     // MARK: Actions

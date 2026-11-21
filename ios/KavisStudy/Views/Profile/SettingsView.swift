@@ -195,7 +195,7 @@ struct SettingsView: View {
         let l = lang
         Task {
             _ = await SettingsAPI.save(s)
-            if reminder { await ReminderService.refresh(s, lang: l) }
+            if reminder { await ReminderService.refresh(s, lang: l, askPermission: true) }
         }
     }
 
@@ -315,7 +315,7 @@ struct SettingsView: View {
                     .frame(width: 48, height: 48)
                     .background(C.priSoft, in: Circle())
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(d("Hesabım")).font(KFont.ui(16, .semibold, lang: lang)).foregroundStyle(C.text)
+                    Text(profile.name.isEmpty ? d("Hesabım") : profile.name).font(KFont.ui(16, .semibold, lang: lang)).foregroundStyle(C.text)
                     Text(profile.email).font(KFont.ui(13, lang: .en)).foregroundStyle(C.text3)
                         .lineLimit(1).truncationMode(.middle)
                         .environment(\.layoutDirection, .leftToRight)
@@ -652,7 +652,7 @@ struct SettingsView: View {
                 HStack(alignment: .firstTextBaseline) {
                     Text(d("Cihazdaki dersler")).font(KFont.ui(15, lang: lang)).foregroundStyle(C.text)
                     Spacer()
-                    Text("\(Format.num(offline.count, lang)) / \(Format.num(pdfCount, lang)) PDF · \(ByteCountFormatter.string(fromByteCount: Int64(offline.reduce(0) { $0 + $1.bytes }), countStyle: .file))")
+                    Text("\(Format.num(offline.count, lang)) / \(Format.num(pdfCount, lang)) PDF · \(Format.bytes(offline.reduce(0) { $0 + $1.bytes }, lang))")
                         .font(KFont.mono(12, .regular)).foregroundStyle(C.text2)
                 }
                 Capsule().fill(C.sub).frame(height: 6)
@@ -746,6 +746,11 @@ struct SettingsView: View {
         .buttonStyle(.plain)
     }
 
+    /// Public web pages in the app language (Apple review 5.1.1(i)): `/privacy`, `/terms`.
+    private func openLegal(_ page: String) {
+        if let url = URL(string: "\(Config.webBaseURL)/\(page)?lang=\(lang.rawValue)") { openURL(url) }
+    }
+
     private func plainRow(_ title: String, color: Color = C.text, arrow: Bool = true, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack {
@@ -790,6 +795,17 @@ struct SettingsView: View {
                     .font(KFont.ui(13, lang: lang)).kLineHeight(1.45, size: 13, lang: lang).foregroundStyle(C.text2)
             }
             .padding(.vertical, 12)
+            divider
+            Text(prefs.t("medDisclaimer"))
+                .font(KFont.ui(12, lang: lang)).kLineHeight(1.45, size: 12, lang: lang).foregroundStyle(C.text3)
+                .frame(maxWidth: .infinity, alignment: .leading).padding(.vertical, 10)
+            divider
+            switchRow(prefs.t("aiSetting"), prefs.t("aiSettingSub"), on: AIConsent.shared.state == .accepted, minHeight: 60) {
+                AIConsent.shared.answer(AIConsent.shared.state != .accepted, userId: app.user?.id ?? "")
+            }
+            plainRow(prefs.t("legalPrivacy")) { openLegal("privacy") }
+            divider
+            plainRow(prefs.t("legalTerms")) { openLegal("terms") }
             divider
             plainRow(d("Hesap bilgilerimi iste")) {
                 toast.show(prefs.t("expMaking"))
@@ -858,7 +874,7 @@ private struct DeleteAccountSheet: View {
                     .background(Color.pair(0xFCE8E6, 0x3D1F1F), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                 Text(prefs.t("delTitle")).font(KFont.ui(21, .bold, lang: lang)).foregroundStyle(KPhone.text)
                 Text(prefs.t("delText")).font(KFont.ui(15, lang: lang)).kLineHeight(1.5, size: 15, lang: lang).foregroundStyle(KPhone.text2)
-                Text(prefs.t("delSub")).font(KFont.ui(14, lang: lang)).kLineHeight(1.5, size: 14, lang: lang).foregroundStyle(KPhone.text)
+                Text(prefs.t("delSubIos")).font(KFont.ui(14, lang: lang)).kLineHeight(1.5, size: 14, lang: lang).foregroundStyle(KPhone.text)
                     .padding(.horizontal, 14).padding(.vertical, 12)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(Color.pair(0xF4EFE6, 0x2B2520), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
