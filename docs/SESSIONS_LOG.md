@@ -51,3 +51,8 @@ Sürüm sayfası metinleri + ekran görüntüleri, Xcode Archive, avukat ve mali
 - Arşivlenen ama birleşmemiş iş: **iPhone/iPad Yardım ekranı** (oturum "iPhone/iPad: uygulama içi Yardım ekranı", dal `claude/practical-cori-35594e`). Üst oturumuyla birlikte arşivlendi; dal git'te duruyor, geri açılabilir.
 - Açık bırakılan: "Terms and conditions Persian translation" (dal `claude/terms-conditions-persian-a7fe4f`, birleşmemiş iş, `legal.ts` çakışması var).
 - Arşivleme sırasında `git worktree` klasörleri de temizlendi; dallar silinmedi.
+
+## 21 Kasım 2026: gönderim öncesi derin test (2 tur)
+- Tur 1: `docs/APPLE_REVIEW_AUDIT.md` (Apple inceleme denetimi), `docs/STUDENT_TEST_REPORT.md` (öğrenci testi, 0,31 $).
+- Düzeltmeler: iOS build 3 (Apple riskleri + öğrenci hataları, dal `kind-torvalds`), sunucu/web (asistan dili, araştırma modu, tablo, OCR paragraf, `build-exam` alanları, `LEGAL_DRAFT_VISIBLE` anahtarı, açılış sayfası, Apple token iptali kodu, dal `hopeful-hertz`). Hepsi main'de; Edge Function'lar henüz CANLIYA ÇIKMADI (Kian'ın onayı bekliyor).
+- Tur 2: `docs/TEST2_PERSONA_FA_IPAD.md` (Farsça/iPad), `docs/TEST2_ATTACKER_KVKK.md` (saldırgan + KVKK), `docs/TEST2_PURCHASES.md` (satın alma; yarım kaldı). Bulguların düzeltmesi henüz yapılmadı.
