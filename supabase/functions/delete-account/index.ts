@@ -7,7 +7,8 @@
 // POST { action: 'cancel' }            → "Vazgeç" within the 30 days.
 // POST { action: 'purge' } + header x-purge-key (the nightly job, migration 20261024213309_account_purge.sql)
 //   → deletes the accounts whose 30 days are over: their files in Storage, then the login (every table goes with it);
-//   also removes the export files (export-data) older than 7 days. Before the login goes, the Apple sign-in token is
+//   also removes the export files (export-data) older than 7 days (by request row, and every file in exports/<user>/
+//   older than 7 days), and the deleted student's rows in auth.audit_log_entries (RPC purge_auth_audit). Before the login goes, the Apple sign-in token is
 //   revoked when the Apple secrets are set (see _shared/apple-revoke.ts).
 // verify_jwt is off because the nightly job and the confirm page have no login; request/cancel check the login themselves.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
@@ -126,7 +127,12 @@ async function purge(db: SupabaseClient) {
     // The login goes; profiles and every table with the student's rows follow by cascade.
     const { error } = await db.auth.admin.deleteUser(uid);
     if (error) console.error('purge', uid, error);
-    else deleted++;
+    else {
+      deleted++;
+      // The login service keeps sign-up / sign-in / delete events with the e-mail and id: remove them too.
+      const { error: ae } = await db.rpc('purge_auth_audit', { p_uid: uid, p_email: u?.user?.email ?? null });
+      if (ae) console.error('purge audit', uid, ae);
+    }
   }
   // Export files (export-data) live 7 days.
   const old = new Date(Date.now() - EXPORT_DAYS * 86_400_000).toISOString();
@@ -135,5 +141,22 @@ async function purge(db: SupabaseClient) {
     const { error } = await db.storage.from('exports').remove([x.file_path, x.file_path.replace(/\.json$/, '.html')]); // the JSON copy and the readable report (removing a missing file is no error)
     if (!error) await db.from('account_requests').update({ file_path: null }).eq('id', x.id);
   }
-  return { deleted, exports_removed: exports?.length ?? 0 };
+  // Safety net: any file in exports/<user>/ older than 7 days goes, even without a request row (e.g. a crash mid-way).
+  let swept = 0;
+  const limit = Date.now() - EXPORT_DAYS * 86_400_000;
+  for (let off = 0; ; off += 100) {
+    const { data: dirs } = await db.storage.from('exports').list('', { limit: 100, offset: off });
+    if (!dirs?.length) break;
+    for (const dir of dirs) {
+      if (dir.id !== null) continue; // a folder has no id
+      const { data: items } = await db.storage.from('exports').list(dir.name, { limit: 1000 });
+      const stale = (items ?? []).filter((i) => i.id !== null && new Date(i.created_at ?? 0).getTime() < limit).map((i) => `${dir.name}/${i.name}`);
+      if (stale.length) {
+        const { error } = await db.storage.from('exports').remove(stale);
+        if (!error) swept += stale.length;
+      }
+    }
+    if (dirs.length < 100) break;
+  }
+  return { deleted, exports_removed: exports?.length ?? 0, exports_swept: swept };
 }

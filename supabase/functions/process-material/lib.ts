@@ -207,6 +207,39 @@ export function looksGarbled(pages: string[]): boolean {
   return vowels / letters.length < 0.2 || odd / nonSpace > 0.04;
 }
 
+/**
+ * Persian / Arabic PDFs: the text layer cannot be trusted. PDF text extraction (pdf.js) gives the words of an
+ * right-to-left line in the wrong order when the PDF stores glyphs left to right (Chrome, many Persian fonts: whole
+ * lines come out reversed, with Arabic presentation forms instead of letters and no half-spaces), and it garbles
+ * letter pairs in other fonts. The teacher's text must not change, so such a PDF is read by text recognition from the
+ * page images (the same path as a scan). True when Arabic-script letters are a third or more of the letters of the
+ * first pages, or when one page is mostly Arabic script.
+ */
+export function rtlTextUnreliable(pages: string[]): boolean {
+  const ARABIC = /\p{Script=Arabic}/u;
+  const count = (t: string) => {
+    let arabic = 0;
+    let all = 0;
+    for (const c of t) {
+      if (!/\p{L}/u.test(c)) continue;
+      all++;
+      if (ARABIC.test(c)) arabic++;
+    }
+    return { arabic, all };
+  };
+  let arabic = 0;
+  let all = 0;
+  for (const [i, p] of pages.entries()) {
+    const c = count(p);
+    if (c.arabic >= 40 && c.arabic / c.all >= 0.5) return true;
+    if (i < 5) {
+      arabic += c.arabic;
+      all += c.all;
+    }
+  }
+  return arabic >= 50 && arabic / all >= 0.33;
+}
+
 const LETTER = /[a-zA-ZçğıöşüÇĞİÖŞÜâîû]/;
 const VOWEL = /[aeiıioöuüAEIİOÖUÜâîû]/;
 const ODD = /[\\\]\[^_`{}|~¡¢£¤¥¦§¨©ª¬®¯°±²³´¶·¸¹º¼½¾¿\u0000-\u0008\u000e-\u001f�□]/g;

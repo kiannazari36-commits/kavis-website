@@ -34,13 +34,15 @@ async function copyLesson(db: SupabaseClient, uid: string, shareId: string, mate
 
   if (items.includes('summary')) {
     const { data: sums } = await db.from('summaries').select('lang, kind, content').eq('material_id', materialId).eq('kind', 'lesson');
-    if (sums?.length) await db.from('summaries').insert(sums.map((s: Row) => ({ ...s, user_id: uid, material_id: newId })));
+    // Not the summaries built from the sharer's own weak topics (same rule as copy_shared_lesson).
+    const own = (sums ?? []).filter((s: Row) => !((s.content as Row | null)?.weakKey));
+    if (own.length) await db.from('summaries').insert(own.map((s: Row) => ({ ...s, user_id: uid, material_id: newId })));
   }
   if (items.includes('cards')) {
     const { data: decks } = await db.from('card_decks').select('id, lang, title').eq('material_id', materialId);
     for (const d of decks ?? []) {
       const { data: nd } = await db.from('card_decks').insert({ user_id: uid, material_id: newId, lang: d.lang, title: d.title }).select('id').single();
-      const { data: cards } = await db.from('flashcards').select('question, answer, note, page, sort_order').eq('deck_id', d.id);
+      const { data: cards } = await db.from('flashcards').select('question, answer, note, page, sort_order').eq('deck_id', d.id).eq('from_mistake', false); // never the cards made from the sharer's own mistakes
       if (nd && cards?.length) await db.from('flashcards').insert(cards.map((c: Row) => ({ ...c, deck_id: nd.id, user_id: uid })));
     }
   }

@@ -13,6 +13,8 @@ export type ReportInput = {
   data: Record<string, Row[]>;
   pdfs: { material_id: string; link: string | null }[];
   linkDays: number;
+  /** avatar / ink / question sample / support attachment files, each with a 7-day link */
+  extraFiles?: { kind: 'avatar' | 'ink' | 'sample' | 'support'; name: string; link: string | null }[];
 };
 
 const T = {
@@ -49,6 +51,7 @@ const T = {
     plan_: 'Plan', provider: 'Sağlayıcı', started: 'Başlangıç', expires: 'Bitiş', trial: 'Deneme kullanımı', lessonsUsed: 'Kullanılan ders', questionsUsed: 'Asistan sorusu', monthUsage: 'Aylık kullanım', month: 'Ay', gens: 'Üretim', noSub: 'Aktif abonelik yok.',
     sstatus: { active: 'Aktif', expired: 'Bitti', grace: 'Ek süre', billing_retry: 'Ödeme yeniden deneniyor', refunded: 'İade', revoked: 'İptal' } as Record<string, string>,
     support: 'Destek yazışmaları', footer: 'Kavis Study · Always Improve More',
+    extra: 'Diğer veriler ve dosyalar', adultAt: 'Yaş onayı (18+)', aiAt: 'Yapay zekâ işleme onayı', pushTokens: 'Bildirim cihazı kaydı', promoTries: 'Promosyon kodu denemesi', promoUsed: 'Kullanılan promosyon kodu', shareReceipts: 'Açtığın paylaşımlar', lessonTexts: 'Derslerden çıkarılan metin (PDF/OCR/kayıt)', lessonTextsN: '{n} ders için sakladığımız metin, {m} parça (tam metin JSON dosyasındadır)', files: 'Yüklediğin diğer dosyalar', fAvatar: 'Profil fotoğrafı', fInk: 'El yazısı dosyası', fSample: 'Soru örneği', fSupport: 'Destek eki', open: 'Aç', count: 'Adet',
   },
   en: {
     locale: 'en-GB', title: 'Your account data', sub: 'A readable summary of the information we keep in Kavis Study. The machine-readable copy of the same data (JSON) is the second link in the email.',
@@ -83,6 +86,7 @@ const T = {
     plan_: 'Plan', provider: 'Provider', started: 'Started', expires: 'Ends', trial: 'Trial usage', lessonsUsed: 'Lessons used', questionsUsed: 'Assistant questions', monthUsage: 'Monthly usage', month: 'Month', gens: 'Generations', noSub: 'No active subscription.',
     sstatus: { active: 'Active', expired: 'Ended', grace: 'Grace period', billing_retry: 'Retrying payment', refunded: 'Refunded', revoked: 'Revoked' },
     support: 'Support messages', footer: 'Kavis Study · Always Improve More',
+    extra: 'Other data and files', adultAt: 'Age confirmation (18+)', aiAt: 'AI processing consent', pushTokens: 'Notification device records', promoTries: 'Promo code attempts', promoUsed: 'Promo codes used', shareReceipts: 'Shared lessons you opened', lessonTexts: 'Text extracted from lessons (PDF/OCR/recording)', lessonTextsN: 'Text we keep for {n} lessons, {m} pieces (the full text is in the JSON file)', files: 'Other files you uploaded', fAvatar: 'Profile photo', fInk: 'Handwriting file', fSample: 'Question sample', fSupport: 'Support attachment', open: 'Open', count: 'Count',
   },
   fa: {
     locale: 'fa-IR', title: 'اطلاعات حساب تو', sub: 'خلاصه‌ی خوانای اطلاعاتی که در Kavis Study نگه می‌داریم. نسخه‌ی قابل‌خواندن برای ماشین (JSON) همین اطلاعات، لینک دوم ایمیل است.',
@@ -117,6 +121,7 @@ const T = {
     plan_: 'طرح', provider: 'ارائه‌دهنده', started: 'شروع', expires: 'پایان', trial: 'مصرف دوره‌ی آزمایشی', lessonsUsed: 'درس‌های استفاده‌شده', questionsUsed: 'پرسش از دستیار', monthUsage: 'مصرف ماهانه', month: 'ماه', gens: 'تولید', noSub: 'اشتراک فعالی وجود ندارد.',
     sstatus: { active: 'فعال', expired: 'پایان‌یافته', grace: 'مهلت اضافه', billing_retry: 'تلاش مجدد پرداخت', refunded: 'بازپرداخت', revoked: 'لغو شده' },
     support: 'پیام‌های پشتیبانی', footer: 'Kavis Study · Always Improve More',
+    extra: 'سایر داده‌ها و فایل‌ها', adultAt: 'تأیید سن (۱۸+)', aiAt: 'رضایت پردازش با هوش مصنوعی', pushTokens: 'ثبت دستگاه اعلان', promoTries: 'تلاش برای کد تخفیف', promoUsed: 'کدهای تخفیف استفاده‌شده', shareReceipts: 'اشتراک‌هایی که باز کرده‌ای', lessonTexts: 'متن استخراج‌شده از درس‌ها (PDF/OCR/ضبط)', lessonTextsN: 'متن نگهداری‌شده برای {n} درس، {m} تکه (متن کامل در فایل JSON است)', files: 'سایر فایل‌هایی که بارگذاری کرده‌ای', fAvatar: 'عکس پروفایل', fInk: 'فایل دست‌نویس', fSample: 'نمونه‌ی پرسش', fSupport: 'پیوست پشتیبانی', open: 'باز کردن', count: 'تعداد',
   },
   ar: {
     locale: 'ar', title: 'بيانات حسابك', sub: 'ملخص مقروء للمعلومات التي نحتفظ بها في Kavis Study. النسخة القابلة للقراءة آليًا (JSON) من البيانات نفسها هي الرابط الثاني في الرسالة.',
@@ -151,6 +156,7 @@ const T = {
     plan_: 'الخطة', provider: 'المزوّد', started: 'البداية', expires: 'النهاية', trial: 'استخدام التجربة', lessonsUsed: 'الدروس المستخدمة', questionsUsed: 'أسئلة المساعد', monthUsage: 'الاستخدام الشهري', month: 'الشهر', gens: 'عمليات التوليد', noSub: 'لا يوجد اشتراك نشط.',
     sstatus: { active: 'نشط', expired: 'منتهٍ', grace: 'فترة سماح', billing_retry: 'إعادة محاولة الدفع', refunded: 'مُسترد', revoked: 'ملغى' },
     support: 'رسائل الدعم', footer: 'Kavis Study · Always Improve More',
+    extra: 'بيانات وملفات أخرى', adultAt: 'تأكيد العمر (+18)', aiAt: 'الموافقة على المعالجة بالذكاء الاصطناعي', pushTokens: 'سجلات أجهزة الإشعارات', promoTries: 'محاولات رمز العرض', promoUsed: 'رموز العرض المستخدمة', shareReceipts: 'الدروس المشاركة التي فتحتها', lessonTexts: 'النص المستخرج من الدروس (PDF/OCR/تسجيل)', lessonTextsN: 'النص المحفوظ لـ {n} درسًا، {m} قطعة (النص الكامل في ملف JSON)', files: 'ملفات أخرى رفعتها', fAvatar: 'صورة الملف الشخصي', fInk: 'ملف الكتابة اليدوية', fSample: 'نموذج أسئلة', fSupport: 'مرفق الدعم', open: 'فتح', count: 'العدد',
   },
 } as const;
 
@@ -199,7 +205,7 @@ export function buildReport(i: ReportInput): string {
   const p = i.profile ?? {};
   add('profile', t.profile, kv([
     [t.name, dash(p.full_name)], [t.email, esc(i.email)], [t.school, dash(p.school)], [t.department, dash(p.department)], [t.classYear, dash(p.class_year)],
-    [t.appLang, esc(pick(t.langs, p.app_lang))], [t.joined, esc(date(i.createdAt ?? p.created_at))], [t.termsAt, esc(date(p.terms_accepted_at))], [t.trialStart, esc(date(p.trial_started_at))],
+    [t.appLang, esc(pick(t.langs, p.app_lang))], [t.joined, esc(date(i.createdAt ?? p.created_at))], [t.termsAt, esc(date(p.terms_accepted_at))], [t.adultAt, esc(date(p.adult_confirmed_at))], [t.aiAt, esc(date(p.ai_consent_at))], [t.trialStart, esc(date(p.trial_started_at))],
   ]));
 
   // 2. settings
@@ -392,6 +398,21 @@ export function buildReport(i: ReportInput): string {
     const um = get('usage_monthly');
     if (um.length) h += h3(t.monthUsage) + table([t.month, t.lessonsUsed, t.questionsUsed, t.gens], um.map((x) => [esc(str(x.month).slice(0, 7)), esc(x.lessons), esc(x.assistant_questions), esc(x.generations)]));
     add('sub', t.sub_, h);
+  }
+
+  // 12. other data and files (tokens, promo, share receipts, lesson texts, avatar / ink / samples / support files)
+  {
+    let h = '';
+    const rows: unknown[][] = [];
+    const cnt = (k: string, label: string) => { const n = get(k).length; if (n) rows.push([esc(label), esc(n)]); };
+    cnt('push_tokens', t.pushTokens); cnt('promo_attempts', t.promoTries); cnt('promo_redemptions', t.promoUsed); cnt('share_receipts', t.shareReceipts);
+    h += table([t.type, t.count], rows);
+    const mc = get('material_content').length;
+    if (mc) h += `<p class="muted">${esc(t.lessonTextsN.replace('{n}', String(mc)).replace('{m}', String(get('material_chunks').length)))}</p>`;
+    const ef = i.extraFiles ?? [];
+    const fname: Record<string, string> = { avatar: t.fAvatar, ink: t.fInk, sample: t.fSample, support: t.fSupport };
+    if (ef.length) h += h3(t.files) + `<p class="muted">${esc(t.valid.replace('{n}', String(i.linkDays)))}</p>` + table([t.type, t.title_, ''], ef.map((x) => [esc(fname[x.kind]), esc(x.name), x.link ? `<a href="${esc(x.link)}">${esc(t.open)}</a>` : '']));
+    add('extra', t.extra, h);
   }
 
   const font = rtl ? "Vazirmatn, Tahoma, 'Segoe UI', Arial, sans-serif" : "Poppins, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif";

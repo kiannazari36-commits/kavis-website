@@ -1,5 +1,5 @@
 // Run: node --experimental-strip-types supabase/functions/assistant/lib.test.ts
-import { answerLang, costUsd, lessonText, queryTerms, rankChunks, splitTail, tsQuery } from './lib.ts';
+import { searchTargets, answerLang, costUsd, lessonText, queryTerms, rankChunks, splitTail, tsQuery } from './lib.ts';
 
 let fails = 0;
 const check = (name: string, ok: boolean) => {
@@ -35,4 +35,8 @@ check('lang: Arabic → ar', answerLang('ما هي أعراض الدواء؟', '
 check('lang: unclear term → interface language', answerLang('ACE?', 'tr') === 'tr' && answerLang('ACE?', 'en') === 'en' && answerLang('12', 'ar') === 'ar');
 check('lang: Turkish without special letters', answerLang('Hoca bu konuyu nasil anlatti', 'en') === 'tr');
 check('lang: "nothing found" style question stays tr', answerLang('Bu derste hoca neyi vurguladı, sınavda ne çıkar?', 'en') === 'tr');
+check('search targets: Turkish question on a Persian lesson', JSON.stringify(searchTargets('tr', ['fa'])) === '["fa"]');
+check('search targets: same language needs no translation', searchTargets('tr', ['tr', 'tr']).length === 0);
+check('search targets: most common first, max 2', JSON.stringify(searchTargets('tr', ['fa', 'en', 'en', 'ar'])) === '["en","fa"]');
+check('search targets: unknown / empty languages are ignored', searchTargets('en', [null, undefined, 'xx']).length === 0);
 if (fails) process.exit(1);

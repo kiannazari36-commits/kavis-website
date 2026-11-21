@@ -1,5 +1,5 @@
 // Run: node --experimental-strip-types supabase/functions/process-material/lib.test.ts
-import { batches, cleanHints, costUsd, hasLetters, looksGarbled, markTerms, pageGarbled, paragraphsOf, plain, readyNotice, splitRuns, unreadablePage } from './lib.ts';
+import { batches, cleanHints, costUsd, hasLetters, looksGarbled, markTerms, pageGarbled, paragraphsOf, plain, readyNotice, rtlTextUnreliable, splitRuns, unreadablePage } from './lib.ts';
 
 let fails = 0;
 const check = (name: string, ok: boolean) => {
@@ -85,4 +85,15 @@ check('table: head + rows', tr.table && tr.head.join() === 'Grup,İlaç,Yan etki
 check('table keeps its row lines as paragraphs (same words)', tr.paragraphs.join('\n') === 'Grup | İlaç | Yan etki\nAminoglikozidler | Gentamisin | Nefrotoksisite\nPenisilinler | Amoksisilin | Alerji');
 check('one single row is not a table', splitRuns(['a | b']).length === 1 && !splitRuns(['a | b'])[0].table);
 check('no word lost across runs', splitRuns(tp).flatMap((r) => r.paragraphs).join('\n') === tp.join('\n'));
+
+// Persian / Arabic PDFs (21 Nov): what pdf.js really gave for PDFs made by Chrome (fa.pdf: whole lines reversed, presentation forms;
+// ar.pdf: letter pairs swapped). These go to text recognition.
+const faExtract = 'یﻧﺪﻣ قﻮﻘﺣ ﺮﺑ ایﻪﻣﺪﻘﻣ\nیﺻﻮﺼﺧ یﺎھاردادﺮﻗ ﻪک داردیﻣ رﺮﻘﻣ یﻧﺪﻣ نﻮﻧﺎﻗ ١ دهﺎﻣ\nﻪک یﺗرﻮﺻ در ﺪﻧادهﻮﻤﻧ ﺪﻘﻌﻨﻣ آن را ﻪک یﻧﺎﺴک ﻪﺑ ﺖﺒﺴﻧ\nﻪﻤھ در ﻞﺻا ﻦﯾو ا ﺖﺳا ﺬﻓﺎﻧ ﺪﺷﺎﺒﻧ نﻮﻧﺎﻗ ﺢﯾﺮﺻ ﻒﻟﺎﺨﻣ';
+const arExtract = 'مقدمة في القانون املدني\nتنص املادة األولى من القانون املدني على أن العقود الخاصة تكون\nنافذة بني املتعاقدين ما لم تخالف نصا صريحا في القانون، وهذا';
+check('rtl: Persian text layer is unreliable', rtlTextUnreliable([faExtract]));
+check('rtl: Arabic text layer is unreliable', rtlTextUnreliable([arExtract]));
+check('rtl: a Turkish page is fine', !rtlTextUnreliable([page.repeat(3)]));
+check('rtl: a mostly English page with a few Arabic words is fine', !rtlTextUnreliable([page.repeat(3) + ' القانون المدني']));
+check('rtl: one mostly-Arabic page among Latin pages is caught', rtlTextUnreliable([page.repeat(5), faExtract + '\n' + arExtract]));
+check('rtl: empty pages are fine', !rtlTextUnreliable(['', '   ']));
 if (fails) process.exit(1);

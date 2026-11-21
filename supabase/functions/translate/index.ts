@@ -39,7 +39,8 @@ ${
     ? 'Literal: follow the lecturer\'s sentences closely, word for word where the language allows, so the student learns the exact terms.'
     : 'Natural: say the same meaning the way it is naturally said in that language, so it is easy to understand. Do not add or leave out facts.'
 }
-Keep drug names, doses, numbers and abbreviations exactly. Keep the line breaks and bullet points. Reply with the translation only.`;
+Keep drug names, doses, numbers and abbreviations exactly. Keep the line breaks and bullet points.
+Reply with the translation ONLY. Never add notes, comments, warnings or explanations of your own, in any language, and never say anything about the source text itself (for example that it looks scrambled, garbled, reversed, incomplete or badly extracted): translate what is there, as well as it can be translated, even if it looks odd. A part you cannot make sense of stays as it is.`;
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
