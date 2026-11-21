@@ -11,7 +11,7 @@ export const CONTACT_EMAIL = 'kavisstudy@gmail.com';
 export const LEGAL_CHROME: Record<Lang, Chrome> = {
   tr: {
     draft: 'TASLAK – Bu metin henüz bir avukat tarafından kontrol edilmedi ve hukuki geçerliliği yoktur. Yayından önce avukat kontrolü gerekir.',
-    updated: 'Son güncelleme: 27 Ekim 2026 (taslak)',
+    updated: 'Son güncelleme: 21 Kasım 2026 (taslak)',
     back: 'Ana sayfa',
     terms: 'Kullanım koşulları',
     privacy: 'Gizlilik ve KVKK',
@@ -19,7 +19,7 @@ export const LEGAL_CHROME: Record<Lang, Chrome> = {
   },
   en: {
     draft: 'DRAFT – This text has not yet been reviewed by a lawyer and has no legal force. A lawyer’s check is required before launch.',
-    updated: 'Last updated: 27 October 2026 (draft)',
+    updated: 'Last updated: 21 November 2026 (draft)',
     back: 'Home',
     terms: 'Terms of use',
     privacy: 'Privacy policy',
@@ -27,7 +27,7 @@ export const LEGAL_CHROME: Record<Lang, Chrome> = {
   },
   fa: {
     draft: 'پیش‌نویس – این متن هنوز توسط وکیل بررسی نشده و اعتبار حقوقی ندارد. پیش از انتشار باید توسط وکیل بررسی شود.',
-    updated: 'آخرین به‌روزرسانی: ۲۷ اکتبر ۲۰۲۶ (پیش‌نویس)',
+    updated: 'آخرین به‌روزرسانی: ۲۱ نوامبر ۲۰۲۶ (پیش‌نویس)',
     back: 'صفحه اصلی',
     terms: 'شرایط استفاده',
     privacy: 'حریم خصوصی',
@@ -35,7 +35,7 @@ export const LEGAL_CHROME: Record<Lang, Chrome> = {
   },
   ar: {
     draft: 'مسودة – لم يراجع محامٍ هذا النص بعد وليس له أي قوة قانونية. تلزم مراجعة محامٍ قبل الإطلاق.',
-    updated: 'آخر تحديث: 27 أكتوبر 2026 (مسودة)',
+    updated: 'آخر تحديث: 21 نوفمبر 2026 (مسودة)',
     back: 'الصفحة الرئيسية',
     terms: 'شروط الاستخدام',
     privacy: 'سياسة الخصوصية',
@@ -224,6 +224,8 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
         'İçerik: yüklediğin PDF’ler, slayt fotoğrafları, ders kayıtların (konuşma-yazıya çevirme cihazında yapılır; yapay zekâya yalnızca metin gönderilir; ses dosyası, en fazla 50 MB, yalnızca senin özel hesabında dinlemen için saklanır ve dersi veya hesabını silince silinir), notların, vurgulamaların ve ders programın. [AVUKAT KONTROL EDECEK: ses kaydı]',
         'Kullanım: okuma ilerlemesi, çalışma süreleri, sınav ve kart sonuçları, asistan soruların, kullanım sayaçları (deneme limitleri için).',
         'Cihaz ve abonelik: kayıtlı cihazların (en fazla 2), abonelik durumu (Apple’dan doğrulanan işlem bilgisi). Kart bilgilerini biz görmeyiz ve saklamayız; ödemeyi Apple alır.',
+        'Profil ve ders bilgileri: okul, bölüm ve sınıf bilgin, profil fotoğrafın (yüklersen), ders programın (ders adı, hoca adı, sınıf/oda, saat), el yazısı notların (Apple Pencil çizimleri), çalışma sürelerin ve kayıtlı cihaz kimliğin.',
+        'Destek: destek talebi yazarsan mesajın, eklediğin ekran görüntüsü, cihaz modelin, uygulama sürümün ve son baktığın ekran. Bildirim: bildirimleri açarsan cihazının bildirim jetonu (Apple Push Notification service için).',
       ] },
       { h: '3. Amaçlar ve hukuki sebepler', p: [
         'Verilerini hizmeti sunmak (sözleşmenin ifası), hesabını ve cihaz sınırını yönetmek, aboneliği doğrulamak, güvenliği sağlamak ve hukuki yükümlülükleri yerine getirmek için işleriz. KVKK m.5/2 (c) sözleşmenin ifası, (ç) hukuki yükümlülük, (f) meşru menfaat; GDPR m.6(1)(b), (c), (f). Pazarlama bildirimi göndermeden önce ayrıca açık rızanı isteriz. [AVUKAT KONTROL EDECEK]',
@@ -235,9 +237,13 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
       { h: '5. Verilerin saklandığı yer ve aktarım', p: [
         'Verilerin Supabase üzerinde AB’de (İrlanda, eu-west-1) saklanır. Yapay zekâ işleme için içerik Anthropic’e, abonelik doğrulaması için ilgili bilgiler Apple’a aktarılır; bu aktarımlar yurt dışına aktarım sayılabilir. KVKK m.9 ve GDPR Bölüm V kapsamındaki güvenceler uygulanır. [AVUKAT KONTROL EDECEK]',
         'Verilerini reklam amacıyla satmayız veya üçüncü kişilerle paylaşmayız. Paylaşım özelliğinde yalnızca uygulamanın ürettiği içerik paylaşılır, orijinal PDF asla paylaşılmaz.',
+        'Hizmeti sunmak için şu işleyicileri kullanırız: Supabase (veritabanı ve dosya depolama, AB), Anthropic (yapay zekâ işleme), Apple (abonelik doğrulama; iPhone uygulamasında bildirim göndermek için Apple Push Notification service), Resend (e-posta gönderimi: giriş kodu, hesap silme ve veri dışa aktarma e-postaları), Vercel (web sitesinin barındırılması; sunucu günlüklerinde IP adresin görünebilir). Yazı tipleri sitemizin kendisinden sunulur; Google Fonts kullanmıyoruz. Web’de sesli ders özelliğini ilk kullandığında konuşma tanıma modeli jsDelivr ve Hugging Face sunucularından indirilir; bu istekler IP adresini bu sağlayıcılara gösterir. [AVUKAT KONTROL EDECEK: işleyici listesi]',
+        'Uygulamanın sahibi, hizmeti yönetmek için tüm hesapların özetini (e-posta, ad, deneme durumu, kullanım ve yapay zekâ maliyeti) görebilir; ders içeriğini veya sohbetlerini bu ekrandan görmez.',
       ] },
       { h: '6. Saklama süresi', p: [
         'Verilerini hesabın açık olduğu sürece saklarız. Hesabını silme talebinden 30 gün sonra hesabın ve tüm içeriğin kalıcı olarak silinir; bu sürede talebi iptal edebilirsin. Yasal olarak saklamamız gereken kayıtlar (ör. abonelik işlemleri) ilgili süre boyunca ayrıca tutulabilir.',
+        'Veri dışa aktarma talep edersen hazırlanan dosyalar (JSON ve okunabilir rapor) ve içindeki bağlantılar 7 gün geçerlidir; 7 gün sonra sunucudan silinir. Hesabın silindiğinde giriş servisimizin tuttuğu kayıt, giriş ve silme günlükleri de silinir.',
+        'Başka öğrencilerin elinde kalan kopyalar: aynı PDF’i yükleyen öğrenciler için yeniden kullanılan ders verisi ve bir öğrencinin sana gönderdiği (veya senin paylaştığın) paylaşım kopyaları, alan kişinin hesabında ayrı bir kopya olarak durur. Hesabını silmen bu kopyaları silmez; kopyalar sana ait notlar, ilerleme, hata veya kişisel veri içermez.',
       ] },
       { h: '7. Haklarınız', p: [
         'KVKK m.11 ve GDPR kapsamında: verilerinin işlenip işlenmediğini öğrenme, bilgi isteme, düzeltme, silme, işlemeye itiraz etme, verilerini taşıma ve otomatik işlemeye ilişkin haklara sahipsin. Uygulama içinde Ayarlar’dan verilerini dışa aktarabilir ve hesabını silebilirsin. Diğer talepler için: ' + M + '. Ayrıca Kişisel Verileri Koruma Kurulu’na veya bulunduğun ülkenin veri koruma otoritesine başvurabilirsin.',
@@ -247,6 +253,7 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
       ] },
       { h: '9. Güvenlik ve çocuklar', p: [
         'Verileri aktarım sırasında şifreleriz, erişimi hesap bazında kısıtlarız. Hizmet 18 yaşından küçükler için tasarlanmamıştır.',
+        'Hesap açarken “18 yaşından büyüğüm” onayını ve yapay zekâ işleme onayını veririz; onay tarihi ve metin sürümü hesabında kayıtlı tutulur.',
       ] },
       { h: '10. Değişiklikler', p: [
         'Bu metni güncelleyebiliriz; önemli değişiklikleri uygulama veya e-posta ile duyururuz. Sorular için: ' + M + '.',
@@ -264,6 +271,8 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
         'Content: the PDFs and slide photos you upload, your lecture recordings (speech-to-text runs on your device; only the transcript is sent to the AI; the sound file, up to 50 MB, is kept only in your own private account for playback and is deleted when you delete the lesson or your account), your notes, highlights and class timetable. [AVUKAT KONTROL EDECEK: sound recording]',
         'Usage: reading progress, study time, quiz and card results, your assistant questions, usage counters (for trial limits).',
         'Devices and subscription: your registered devices (max 2) and subscription status (transaction data verified with Apple). We never see or store your card details; Apple takes the payment.',
+        'Profile and course details: your school, department and year, your profile photo (if you add one), your timetable (course name, teacher name, room, time), your handwritten notes (Apple Pencil drawings), your study time and your registered device ID.',
+        'Support: if you write a support request, your message, any screenshot you attach, your device model, app version and the last screen you viewed. Notifications: if you turn them on, your device’s notification token (for the Apple Push Notification service).',
       ] },
       { h: '3. Purposes and legal bases', p: [
         'We process data to provide the service (performance of a contract), manage your account and device limit, verify your subscription, keep the service secure and meet legal obligations. GDPR Art. 6(1)(b), (c), (f); KVKK Art. 5/2 (c), (ç), (f). We ask for your explicit consent separately before sending any marketing. [LAWYER TO CHECK]',
@@ -275,9 +284,13 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
       { h: '5. Where data is stored and transfers', p: [
         'Your data is stored with Supabase in the EU (Ireland, eu-west-1). For AI processing content is sent to Anthropic, and for subscription checks relevant data goes to Apple; these may be transfers outside your country. Safeguards under GDPR Chapter V and KVKK Art. 9 apply. [LAWYER TO CHECK]',
         'We do not sell your data for advertising or share it with third parties. When you share, only what the app made is shared; the original PDF is never shared.',
+        'To provide the service we use these processors: Supabase (database and file storage, EU), Anthropic (AI processing), Apple (subscription checks; the Apple Push Notification service for notifications in the iPhone app), Resend (email delivery: sign-in codes, account deletion and data export emails) and Vercel (hosting of the website; your IP address may appear in server logs). Fonts are served from our own site; we do not use Google Fonts. The first time you use the voice lesson feature on the web, a speech-recognition model is downloaded from jsDelivr and Hugging Face servers; these requests show your IP address to those providers. [LAWYER TO CHECK: processor list]',
+        'The app owner can see an overview of all accounts (email, name, trial status, usage and AI cost) to run the service; they do not see lesson content or chats on this screen.',
       ] },
       { h: '6. Retention', p: [
         'We keep your data while your account is open. 30 days after you request deletion, your account and all content are permanently deleted; you can cancel the request during that time. Records we must keep by law (e.g. subscription transactions) may be kept for the legally required period.',
+        'If you request a data export, the files we prepare (a JSON file and a readable report) and the links inside them are valid for 7 days and are deleted from our servers after 7 days. When your account is deleted, the sign-up, sign-in and deletion logs kept by our login service are deleted too.',
+        'Copies held by other students: lesson data that is reused for students who upload the same PDF, and share copies that another student sent you (or you shared), stay as separate copies in the receiving person’s account. Deleting your account does not delete those copies; they contain none of your notes, progress, mistakes or personal data.',
       ] },
       { h: '7. Your rights', p: [
         'Under GDPR and KVKK Art. 11 you have the right to know whether your data is processed, to access, correct and erase it, to object, to data portability and rights relating to automated processing. In the app you can export your data and delete your account in Settings. For other requests: ' + M + '. You may also complain to your data-protection authority (in Türkiye, the KVKK Board).',
@@ -287,6 +300,7 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
       ] },
       { h: '9. Security and children', p: [
         'Data is encrypted in transit and access is restricted per account. The service is not designed for people under 18.',
+        'When you sign up we record your confirmation that you are over 18 and your consent to AI processing; the date and the version of the text are kept on your account.',
       ] },
       { h: '10. Changes', p: [
         'We may update this text and will announce important changes in the app or by email. Questions: ' + M + '.',
@@ -304,6 +318,8 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
         'محتوا: PDFها و عکس‌های اسلاید که بارگذاری می‌کنی، ضبط‌های کلاس (تبدیل گفتار به متن روی دستگاه خودت انجام می‌شود؛ فقط متن برای هوش مصنوعی فرستاده می‌شود؛ فایل صوتی، تا ۵۰ مگابایت، فقط در حساب خصوصی خودت برای گوش دادن نگه داشته می‌شود و با حذف درس یا حسابت پاک می‌شود)، یادداشت‌ها، هایلایت‌ها و برنامه کلاسی. [AVUKAT KONTROL EDECEK: ضبط صوتی]',
         'استفاده: پیشرفت مطالعه، زمان مطالعه، نتایج آزمون و کارت، پرسش‌های دستیار و شمارنده‌های استفاده (برای محدودیت دوره آزمایشی).',
         'دستگاه و اشتراک: دستگاه‌های ثبت‌شده (حداکثر ۲) و وضعیت اشتراک (اطلاعات تراکنش تأییدشده از اپل). ما اطلاعات کارت تو را نمی‌بینیم و ذخیره نمی‌کنیم؛ پرداخت را اپل دریافت می‌کند.',
+        'اطلاعات پروفایل و درس: دانشگاه، رشته و سال تحصیلی، عکس پروفایل (در صورت بارگذاری)، برنامه‌ی کلاسی (نام درس، نام استاد، کلاس/اتاق، ساعت)، یادداشت‌های دست‌نویس (طرح‌های Apple Pencil)، زمان مطالعه و شناسه‌ی دستگاه ثبت‌شده‌ی تو.',
+        'پشتیبانی: اگر درخواست پشتیبانی بنویسی، پیام تو، تصویر ضمیمه‌شده، مدل دستگاه، نسخه‌ی برنامه و آخرین صفحه‌ای که دیده‌ای. اعلان‌ها: اگر آن‌ها را روشن کنی، توکن اعلان دستگاه (برای Apple Push Notification service).',
       ] },
       { h: '۳. اهداف و مبنای قانونی', p: [
         'داده‌ها را برای ارائه خدمت (اجرای قرارداد)، مدیریت حساب و محدودیت دستگاه، تأیید اشتراک، تأمین امنیت و انجام تعهدات قانونی پردازش می‌کنیم. GDPR ماده ۶(۱) بندهای b، c، f؛ KVKK ماده ۵/۲. پیش از ارسال هر پیام تبلیغاتی، رضایت صریح تو را جداگانه می‌گیریم. [وکیل بررسی کند]',
@@ -315,9 +331,13 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
       { h: '۵. محل نگهداری و انتقال', p: [
         'داده‌های تو نزد Supabase در اتحادیه اروپا (ایرلند، eu-west-1) ذخیره می‌شود. برای پردازش هوش مصنوعی محتوا به Anthropic و برای تأیید اشتراک اطلاعات لازم به اپل منتقل می‌شود؛ این موارد ممکن است انتقال به خارج از کشور تو باشد. تضمین‌های فصل پنجم GDPR و ماده ۹ KVKK اعمال می‌شود. [وکیل بررسی کند]',
         'داده‌های تو را برای تبلیغات نمی‌فروشیم و با اشخاص ثالث به اشتراک نمی‌گذاریم. در اشتراک‌گذاری فقط آنچه برنامه ساخته به اشتراک گذاشته می‌شود و PDF اصلی هرگز.',
+        'برای ارائه‌ی خدمت از این پردازشگرها استفاده می‌کنیم: Supabase (پایگاه داده و ذخیره‌ی فایل، اتحادیه اروپا)، Anthropic (پردازش هوش مصنوعی)، Apple (تأیید اشتراک؛ و Apple Push Notification service برای اعلان‌ها در برنامه‌ی آیفون)، Resend (ارسال ایمیل: کد ورود، حذف حساب و دریافت داده‌ها) و Vercel (میزبانی وب‌سایت؛ ممکن است IP تو در گزارش‌های سرور دیده شود). فونت‌ها از خود سایت ما ارائه می‌شوند و از Google Fonts استفاده نمی‌کنیم. اولین بار که در وب از ویژگی درس صوتی استفاده کنی، مدل تشخیص گفتار از سرورهای jsDelivr و Hugging Face دانلود می‌شود و این درخواست‌ها IP تو را به این ارائه‌دهندگان نشان می‌دهد. [وکیل بررسی کند: فهرست پردازشگرها]',
+        'صاحب برنامه برای اداره‌ی خدمت می‌تواند خلاصه‌ی همه‌ی حساب‌ها (ایمیل، نام، وضعیت دوره‌ی آزمایشی، مصرف و هزینه‌ی هوش مصنوعی) را ببیند؛ محتوای درس‌ها یا گفتگوها را در این صفحه نمی‌بیند.',
       ] },
       { h: '۶. مدت نگهداری', p: [
         'تا زمانی که حسابت باز است داده‌ها را نگه می‌داریم. ۳۰ روز پس از درخواست حذف، حساب و همه محتوا برای همیشه پاک می‌شود و در این مدت می‌توانی درخواست را لغو کنی. سوابقی که قانوناً باید نگه داریم (مثلاً تراکنش‌های اشتراک) ممکن است به مدت قانونی نگهداری شود.',
+        'اگر دریافت داده‌هایت را بخواهی، فایل‌های آماده‌شده (یک فایل JSON و یک گزارش خوانا) و لینک‌های داخل آن‌ها ۷ روز معتبرند و پس از ۷ روز از سرور ما پاک می‌شوند. وقتی حسابت حذف شود، گزارش‌های ثبت‌نام، ورود و حذف که سرویس ورود ما نگه می‌دارد نیز پاک می‌شود.',
+        'نسخه‌هایی که در اختیار دانشجویان دیگر می‌ماند: داده‌ی درسی که برای دانشجویانی که همان PDF را بارگذاری می‌کنند دوباره استفاده می‌شود، و نسخه‌های اشتراک‌گذاری که دانشجوی دیگری برای تو فرستاده (یا تو به اشتراک گذاشته‌ای)، به‌صورت نسخه‌ی جداگانه در حساب گیرنده می‌مانند. حذف حسابت این نسخه‌ها را پاک نمی‌کند؛ آن‌ها یادداشت، پیشرفت، اشتباه‌ها یا داده‌ی شخصی تو را ندارند.',
       ] },
       { h: '۷. حقوق تو', p: [
         'طبق GDPR و ماده ۱۱ KVKK حق داری بدانی داده‌هایت پردازش می‌شود یا نه، به آن‌ها دسترسی داشته باشی، اصلاح و حذف کنی، اعتراض کنی، انتقال‌پذیری بخواهی و درباره پردازش خودکار حقوقی داری. در برنامه از تنظیمات می‌توانی داده‌هایت را خروجی بگیری و حسابت را حذف کنی. برای درخواست‌های دیگر: ' + M + '. همچنین می‌توانی به مرجع حفاظت از داده کشور خود شکایت کنی.',
@@ -327,6 +347,7 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
       ] },
       { h: '۹. امنیت و کودکان', p: [
         'داده‌ها هنگام انتقال رمزگذاری می‌شوند و دسترسی برای هر حساب محدود است. این خدمت برای افراد زیر ۱۸ سال طراحی نشده است.',
+        'هنگام ثبت‌نام تأیید «بالای ۱۸ سال هستم» و رضایت پردازش با هوش مصنوعی را ثبت می‌کنیم؛ تاریخ و نسخه‌ی متن در حساب تو نگه داشته می‌شود.',
       ] },
       { h: '۱۰. تغییرات', p: [
         'ممکن است این متن را به‌روز کنیم و تغییرات مهم را در برنامه یا با ایمیل اعلام می‌کنیم. پرسش‌ها: ' + M + '.',
@@ -344,6 +365,8 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
         'المحتوى: ملفات PDF وصور الشرائح التي ترفعها، وتسجيلات المحاضرات (يتم تحويل الكلام إلى نص على جهازك؛ ولا يُرسل إلى الذكاء الاصطناعي سوى النص؛ ويُحفظ الملف الصوتي، حتى 50 ميغابايت، في حسابك الخاص فقط للاستماع إليه ويُحذف عند حذف الدرس أو حسابك)، وملاحظاتك وتمييزاتك وجدولك الدراسي. [AVUKAT KONTROL EDECEK: التسجيل الصوتي]',
         'الاستخدام: تقدّم القراءة ووقت الدراسة ونتائج الاختبارات والبطاقات وأسئلتك للمساعد وعدّادات الاستخدام (لحدود التجربة).',
         'الأجهزة والاشتراك: أجهزتك المسجّلة (حتى جهازين) وحالة الاشتراك (بيانات معاملة موثّقة من Apple). لا نرى بيانات بطاقتك ولا نخزّنها؛ تتولى Apple الدفع.',
+        'بيانات الملف الشخصي والدروس: جامعتك وقسمك وسنتك الدراسية، وصورة ملفك الشخصي (إن أضفتها)، وجدولك الدراسي (اسم المادة واسم الأستاذ والقاعة والوقت)، وملاحظاتك المكتوبة بخط اليد (رسومات Apple Pencil)، ومدة دراستك ومعرّف جهازك المسجَّل.',
+        'الدعم: إذا كتبت طلب دعم فرسالتك ولقطة الشاشة التي ترفقها وطراز جهازك وإصدار التطبيق وآخر شاشة شاهدتها. الإشعارات: إذا فعّلتها فرمز الإشعارات لجهازك (لخدمة Apple Push Notification).',
       ] },
       { h: '3. الأغراض والأسس القانونية', p: [
         'نعالج البيانات لتقديم الخدمة (تنفيذ العقد) وإدارة حسابك وحد الأجهزة والتحقق من الاشتراك وحفظ الأمان والوفاء بالالتزامات القانونية. GDPR المادة 6(1) البنود b وc وf؛ KVKK المادة 5/2. نطلب موافقتك الصريحة بشكل منفصل قبل إرسال أي رسائل تسويقية. [على المحامي المراجعة]',
@@ -355,9 +378,13 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
       { h: '5. مكان التخزين والنقل', p: [
         'تُخزَّن بياناتك لدى Supabase في الاتحاد الأوروبي (أيرلندا، eu-west-1). لأغراض الذكاء الاصطناعي يُرسل المحتوى إلى Anthropic، وللتحقق من الاشتراك تُرسل البيانات اللازمة إلى Apple؛ وقد يُعد ذلك نقلًا خارج بلدك. تُطبَّق الضمانات وفق الفصل الخامس من GDPR والمادة 9 من KVKK. [على المحامي المراجعة]',
         'لا نبيع بياناتك للإعلانات ولا نشاركها مع أطراف ثالثة. عند المشاركة يُشارك ما أنشأه التطبيق فقط، ولا يُشارك ملف PDF الأصلي أبدًا.',
+        'لتقديم الخدمة نستخدم المعالِجين التاليين: Supabase (قاعدة البيانات وتخزين الملفات في الاتحاد الأوروبي)، وAnthropic (معالجة الذكاء الاصطناعي)، وApple (التحقق من الاشتراك، وخدمة Apple Push Notification للإشعارات في تطبيق الآيفون)، وResend (إرسال البريد: رموز الدخول وبريد حذف الحساب وتصدير البيانات)، وVercel (استضافة الموقع؛ وقد يظهر عنوان IP الخاص بك في سجلات الخادم). تُقدَّم الخطوط من موقعنا نفسه ولا نستخدم Google Fonts. عند أول استخدام لميزة الدرس الصوتي على الويب يُنزَّل نموذج التعرّف على الكلام من خوادم jsDelivr وHugging Face، وتُظهر هذه الطلبات عنوان IP الخاص بك لهذه الجهات. [على المحامي المراجعة: قائمة المعالِجين]',
+        'يستطيع مالك التطبيق رؤية نظرة عامة على كل الحسابات (البريد والاسم وحالة التجربة والاستخدام وتكلفة الذكاء الاصطناعي) لإدارة الخدمة؛ ولا يرى محتوى الدروس ولا المحادثات في هذه الشاشة.',
       ] },
       { h: '6. مدة الاحتفاظ', p: [
         'نحتفظ ببياناتك ما دام حسابك مفتوحًا. بعد 30 يومًا من طلب الحذف يُحذف حسابك وكل المحتوى نهائيًا، ويمكنك إلغاء الطلب خلال هذه المدة. قد نحتفظ بسجلات يفرض القانون حفظها (مثل معاملات الاشتراك) للمدة القانونية.',
+        'إذا طلبت تصدير بياناتك فالملفات التي نجهّزها (ملف JSON وتقرير مقروء) والروابط داخلها صالحة 7 أيام وتُحذف من خوادمنا بعد 7 أيام. وعند حذف حسابك تُحذف أيضًا سجلات التسجيل والدخول والحذف التي تحتفظ بها خدمة الدخول لدينا.',
+        'النسخ التي تبقى لدى طلاب آخرين: بيانات الدرس المعاد استخدامها للطلاب الذين يرفعون ملف PDF نفسه، ونسخ المشاركة التي أرسلها لك طالب آخر (أو شاركتها أنت)، تبقى نسخًا منفصلة في حساب المستلِم. حذف حسابك لا يحذف هذه النسخ؛ فهي لا تتضمن ملاحظاتك ولا تقدّمك ولا أخطاءك ولا بياناتك الشخصية.',
       ] },
       { h: '7. حقوقك', p: [
         'بموجب GDPR والمادة 11 من KVKK لك الحق في معرفة ما إذا كانت بياناتك تُعالج، والاطلاع عليها وتصحيحها ومحوها والاعتراض ونقلها، وحقوق تتعلق بالمعالجة الآلية. يمكنك من الإعدادات في التطبيق تصدير بياناتك وحذف حسابك. لطلبات أخرى: ' + M + '. ويمكنك أيضًا تقديم شكوى إلى هيئة حماية البيانات في بلدك.',
@@ -367,6 +394,7 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
       ] },
       { h: '9. الأمان والأطفال', p: [
         'تُشفَّر البيانات أثناء النقل ويُقيَّد الوصول لكل حساب. الخدمة غير مصممة لمن هم دون 18 عامًا.',
+        'عند التسجيل نحفظ تأكيدك بأنك أكبر من 18 عامًا وموافقتك على المعالجة بالذكاء الاصطناعي؛ ويُحفظ تاريخ ذلك وإصدار النص في حسابك.',
       ] },
       { h: '10. التغييرات', p: [
         'قد نحدّث هذا النص وسنعلن التغييرات المهمة في التطبيق أو بالبريد الإلكتروني. للاستفسار: ' + M + '.',
