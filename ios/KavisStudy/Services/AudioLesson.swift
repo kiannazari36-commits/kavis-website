@@ -102,7 +102,7 @@ enum AudioChapters {
 @MainActor @Observable
 final class AudioLessonModel: NSObject, AVSpeechSynthesizerDelegate {
     struct Lesson: Equatable { let title: String; let lang: Lang; let chapters: [AudioChapter] }
-    enum Failure { case noLesson, locked, budget, failed }
+    enum Failure { case noLesson, locked, budget, failed, noVoice }
 
     private(set) var lesson: Lesson?
     private(set) var loading = false
@@ -156,6 +156,8 @@ final class AudioLessonModel: NSObject, AVSpeechSynthesizerDelegate {
         case .success(let r):
             let chapters = AudioChapters.build(points: r.points, topics: topics, weak: data.weak)
             guard !chapters.isEmpty else { return .failed }
+            // No voice for the lesson's language (Persian is often missing): say so instead of a silent default voice.
+            guard SpeechVoices.voice(language: r.lang.rawValue, female: female) != nil else { return .noVoice }
             self.female = female
             baseRate = Float(rate)
             lesson = Lesson(title: lessonId.title, lang: r.lang, chapters: chapters)
@@ -185,10 +187,7 @@ final class AudioLessonModel: NSObject, AVSpeechSynthesizerDelegate {
     // MARK: Speaking
 
     private func voice(for lang: Lang) -> AVSpeechSynthesisVoice? {
-        let code = ["tr": "tr-TR", "en": "en-US", "fa": "fa-IR", "ar": "ar-SA"][lang.rawValue] ?? lang.rawValue
-        let voices = AVSpeechSynthesisVoice.speechVoices().filter { $0.language == code }
-        let wanted: AVSpeechSynthesisVoiceGender? = female.map { $0 ? .female : .male }
-        return voices.first { wanted != nil && $0.gender == wanted } ?? AVSpeechSynthesisVoice(language: code)
+        SpeechVoices.voice(language: lang.rawValue, female: female)
     }
 
     /// Speaks the part from the sentence on; the next part follows by itself.
@@ -280,5 +279,24 @@ final class AudioLessonModel: NSObject, AVSpeechSynthesizerDelegate {
         playing = false
         lesson = nil
         idx = 0; sent = 0
+    }
+}
+
+
+/// The phone's voices: only a voice that really speaks the language is used. (`AVSpeechSynthesisVoice(language:)` would
+/// hand out the system default voice for a language without one, which reads Persian text with the wrong sounds.)
+enum SpeechVoices {
+    static func code(for language: String) -> String {
+        ["tr": "tr-TR", "en": "en-US", "fa": "fa-IR", "ar": "ar-SA"][language] ?? language
+    }
+
+    /// A voice for `language` ("tr", "fa" …); the female / male choice is used when the phone has it. nil = none.
+    static func voice(language: String, female: Bool?) -> AVSpeechSynthesisVoice? {
+        let code = code(for: language)
+        let base = language.split(separator: "-").first.map(String.init) ?? language
+        let all = AVSpeechSynthesisVoice.speechVoices()
+        let voices = all.filter { $0.language == code }.isEmpty ? all.filter { $0.language.hasPrefix(base + "-") } : all.filter { $0.language == code }
+        let wanted: AVSpeechSynthesisVoiceGender? = female.map { $0 ? .female : .male }
+        return voices.first { wanted != nil && $0.gender == wanted } ?? voices.first
     }
 }

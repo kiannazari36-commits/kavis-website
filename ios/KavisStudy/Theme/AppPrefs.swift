@@ -40,6 +40,13 @@ final class AppPrefs {
         Strings.design(turkish, lang)
     }
 
+    /// A department as stored in the profile (Turkish wording): the design's own words, or the iOS texts for the
+    /// departments added later (law, engineering, social sciences).
+    func dept(_ turkish: String) -> String {
+        let key = ["Hukuk": "deptLaw", "Mühendislik": "deptEng", "Sosyal Bilimler": "deptSocial"][turkish]
+        return key.map { t($0) } ?? d(turkish)
+    }
+
     /// A design text that has sample numbers in it ("Bu dönem 5 ders · 13 PDF"): the sample numbers are swapped for the
     /// real ones, written in the language's own digits.
     func d(_ turkish: String, numbers: [(sample: String, value: Int)]) -> String {

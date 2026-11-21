@@ -330,6 +330,7 @@ private struct AddClassSheet: View {
 
     private func field(_ label: String, text: Binding<String>) -> some View {
         TextField("", text: text, prompt: Text(label).foregroundStyle(KStudy.text3))
+            .autocorrectionDisabled()
             .font(KFont.ui(15, lang: lang)).foregroundStyle(KPhone.text)
             .padding(.horizontal, 16).frame(height: 48)
             .background(KStudy.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))

@@ -149,7 +149,17 @@
   "quizRight": "Doğru cevap",
   "quizYours": "Senin cevabın",
   "quizClose": "Kapat",
-  "exShort": "{r} soru istedin, {b} soru hazırdı. Sınav bu sorularla açılıyor."
+  "exShort": "{r} soru istedin, {b} soru hazırdı. Sınav bu sorularla açılıyor.",
+  "pwRefusedAccount": "Bu abonelik başka bir Kavis hesabına bağlı. O hesapla giriş yapmalısın.",
+  "pwRefusedSandbox": "Test satın alımı bu hesapta kullanılamıyor.",
+  "pwNoSubscription": "Bu hesapta aktif abonelik bulunamadı",
+  "consentAdult": "Ben 18 yaşından büyüğüm",
+  "consentNeedAdult": "Devam etmek için 18 yaşından büyük olduğunu onaylamalısın",
+  "deptLaw": "Hukuk",
+  "deptEng": "Mühendislik",
+  "deptSocial": "Sosyal Bilimler",
+  "padAddEnd": "ekleyelim.",
+  "audioNoVoice": "Bu dil için cihazında bir ses yok. Ayarlar > Erişilebilirlik > Sesli İçerik > Sesler bölümünden bir ses indirebilirsin."
  },
  "en": {
   "remindTitle": "Study time",
@@ -301,7 +311,17 @@
   "quizRight": "Right answer",
   "quizYours": "Your answer",
   "quizClose": "Close",
-  "exShort": "You asked for {r} questions; {b} were ready. The exam opens with these."
+  "exShort": "You asked for {r} questions; {b} were ready. The exam opens with these.",
+  "pwRefusedAccount": "This subscription belongs to another Kavis account. Sign in with that account.",
+  "pwRefusedSandbox": "Test purchases cannot be used on this account.",
+  "pwNoSubscription": "No active subscription found for this account",
+  "consentAdult": "I am over 18",
+  "consentNeedAdult": "Please confirm you are over 18 to continue",
+  "deptLaw": "Law",
+  "deptEng": "Engineering",
+  "deptSocial": "Social Sciences",
+  "padAddEnd": "add them.",
+  "audioNoVoice": "This device has no voice for this language. You can download one in Settings > Accessibility > Spoken Content > Voices."
  },
  "fa": {
   "remindTitle": "وقت مطالعه",
@@ -453,7 +473,17 @@
   "quizRight": "پاسخ درست",
   "quizYours": "پاسخ تو",
   "quizClose": "بستن",
-  "exShort": "{r} سؤال خواستی، {b} سؤال آماده بود. آزمون با همین‌ها باز می‌شود."
+  "exShort": "{r} سؤال خواستی، {b} سؤال آماده بود. آزمون با همین‌ها باز می‌شود.",
+  "pwRefusedAccount": "این اشتراک به حساب دیگری در Kavis وصل است. با همان حساب وارد شو.",
+  "pwRefusedSandbox": "خرید آزمایشی روی این حساب قابل استفاده نیست.",
+  "pwNoSubscription": "برای این حساب اشتراک فعالی پیدا نشد",
+  "consentAdult": "من بالای ۱۸ سال هستم",
+  "consentNeedAdult": "برای ادامه باید تأیید کنی که بالای ۱۸ سال هستی",
+  "deptLaw": "حقوق",
+  "deptEng": "مهندسی",
+  "deptSocial": "علوم اجتماعی",
+  "padAddEnd": "اضافه کنیم.",
+  "audioNoVoice": "برای این زبان صدایی روی دستگاهت نیست. از تنظیمات > دسترسی‌پذیری > محتوای گفتاری > صداها می‌توانی یک صدا دانلود کنی."
  },
  "ar": {
   "remindTitle": "وقت الدراسة",
@@ -605,6 +635,16 @@
   "quizRight": "الإجابة الصحيحة",
   "quizYours": "إجابتك",
   "quizClose": "إغلاق",
-  "exShort": "طلبت {r} سؤالًا وكان {b} جاهزًا. يُفتح الاختبار بهذه الأسئلة."
+  "exShort": "طلبت {r} سؤالًا وكان {b} جاهزًا. يُفتح الاختبار بهذه الأسئلة.",
+  "pwRefusedAccount": "هذا الاشتراك مرتبط بحساب Kavis آخر. سجّل الدخول بذلك الحساب.",
+  "pwRefusedSandbox": "لا يمكن استخدام عمليات الشراء التجريبية في هذا الحساب.",
+  "pwNoSubscription": "لم يُعثر على اشتراك نشط لهذا الحساب",
+  "consentAdult": "أنا أكبر من 18 عامًا",
+  "consentNeedAdult": "للمتابعة، يجب أن تؤكد أنك أكبر من 18 عامًا",
+  "deptLaw": "القانون",
+  "deptEng": "الهندسة",
+  "deptSocial": "العلوم الاجتماعية",
+  "padAddEnd": "نضيفها.",
+  "audioNoVoice": "لا يوجد صوت لهذه اللغة على جهازك. يمكنك تنزيل صوت من الإعدادات > تقنيات الإتاحة > المحتوى المنطوق > الأصوات."
  }
 }

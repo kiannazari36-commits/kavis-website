@@ -53,12 +53,12 @@ struct HomeView: View {
                 .frame(maxHeight: .infinity, alignment: .bottom)
                 .padding(.bottom, 8)
             if !planOpen {
-                PlanTab(count: todayTasks.filter { $0.status != "done" }.count) { withAnimation(.easeOut(duration: 0.25)) { planOpen = true } }
+                PlanTab(count: todayTasks.filter { $0.status != "done" }.count) { kAnimate(.easeOut(duration: 0.25)) { planOpen = true } }
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                     .padding(.top, wide ? 250 : KLayout.top(296, minimum: 120))
             }
             if planOpen && !wide {
-                PlanPanel(tasks: todayTasks, onClose: { withAnimation(.easeOut(duration: 0.25)) { planOpen = false } }, onItem: openTask, onToggle: toggleDone, onWeek: { planOpen = false; app.go(.weekPlan) })
+                PlanPanel(tasks: todayTasks, onClose: { kAnimate(.easeOut(duration: 0.25)) { planOpen = false } }, onItem: openTask, onToggle: toggleDone, onWeek: { planOpen = false; app.go(.weekPlan) })
             }
             if let key = trial.lockedKey {
                 TrialLockedDialog(
@@ -69,9 +69,9 @@ struct HomeView: View {
                 )
             }
         }
-        .animation(.easeOut(duration: 0.2), value: trial.lockedKey)
-        .animation(.easeOut(duration: 0.2), value: later)
-        .animation(.easeOut(duration: 0.2), value: reviewMenuOpen)
+        .kAnimation(.easeOut(duration: 0.2), value: trial.lockedKey)
+        .kAnimation(.easeOut(duration: 0.2), value: later)
+        .kAnimation(.easeOut(duration: 0.2), value: reviewMenuOpen)
         .task {
             Task { photo = await AvatarAPI.fetch() }
             async let list = CoursesAPI.listCourses()
@@ -250,7 +250,7 @@ struct HomeView: View {
                 Button { app.go(.weekPlan) } label: {
                     Text(t("home.k1116")).font(KFont.ui(13, lang: lang)).foregroundStyle(KPhone.text2)
                 }
-                Button { withAnimation(.easeOut(duration: 0.25)) { planOpen = false } } label: {
+                Button { kAnimate(.easeOut(duration: 0.25)) { planOpen = false } } label: {
                     KIcon(name: .close, size: 14, width: 2.2).foregroundStyle(KPhone.text2)
                         .frame(width: 38, height: 38).background(KPhone.card, in: Circle())
                         .overlay(Circle().stroke(KPhone.line, lineWidth: 1))
@@ -413,6 +413,8 @@ struct HomeView: View {
             }
             .padding(.leading, 5).padding(.trailing, 12)
             .frame(height: 44)
+            // Fixed 44 pt pill: its text stops growing at the largest accessibility sizes (it would be cut off).
+            .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
             .background(KPhone.card, in: Capsule())
             .overlay(Capsule().stroke(KPhone.line, lineWidth: 1))
         }
@@ -473,6 +475,7 @@ struct HomeView: View {
                 Text(title).font(KFont.ui(11, primary ? .medium : .regular, lang: lang)).lineLimit(1).minimumScaleFactor(0.8)
             }
             .foregroundStyle(primary ? KPhone.ctaText : KPhone.text)
+            .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
             .frame(maxWidth: .infinity, minHeight: 62)
             .background(primary ? KPhone.navActive : KPhone.card, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(primary ? .clear : KPhone.line, lineWidth: 1))

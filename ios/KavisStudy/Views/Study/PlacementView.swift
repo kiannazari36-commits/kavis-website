@@ -88,7 +88,7 @@ struct PlacementView: View {
                 }
             }
         }
-        .animation(.easeOut(duration: 0.2), value: stage)
+        .kAnimation(.easeOut(duration: 0.2), value: stage)
         .task { await load() }
     }
 

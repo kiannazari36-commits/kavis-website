@@ -187,7 +187,7 @@ struct ProgressView: View {
     private func timeCard(_ p: ProgressData) -> some View {
         let total = p.weekMinutes.reduce(0, +)
         let goal = Double(settings.studyDays) * settings.studyHours
-        let goalText = goal == goal.rounded() ? String(Int(goal)) : String(format: "%.1f", goal)
+        let goalText = Format.decimal(goal, lang)
         let maxM = max(60, p.weekMinutes.max() ?? 0)
         let todayIndex = (Calendar(identifier: .gregorian).component(.weekday, from: Date()) + 5) % 7
         let studied = p.weekMinutes.filter { $0 > 0 }
@@ -253,8 +253,7 @@ struct ProgressView: View {
 
     private var hoursText: String {
         let h = settings.studyHours
-        let text = h == h.rounded() ? String(Int(h)) : String(format: "%.1f", h)
-        return lang == .tr ? text.replacingOccurrences(of: ".", with: ",") : text
+        return Format.decimal(h, lang)
     }
 
     /// "5–11 EKİM": the days of this week.
@@ -422,7 +421,7 @@ struct ProgressView: View {
         card {
             heading(.clock, d("Öneri: en verimli saatlerin"))
             VStack(alignment: .leading, spacing: 2) {
-                Text(String(format: "%02d:00–%02d:00 · %%%d", b.from, b.to, b.rate)).font(KFont.mono(16, .semibold)).foregroundStyle(KPhone.text)
+                Text(String(format: "%02d:00–%02d:00", b.from, b.to) + " · " + Format.percent(b.rate, lang)).font(KFont.mono(16, .semibold)).foregroundStyle(KPhone.text)
                 Text(d("En verimli saatler")).font(KFont.ui(12, lang: lang)).foregroundStyle(KStudy.text3)
             }
             .padding(12).frame(maxWidth: .infinity, alignment: .leading)

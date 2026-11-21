@@ -52,13 +52,25 @@ struct CardsView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(C.bg.ignoresSafeArea())
+        // Keyboard (iPad): Space shows the answer; then ← "again", ↓ "hard", → "good".
+        .background {
+            if card != nil {
+                if back {
+                    KeyShortcut(.leftArrow) { rate(.again) }
+                    KeyShortcut(.downArrow) { rate(.hard) }
+                    KeyShortcut(.rightArrow) { rate(.good) }
+                } else {
+                    KeyShortcut(.space) { back = true }
+                }
+            }
+        }
         .task {
             guard queue == nil else { return }
             let cards = await CardsAPI.dueCards(courseId: courseId, materialId: materialId)
             queue = cards
             total = cards.count
         }
-        .animation(.easeInOut(duration: 0.2), value: back)
+        .kAnimation(.easeInOut(duration: 0.2), value: back)
     }
 
     // MARK: iPad (design NewIPad "cards": one big 640 x 340 card in the middle, rate buttons under it)

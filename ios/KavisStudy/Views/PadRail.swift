@@ -92,6 +92,8 @@ struct PadRail: View {
             .padding(.bottom, 4)
         }
         .padding(.top, 40).padding(.bottom, 24)
+        // The rail is 88 pt wide: its icons and logotype do not grow with Dynamic Type.
+        .dynamicTypeSize(...DynamicTypeSize.large)
         .frame(width: 88)
         .frame(maxHeight: .infinity)
         .accessibilityElement(children: .contain)
@@ -218,7 +220,7 @@ struct PadFlowFrame<Content: View>: View {
                     .shadow(color: Color(hex: 0x7A5208, opacity: 0.32), radius: 17, y: 20)
                     .padding(.top, 40)
                     .accessibilityHidden(true)
-                (Text(i == 3 ? prefs.t("padSideDept") : prefs.d(Self.titles[i].0)) + Text("\n") + Text(prefs.d(Self.titles[i].1)).foregroundColor(KPhone.brand).fontWeight(.regular))
+                (Text(i == 3 ? prefs.t("padSideDept") : prefs.d(Self.titles[i].0)) + Text("\n") + Text(i == 5 ? prefs.t("padAddEnd") : prefs.d(Self.titles[i].1)).foregroundColor(KPhone.brand).fontWeight(.regular))
                     .font(KFont.ui(30, .medium, lang: lang)).kTracking(-0.03, size: 30, lang: lang)
                     .foregroundStyle(KPhone.text)
                     .padding(.top, 28)
@@ -246,7 +248,9 @@ struct PadFlowFrame<Content: View>: View {
                     .font(KFont.ui(12, lang: lang)).kLineHeight(1.5, size: 12, lang: lang).foregroundStyle(KPhone.text2)
             }
             .padding(.horizontal, 40).padding(.top, 44).padding(.bottom, 36)
-            .frame(width: 400, alignment: .leading)
+            // The brand panel is chrome with a fixed layout: it does not grow with Dynamic Type.
+            .dynamicTypeSize(...DynamicTypeSize.xLarge)
+            .containerRelativeFrame(.horizontal) { w, _ in min(400, w * 0.4) }
             .frame(maxHeight: .infinity, alignment: .top)
             .background(KPhone.welcomeBg.ignoresSafeArea())
             content()
@@ -267,9 +271,11 @@ struct PadDialog<Content: View>: View {
         ZStack {
             KPhone.authBg.ignoresSafeArea()
             Color(hex: 0x2A2420).opacity(0.35).ignoresSafeArea().onTapGesture(perform: onClose)
+            KeyShortcut(.escape, action: onClose)
             content()
-                .frame(width: 620)
+                .frame(maxWidth: 620)
                 .frame(maxHeight: 880)
+                .padding(.horizontal, 16)
                 .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
                 .overlay(RoundedRectangle(cornerRadius: 30, style: .continuous).stroke(KPhone.line, lineWidth: 1))
                 .shadow(color: Color(hex: 0x2A2420, opacity: 0.3), radius: 35, y: 30)

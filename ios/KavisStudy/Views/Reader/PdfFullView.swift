@@ -52,9 +52,9 @@ struct PdfFullView: View {
                              onInk: { pg, strokes in saveInk(page: pg, strokes: strokes) },
                              onTerm: { key in
                                  if let key, let id = terms[key]?.id, openTerm?.id != id { ReaderAPI.tapTerm(id) }
-                                 withAnimation(.easeOut(duration: 0.2)) { openTerm = key.flatMap { terms[$0] } }
+                                 kAnimate(.easeOut(duration: 0.2)) { openTerm = key.flatMap { terms[$0] } }
                              },
-                             onSelect: { sel in withAnimation(.easeOut(duration: 0.15)) { selection = sel } },
+                             onSelect: { sel in kAnimate(.easeOut(duration: 0.15)) { selection = sel } },
                              clearSelection: clearSel)
                     .ignoresSafeArea()
             } else if failed {
@@ -90,7 +90,7 @@ struct PdfFullView: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
-        .animation(.easeOut(duration: 0.2), value: translateText)
+        .kAnimation(.easeOut(duration: 0.2), value: translateText)
         .toastOverlay(toast, lang: lang)
         .task {
             guard let data = await ReaderAPI.pdfData(materialId: materialId),
@@ -141,7 +141,7 @@ struct PdfFullView: View {
                 Text(term.surface).font(KFont.ui(18, .semibold, lang: .tr)).foregroundStyle(KRead.popFg)
                     .environment(\.layoutDirection, .leftToRight)
                 Spacer()
-                Button { withAnimation(.easeOut(duration: 0.2)) { openTerm = nil } } label: {
+                Button { kAnimate(.easeOut(duration: 0.2)) { openTerm = nil } } label: {
                     KIcon(name: .close, size: 13, width: 2).foregroundStyle(KRead.popFg)
                         .frame(width: 30, height: 30).background(KRead.popChip, in: Circle())
                 }

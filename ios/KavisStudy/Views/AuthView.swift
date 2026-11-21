@@ -16,6 +16,7 @@ struct AuthView: View {
     @State private var password = ""
     @State private var showPassword = false
     @State private var consent = false
+    @State private var adult = false
     @State private var busy = false
     /// The account waiting for its email confirmation (the password signs in after a confirmation link).
     @State private var pending = (email: "", name: "", password: "")
@@ -49,7 +50,7 @@ struct AuthView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(background.ignoresSafeArea())
-        .animation(.easeInOut(duration: 0.2), value: mode)
+        .kAnimation(.easeInOut(duration: 0.2), value: mode)
     }
 
     // MARK: Background, header
@@ -257,15 +258,7 @@ struct AuthView: View {
         VStack(spacing: 10) {
             if signup {
                 HStack(alignment: .top, spacing: 10) {
-                    Button { consent.toggle() } label: {
-                        ZStack {
-                            Circle().fill(consent ? KPhone.cta : .clear)
-                            Circle().stroke(consent ? .clear : KPhone.text3, lineWidth: 1.5)
-                            if consent { KIcon(name: .check, size: 13, width: 3).foregroundStyle(KPhone.ctaText) }
-                        }
-                        .frame(width: 22, height: 22)
-                    }
-                    .accessibilityAddTraits(consent ? [.isSelected] : [])
+                    tick($consent)
                     // The words "Kullanım koşulları" and "KVKK aydınlatma metni" open the web pages (Apple review 5.1.1(i)).
                     consentText
                         .font(KFont.ui(12, lang: lang))
@@ -274,9 +267,18 @@ struct AuthView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .padding(.horizontal, 4)
+                HStack(alignment: .top, spacing: 10) {
+                    tick($adult)
+                    Text(t("consentAdult")).foregroundStyle(KPhone.text2)
+                        .font(KFont.ui(12, lang: lang))
+                        .kLineHeight(1.5, size: 12, lang: lang)
+                        .multilineTextAlignment(.leading)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .padding(.horizontal, 4)
             }
             Button { Task { await submit() } } label: {
-                let blocked = signup && !consent
+                let blocked = signup && !(consent && adult)
                 Text(t(signup ? "signup.createAccount" : "signup.login"))
                     .font(KFont.ui(17, .medium, lang: lang))
                     .foregroundStyle(blocked ? KPhone.text3 : KPhone.ctaText)
@@ -296,6 +298,18 @@ struct AuthView: View {
         .padding(.bottom, 10)
         .frame(maxWidth: .infinity)
         .overlay(alignment: .top) { Rectangle().fill(KPhone.line).frame(height: 1) }
+    }
+
+    private func tick(_ on: Binding<Bool>) -> some View {
+        Button { on.wrappedValue.toggle() } label: {
+            ZStack {
+                Circle().fill(on.wrappedValue ? KPhone.cta : .clear)
+                Circle().stroke(on.wrappedValue ? .clear : KPhone.text3, lineWidth: 1.5)
+                if on.wrappedValue { KIcon(name: .check, size: 13, width: 3).foregroundStyle(KPhone.ctaText) }
+            }
+            .frame(width: 22, height: 22)
+        }
+        .accessibilityAddTraits(on.wrappedValue ? [.isSelected] : [])
     }
 
     private var consentText: Text {
@@ -319,6 +333,12 @@ struct AuthView: View {
             toast.show(t("signup.needConsent"))
             return
         }
+        if signup && !adult {
+            toast.show(t("consentNeedAdult"))
+            return
+        }
+        // Proof of consent: sent to the server right after the account exists (see `finish`).
+        if signup { ConsentSync.stage(adult: adult, ai: consent) } else { ConsentSync.clearStage() }
         busy = true
         do {
             if signup {
@@ -341,6 +361,7 @@ struct AuthView: View {
 
     private func social(_ provider: AuthProvider) async {
         guard !busy else { return }
+        ConsentSync.clearStage()
         do {
             await finish(try await AuthAPI.socialLogIn(provider))
         } catch AuthFailure.cancel {
@@ -364,6 +385,7 @@ struct AuthView: View {
     /// After a login: an account that is already on 2 devices must sign one out first (the device-limit screen).
     /// An account that has not answered the first steps goes to the onboarding, the others go home.
     private func finish(_ user: User) async {
+        await ConsentSync.flush(userId: user.id)
         if let others = await DevicesAPI.checkDeviceLimit() {
             busy = false
             app.user = user

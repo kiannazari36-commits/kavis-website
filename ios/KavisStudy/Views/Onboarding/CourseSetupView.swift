@@ -15,6 +15,9 @@ struct CourseSetupView: View {
         "Diş Hekimliği": ["Anatomi", "Diş Morfolojisi", "Oral Diagnoz", "Endodonti", "Periodontoloji", "Protetik Diş Tedavisi", "Ortodonti"],
         "Hemşirelik": ["Hemşirelik Esasları", "Anatomi", "Fizyoloji", "Farmakoloji", "İç Hastalıkları Hemşireliği", "Cerrahi Hastalıkları Hemşireliği"],
         "Sağlık Bilimleri": ["Anatomi", "Fizyoloji", "Biyokimya", "Halk Sağlığı", "Beslenme İlkeleri"],
+        "Hukuk": ["Medeni Hukuk", "Ceza Hukuku", "Anayasa Hukuku", "Borçlar Hukuku", "İdare Hukuku", "Ticaret Hukuku"],
+        "Mühendislik": ["Matematik", "Fizik", "Statik", "Termodinamik", "Programlama"],
+        "Sosyal Bilimler": ["Psikoloji", "Sosyoloji", "İktisat", "Siyaset Bilimi"],
     ]
 
     @State private var all: [String] = []
@@ -106,6 +109,7 @@ struct CourseSetupView: View {
     private var addRow: some View {
         HStack(spacing: 8) {
             TextField("", text: $typed, prompt: Text(d("Ders adı yaz (ör. Biyokimya)")).foregroundStyle(KPhone.text3))
+                .autocorrectionDisabled().textInputAutocapitalization(.words)
                 .font(KFont.ui(15, lang: lang))
                 .foregroundStyle(KPhone.text)
                 .focused($focused)

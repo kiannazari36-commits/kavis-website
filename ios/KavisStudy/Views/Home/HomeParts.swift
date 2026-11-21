@@ -35,7 +35,7 @@ struct FloatingTabBar: View {
     @Environment(\.padRail) private var padRail
 
     var body: some View {
-        if !padRail { bar }
+        if !padRail { bar.dynamicTypeSize(...DynamicTypeSize.xxxLarge) }
     }
 
     private var bar: some View {

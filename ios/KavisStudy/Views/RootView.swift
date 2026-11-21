@@ -19,7 +19,7 @@ struct RootView: View {
             .safeAreaInset(edge: .leading, spacing: 0) {
                 if rail { PadRail().transition(.move(edge: .leading)) }
             }
-        .animation(.easeInOut(duration: 0.25), value: rail)
+        .kAnimation(.easeInOut(duration: 0.25), value: rail)
         // "Sesli anlatım" keeps reading while the student moves around: the small player sits over every screen
         // except the assistant, which shows the big one.
         .overlay(alignment: .bottom) {
@@ -27,12 +27,12 @@ struct RootView: View {
                 AudioMini().padding(.bottom, rail ? 12 : 96).padding(.leading, rail ? 88 : 0).transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
-        .animation(.easeOut(duration: 0.2), value: audio.lesson != nil)
+        .kAnimation(.easeOut(duration: 0.2), value: audio.lesson != nil)
         .modifier(RootTasks())
         .overlay { if let key = trial.lockedKey, showsOwnLock == false { lockDialog(key) } }
         .overlay { if let sheet = consent.sheet, app.user != nil { AIConsentSheet(sheet: sheet) } }
-        .animation(.easeOut(duration: 0.2), value: trial.lockedKey)
-        .animation(.easeOut(duration: 0.2), value: consent.sheet == nil)
+        .kAnimation(.easeOut(duration: 0.2), value: trial.lockedKey)
+        .kAnimation(.easeOut(duration: 0.2), value: consent.sheet == nil)
         // First time on home with an account that never answered (Apple / Google sign-in): ask once.
         .task(id: app.route == .home && app.user != nil) {
             guard app.route == .home, let user = app.user else { return }
@@ -147,7 +147,7 @@ struct RootView: View {
                 AssistantChatView(target: target)
             }
         }
-        .animation(.easeInOut(duration: 0.25), value: app.route)
+        .kAnimation(.easeInOut(duration: 0.25), value: app.route)
     }
 }
 
@@ -165,6 +165,7 @@ private struct RootTasks: ViewModifier {
         .task(id: app.user?.id) {
             guard let user = app.user else { return }
             AIConsent.shared.load(userId: user.id)
+            await ConsentSync.flush(userId: user.id)
             PushService.start()
             if let l = await AccountAPI.fetchLang() { prefs.lang = l }
             if let s = await SettingsAPI.fetch() {

@@ -40,7 +40,7 @@ final class ThemeTests: XCTestCase {
         XCTAssertEqual(Format.num(12, .ar), "12")
         XCTAssertEqual(Format.percent(56, .tr), "%56")
         XCTAssertEqual(Format.percent(56, .en), "56%")
-        XCTAssertEqual(Format.percent(56, .fa), "٪۵۶")
+        XCTAssertEqual(Format.percent(56, .fa), "۵۶٪")
     }
 
     func testPhoneTextsAreThere() {
@@ -69,5 +69,29 @@ final class AuthRulesTests: XCTestCase {
         }
         XCTAssertEqual(Strings.text("signup.titleIn1", .en), "Welcome")
         XCTAssertEqual(Strings.text("signup.titleIn2", .en), "back")
+    }
+}
+
+final class Build4Tests: XCTestCase {
+    func testBidiMarkOnlyForLatinStartInRtl() {
+        XCTAssertEqual(Bidi.fix("PDF را باز کن", .fa), "\u{200F}PDF را باز کن")
+        XCTAssertEqual(Bidi.fix("باز کن PDF", .fa), "باز کن PDF")
+        XCTAssertEqual(Bidi.fix("PDF open", .en), "PDF open")
+    }
+
+    func testDecimalFormats() {
+        XCTAssertEqual(Format.decimal(1.5, .tr), "1,5")
+        XCTAssertEqual(Format.decimal(1.5, .en), "1.5")
+        XCTAssertEqual(Format.decimal(1.5, .fa), "۱٫۵")
+        XCTAssertEqual(Format.decimal(2, .en), "2")
+        XCTAssertEqual(Format.decimal(1, .tr, trimZero: false), "1,0")
+    }
+
+    func testPurchaseRefusalCodes() {
+        XCTAssertEqual(StoreAPI.refusal(code: "account"), .account)
+        XCTAssertEqual(StoreAPI.refusal(code: "sandbox"), .sandbox)
+        XCTAssertEqual(StoreAPI.refusal(code: "no_subscription"), .noSubscription)
+        XCTAssertNil(StoreAPI.refusal(code: "something-new"))
+        XCTAssertNil(StoreAPI.refusal(code: nil))
     }
 }

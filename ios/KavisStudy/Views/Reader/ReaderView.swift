@@ -167,6 +167,12 @@ struct ReaderView: View {
             }
         }
         .task(id: "\(sectionIndex)-\(topBlock ?? -1)-\(pdfMode ? pdfPage : -1)") { await savePlace() }
+        // Keyboard (iPad): ← / → change the section, Cmd+F asks for a page.
+        .background {
+            KeyShortcut(.leftArrow) { if let doc, sectionIndex > 0 { goSection(sectionIndex - 1) } }
+            KeyShortcut(.rightArrow) { if let doc, sectionIndex < doc.sections.count - 1 { goSection(sectionIndex + 1) } }
+            KeyShortcut("f", modifiers: .command) { pageAsk = true }
+        }
         .task(id: pdfMode) { await loadPdf() }
         .onChange(of: pdfPage) { _, p in
             seen.insert(p)
@@ -190,10 +196,10 @@ struct ReaderView: View {
                 MoleculeSheet(molecule: molecule.mol, page: molecule.page, contentLang: doc.docLang).presentationDetents([.large])
             }
         }
-        .animation(.easeOut(duration: 0.2), value: openTerm)
-        .animation(.easeOut(duration: 0.2), value: translateText)
-        .animation(.easeOut(duration: 0.2), value: shareOpen)
-        .animation(.easeOut(duration: 0.15), value: pdfSel)
+        .kAnimation(.easeOut(duration: 0.2), value: openTerm)
+        .kAnimation(.easeOut(duration: 0.2), value: translateText)
+        .kAnimation(.easeOut(duration: 0.2), value: shareOpen)
+        .kAnimation(.easeOut(duration: 0.15), value: pdfSel)
     }
 
     // MARK: Original PDF
@@ -419,7 +425,7 @@ struct ReaderView: View {
     private func askPanel(_ question: String?) {
         guard let lesson else { return }
         if wide {
-            withAnimation(.easeOut(duration: 0.2)) { panelOpen = true }
+            kAnimate(.easeOut(duration: 0.2)) { panelOpen = true }
             guard let question else { return }
             panelQuestion = question
             panelKey += 1
@@ -438,7 +444,7 @@ struct ReaderView: View {
         AssistantChatView(
             target: AssistantChatTarget(topicId: lesson.courseId ?? "all", question: panelQuestion, materialId: docID,
                                         lessonTitle: lesson.title, page: currentPage),
-            onClose: { withAnimation(.easeOut(duration: 0.2)) { panelOpen = false } }
+            onClose: { kAnimate(.easeOut(duration: 0.2)) { panelOpen = false } }
         )
         .id(panelKey)
     }
@@ -611,7 +617,7 @@ struct ReaderView: View {
             circleButton(label: t("textSize")) { cycleFontSize() } content: {
                 Text("Aa").font(KFont.reading(17, .semibold, lang: .en))
             }
-            Button { withAnimation(.easeOut(duration: 0.2)) { panelOpen.toggle() } } label: {
+            Button { kAnimate(.easeOut(duration: 0.2)) { panelOpen.toggle() } } label: {
                 Image("StarButton").resizable().scaledToFit().frame(width: 34, height: 34)
                     .frame(width: 46, height: 46)
                     .background(Circle().fill(panelOpen ? Color(hex: 0x9C2F3A) : KRead.chrome))
@@ -649,7 +655,7 @@ struct ReaderView: View {
             .scrollIndicators(.hidden)
             }
             .padding(.top, 14).padding(.bottom, 4)
-            .onChange(of: sectionIndex) { _, i in withAnimation { proxy.scrollTo(i, anchor: .center) } }
+            .onChange(of: sectionIndex) { _, i in kAnimate { proxy.scrollTo(i, anchor: .center) } }
             .accessibilityLabel(t("sections"))
         }
     }
@@ -823,7 +829,7 @@ struct ReaderView: View {
                 Text(t("ptMarked")).font(KFont.ui(13, lang: lang)).frame(maxWidth: .infinity, alignment: .leading)
                 Button {
                     StudyMarksAPI.keepNoteSeen(docID)
-                    withAnimation(.easeOut(duration: 0.2)) { studyNoteGone = true }
+                    kAnimate(.easeOut(duration: 0.2)) { studyNoteGone = true }
                 } label: {
                     KIcon(name: .close, size: 13, width: 2).frame(width: 30, height: 30)
                 }
@@ -1152,16 +1158,16 @@ struct ReaderView: View {
         if speaker.speaking { speaker.stop(); return }
         if pdfMode {
             guard let text = pdfDoc?.page(at: pdfPage - 1)?.string, !text.isEmpty else { return }
-            speaker.speak(text, language: doc?.language ?? "tr", rate: Float(settings.ttsRate), female: settings.ttsVoice == .female)
-            toast.show(t("pageAloud"))
+            let ok = speaker.speak(text, language: doc?.language ?? "tr", rate: Float(settings.ttsRate), female: settings.ttsVoice == .female)
+            toast.show(t(ok ? "pageAloud" : "audioNoVoice"))
             return
         }
         guard let doc, let section else { return }
         let text = section.blocks.flatMap { block in
             [block.heading].compactMap { $0 } + block.paragraphs.map(\.plain)
         }.joined(separator: " ")
-        speaker.speak(text, language: doc.language, rate: Float(settings.ttsRate), female: settings.ttsVoice == .female)
-        toast.show(t("pageAloud"))
+        let ok = speaker.speak(text, language: doc.language, rate: Float(settings.ttsRate), female: settings.ttsVoice == .female)
+        toast.show(t(ok ? "pageAloud" : "audioNoVoice"))
     }
 
     // MARK: Term explanation
@@ -1184,7 +1190,7 @@ struct ReaderView: View {
                 }
                 Text(ex?.text ?? "").font(KFont.ui(14, lang: lang)).kLineHeight(1.5, size: 14, lang: lang)
                 FlowLayout(spacing: 8, rowSpacing: 8) {
-                    popButton(t("listen"), icon: .play) { speaker.speak("\(name). \(ex?.text ?? "")", language: lang.rawValue) }
+                    popButton(t("listen"), icon: .play) { if !speaker.speak("\(name). \(ex?.text ?? "")", language: lang.rawValue) { toast.show(t("audioNoVoice")) } }
                     popButton(t("addToCards")) { Task { await addCard(term, name: name) } }
                     popButton(t("translate"), primary: true) {
                         openTerm = nil
@@ -1270,6 +1276,7 @@ struct TranslationSheet: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             Color(hex: 0x140E0A, opacity: 0.45).ignoresSafeArea().onTapGesture(perform: onClose)
+            KeyShortcut(.escape, action: onClose)
             VStack(alignment: .leading, spacing: 12) {
                 Capsule().fill(Color.pair(0xE2D7C6, 0x4A403A)).frame(width: 40, height: 5).frame(maxWidth: .infinity).padding(.bottom, 4)
                 HStack {
@@ -1355,17 +1362,17 @@ final class Speaker: NSObject, AVSpeechSynthesizerDelegate {
     }
 
     /// `rate` is a speed factor (1 = normal); `female` picks a female voice when the phone has one.
-    func speak(_ text: String, language: String, rate: Float = 0.95, female: Bool? = nil) {
+    /// False when the phone has no voice for the language (nothing is spoken; the caller tells the student).
+    @discardableResult
+    func speak(_ text: String, language: String, rate: Float = 0.95, female: Bool? = nil) -> Bool {
         synthesizer.stopSpeaking(at: .immediate)
+        guard let voice = SpeechVoices.voice(language: language, female: female) else { speaking = false; return false }
         let utterance = AVSpeechUtterance(string: text)
-        let tags = ["tr": "tr-TR", "en": "en-US", "fa": "fa-IR", "ar": "ar-SA"]
-        let code = tags[language] ?? language
-        let voices = AVSpeechSynthesisVoice.speechVoices().filter { $0.language == code }
-        let wanted: AVSpeechSynthesisVoiceGender? = female.map { $0 ? .female : .male }
-        utterance.voice = voices.first { wanted != nil && $0.gender == wanted } ?? AVSpeechSynthesisVoice(language: code)
+        utterance.voice = voice
         utterance.rate = AVSpeechUtteranceDefaultSpeechRate * rate
         speaking = true
         synthesizer.speak(utterance)
+        return true
     }
 
     func stop() {

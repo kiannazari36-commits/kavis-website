@@ -159,8 +159,8 @@ struct SettingsView: View {
                 .transition(.opacity)
             }
         }
-        .animation(.easeInOut(duration: 0.2), value: deleteOpen)
-        .animation(.easeInOut(duration: 0.2), value: timeOpen)
+        .kAnimation(.easeInOut(duration: 0.2), value: deleteOpen)
+        .kAnimation(.easeInOut(duration: 0.2), value: timeOpen)
         .sheet(isPresented: $manageOffline) { OfflineLessonsView { offline = OfflineStore.lessons() }.presentationDetents([.large]) }
         .task { await load() }
         .onChange(of: sync.revision) { offline = OfflineStore.lessons() }
@@ -280,7 +280,7 @@ struct SettingsView: View {
                         .shadow(color: .black.opacity(0.2), radius: 1.5, y: 1)
                         .padding(2)
                 }
-                .animation(.easeInOut(duration: 0.15), value: on)
+                .kAnimation(.easeInOut(duration: 0.15), value: on)
         }
         .buttonStyle(.plain)
         .accessibilityLabel(label)
@@ -337,9 +337,7 @@ struct SettingsView: View {
 
     /// "1,5 sa" in the design's words.
     private func hoursText(_ x: Double) -> String {
-        var s = x == x.rounded() ? String(Int(x)) : String(format: "%.1f", x)
-        if lang == .tr { s = s.replacingOccurrences(of: ".", with: ",") }
-        return Format.num(s, lang)
+        Format.decimal(x, lang)
     }
 
     private var planCard: some View {
@@ -465,7 +463,7 @@ struct SettingsView: View {
                 HStack(spacing: 10) {
                     Text(d("Bölüm")).font(KFont.ui(15, lang: lang)).foregroundStyle(C.text)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    Text(profile.department.isEmpty ? "—" : d(profile.department)).font(KFont.ui(14, lang: lang)).foregroundStyle(C.text3)
+                    Text(profile.department.isEmpty ? "—" : prefs.dept(profile.department)).font(KFont.ui(14, lang: lang)).foregroundStyle(C.text3)
                     chevron()
                 }
                 .frame(minHeight: 52)
@@ -512,8 +510,7 @@ struct SettingsView: View {
 
     /// "1,0×" as the design writes it.
     private func rateText(_ v: Double) -> String {
-        let s = String(format: "%.1f", v)
-        return (lang == .en ? s : s.replacingOccurrences(of: ".", with: ",")) + "×"
+        Format.decimal(v, lang, trimZero: false) + "×"
     }
 
     // MARK: Notifications
@@ -866,6 +863,7 @@ private struct DeleteAccountSheet: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             Color(hex: 0x140E0A, opacity: 0.45).ignoresSafeArea().onTapGesture(perform: onClose)
+            KeyShortcut(.escape, action: onClose)
             VStack(alignment: .leading, spacing: 12) {
                 Capsule().fill(Color.pair(0xE2D7C6, 0x4A403A)).frame(width: 40, height: 5)
                     .frame(maxWidth: .infinity).padding(.bottom, 8)

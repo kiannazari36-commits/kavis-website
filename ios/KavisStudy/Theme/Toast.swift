@@ -36,6 +36,6 @@ extension View {
                     .accessibilityAddTraits(.updatesFrequently)
             }
         }
-        .animation(.easeOut(duration: 0.2), value: center.message)
+        .kAnimation(.easeOut(duration: 0.2), value: center.message)
     }
 }
