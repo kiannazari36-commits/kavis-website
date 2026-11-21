@@ -14,17 +14,17 @@ struct WelcomeView: View {
     /// iPad (design NewIPad "welcome"): the 320 pt star on the left, the text and buttons in a 440 pt column.
     private var wideBody: some View {
         let lang = prefs.lang
-        return HStack(spacing: 80) {
-            Image("BrandIcon").resizable().frame(width: 320, height: 320)
-                .shadow(color: Color(hex: 0x7A5208, opacity: 0.35), radius: 25, y: 30)
-                .accessibilityLabel(prefs.t("welcome.k1280"))
-            VStack(alignment: .leading, spacing: 0) {
+        let icon = Image("BrandIcon").resizable().frame(width: 320, height: 320)
+            .shadow(color: Color(hex: 0x7A5208, opacity: 0.35), radius: 25, y: 30)
+            .accessibilityLabel(prefs.t("welcome.k1280"))
+        let column = VStack(alignment: .leading, spacing: 0) {
                 Wordmark(size: 22).environment(\.layoutDirection, .leftToRight)
                 VStack(alignment: .leading, spacing: 12) {
                     Text("\(prefs.t("welcome.k2322"))\n\(prefs.t("welcome.k1486"))").foregroundStyle(KPhone.text)
                     Text(prefs.t("welcome.k388")).foregroundStyle(KPhone.brand)
                 }
                 .font(KFont.ui(38, .medium, lang: lang)).kTracking(-0.02, size: 38, lang: lang).kLineHeight(1.18, size: 38, lang: lang)
+                .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
                 .padding(.top, 22)
                 Text(prefs.t("welcome.k1593"))
                     .font(KFont.ui(17, lang: lang)).kLineHeight(1.55, size: 17, lang: lang).foregroundStyle(KPhone.text2)
@@ -44,9 +44,13 @@ struct WelcomeView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.top, 14)
             }
-            .frame(width: 440)
+            .frame(maxWidth: 440)
+        // Side by side when the screen is wide enough (landscape); narrow iPad windows put the star above the text.
+        let body = ViewThatFits(in: .horizontal) {
+            HStack(spacing: 80) { icon; column.frame(width: 440) }.padding(.horizontal, 100)
+            VStack(spacing: 36) { icon.scaleEffect(0.7).frame(width: 224, height: 224); column }.padding(.horizontal, 40)
         }
-        .padding(.horizontal, 100)
+        return body
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(KPhone.welcomeBg.ignoresSafeArea())
     }

@@ -119,9 +119,15 @@ final class TrialRulesTests: XCTestCase {
 
 final class OnboardingRulesTests: XCTestCase {
     func testDepartmentsAreDesignTexts() {
-        XCTAssertEqual(OnboardingView.departments.count, 6)
+        XCTAssertEqual(OnboardingView.departments.count, 9)
+        XCTAssertEqual(OnboardingView.departments.last, "Diğer")
+        let prefs = AppPrefs()
         for name in OnboardingView.departments {
-            for lang in Lang.allCases { XCTAssertFalse(Strings.design(name, lang).isEmpty) }
+            for lang in Lang.allCases {
+                prefs.lang = lang
+                XCTAssertFalse(prefs.dept(name).isEmpty)
+                if lang != .tr { XCTAssertNotEqual(prefs.dept(name), name, "\(name) \(lang)") }
+            }
         }
         XCTAssertEqual(Strings.design("Eczacılık", .en), "Pharmacy")
     }

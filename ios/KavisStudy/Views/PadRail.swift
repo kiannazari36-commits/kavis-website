@@ -248,6 +248,8 @@ struct PadFlowFrame<Content: View>: View {
                     .font(KFont.ui(12, lang: lang)).kLineHeight(1.5, size: 12, lang: lang).foregroundStyle(KPhone.text2)
             }
             .padding(.horizontal, 40).padding(.top, 44).padding(.bottom, 36)
+            // The brand panel is chrome with a fixed layout: it does not grow with Dynamic Type.
+            .dynamicTypeSize(...DynamicTypeSize.xLarge)
             .containerRelativeFrame(.horizontal) { w, _ in min(400, w * 0.4) }
             .frame(maxHeight: .infinity, alignment: .top)
             .background(KPhone.welcomeBg.ignoresSafeArea())

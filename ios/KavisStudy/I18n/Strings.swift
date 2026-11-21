@@ -35,7 +35,7 @@ enum Strings {
     /// The text for a key; falls back to English, then to the key itself.
     /// `vars` replaces placeholders such as `{n}`.
     static func text(_ key: String, _ lang: Lang, _ vars: [String: String] = [:]) -> String {
-        var s = dicts[lang]?[key] ?? dicts[.en]?[key] ?? key
+        guard var s = dicts[lang]?[key] ?? dicts[.en]?[key] else { return key }
         for (name, value) in vars { s = s.replacingOccurrences(of: "{\(name)}", with: value) }
         return Bidi.fix(s, lang)
     }
