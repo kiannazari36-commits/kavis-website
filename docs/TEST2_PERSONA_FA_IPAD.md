@@ -1,0 +1,31 @@
+# Test 2: "Parisa" (Farsça konuşan hukuk öğrencisi, iPad) — sadece YENİ sorunlar (21 Kasım 2026)
+
+Kod değiştirilmedi. Test edilen kod: `main` a7e30ec (ios kodu bu dalla aynı). Yerel yığın, sahte hesap `fa1@kavis.test` (yerelde SQL ile Premium verildi, deneme sınırına takılmamak için). Simülatör: iPad Pro 13 (M5), `kavis.server=local`. Uygulama dili Farsça (RTL), karanlık mod, Dynamic Type large ve en büyük boy. Gerçek AI harcaması: **≈0,06 $** (hesabın `usage_monthly` değeri 0,054 $ → birkaç soru daha; 0,8 $ sınırının çok altında).
+Ekran görüntüleri: `docs/test-report2/`.
+
+## Sorunlar
+| # | Önem | Adımlar → beklenen / gerçek | Ekran görüntüsü | Olası neden |
+|---|---|---|---|---|
+| 1 | **Engelleyici** (Farsça/Arapça için) | Farsça PDF yükle (Chrome'dan ve CoreText'ten, ikisi de) → okuma sayfasında metin. Beklenen: PDF'teki metin aynen. Gerçek: kelime sırası satır içinde TERS ("مدنی حقوق بر ایمقدمه ماده .کندمی تنظیم…"), yarım boşluklar kaybolmuş, numaralı liste ve başlık paragrafa karışmış. Veritabanındaki `reader_doc` da ters (yani görüntü değil, kayıt bozuk). Orijinal PDF görünümü doğru. "Öğretmenin metni değişmez" sözü Farsça/Arapçada tutmuyor, uyarı da yok. | p25, p35 | `supabase/functions/process-material/index.ts:149` `unpdf extractText` (pdfjs görsel sırayla verir; RTL için bidi düzeltmesi yok). Cihazdaki PDFKit metni doğru sırada veriyor. |
+| 2 | Önemli | Farsça PDF'e Türkçe/İngilizce soru (asistan, ders seçili) → beklenen cevap; gerçek: "Ders notlarında bilgi bulamadım" (soru dili ≠ PDF dili). Farsça soru çalıştı. | p51, p52 | `assistant` tam metin arama dile bağlı; çok dilli arama / soruyu PDF diline çevirme yok. |
+| 3 | Önemli | Farsça arayüzde "PDF" ile başlayan metinler (onboarding alt notu, seviye tespiti seçeneği, 1. tanıtım kartı, asistan karşılama) cümle sırası karışık. | p11, p23, p51 | Latin kelimeyle başlayan Text'in yön tabanı LTR oluyor; metne RLM (U+200F) eklemek veya yönü zorlamak gerek. |
+| 4 | Önemli | Büyük Dynamic Type (erişilebilirlik XXXL) + karanlık: asistan ekranında logo hap ile üst üste, başlık altyazıyla çakışıyor; rail logosu "STUD/Y" kesik, ana ekranda sağ kenarda kırpılıyor. | dt-xxxl-assistant-overlap.jpg, dt-xxxl-home.jpg | Sabit boyutlu başlık/rail; `ScaledMetric` / minimumScaleFactor yok. |
+| 5 | Önemli | Farsça sesli anlatım / "Dinle": iOS'ta Farsça (fa-IR) ses genelde yok. Ses yoksa `AVSpeechSynthesisVoice(language:)` nil döner, sistem varsayılan sesi Farsça metni okumaya çalışır; kullanıcıya "ses yok" mesajı yok, düğme sadece yanar. | p40 | `Services/AudioLesson.swift:187-191`, `Views/Reader/ReaderView.swift:1361-1365` |
+| 6 | Önemli | Çeviri: hedef Türkçe seçilince cevap İngilizce bir not cümlesiyle başlıyor ("The source text is scrambled…"), çeviriye yorum karışıyor. (Kaynak ters olduğu için tetiklendi; #1 düzelince azalır ama istem yine meta yorum yazmasın.) | p39 | `translate` istemi |
+| 7 | Önemli | iPad + klavye: hiç klavye kısayolu yok (Cmd+F arama, sayfa/kart geçişi, Esc ile kapatma); işaretçi (hover) efekti yok; "Hareketi azalt" ayarına bakılmıyor (51 animasyon, `accessibilityReduceMotion` 0). | kod taraması | `keyboardShortcut` 0, `accessibilityReduceMotion` 0 sonuç |
+| 8 | Küçük | Onboarding bölüm listesinde "Hukuk/Diğer sosyal" yok (eczacılık, tıp, hemşirelik, diş, sağlık bilimleri, diğer). Hukuk öğrencisi "Diğer"e düşüyor. | p10 | `OnboardingView` bölüm listesi |
+| 9 | Küçük | Farsça onboarding son adımında Türkçe kelime: "درس‌هایت را **ekleyelim.**" | p13 | eksik fa çevirisi (vurgulu satır) |
+| 10 | Küçük | Rakam karışık: "· 1 درس", "1.5 ساعت" Latin, "۴ روز" Farsça rakam; "%۱۰۰" yüzde işareti önde; test seçenekleri A–E Latin harf. | p13, p45 | `Format.num` her yerde kullanılmıyor |
+| 11 | Küçük | Ders adı alanında otomatik düzeltme açık ("Medeni Hukuk" → "Medeni Hulu's"); asistan sorusunda da düzeltme metni bozuyor. | p14, p52 | metin alanlarında `autocorrectionDisabled` yok |
+| 12 | Küçük | Güven ve diğer alt sayfalar iPad dikeyde tam genişlik (çok geniş, ortada küçük içerik). Çeviri sayfası başlığı "صفحه 12" (bilinen #11'in yeniden doğrulaması). | p43 | sheet boyutu |
+| 13 | Küçük | Türkçe karar PDF'inde başlık "T.C. YARGITAY HUKUK GENEL KURULU" metne girmemiş, gövde "KARARI Yargıtay…" diye başlıyor (başlığın yarısı kaybolmuş). | (DB kontrolü) | process-material başlık ayıklama |
+
+Eski bulguların yeniden doğrulaması (tek satır): #3 (derssiz yüklenen PDF görünmüyor) ve #18 (dosya seçici geç açılıyor, ilk dokunuş boşa gidiyor) tekrar görüldü.
+
+## İyi çalışanlar
+- Farsça RTL: rail sağda, sekme/rozet/akış ters, onboarding, ana ekran, yükleme, test (soru ve şıklar sağa hizalı), özet (mantıksal sırada, doğru Farsça), zor kelime kartı ve altı çizili kelimeler, Farsça asistan sorusu (cevap Farsça, liste düzgün, kaynak çipleri). Yatay (landscape) ve karanlık mod düzgün.
+- Uygulama işleme sırasında kapatılıp açılınca oturum kalıyor, ders sunucuda hazır oluyor.
+- Farsça metin yapıştırma (pbcopy → Paste) ile alanlara Farsça girilebiliyor.
+
+## Test edilemeyenler (süre/kullanım sınırı)
+Arapça arayüz, karışık Farsça/İngilizce PDF'in okuma sayfası, taranmış görsel PDF, tek sayfalık çok uzun PDF, arama, plan ve ilerleme grafikleri (RTL), Pencil çizimi, metin seçim menüleri, Split View/Slide Over (simülatörde sürülemedi; `RootView` boyut sınıfı kullandığı için kodda iyi görünüyor, ama `PadRail.swift:271` sabit 620 genişlikli pencere dar ekranda taşabilir), VoiceOver (sadece kod: 137 `accessibilityLabel`), ağ kesintisi/çevrimdışı, yarıda kesilen yükleme, döndürürken yükleme, çok uzun/emoji/RTL işaretli/1 karakterli ders adları, hızlı çift dokunuş. Ayrıca `assistant` fonksiyonuna doğrudan API çağrısı geçerli token'la "not signed in" 401 verdi (uygulamadan çalıştı); sebebi araştırılmadı.
