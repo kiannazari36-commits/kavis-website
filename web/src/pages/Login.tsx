@@ -5,13 +5,14 @@ import { useToast } from '../components/Toast';
 import Wordmark from '../components/Wordmark';
 import LangThemeSwitch from '../components/LangThemeSwitch';
 import Icon, { AppleLogo, GoogleLogo } from '../components/Icon';
-import { AuthFail, currentUser, hasSession, logIn, onSignedIn, resendCode, sendPasswordReset, setNewPassword, signUp, socialLogIn, verifyEmail, type Provider } from '../api/auth';
+import { AuthFail, currentUser, hasSession, logIn, logOut, onSignedIn, resendCode, sendPasswordReset, setNewPassword, signUp, socialLogIn, verifyEmail, type Provider } from '../api/auth';
 import { checkDeviceLimit } from '../api/devices';
+import { consentNeeded, recordConsent, rememberConsent } from '../api/consent';
 import s from './Login.module.css';
 
 // Design: design/DeskApp.dc.html screen "login" (layout) + design/NewSignup.dc.html (sign up / log in / verify flow).
-type Mode = 'signup' | 'login' | 'verify' | 'forgot' | 'reset';
-const MODES: Mode[] = ['login', 'verify', 'forgot', 'reset'];
+type Mode = 'signup' | 'login' | 'verify' | 'forgot' | 'reset' | 'consent';
+const MODES: Mode[] = ['login', 'verify', 'forgot', 'reset', 'consent'];
 
 const RESEND_SECONDS = 42;
 // Sign-up confirmation: false = the email has a link, true = a 6-digit code (now; needs {{ .Token }} in the
@@ -20,6 +21,11 @@ const EMAIL_CODE = true;
 
 /** After login: if the account is already on 2 devices, choose one to sign out first. */
 async function afterLogin(navigate: (to: string) => void) {
+  // Consent and age proof first (sign-up boxes are saved here; Apple / Google sign-in sees the one-time screen).
+  if (await consentNeeded()) {
+    navigate('/login?mode=consent');
+    return;
+  }
   navigate((await checkDeviceLimit()) ? '/devices' : '/home');
 }
 
@@ -49,11 +55,12 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
   const [consent, setConsent] = useState(false);
+  const [adult, setAdult] = useState(false);
   const [busy, setBusy] = useState(false);
   const [pending, setPending] = useState({ email: params.get('email') ?? '', name: '' });
 
   const signup = mode === 'signup';
-  const blocked = signup && !consent;
+  const blocked = signup && !(consent && adult);
   const score = passwordScore(password);
 
   // Back from Google (?oauth=1): the session is ready or about to be; continue once, like after a password login.
@@ -86,13 +93,14 @@ export default function Login() {
     e.preventDefault();
     if (busy) return;
     if (blocked) {
-      toast(t('needConsent'));
+      toast(t(consent ? 'needAdult' : 'needConsent'));
       return;
     }
     setBusy(true);
     try {
       if (signup) {
         const r = await signUp(name, email, password, lang);
+        rememberConsent(); // written to the server after the email code (the account has no session before that)
         setPending({ email: r.pendingEmail, name: r.name });
         setBusy(false);
         setMode('verify');
@@ -148,6 +156,8 @@ export default function Login() {
           <Verify email={pending.email} onBack={() => setMode('signup')} />
         ) : mode === 'forgot' ? (
           <Forgot initialEmail={email} onBack={() => setMode('login')} />
+        ) : mode === 'consent' ? (
+          <Consent onDone={() => afterLogin(navigate)} />
         ) : mode === 'reset' ? (
           <Reset onExpired={() => setMode('forgot')} />
         ) : (
@@ -252,6 +262,15 @@ export default function Login() {
                   <Link to="/privacy" target="_blank" onClick={(e) => e.stopPropagation()}>
                     <b>{t('kvkk')}</b>
                   </Link> {t('consentEnd')}
+                </span>
+              </button>
+            )}
+
+            {signup && (
+              <button type="button" role="checkbox" aria-checked={adult} className={s.consent} onClick={() => setAdult(!adult)}>
+                <span className={adult ? `${s.box} ${s.boxOn}` : s.box}>{adult && <Icon name="check" size={13} width={3} />}</span>
+                <span>
+                  <b>{t('adult')}</b>
                 </span>
               </button>
             )}
@@ -402,6 +421,75 @@ function Verify({ email, onBack }: { email: string; onBack: () => void }) {
           {t('verifyGo')}
         </button>
       )}
+    </div>
+  );
+}
+
+/** One-time consent screen: "I am over 18" + the AI-processing consent (Apple / Google sign-in, or an account that never gave it). */
+function Consent({ onDone }: { onDone: () => void }) {
+  const { t } = useI18n();
+  const toast = useToast();
+  const navigate = useNavigate();
+  const [adult, setAdult] = useState(false);
+  const [ai, setAi] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const ready = adult && ai;
+
+  const go = async () => {
+    if (busy) return;
+    if (!ready) {
+      toast(t(adult ? 'needConsent' : 'needAdult'));
+      return;
+    }
+    setBusy(true);
+    try {
+      await recordConsent(true, true);
+      onDone();
+    } catch (e) {
+      console.error('recordConsent', e);
+      setBusy(false);
+      toast(t('errOther'));
+    }
+  };
+
+  return (
+    <div className={s.form}>
+      <h1 className={s.title}>
+        {t('consentTitleA')} <span>{t('consentTitleB')}</span>
+      </h1>
+      <p className={s.verifyText}>{t('consentText')}</p>
+      <button type="button" role="checkbox" aria-checked={adult} className={s.consent} onClick={() => setAdult(!adult)}>
+        <span className={adult ? `${s.box} ${s.boxOn}` : s.box}>{adult && <Icon name="check" size={13} width={3} />}</span>
+        <span>
+          <b>{t('adult')}</b>
+        </span>
+      </button>
+      <button type="button" role="checkbox" aria-checked={ai} className={s.consent} onClick={() => setAi(!ai)}>
+        <span className={ai ? `${s.box} ${s.boxOn}` : s.box}>{ai && <Icon name="check" size={13} width={3} />}</span>
+        <span>
+          <Link to="/terms" target="_blank" onClick={(e) => e.stopPropagation()}>
+            <b>{t('terms')}</b>
+          </Link>{' '}
+          {t('and')}{' '}
+          <Link to="/privacy" target="_blank" onClick={(e) => e.stopPropagation()}>
+            <b>{t('kvkk')}</b>
+          </Link>{' '}
+          {t('consentEnd')}
+        </span>
+      </button>
+      <button type="button" className={ready ? s.submit : `${s.submit} ${s.submitOff}`} aria-disabled={!ready || busy} onClick={go}>
+        {t('consentGo')}
+      </button>
+      <button
+        type="button"
+        className={s.switch}
+        onClick={async () => {
+          await logOut();
+          navigate('/login?mode=login');
+        }}
+      >
+        <b>{t('consentOut')}</b>
+      </button>
     </div>
   );
 }
