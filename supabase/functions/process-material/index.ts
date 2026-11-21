@@ -20,7 +20,7 @@ import { safeStoragePath } from '../_shared/paths.ts';
 import { extractText, getDocumentProxy } from 'npm:unpdf';
 import { PDFDocument } from 'npm:pdf-lib@1.17.1';
 import { OCR_SCHEMA, OCR_SYSTEM, pageTexts, toBase64, type OcrBatch } from './ocr.ts';
-import { batches, cleanHints, costUsd, hasLetters, looksGarbled, markTerms, pageGarbled, paragraphsOf, readyNotice, splitRuns, unreadablePage } from './lib.ts';
+import { batches, cleanHints, costUsd, hasLetters, looksGarbled, markTerms, pageGarbled, paragraphsOf, readyNotice, rtlTextUnreliable, splitRuns, unreadablePage } from './lib.ts';
 import { SCHEMA, SYSTEM, contentLanguage, styleNote, userMessage, type AiBatch } from './ai.ts';
 
 declare const EdgeRuntime: { waitUntil(p: Promise<unknown>): void };
@@ -262,7 +262,8 @@ async function runBatch(db: SupabaseClient, materialId: string, batchNo: number,
       await clearOutput(db, materialId);
       // A PDF whose font gives nonsense letters instead of words (on all pages or only some) is read by text
       // recognition from the page images.
-      if (!ocr && (looksGarbled(text) || text.some(pageGarbled))) {
+      // Persian / Arabic text layers come out in the wrong order (see rtlTextUnreliable): those are read the same way.
+      if (!ocr && (looksGarbled(text) || text.some(pageGarbled) || rtlTextUnreliable(text))) {
         await runAgain(materialId, 0, true);
         return;
       }
