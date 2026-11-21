@@ -109,11 +109,25 @@ enum StoreAPI {
     /// "Satın alımları geri yükle": asks the App Store for this Apple Account's purchases and sends them to the server.
     static func restore() async -> RestoreResult {
         guard (try? await AppStore.sync()) != nil else { return .noStore }
-        var premium = false, found = false, refused: Refusal?, failed = false
+        var signed: [String] = []
         for await result in Transaction.currentEntitlements {
-            guard case .verified = result else { continue }
+            if case .verified = result { signed.append(result.jwsRepresentation) }
+        }
+        // The server's `restore` action decides (also when the phone found nothing).
+        struct Body: Encodable { let action = "restore"; let signed_transactions: [String] }
+        struct Res: Decodable { let premium: Bool? }
+        do {
+            let r: Res = try await supabase.functions.invoke("apple-purchase", options: FunctionInvokeOptions(body: Body(signed_transactions: signed)))
+            return r.premium == true ? .premium : .refused(.noSubscription)
+        } catch FunctionsError.httpError(_, let data) {
+            struct Err: Decodable { let error: String? }
+            if let refusal = refusal(code: (try? JSONDecoder().decode(Err.self, from: data))?.error) { return .refused(refusal) }
+        } catch {}
+        // Old behaviour when the new action is not there or fails: send each transaction on its own.
+        var premium = false, found = false, refused: Refusal?, failed = false
+        for jws in signed {
             found = true
-            switch await send(result.jwsRepresentation) {
+            switch await send(jws) {
             case .accepted(let p): if p { premium = true }
             case .refused(let r): refused = r
             case .rejected, .retryLater: failed = true
