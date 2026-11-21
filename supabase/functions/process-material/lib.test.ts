@@ -1,5 +1,5 @@
 // Run: node --experimental-strip-types supabase/functions/process-material/lib.test.ts
-import { batches, cleanHints, costUsd, hasLetters, looksGarbled, markTerms, pageGarbled, paragraphsOf, plain, readyNotice, unreadablePage } from './lib.ts';
+import { batches, cleanHints, costUsd, hasLetters, looksGarbled, markTerms, pageGarbled, paragraphsOf, plain, readyNotice, splitRuns, unreadablePage } from './lib.ts';
 
 let fails = 0;
 const check = (name: string, ok: boolean) => {
@@ -70,4 +70,19 @@ check('only [?] marks is unreadable', unreadablePage('[?]', true) && unreadableP
 check('a few [?] words are fine', !unreadablePage('Kan basıncı [?] ile ölçülür ve kaydedilir.', true));
 check('nonsense left after recognition is unreadable', unreadablePage(shift(real), true));
 check('page has letters', hasLetters(real) && !hasLetters('12 34') && hasLetters('فیزیولوژی علم مطالعه عملکرد'));
+const tablePage = `Antibiyotikler
+Bakteriyel enfeksiyonlarda kullanılır.
+Grup | İlaç | Yan etki
+Aminoglikozidler | Gentamisin | Nefrotoksisite
+Penisilinler | Amoksisilin | Alerji
+Tablodan sonra normal metin devam eder.`;
+const tp = paragraphsOf(tablePage);
+check('table rows stay one paragraph each, not joined into text', tp.length === 6 && tp[2] === 'Grup | İlaç | Yan etki' && tp[4] === 'Penisilinler | Amoksisilin | Alerji');
+const runs = splitRuns(tp.slice(1));
+check('text, table, text runs in order', runs.length === 3 && !runs[0].table && runs[1].table && !runs[2].table);
+const tr = runs[1];
+check('table: head + rows', tr.table && tr.head.join() === 'Grup,İlaç,Yan etki' && tr.rows.length === 2 && tr.rows[1][1] === 'Amoksisilin');
+check('table keeps its row lines as paragraphs (same words)', tr.paragraphs.join('\n') === 'Grup | İlaç | Yan etki\nAminoglikozidler | Gentamisin | Nefrotoksisite\nPenisilinler | Amoksisilin | Alerji');
+check('one single row is not a table', splitRuns(['a | b']).length === 1 && !splitRuns(['a | b'])[0].table);
+check('no word lost across runs', splitRuns(tp).flatMap((r) => r.paragraphs).join('\n') === tp.join('\n'));
 if (fails) process.exit(1);

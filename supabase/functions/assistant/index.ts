@@ -14,7 +14,7 @@
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 import { addUsage, overBudget } from '../_shared/budget.ts';
-import { costUsd, lessonText, queryTerms, rankChunks, splitTail, tsQuery } from './lib.ts';
+import { ANSWER_LANG_NAMES, OUTSIDE_LABELS, answerLang, costUsd, lessonText, queryTerms, rankChunks, splitTail, tsQuery, type AnswerLang } from './lib.ts';
 
 // Haiku 5.5 answers normal lesson questions (tested 10 Nov 2026: as faithful to the PDF as Sonnet, ~16x cheaper).
 // Photos of questions also go to Haiku (tested 11 Nov 2026: same right answer as Sonnet). "AI + research" stays on Sonnet:
@@ -80,18 +80,21 @@ function secretKey() {
   return Object.values(keys)[0] ?? '';
 }
 
-const LANG_NAMES: Record<string, string> = { tr: 'Turkish', en: 'English', fa: 'Persian', ar: 'Arabic' };
-
-const system = (mode: string, lang: string, whole: boolean, solve: boolean) => `You are Kavis, a study assistant for a university student. You answer from the student's own lecture material.
+// `lang` is the answer language, decided in code (answerLang): the language of the question, else the app language.
+const system = (mode: string, lang: AnswerLang, whole: boolean, solve: boolean) => `You are Kavis, a study assistant for a university student. You answer from the student's own lecture material.
 ${
   whole
-    ? 'You get the whole text of ONE lesson the student chose, page by page ([Page n]), and maybe earlier messages of this chat. Talk only about this lesson: if the question is about another subject, say kindly in one sentence that here you only help with this lesson.'
+    ? `You get the whole text of ONE lesson the student chose, page by page ([Page n]), and maybe earlier messages of this chat. ${
+        mode === 'ai'
+          ? 'Start from this lesson, but the student chose "AI + research", so questions beyond the lesson are welcome (see the research rule).'
+          : 'Talk only about this lesson: if the question is about another subject, say kindly in one sentence that here you only help with this lesson.'
+      }`
     : 'You get numbered excerpts [E1], [E2]… from the student\'s lessons (lesson name and page given), and maybe earlier messages of this chat.'
 }
 ${
   mode === 'ai'
-    ? 'Base your answer on the lesson text you got. When it is not enough, or the student asks for more or newer information, search the web (reliable medical and academic sources first) and add what you found; say briefly which part is not from their PDFs.'
-    : 'Answer ONLY from the lesson text you got. If it does not contain the answer, say clearly (in one or two sentences) that you could not find it in their lessons and suggest what to look for; do not use outside knowledge.'
+    ? `RESEARCH MODE: the student chose "AI + research" on purpose, so searching the web is expected. For every question about a study topic (not a greeting, not an action request) you MUST call web_search at least once (at most ${WEB_SEARCHES} searches), even when the lesson text already answers it and even when the topic is not in the lesson at all; prefer reliable medical and academic sources. Then answer: first, in one or two sentences, what the lesson says (skip this when the lesson has nothing on it, or say so in one short sentence); then a new line that starts with the label "${OUTSIDE_LABELS[lang]}:" followed by what the web search added. Never reply "it is not in your lessons, I cannot say" in this mode: answer from the web under that label. Mark every sentence that is not from the lesson as outside knowledge, and end with OUTSIDE: yes.`
+    : 'Answer ONLY from the lesson text you got. If it does not contain the answer, say clearly (in one or two sentences) that you could not find it in their lessons and suggest what to look for; do not use outside knowledge and do not search the web.'
 }
 If the student is reading a lesson now, you are told which pages are open; "this page", "this topic", "explain this" mean those pages. They may still ask about any other page of the lesson.
 ${
@@ -101,7 +104,7 @@ ${
 }
 You may get the list of the student's weak topics (the ones they told you about and the ones they answered wrong in quizzes). When they ask about "my weak topics" / "zayıf olduğum konular", use exactly that list (with its pages) and do not ask which topics they mean; if the list is empty, say they have no weak topics saved yet.
 You can act for the student with tools: mark_weak_topic and add_flashcard. Use them only when the student asks for it; after an action, confirm it in one short sentence. You cannot do anything else (no reminders, no notes); say so kindly if asked.
-Write in the language of the student's question (if unclear: ${LANG_NAMES[lang] ?? 'Turkish'}), plain text without markdown (no headings, no ** bold) — except when the student asks for a table, chart, list to compare or memorise ("cetvel", "tablo", "çizelge", "table"): then write a simple markdown table (a header row, a |---| line, one row per line, short cells) and at most one short sentence before it; never mention which language you use.
+ANSWER LANGUAGE: write the whole answer in ${ANSWER_LANG_NAMES[lang]} — also when you found nothing in the lessons, when you say a topic is not covered, when you answer "what did the teacher emphasize" or "this page" questions, and after any action. Never switch to English (or any other language) because these instructions or the lesson text are in English; quote lesson terms in their own language only. Write plain text without markdown (no headings, no ** bold) — except when the student asks for a table, chart, list to compare or memorise ("cetvel", "tablo", "çizelge", "table"): then write a simple markdown table (a header row, a |---| line, one row per line, short cells) and at most one short sentence before it; never mention which language you use.
 Never write excerpt or page labels like [E1] or [Page 3] inside the answer text; the student does not see them. Only the last SOURCES line carries numbers.
 End with one last line exactly like: SOURCES: [2, 5] OUTSIDE: no
 — ${whole ? 'the page numbers you used' : 'the excerpt numbers you used'} (empty [] if none), and OUTSIDE: yes only if you added general knowledge.`;
@@ -123,7 +126,7 @@ Deno.serve(async (req) => {
   let question = typeof body.question === 'string' ? body.question.trim().slice(0, 2000) : '';
   if (!question && !image) return json({ error: 'question' }, 400);
   const mode = body.mode === 'ai' ? 'ai' : 'pdf';
-  const lang = typeof body.lang === 'string' ? body.lang : 'tr';
+  const appLang = typeof body.lang === 'string' ? body.lang : 'tr';
   const courseId: string | null = typeof body.course_id === 'string' ? body.course_id : null;
   const materialId: string | null = typeof body.material_id === 'string' ? body.material_id : null;
   const pageFrom = Number.isInteger(body.page_from) ? (body.page_from as number) : null;
@@ -181,6 +184,8 @@ Deno.serve(async (req) => {
       open.push(...(data ?? []).filter((c) => c.page !== null && c.page >= pageFrom && c.page <= last).slice(0, 4));
     }
   }
+  // The answer language is decided here, once, from the question (else the app language).
+  const lang = answerLang(question, appLang);
   const terms = queryTerms(question);
   if (!whole && ids.length && terms.length) {
     const { data } = await db
@@ -209,10 +214,10 @@ Deno.serve(async (req) => {
 
   const excerpts = pieces.length
     ? pieces.map((p, i) => `[E${i + 1}] (${titles.get(p.material_id) ?? ''}, page ${p.page ?? '?'})\n${p.text.slice(0, 2500)}`).join('\n\n')
-    : '(no matching excerpts were found in the student\'s lessons)';
+    : `(no matching excerpts were found in the student's lessons — say so in ${ANSWER_LANG_NAMES[lang]}, not in English)`;
   const lessonTitle = materialId ? (titles.get(materialId) ?? '') : '';
   const reading = materialId && pageFrom !== null ? `I am reading "${lessonTitle}", page ${pageFrom}${pageTo && pageTo !== pageFrom ? `-${pageTo}` : ''}.\n\n` : '';
-  const userText = `${reading}${weakText}${whole ? '' : `Excerpts from my lessons:\n\n${excerpts}\n\n`}${image ? 'Solve the question in this photo. Its text: ' : 'My question: '}${question}`;
+  const userText = `${reading}${weakText}${whole ? '' : `Excerpts from my lessons:\n\n${excerpts}\n\n`}${image ? 'Solve the question in this photo. Its text: ' : 'My question: '}${question}\n\n(Write your answer in ${ANSWER_LANG_NAMES[lang]}.${mode === 'ai' ? ' Research mode: search the web before answering.' : ''})`;
 
   const params = {
     model: MODEL,

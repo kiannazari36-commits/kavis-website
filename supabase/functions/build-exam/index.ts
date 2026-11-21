@@ -1,6 +1,8 @@
 // Edge Function build-exam: "Sınav merkezi" (design ScrReview, tab "Sınav"). No AI, free: an exam is put together
 // from the questions (multiple choice, fill in the blank, written) the server already wrote for the student's lessons (lesson end, section checks,
 // exam packs, new questions).
+// The answer of 'build' also says when fewer questions than asked could be built: { requested, built, short, available, reason }
+// (reason 'not_enough_questions' or null); the exam itself is built as before.
 // POST { action: 'overview' }                                   → { courses: [{ course_id, questions (multiple choice), types: { multiple_choice, fill_blank, written counts } }] }
 // POST { action: 'build', course_ids, count, weak_focus, types? } → { quiz_id, questions } or 404 { error: 'empty' }
 //   One course = "Derse özel sınav", several = "Genel sınav" (quizzes.kind 'combined'). With weak_focus, half of the
@@ -9,6 +11,7 @@
 //   ("Sayfa n'e bak" opens the right PDF).
 // Writes (service role): quizzes + quiz_questions.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
+import { shortfall } from './lib.ts';
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -152,7 +155,7 @@ Deno.serve(async (req) => {
       if (e2) throw e2;
       const sources = Object.fromEntries((copies ?? []).map((c) => [c.id, chosen[c.sort_order as number].material_id]));
       await db.from('quizzes').update({ options: { count, weak_focus: body.weak_focus !== false, course_ids: courseIds, source: 'exam_center', sources } }).eq('id', quiz.id);
-      return json({ quiz_id: quiz.id, questions: chosen.length });
+      return json({ quiz_id: quiz.id, questions: chosen.length, ...shortfall(count, chosen.length, qs.length) });
     }
     return json({ error: 'action' }, 400);
   } catch (e) {

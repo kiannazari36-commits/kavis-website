@@ -220,7 +220,7 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
         'Veri sorumlusu: Melisa Ferahani, Merkez Mahallesi, Çendere Caddesi, Seba Rezidans A4, Kapı No: 4, 34406 Kağıthane / İstanbul, Türkiye. İletişim: ' + M + '. [VERBİS / AB temsilcisi bilgisi – avukat belirleyecek]',
       ] },
       { h: '2. Hangi verileri işliyoruz', p: [
-        'Hesap: e-posta adresi, adın (isteğe bağlı), giriş yöntemi (e-posta kodu, Apple veya Google), dil ve tema tercihlerin.',
+        'Hesap: e-posta adresi, adın (isteğe bağlı), giriş yöntemi (e-posta ve şifre — hesabı açarken e-postana gelen onay koduyla doğrulanır —, Apple veya Google), dil ve tema tercihlerin.',
         'İçerik: yüklediğin PDF’ler, slayt fotoğrafları, ders kayıtların (konuşma-yazıya çevirme cihazında yapılır; yapay zekâya yalnızca metin gönderilir; ses dosyası, en fazla 50 MB, yalnızca senin özel hesabında dinlemen için saklanır ve dersi veya hesabını silince silinir), notların, vurgulamaların ve ders programın. [AVUKAT KONTROL EDECEK: ses kaydı]',
         'Kullanım: okuma ilerlemesi, çalışma süreleri, sınav ve kart sonuçları, asistan soruların, kullanım sayaçları (deneme limitleri için).',
         'Cihaz ve abonelik: kayıtlı cihazların (en fazla 2), abonelik durumu (Apple’dan doğrulanan işlem bilgisi). Kart bilgilerini biz görmeyiz ve saklamayız; ödemeyi Apple alır.',
@@ -260,7 +260,7 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
         'Data controller: Melisa Ferahani, Merkez Mahallesi, Çendere Caddesi, Seba Rezidans A4, Kapı No: 4, 34406 Kağıthane, Istanbul, Türkiye. Contact: ' + M + '. [Registration / EU representative details – to be set by a lawyer]',
       ] },
       { h: '2. What data we process', p: [
-        'Account: email address, your name (optional), sign-in method (email code, Apple or Google), language and theme preferences.',
+        'Account: email address, your name (optional), sign-in method (email and password, confirmed with a code sent to your email when you sign up; or Apple or Google), language and theme preferences.',
         'Content: the PDFs and slide photos you upload, your lecture recordings (speech-to-text runs on your device; only the transcript is sent to the AI; the sound file, up to 50 MB, is kept only in your own private account for playback and is deleted when you delete the lesson or your account), your notes, highlights and class timetable. [AVUKAT KONTROL EDECEK: sound recording]',
         'Usage: reading progress, study time, quiz and card results, your assistant questions, usage counters (for trial limits).',
         'Devices and subscription: your registered devices (max 2) and subscription status (transaction data verified with Apple). We never see or store your card details; Apple takes the payment.',
@@ -300,7 +300,7 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
         'مسئول داده: Melisa Ferahani، Merkez Mahallesi, Çendere Caddesi, Seba Rezidans A4, Kapı No: 4, 34406 Kağıthane, Istanbul, Türkiye. تماس: ' + M + '. [اطلاعات ثبت / نماینده در اتحادیه اروپا – وکیل تعیین کند]',
       ] },
       { h: '۲. چه داده‌هایی را پردازش می‌کنیم', p: [
-        'حساب: نشانی ایمیل، نام (اختیاری)، روش ورود (کد ایمیل، Apple یا Google)، ترجیح زبان و حالت نمایش.',
+        'حساب: نشانی ایمیل، نام (اختیاری)، روش ورود (ایمیل و رمز عبور که هنگام ثبت‌نام با کدی که به ایمیلت می‌آید تأیید می‌شود؛ یا Apple یا Google)، ترجیح زبان و حالت نمایش.',
         'محتوا: PDFها و عکس‌های اسلاید که بارگذاری می‌کنی، ضبط‌های کلاس (تبدیل گفتار به متن روی دستگاه خودت انجام می‌شود؛ فقط متن برای هوش مصنوعی فرستاده می‌شود؛ فایل صوتی، تا ۵۰ مگابایت، فقط در حساب خصوصی خودت برای گوش دادن نگه داشته می‌شود و با حذف درس یا حسابت پاک می‌شود)، یادداشت‌ها، هایلایت‌ها و برنامه کلاسی. [AVUKAT KONTROL EDECEK: ضبط صوتی]',
         'استفاده: پیشرفت مطالعه، زمان مطالعه، نتایج آزمون و کارت، پرسش‌های دستیار و شمارنده‌های استفاده (برای محدودیت دوره آزمایشی).',
         'دستگاه و اشتراک: دستگاه‌های ثبت‌شده (حداکثر ۲) و وضعیت اشتراک (اطلاعات تراکنش تأییدشده از اپل). ما اطلاعات کارت تو را نمی‌بینیم و ذخیره نمی‌کنیم؛ پرداخت را اپل دریافت می‌کند.',
@@ -340,7 +340,7 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
         'المسؤول عن البيانات: Melisa Ferahani، Merkez Mahallesi, Çendere Caddesi, Seba Rezidans A4, Kapı No: 4, 34406 Kağıthane, Istanbul, Türkiye. للتواصل: ' + M + '. [بيانات التسجيل / ممثل الاتحاد الأوروبي – يحددها المحامي]',
       ] },
       { h: '2. ما البيانات التي نعالجها', p: [
-        'الحساب: البريد الإلكتروني، اسمك (اختياري)، طريقة الدخول (رمز البريد أو Apple أو Google)، تفضيلات اللغة والمظهر.',
+        'الحساب: البريد الإلكتروني، اسمك (اختياري)، طريقة الدخول (البريد الإلكتروني وكلمة المرور، مع التحقق برمز يصل إلى بريدك عند إنشاء الحساب؛ أو Apple أو Google)، تفضيلات اللغة والمظهر.',
         'المحتوى: ملفات PDF وصور الشرائح التي ترفعها، وتسجيلات المحاضرات (يتم تحويل الكلام إلى نص على جهازك؛ ولا يُرسل إلى الذكاء الاصطناعي سوى النص؛ ويُحفظ الملف الصوتي، حتى 50 ميغابايت، في حسابك الخاص فقط للاستماع إليه ويُحذف عند حذف الدرس أو حسابك)، وملاحظاتك وتمييزاتك وجدولك الدراسي. [AVUKAT KONTROL EDECEK: التسجيل الصوتي]',
         'الاستخدام: تقدّم القراءة ووقت الدراسة ونتائج الاختبارات والبطاقات وأسئلتك للمساعد وعدّادات الاستخدام (لحدود التجربة).',
         'الأجهزة والاشتراك: أجهزتك المسجّلة (حتى جهازين) وحالة الاشتراك (بيانات معاملة موثّقة من Apple). لا نرى بيانات بطاقتك ولا نخزّنها؛ تتولى Apple الدفع.',

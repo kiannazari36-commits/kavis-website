@@ -15,3 +15,10 @@ export const isAndroid = () => /Android/i.test(navigator.userAgent);
 /** Support e-mail and how fast we answer it (shown on the Help page; Kian may change it to 48 later). */
 export const SUPPORT_EMAIL = 'kavisstudy@gmail.com';
 export const SUPPORT_REPLY_HOURS = 24;
+
+/**
+ * The legal pages (/terms, /privacy) are drafts a lawyer has not checked yet. true = show the "TASLAK" banner and the
+ * bracketed lawyer notes. Set to false once the texts are checked (or before App Review): the banner and every
+ * "[AVUKAT KONTROL EDECEK …]"-style note disappear when the page is drawn. The notes stay in src/i18n/legal.ts.
+ */
+export const LEGAL_DRAFT_VISIBLE = true;

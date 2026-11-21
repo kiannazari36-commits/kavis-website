@@ -187,3 +187,9 @@ scheduled jobs: none left (`daily-planner`, `send-notifications` built — see a
    (pgvector + embeddings) can be added later without changing the apps.
 2. **Course catalog:** migration `20261106151035_course_catalog_fill.sql` fills `course_catalog` per department (Turkish names; live since 6 Nov 2026).
 3. **Edge Functions:** none is built yet (list above). Next step after this.
+
+## Audit fixes of 21 Nov 2026 (local only until deployed)
+- `build-exam` `build` answer: `{ quiz_id, questions, requested, built, short, available, reason }`; `reason` = `not_enough_questions` when the lessons have fewer questions of the chosen types than asked.
+- `process-material`: a table (rows `a | b | c`) is a block `{ pageFrom, pageTo, tag, heading?, paragraphs: [[row line]…], table: { head: string[], rows: string[][] } }`; the paragraphs keep the same row text (older readers show lines). Text before/after a table on the same page is its own block.
+- `assistant`: answer language is `answerLang(question, lang)`; research mode (`mode: 'ai'`) always runs the web search (max 3) and labels outside knowledge.
+- Sign in with Apple revoke: `_shared/apple-revoke.ts`. Secrets `APPLE_TEAM_ID`, `APPLE_KEY_ID`, `APPLE_CLIENT_ID` (the app's bundle id `study.kavis.app` for native sign-in), `APPLE_PRIVATE_KEY` (content of the .p8). Edge `apple-link` (`verify_jwt = true`; POST `{ authorization_code }` → `{ linked }`) saves Apple's refresh token in the user's `app_metadata.apple_refresh_token`; `delete-account` `purge` revokes it before deleting the login.

@@ -1,5 +1,5 @@
 // Run: node --experimental-strip-types supabase/functions/assistant/lib.test.ts
-import { costUsd, lessonText, queryTerms, rankChunks, splitTail, tsQuery } from './lib.ts';
+import { answerLang, costUsd, lessonText, queryTerms, rankChunks, splitTail, tsQuery } from './lib.ts';
 
 let fails = 0;
 const check = (name: string, ok: boolean) => {
@@ -26,4 +26,13 @@ check('outside yes, empty sources', splitTail('A\nSOURCES: [] OUTSIDE: yes').out
 check('no tail line', splitTail('Sadece cevap').answer === 'Sadece cevap');
 check('splitTail drops ** bold', splitTail('**Doz:** 4 g\nSOURCES: [] OUTSIDE: yes').answer === 'Doz: 4 g');
 
+
+check('lang: Turkish question, interface en → tr', answerLang('Hoca derste neyi vurguladı?', 'en') === 'tr');
+check('lang: "Bu sayfayı özetle" → tr', answerLang('Bu sayfayı özetle', 'en') === 'tr');
+check('lang: English question, interface tr → en', answerLang('What did the teacher emphasize?', 'tr') === 'en');
+check('lang: Persian letters → fa', answerLang('بتا بلوکرها چگونه کار می\u200cکنند؟', 'tr') === 'fa');
+check('lang: Arabic → ar', answerLang('ما هي أعراض الدواء؟', 'tr') === 'ar');
+check('lang: unclear term → interface language', answerLang('ACE?', 'tr') === 'tr' && answerLang('ACE?', 'en') === 'en' && answerLang('12', 'ar') === 'ar');
+check('lang: Turkish without special letters', answerLang('Hoca bu konuyu nasil anlatti', 'en') === 'tr');
+check('lang: "nothing found" style question stays tr', answerLang('Bu derste hoca neyi vurguladı, sınavda ne çıkar?', 'en') === 'tr');
 if (fails) process.exit(1);

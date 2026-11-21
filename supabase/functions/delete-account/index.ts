@@ -7,9 +7,11 @@
 // POST { action: 'cancel' }            → "Vazgeç" within the 30 days.
 // POST { action: 'purge' } + header x-purge-key (the nightly job, migration 20261024213309_account_purge.sql)
 //   → deletes the accounts whose 30 days are over: their files in Storage, then the login (every table goes with it);
-//   also removes the export files (export-data) older than 7 days.
+//   also removes the export files (export-data) older than 7 days. Before the login goes, the Apple sign-in token is
+//   revoked when the Apple secrets are set (see _shared/apple-revoke.ts).
 // verify_jwt is off because the nightly job and the confirm page have no login; request/cancel check the login themselves.
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
+import { appleEnvFrom, revokeAppleToken } from '../_shared/apple-revoke.ts';
 import { asLang, MAILS_PER_HOUR, newToken, sendAccountMail, siteUrl } from '../_shared/mail.ts';
 
 const cors = {
@@ -115,6 +117,12 @@ async function purge(db: SupabaseClient) {
       const paths = await filesOf(db, bucket, uid);
       for (let i = 0; i < paths.length; i += 100) await db.storage.from(bucket).remove(paths.slice(i, i + 100));
     }
+    // Sign in with Apple: revoke the student's Apple token first (needs the Apple secrets and the refresh token saved by
+    // the Edge Function apple-link; without either it is skipped). Apple being unreachable never blocks the deletion.
+    const { data: u } = await db.auth.admin.getUserById(uid);
+    const appleToken = (u?.user?.app_metadata as { apple_refresh_token?: string } | undefined)?.apple_refresh_token;
+    const revoked = await revokeAppleToken(appleToken, appleEnvFrom((k) => Deno.env.get(k)), fetch);
+    if (revoked === 'failed') console.error('purge apple revoke failed', uid);
     // The login goes; profiles and every table with the student's rows follow by cascade.
     const { error } = await db.auth.admin.deleteUser(uid);
     if (error) console.error('purge', uid, error);

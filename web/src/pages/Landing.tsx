@@ -2,9 +2,9 @@ import { useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n/I18nProvider';
 import Wordmark from '../components/Wordmark';
 import LangThemeSwitch from '../components/LangThemeSwitch';
-import Icon, { AppleLogo, PlayLogo, type IconName } from '../components/Icon';
+import Icon, { AppleLogo, type IconName } from '../components/Icon';
 import StoreButton from '../components/StoreButton';
-import { APP_STORE_URL, MAC_STORE_URL, PLAY_STORE_URL } from '../config';
+import { APP_STORE_URL, SUPPORT_EMAIL } from '../config';
 import LegalLinks from '../components/LegalLinks';
 import s from './Landing.module.css';
 
@@ -65,8 +65,6 @@ export default function Landing() {
           <p className={s.lead}>{t('k11')}</p>
           <div className={s.stores}>
             <StoreButton url={APP_STORE_URL} logo={<AppleLogo size={22} />} small={t('k12')} name="App Store" />
-            <StoreButton url={PLAY_STORE_URL} logo={<PlayLogo size={20} />} small={t('k13')} name="Google Play" />
-            <StoreButton url={MAC_STORE_URL} logo={<AppleLogo size={22} />} small={t('k14')} name="macOS" />
             <button className={s.webBtn} onClick={toSignup}>
               <Icon name="globe" size={18} />
               {t('k15')}
@@ -148,6 +146,9 @@ export default function Landing() {
         ))}
       </section>
       <LegalLinks />
+      <p className={s.contact}>
+        <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>
+      </p>
     </div>
   );
 }

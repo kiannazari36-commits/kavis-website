@@ -19,7 +19,7 @@ import { addUsage, overBudget } from '../_shared/budget.ts';
 import { extractText, getDocumentProxy } from 'npm:unpdf';
 import { PDFDocument } from 'npm:pdf-lib@1.17.1';
 import { OCR_SCHEMA, OCR_SYSTEM, pageTexts, toBase64, type OcrBatch } from './ocr.ts';
-import { batches, cleanHints, costUsd, hasLetters, looksGarbled, markTerms, pageGarbled, paragraphsOf, readyNotice, unreadablePage } from './lib.ts';
+import { batches, cleanHints, costUsd, hasLetters, looksGarbled, markTerms, pageGarbled, paragraphsOf, readyNotice, splitRuns, unreadablePage } from './lib.ts';
 import { SCHEMA, SYSTEM, contentLanguage, styleNote, userMessage, type AiBatch } from './ai.ts';
 
 declare const EdgeRuntime: { waitUntil(p: Promise<unknown>): void };
@@ -345,14 +345,23 @@ async function runBatch(db: SupabaseClient, materialId: string, batchNo: number,
       if (heading) paragraphs = paragraphs.filter((x) => x !== heading);
       if (!paragraphs.length && !heading) continue;
       const pageTerms = terms.filter((t) => t.page === pg.page).concat(terms.filter((t) => t.page !== pg.page));
-      const block = {
-        pageFrom: pg.page,
-        pageTo: pg.page,
-        tag: info?.tag ?? 'general',
-        ...(heading ? { heading } : {}),
-        paragraphs: paragraphs.map((x) => markTerms(x, pageTerms, used)),
-      };
-      addBlock(block, info?.section_title);
+      // Tables (rows written as "a | b | c") become their own table block; the row lines stay as its paragraphs, so the
+      // teacher's words are all still there (older readers just show them as lines). Text around a table is its own block.
+      const runs = splitRuns(paragraphs);
+      runs.forEach((run, k) => {
+        addBlock(
+          {
+            pageFrom: pg.page,
+            pageTo: pg.page,
+            tag: info?.tag ?? 'general',
+            ...(heading && k === 0 ? { heading } : {}),
+            paragraphs: run.table ? run.paragraphs.map((x) => [x]) : run.paragraphs.map((x) => markTerms(x, pageTerms, used)),
+            ...(run.table ? { table: { head: run.head, rows: run.rows } } : {}),
+          },
+          k === 0 ? info?.section_title : undefined,
+        );
+      });
+      if (!runs.length) addBlock({ pageFrom: pg.page, pageTo: pg.page, tag: info?.tag ?? 'general', heading, paragraphs: [] }, info?.section_title);
     }
 
     // Topics (with ids, so questions and search pieces can point to them).

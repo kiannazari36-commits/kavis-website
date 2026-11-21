@@ -6,6 +6,47 @@ export type Segment = string | { term: string; text: string };
 
 const END = /[.!?:;…)]$/;
 
+/** A line of a table as text recognition writes it: at least two cells separated by " | ". */
+export const isTableRow = (line: string) => line.split(' | ').filter((c) => c.trim()).length >= 2;
+
+/** The cells of a table row line. */
+export const tableCells = (line: string) => line.split(' | ').map((c) => c.trim());
+
+export type PageRun = { table: false; paragraphs: string[] } | { table: true; paragraphs: string[]; head: string[]; rows: string[][] };
+
+/**
+ * Splits a page's paragraphs into runs: normal text, and tables (2 or more table-row paragraphs in a row; the first
+ * row is the head). A table keeps its row lines as `paragraphs` too (the same words, for reading aloud, translating
+ * and old readers), so no word of the teacher's text is lost or changed. Anything else stays in order.
+ */
+export function splitRuns(paragraphs: string[]): PageRun[] {
+  const runs: PageRun[] = [];
+  let text: string[] = [];
+  let rows: string[] = [];
+  const flushText = () => {
+    if (text.length) runs.push({ table: false, paragraphs: text });
+    text = [];
+  };
+  const flushRows = () => {
+    if (rows.length >= 2) {
+      flushText();
+      const cells = rows.map(tableCells);
+      runs.push({ table: true, paragraphs: rows, head: cells[0], rows: cells.slice(1) });
+    } else text.push(...rows);
+    rows = [];
+  };
+  for (const p of paragraphs) {
+    if (isTableRow(p)) rows.push(p);
+    else {
+      flushRows();
+      text.push(p);
+    }
+  }
+  flushRows();
+  flushText();
+  return runs;
+}
+
 /**
  * Splits one page of extracted PDF text into paragraphs. Lines are joined with spaces; a word broken with a
  * hyphen at the end of a line is joined back. A new paragraph starts at an empty line, after a line that ends a
@@ -23,6 +64,12 @@ export function paragraphsOf(pageText: string): string[] {
     const line = lines[i];
     if (!line) {
       flush();
+      continue;
+    }
+    // A table row ("a | b | c", as text recognition writes tables): always its own paragraph, never joined.
+    if (isTableRow(line)) {
+      flush();
+      out.push(line);
       continue;
     }
     const bullet = /^([•\-–▪●*]|\d+[.)])\s/.test(line);
