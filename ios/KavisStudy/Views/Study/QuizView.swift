@@ -117,7 +117,7 @@ struct QuizView: View {
                 app.back()
             }
         }
-        .animation(.easeOut(duration: 0.2), value: phase)
+        .kAnimation(.easeOut(duration: 0.2), value: phase)
     }
 
     private var headerTitle: String {
@@ -221,6 +221,7 @@ struct QuizView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     if phase != .reveal && q.fillBlank {
                         TextField(t("blankPlaceholder"), text: $typed)
+                            .autocorrectionDisabled()
                             .font(KFont.reading(18, lang: qLang)).foregroundStyle(KPhone.text)
                             .focused($typing).disabled(judging)
                             .submitLabel(.send)

@@ -262,8 +262,7 @@ struct RecordingView: View {
 
     /// "1,0" / "1,25" / "1,5" / "2,0" (the design shows "1,0×").
     private var speedLabel: String {
-        let s = player.speed == 1.25 ? "1.25" : String(format: "%.1f", player.speed)
-        return Format.num(lang == .en ? s : s.replacingOccurrences(of: ".", with: ","), lang)
+        Format.decimal(Double(player.speed), lang, fraction: player.speed == 1.25 ? 2 : 1, trimZero: false)
     }
 
     private func seek(_ sec: Double) {

@@ -109,6 +109,7 @@ struct CourseSetupView: View {
     private var addRow: some View {
         HStack(spacing: 8) {
             TextField("", text: $typed, prompt: Text(d("Ders adı yaz (ör. Biyokimya)")).foregroundStyle(KPhone.text3))
+                .autocorrectionDisabled().textInputAutocapitalization(.words)
                 .font(KFont.ui(15, lang: lang))
                 .foregroundStyle(KPhone.text)
                 .focused($focused)

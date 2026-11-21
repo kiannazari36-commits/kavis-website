@@ -99,8 +99,8 @@ struct UploadView: View {
                 FairUseSheet(used: trial.status.fairUsed, resetsOn: trial.status.fairResetsOn) { fairOpen = false }
             }
         }
-        .animation(.easeOut(duration: 0.2), value: trial.lockedKey)
-        .animation(.easeOut(duration: 0.2), value: fairOpen)
+        .kAnimation(.easeOut(duration: 0.2), value: trial.lockedKey)
+        .kAnimation(.easeOut(duration: 0.2), value: fairOpen)
         // One picker for both kinds: SwiftUI shows only one `.fileImporter` per view.
         .fileImporter(isPresented: Binding(get: { showPDFImporter || showAudioImporter }, set: { if !$0 { showPDFImporter = false; showAudioImporter = false } }),
                       allowedContentTypes: showAudioImporter ? [.audio] : [.pdf]) { result in
@@ -110,8 +110,8 @@ struct UploadView: View {
         .alert(prefs.t("upUnreadable"), isPresented: $unreadableOpen) {
             Button(prefs.t("upOk"), role: .cancel) {}
         }
-        .animation(.easeOut(duration: 0.2), value: longSheet)
-        .animation(.easeInOut(duration: 0.2), value: mode)
+        .kAnimation(.easeOut(duration: 0.2), value: longSheet)
+        .kAnimation(.easeInOut(duration: 0.2), value: mode)
         .task {
             // "Bu derse PDF ekle" in a course folder chooses that course.
             if let id = app.uploadCourseId { courseId = id; app.uploadCourseId = nil }
@@ -393,6 +393,7 @@ struct UploadView: View {
         VStack(alignment: .leading, spacing: 6) {
             Text(label).font(KFont.ui(13, .medium, lang: lang)).foregroundStyle(KPhone.text2)
             TextField("", text: text)
+                .autocorrectionDisabled().textInputAutocapitalization(.words)
                 .font(KFont.ui(15, lang: lang)).foregroundStyle(KPhone.text)
                 .padding(.horizontal, 14).frame(height: 48)
                 .background(KPhone.card, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
@@ -549,13 +550,13 @@ struct UploadView: View {
             .draggable(p.id.uuidString) { Image(uiImage: p.thumb).resizable().frame(width: 58, height: 74) }
             .dropDestination(for: String.self) { ids, _ in
                 guard let id = ids.first, let from = photos.firstIndex(where: { $0.id.uuidString == id }), from != i else { return false }
-                withAnimation { photos.move(fromOffsets: IndexSet(integer: from), toOffset: from < i ? i + 1 : i) }
+                kAnimate { photos.move(fromOffsets: IndexSet(integer: from), toOffset: from < i ? i + 1 : i) }
                 return true
             }
             .contextMenu {
                 if i > 0 { Button(movePageTexts().left) { photos.swapAt(i, i - 1) } }
                 if i < photos.count - 1 { Button(movePageTexts().right) { photos.swapAt(i, i + 1) } }
-                Button(movePageTexts().remove, role: .destructive) { _ = withAnimation { photos.remove(at: i) } }
+                Button(movePageTexts().remove, role: .destructive) { _ = kAnimate { photos.remove(at: i) } }
             }
             .accessibilityLabel(prefs.t("up_photoPages", ["n": Format.num(i + 1, lang)]))
     }

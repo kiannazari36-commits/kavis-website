@@ -97,6 +97,7 @@ struct CoursesListView: View {
         .onChange(of: OfflineSync.shared.revision) { onDevice = Set(OfflineStore.lessons().map(\.id)) }
         .alert(d("Ders ekle"), isPresented: $adding) {
             TextField(prefs.t("wel_coursePh"), text: $newName)
+                .autocorrectionDisabled().textInputAutocapitalization(.words)
             Button(prefs.t("wel_addShort")) { Task { await add() } }
             Button(prefs.t("schCancel"), role: .cancel) { newName = "" }
         }
@@ -195,7 +196,7 @@ struct CoursesListView: View {
                     }
                 }
                 .frame(height: 6)
-                Text("%\(Format.num(st.percent, lang)) \(d("okundu"))").font(KFont.ui(11, lang: lang)).foregroundStyle(KPhone.text2)
+                Text("\(Format.percent(st.percent, lang)) \(d("okundu"))").font(KFont.ui(11, lang: lang)).foregroundStyle(KPhone.text2)
             }
             .padding(18)
             .frame(maxWidth: .infinity, minHeight: 200, alignment: .topLeading)
@@ -295,7 +296,7 @@ struct CoursesListView: View {
                             }
                         }
                         .frame(height: 6)
-                        Text("%\(Format.num(st.percent, lang))").font(KFont.mono(12, .semibold)).foregroundStyle(KPhone.text)
+                        Text(Format.percent(st.percent, lang)).font(KFont.mono(12, .semibold)).foregroundStyle(KPhone.text)
                     }
                     Text(c.pdfs.isEmpty ? d("Henüz PDF yok") : c.exam[lang])
                         .font(KFont.ui(11, lang: lang))
@@ -353,7 +354,7 @@ struct CoursesListView: View {
                 ForEach(share, id: \.name) { s in
                     HStack(spacing: 6) {
                         Circle().fill(s.color).frame(width: 8, height: 8)
-                        Text("\(s.name) · %\(Format.num(s.pct, lang))").font(KFont.ui(12, lang: lang)).foregroundStyle(KPhone.text2)
+                        Text("\(s.name) · \(Format.percent(s.pct, lang))").font(KFont.ui(12, lang: lang)).foregroundStyle(KPhone.text2)
                     }
                 }
             }
@@ -413,6 +414,7 @@ struct CourseFolderView: View {
         }
         .alert(prefs.t("cfRenameTitle"), isPresented: $renaming) {
             TextField(prefs.t("wel_coursePh"), text: $newName)
+                .autocorrectionDisabled().textInputAutocapitalization(.words)
             Button(prefs.t("cfSave")) { Task { await rename() } }
             Button(prefs.t("schCancel"), role: .cancel) {}
         }
@@ -515,10 +517,10 @@ struct CourseFolderView: View {
                 ZStack {
                     Circle().stroke(FolderPalette.track, lineWidth: 6)
                     Circle().trim(from: 0, to: CGFloat(pdf.read) / 100).stroke(ring, style: StrokeStyle(lineWidth: 6, lineCap: .butt)).rotationEffect(.degrees(-90))
-                    Text("%\(Format.num(pdf.read, lang))").font(KFont.mono(11, .semibold)).foregroundStyle(KPhone.text)
+                    Text(Format.percent(pdf.read, lang)).font(KFont.mono(11, .semibold)).foregroundStyle(KPhone.text)
                 }
                 .frame(width: 54, height: 54)
-                .accessibilityLabel("%\(pdf.read) \(d("okundu"))")
+                .accessibilityLabel("\(Format.percent(pdf.read, lang)) \(d("okundu"))")
                 VStack(alignment: .leading, spacing: 3) {
                     Text(pdf.title[lang]).font(KFont.ui(16, .semibold, lang: lang)).foregroundStyle(KPhone.text).lineLimit(1)
                     Text(pageLine(pdf)).font(KFont.ui(12, lang: lang)).foregroundStyle(KPhone.text2)
@@ -736,7 +738,7 @@ struct CourseFolderView: View {
             }
             HStack(spacing: 8) {
                 stat(Format.num(c.pdfs.count, lang), "PDF")
-                stat("%\(Format.num(st.percent, lang))", d("okundu"))
+                stat(Format.percent(st.percent, lang), d("okundu"))
                 stat(minutesText(st.minutes, d, lang), d("çalışma"))
             }
         }
@@ -763,7 +765,7 @@ struct CourseFolderView: View {
                             Text(Format.num(pdf.read, lang)).font(KFont.mono(11, .semibold)).foregroundStyle(KPhone.text)
                         }
                         .frame(width: 46, height: 46)
-                        .accessibilityLabel("%\(pdf.read) \(d("okundu"))")
+                        .accessibilityLabel("\(Format.percent(pdf.read, lang)) \(d("okundu"))")
                         VStack(alignment: .leading, spacing: 5) {
                             Text(pdf.title[lang]).font(KFont.ui(15, .medium, lang: lang)).foregroundStyle(KPhone.text).lineLimit(1)
                             HStack(spacing: 8) {

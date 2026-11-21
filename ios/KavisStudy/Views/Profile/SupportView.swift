@@ -121,8 +121,8 @@ struct SupportView: View {
                     .padding(.horizontal, 20).padding(.top, 4).padding(.bottom, 12)
                 }
                 .scrollDismissesKeyboard(.interactively)
-                .onChange(of: msgs.count) { _, _ in withAnimation { proxy.scrollTo("end", anchor: .bottom) } }
-                .onChange(of: busy) { _, _ in withAnimation { proxy.scrollTo("end", anchor: .bottom) } }
+                .onChange(of: msgs.count) { _, _ in kAnimate { proxy.scrollTo("end", anchor: .bottom) } }
+                .onChange(of: busy) { _, _ in kAnimate { proxy.scrollTo("end", anchor: .bottom) } }
             }
             if msgs.isEmpty { quick }
             composer
@@ -182,6 +182,7 @@ struct SupportView: View {
     private var composer: some View {
         HStack(spacing: 6) {
             TextField(t("hpPlaceholder"), text: $draft)
+                .autocorrectionDisabled()
                 .font(KFont.ui(15, lang: lang)).foregroundStyle(C.text)
                 .submitLabel(.send).onSubmit { send(draft) }
                 .padding(.horizontal, 14).frame(height: 42)
@@ -208,7 +209,7 @@ struct SupportView: View {
                 VStack(spacing: 0) {
                     ForEach(Array(faq.enumerated()), id: \.offset) { i, f in
                         if i > 0 { Rectangle().fill(C.line).frame(height: 1) }
-                        Button { withAnimation(.easeInOut(duration: 0.18)) { openFaq = openFaq == i ? -1 : i } } label: {
+                        Button { kAnimate(.easeInOut(duration: 0.18)) { openFaq = openFaq == i ? -1 : i } } label: {
                             VStack(alignment: .leading, spacing: 6) {
                                 HStack(alignment: .top, spacing: 8) {
                                     Text(f.q).font(KFont.ui(14, .medium, lang: lang)).foregroundStyle(C.text).multilineTextAlignment(.leading)

@@ -67,7 +67,7 @@ struct AssistantHomeView: View {
         }
         .padding(wide ? EdgeInsets(top: 16, leading: 0, bottom: 16, trailing: 16) : EdgeInsets())
         .background { if wide { KPhone.homeBg.ignoresSafeArea() } }
-        .animation(.easeOut(duration: 0.2), value: panel)
+        .kAnimation(.easeOut(duration: 0.2), value: panel)
         .task {
             topics = await AssistantAPI.listTopics()
             if MockFlag.value("assistantPanel") == "menu" { panel = .menu }
@@ -260,6 +260,7 @@ struct AssistantHomeView: View {
             HStack(spacing: 10) {
                 KIcon(name: .pen, size: 17, width: 1.6).foregroundStyle(KPhone.text3)
                 TextField("", text: $draft, prompt: Text(placeholder).foregroundStyle(KPhone.text3), axis: .vertical)
+                    .autocorrectionDisabled().textInputAutocapitalization(.never)
                     .font(KFont.ui(15, lang: lang)).foregroundStyle(KPhone.text)
                     .focused($focused)
                     .submitLabel(.send)

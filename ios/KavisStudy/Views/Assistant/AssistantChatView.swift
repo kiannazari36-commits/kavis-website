@@ -196,8 +196,7 @@ struct AssistantChatView: View {
 
     private var speedLabel: String {
         let v = Self.speeds[speedIndex]
-        let text = v == v.rounded() ? String(format: "%.1f", v) : String(format: "%g", v)
-        return (lang == .tr ? text.replacingOccurrences(of: ".", with: ",") : text) + "×"
+        return Format.decimal(v, lang, fraction: v == (v * 10).rounded() / 10 ? 1 : 2, trimZero: false) + "×"
     }
 
     private static func maleVoiceLabel(_ lang: Lang) -> String {
@@ -247,13 +246,13 @@ struct AssistantChatView: View {
             }
             .scrollDismissesKeyboard(.interactively)
             .onChange(of: messages.count) { _, _ in
-                withAnimation { proxy.scrollTo(waiting ? "typing" : (messages.last?.id ?? "typing"), anchor: .bottom) }
+                kAnimate { proxy.scrollTo(waiting ? "typing" : (messages.last?.id ?? "typing"), anchor: .bottom) }
             }
             .onChange(of: waiting) { _, _ in
-                withAnimation { proxy.scrollTo(waiting ? "typing" : (messages.last?.id ?? "typing"), anchor: .bottom) }
+                kAnimate { proxy.scrollTo(waiting ? "typing" : (messages.last?.id ?? "typing"), anchor: .bottom) }
             }
             .onChange(of: streaming) { _, _ in proxy.scrollTo("typing", anchor: .bottom) }
-            .onChange(of: dictation.listening) { _, now in if now && listening { withAnimation { proxy.scrollTo("listen", anchor: .bottom) } } }
+            .onChange(of: dictation.listening) { _, now in if now && listening { kAnimate { proxy.scrollTo("listen", anchor: .bottom) } } }
         }
     }
 
@@ -456,7 +455,7 @@ struct AssistantChatView: View {
             .accessibilityLabel(prefs.t("quick"))
         }
         HStack(spacing: 10) {
-            Button { withAnimation(.easeOut(duration: 0.15)) { quickOpen.toggle() } } label: {
+            Button { kAnimate(.easeOut(duration: 0.15)) { quickOpen.toggle() } } label: {
                 KIcon(name: .sparkle, size: 20, width: 1.7).foregroundStyle(quickOpen ? KOnb.priText : KPhone.text)
                     .frame(width: 48, height: 48)
                     .background(quickOpen ? KOnb.priSoft : .clear, in: Circle())
@@ -465,6 +464,7 @@ struct AssistantChatView: View {
             .disabled(offline)
             .accessibilityLabel(prefs.t("quick"))
             TextField("", text: $draft, prompt: Text(dictation.listening ? prefs.t("voiceRec") : target.teach ? prefs.t("teachPh") : d("Bu ders hakkında sor…")).foregroundStyle(KPhone.text3))
+                .autocorrectionDisabled().textInputAutocapitalization(.never)
                 .font(KFont.ui(15, lang: lang)).foregroundStyle(KPhone.text)
                 .focused($focused)
                 .submitLabel(.send)

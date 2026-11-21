@@ -34,11 +34,25 @@ enum Format {
         return String(s.map { c in c.wholeNumberValue.map { faDigits[$0] } ?? c })
     }
 
+    /// "%85" (tr), "85%" (en, ar), "۸۵٪" (fa: the sign comes after the number). The one place for percentages.
     static func percent(_ n: Int, _ lang: Lang) -> String {
         switch lang {
         case .tr: "%\(n)"
-        case .fa: "٪\(num(n, lang))"
+        case .fa: "\(num(n, lang))٪"
         default: "\(n)%"
+        }
+    }
+
+    /// A decimal number in the language's style ("1,5" tr, "1.5" en/ar, "۱٫۵" fa). Whole numbers lose ".0" when
+    /// `trimZero` is true. The one place for decimals (hours, speeds, sizes).
+    static func decimal(_ x: Double, _ lang: Lang, fraction: Int = 1, trimZero: Bool = true) -> String {
+        if trimZero, x == x.rounded() { return num(Int(x), lang) }
+        var s = String(format: "%.\(fraction)f", x)
+        if trimZero, s.contains("."), s.hasSuffix("0") { s = String(s.reversed().drop { $0 == "0" }.reversed()) }
+        switch lang {
+        case .tr: return s.replacingOccurrences(of: ".", with: ",")
+        case .fa: return num(s.replacingOccurrences(of: ".", with: "٫"), lang)
+        default: return s
         }
     }
 

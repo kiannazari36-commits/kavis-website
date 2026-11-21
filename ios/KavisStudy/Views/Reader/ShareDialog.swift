@@ -30,6 +30,7 @@ struct ShareDialog: View {
     var body: some View {
         ZStack {
             Color(hex: 0x2A2420, opacity: 0.35).ignoresSafeArea().onTapGesture(perform: onClose)
+            KeyShortcut(.escape, action: onClose)
             VStack(alignment: .leading, spacing: 10) {
                 HStack(spacing: 12) {
                     VStack(alignment: .leading, spacing: 2) {

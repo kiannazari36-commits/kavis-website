@@ -42,7 +42,7 @@ struct SplashView: View {
         .buttonStyle(.plain)
         .accessibilityLabel(prefs.t("splash.k804"))
         .task {
-            withAnimation(.easeOut(duration: 2)) { progress = 1 }
+            kAnimate(.easeOut(duration: 2)) { progress = 1 }
             try? await Task.sleep(for: .milliseconds(2300))
             if !Task.isCancelled { onContinue() }
         }

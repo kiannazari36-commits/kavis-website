@@ -50,7 +50,7 @@ struct AuthView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(background.ignoresSafeArea())
-        .animation(.easeInOut(duration: 0.2), value: mode)
+        .kAnimation(.easeInOut(duration: 0.2), value: mode)
     }
 
     // MARK: Background, header

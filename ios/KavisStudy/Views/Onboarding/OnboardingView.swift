@@ -41,7 +41,7 @@ struct OnboardingView: View {
         .background(KPhone.homeBg.ignoresSafeArea())
         // iPad side panel: Dil (1), Çalışma planı (2), Bölüm (3), Tanıtım (4).
         .preference(key: PadFlowStepKey.self, value: step == .lang ? 1 : step == .plan ? 2 : step == .dept ? 3 : 4)
-        .animation(.easeInOut(duration: 0.2), value: step)
+        .kAnimation(.easeInOut(duration: 0.2), value: step)
         .task {
             let saved = SettingsAPI.loadNow()
             days = saved.studyDays
@@ -220,9 +220,9 @@ struct OnboardingView: View {
     // MARK: Step 2: weekly plan
 
     private func hoursText(_ h: Double) -> String {
-        let raw = h.truncatingRemainder(dividingBy: 1) == 0 ? String(Int(h)) : String(h)
+        let raw = Format.decimal(h, lang)
         switch lang {
-        case .tr: return raw.replacingOccurrences(of: ".", with: ",") + " sa"
+        case .tr: return raw + " sa"
         case .en: return raw + " h"
         case .fa: return raw + " ساعت"
         case .ar: return raw + " ساعة"
@@ -231,13 +231,13 @@ struct OnboardingView: View {
 
     private var planSummary: String {
         let total = (Double(days) * hours * 10).rounded() / 10
-        let totalText = total.truncatingRemainder(dividingBy: 1) == 0 ? String(Int(total)) : String(total)
-        let t = lang == .tr ? totalText.replacingOccurrences(of: ".", with: ",") : totalText
+        let t = Format.decimal(total, lang)
+        let dayText = Format.num(self.days, lang)
         switch lang {
-        case .tr: return "Haftada \(days) gün × \(hoursText(hours)) ≈ \(t) saat"
-        case .en: return "\(days) days × \(hoursText(hours)) ≈ \(t) h a week"
-        case .fa: return "هفته‌ای \(days) روز × \(hoursText(hours)) ≈ \(t) ساعت"
-        case .ar: return "\(days) أيام × \(hoursText(hours)) ≈ \(t) ساعة أسبوعيًا"
+        case .tr: return "Haftada \(dayText) gün × \(hoursText(hours)) ≈ \(t) saat"
+        case .en: return "\(dayText) days × \(hoursText(hours)) ≈ \(t) h a week"
+        case .fa: return "هفته‌ای \(dayText) روز × \(hoursText(hours)) ≈ \(t) ساعت"
+        case .ar: return "\(dayText) أيام × \(hoursText(hours)) ≈ \(t) ساعة أسبوعيًا"
         }
     }
 
@@ -327,6 +327,7 @@ struct OnboardingView: View {
             title(d("Hangi bölümde okuyorsun?"), size: 28, lineHeight: 1.12)
             lead(d("Terim açıklamalarını ve soru tarzını bölümüne göre ayarlarız."), size: 14).padding(.bottom, 4)
             TextField("", text: $school, prompt: Text(prefs.t("wel_schoolPh")).foregroundStyle(KPhone.text3))
+                .autocorrectionDisabled()
                 .font(KFont.ui(15, lang: lang))
                 .foregroundStyle(KPhone.text)
                 .textContentType(.organizationName)

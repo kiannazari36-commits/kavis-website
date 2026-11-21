@@ -246,7 +246,7 @@ struct PadFlowFrame<Content: View>: View {
                     .font(KFont.ui(12, lang: lang)).kLineHeight(1.5, size: 12, lang: lang).foregroundStyle(KPhone.text2)
             }
             .padding(.horizontal, 40).padding(.top, 44).padding(.bottom, 36)
-            .frame(width: 400, alignment: .leading)
+            .containerRelativeFrame(.horizontal) { w, _ in min(400, w * 0.4) }
             .frame(maxHeight: .infinity, alignment: .top)
             .background(KPhone.welcomeBg.ignoresSafeArea())
             content()
@@ -267,9 +267,11 @@ struct PadDialog<Content: View>: View {
         ZStack {
             KPhone.authBg.ignoresSafeArea()
             Color(hex: 0x2A2420).opacity(0.35).ignoresSafeArea().onTapGesture(perform: onClose)
+            KeyShortcut(.escape, action: onClose)
             content()
-                .frame(width: 620)
+                .frame(maxWidth: 620)
                 .frame(maxHeight: 880)
+                .padding(.horizontal, 16)
                 .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
                 .overlay(RoundedRectangle(cornerRadius: 30, style: .continuous).stroke(KPhone.line, lineWidth: 1))
                 .shadow(color: Color(hex: 0x2A2420, opacity: 0.3), radius: 35, y: 30)

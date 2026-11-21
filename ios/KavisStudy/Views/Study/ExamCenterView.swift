@@ -75,7 +75,7 @@ struct ExamCenterView: View {
                 .transition(.opacity)
             }
         }
-        .animation(.easeInOut(duration: 0.2), value: weekOpen)
+        .kAnimation(.easeInOut(duration: 0.2), value: weekOpen)
         .task {
             guard !loaded else { return }
             loaded = true
@@ -374,7 +374,7 @@ struct ExamCenterView: View {
                         .overlay(alignment: weakFocus ? .trailing : .leading) {
                             Circle().fill(C.onDark).frame(width: 22, height: 22).padding(3)
                         }
-                        .animation(.easeInOut(duration: 0.15), value: weakFocus)
+                        .kAnimation(.easeInOut(duration: 0.15), value: weakFocus)
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(d("Zayıf konulara ağırlık ver"))

@@ -80,7 +80,7 @@ struct FairUseSheet: View {
             Text(prefs.t("fairT", ["n": Format.num(TrialLimits.fairLessons, lang)])).font(KFont.ui(21, .bold, lang: lang)).foregroundStyle(KPhone.text).padding(.bottom, 6)
             Text(prefs.t("fairD", ["date": dateText])).font(KFont.ui(14.5, lang: lang)).kLineHeight(1.5, size: 14.5, lang: lang)
                 .foregroundStyle(KPhone.text2).padding(.bottom, 12)
-            Button { withAnimation(.easeOut(duration: 0.2)) { infoOpen.toggle() } } label: {
+            Button { kAnimate(.easeOut(duration: 0.2)) { infoOpen.toggle() } } label: {
                 HStack(spacing: 6) {
                     Text(prefs.t("fairWhat")).font(KFont.ui(14, .medium, lang: lang))
                     KIcon(name: .chevronDown, size: 14, width: 2).rotationEffect(.degrees(infoOpen ? 180 : 0))

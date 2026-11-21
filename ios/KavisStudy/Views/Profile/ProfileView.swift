@@ -56,7 +56,7 @@ struct ProfileView: View {
             profileStats = await s
             if let st = await st { notifyTime = st.notifyTime }
         }
-        .animation(.easeInOut(duration: 0.2), value: mode)
+        .kAnimation(.easeInOut(duration: 0.2), value: mode)
     }
 
     private var background: some View {
@@ -401,6 +401,7 @@ struct ProfileView: View {
                 .textContentType(content)
                 .keyboardType(content == .emailAddress ? .emailAddress : .default)
                 .textInputAutocapitalization(content == .emailAddress ? .never : .words)
+                .autocorrectionDisabled()
                 .font(KFont.ui(15, lang: lang))
                 .foregroundStyle(KPhone.text)
                 .padding(.horizontal, 20)
