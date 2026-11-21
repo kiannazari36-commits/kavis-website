@@ -413,6 +413,8 @@ struct HomeView: View {
             }
             .padding(.leading, 5).padding(.trailing, 12)
             .frame(height: 44)
+            // Fixed 44 pt pill: its text stops growing at the largest accessibility sizes (it would be cut off).
+            .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
             .background(KPhone.card, in: Capsule())
             .overlay(Capsule().stroke(KPhone.line, lineWidth: 1))
         }
@@ -473,6 +475,7 @@ struct HomeView: View {
                 Text(title).font(KFont.ui(11, primary ? .medium : .regular, lang: lang)).lineLimit(1).minimumScaleFactor(0.8)
             }
             .foregroundStyle(primary ? KPhone.ctaText : KPhone.text)
+            .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
             .frame(maxWidth: .infinity, minHeight: 62)
             .background(primary ? KPhone.navActive : KPhone.card, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(primary ? .clear : KPhone.line, lineWidth: 1))

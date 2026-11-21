@@ -36,7 +36,7 @@ extension View {
     /// Before that SwiftUI cannot make lines tighter than the font's own height, so only looser lines are possible.
     @ViewBuilder func kLineHeight(_ multiple: CGFloat, size: CGFloat, lang: Lang) -> some View {
         if #available(iOS 26, *) {
-            lineHeight(.exact(points: multiple * size))
+            modifier(ScaledLineHeight(points: multiple * size))
         } else {
             lineSpacing(max(0, KFont.lineSpacing(multiple, size: size, lang: lang)))
         }
@@ -68,4 +68,19 @@ extension View {
     func kTracking(_ em: CGFloat, size: CGFloat, lang: Lang) -> some View {
         tracking(lang.isRTL ? 0 : em * size)
     }
+}
+
+
+/// An exact line height that grows with Dynamic Type like the font does (a fixed number of points would make the
+/// lines overlap at the larger text sizes).
+@available(iOS 26, *)
+private struct ScaledLineHeight: ViewModifier {
+    @ScaledMetric(relativeTo: .body) private var height: CGFloat = 1
+    private let points: CGFloat
+
+    init(points: CGFloat) { self.points = points }
+
+    // `height` is the scale factor of the current text size (1 at the default size).
+
+    func body(content: Content) -> some View { content.lineHeight(.exact(points: points * height)) }
 }

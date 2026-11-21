@@ -92,6 +92,8 @@ struct PadRail: View {
             .padding(.bottom, 4)
         }
         .padding(.top, 40).padding(.bottom, 24)
+        // The rail is 88 pt wide: its icons and logotype do not grow with Dynamic Type.
+        .dynamicTypeSize(...DynamicTypeSize.large)
         .frame(width: 88)
         .frame(maxHeight: .infinity)
         .accessibilityElement(children: .contain)

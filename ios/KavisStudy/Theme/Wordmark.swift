@@ -28,6 +28,9 @@ struct Wordmark: View {
                 .foregroundStyle(KColor.text.opacity(0.7))
         }
         .environment(\.layoutDirection, .leftToRight)
+        // A logotype, not reading text: it stays the same size at the largest Dynamic Type sizes (it would be cut off).
+        .dynamicTypeSize(...DynamicTypeSize.large)
+        .fixedSize()
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Kavis Study")
     }

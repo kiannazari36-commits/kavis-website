@@ -95,6 +95,7 @@ struct AssistantChatView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.top, 22).padding(.bottom, 14).padding(.horizontal, 20)
+                .dynamicTypeSize(...DynamicTypeSize.accessibility1)
                 Button { onClose?() } label: {
                     KIcon(name: .close, size: 14, width: 2).foregroundStyle(KPhone.text2)
                         .frame(width: 32, height: 32).background(KPhone.sub, in: Circle())
@@ -157,6 +158,7 @@ struct AssistantChatView: View {
             .accessibilityLabel(d("Kapat"))
         }
         .padding(.horizontal, 16).padding(.top, 10).padding(.bottom, 8)
+        .dynamicTypeSize(...DynamicTypeSize.accessibility1)
     }
 
     private var controls: some View {
