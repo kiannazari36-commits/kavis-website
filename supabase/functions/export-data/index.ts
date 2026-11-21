@@ -4,9 +4,10 @@
 // text/plain, so the report link goes through the web page /export (it fetches the file and shows it); the
 // report file itself stays one self-contained HTML file. → { sent: true } | 429 { error: 'limit' } (3 per hour)
 // PDFs are not copied in: each original file comes as a download link valid for 7 days.
-import { createClient } from 'npm:@supabase/supabase-js@2';
+import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import { asLang, MAILS_PER_HOUR, newToken, publicLink, sendAccountMail, siteUrl } from '../_shared/mail.ts';
 import { buildReport } from '../_shared/report.ts';
+import { safeStoragePath } from '../_shared/paths.ts';
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -22,8 +23,8 @@ function secretKey() {
   return Object.values(keys)[0] ?? '';
 }
 
-// The student's own rows (user_id). Left out: the PDF text cut into pieces (material_chunks, material_content —
-// the PDF itself is linked), push tokens (device secrets).
+// The student's own rows (user_id): every table that carries user_id (21 Nov: push_tokens, promo_attempts,
+// promo_redemptions, share_receipts, material_content and material_chunks added).
 const TABLES = [
   'user_settings', 'user_devices', 'trial_usage', 'subscriptions', 'usage_monthly', 'account_requests',
   'courses', 'course_exams', 'exam_periods', 'timetable_entries', 'own_plan_items',
@@ -31,8 +32,25 @@ const TABLES = [
   'summaries', 'teacher_styles', 'question_samples', 'card_decks', 'flashcards', 'quizzes', 'quiz_questions', 'quiz_attempts', 'quiz_answers',
   'topic_progress', 'review_sessions', 'study_plans', 'plan_items', 'study_sessions',
   'assistant_threads', 'assistant_messages', 'notifications', 'shares', 'support_tickets', 'support_messages',
+  'push_tokens', 'promo_attempts', 'promo_redemptions', 'share_receipts', 'material_content', 'material_chunks',
 ];
 const LINK_DAYS = 7;
+
+/** All files under "<user>/" in a bucket (folders are walked through). */
+async function filesOf(db: SupabaseClient, bucket: string, prefix: string): Promise<string[]> {
+  const out: string[] = [];
+  for (let offset = 0; ; offset += 100) {
+    const { data, error } = await db.storage.from(bucket).list(prefix, { limit: 100, offset });
+    if (error || !data?.length) break;
+    for (const item of data) {
+      const path = `${prefix}/${item.name}`;
+      if (item.id === null) out.push(...(await filesOf(db, bucket, path)));
+      else out.push(path);
+    }
+    if (data.length < 100) break;
+  }
+  return out;
+}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
@@ -66,15 +84,28 @@ Deno.serve(async (req) => {
     const files = (data.material_files ?? []) as { material_id: string; storage_path: string }[];
     const pdfs = [];
     for (const f of files) {
-      const { data: link } = await db.storage.from('materials').createSignedUrl(f.storage_path, LINK_DAYS * 86400);
+      const p = safeStoragePath(uid, f.storage_path);
+      const { data: link } = p ? await db.storage.from('materials').createSignedUrl(p, LINK_DAYS * 86400) : { data: null };
       pdfs.push({ material_id: f.material_id, path: f.storage_path, link: link ? publicLink(link.signedUrl) : null });
+    }
+    // The other files: profile photo, handwriting (ink), question samples, support attachments (a 7-day link each).
+    const extraFiles: { kind: 'avatar' | 'ink' | 'sample' | 'support'; bucket: string; path: string; name: string; link: string | null }[] = [];
+    const wanted: { kind: 'avatar' | 'ink' | 'sample' | 'support'; bucket: string; path: string }[] = [];
+    const av = safeStoragePath(uid, (profile as { avatar_path?: string | null } | null)?.avatar_path);
+    if (av) wanted.push({ kind: 'avatar', bucket: 'avatars', path: av });
+    for (const p of await filesOf(db, 'ink', uid)) wanted.push({ kind: 'ink', bucket: 'ink', path: p });
+    for (const r of (data.question_samples ?? []) as { storage_path: string | null }[]) { const p = safeStoragePath(uid, r.storage_path); if (p) wanted.push({ kind: 'sample', bucket: 'question-samples', path: p }); }
+    for (const r of (data.support_messages ?? []) as { attachment_path: string | null }[]) { const p = safeStoragePath(uid, r.attachment_path); if (p) wanted.push({ kind: 'support', bucket: 'support', path: p }); }
+    for (const w of wanted) {
+      const { data: link } = await db.storage.from(w.bucket).createSignedUrl(w.path, LINK_DAYS * 86400, { download: true });
+      extraFiles.push({ ...w, name: w.path.split('/').slice(1).join('/'), link: link ? publicLink(link.signedUrl) : null });
     }
     const file = JSON.stringify({
       app: 'Kavis Study',
       exported_at: new Date().toISOString(),
       account: { id: uid, email, created_at: who.user.created_at },
       profile,
-      files: { links_valid_days: LINK_DAYS, pdfs },
+      files: { links_valid_days: LINK_DAYS, pdfs, other: extraFiles },
       data,
     }, null, 2);
     // A random file name, so a link cannot be guessed from another one.
@@ -82,7 +113,11 @@ Deno.serve(async (req) => {
     const path = `${base}.json`;
     const reportPath = `${base}.html`;
     const lang = asLang((profile as { app_lang?: string } | null)?.app_lang);
-    const report = buildReport({ lang, exportedAt: new Date(), email, createdAt: who.user.created_at, profile, data: data as Record<string, Record<string, unknown>[]>, pdfs, linkDays: LINK_DAYS });
+    const report = buildReport({ lang, exportedAt: new Date(), email, createdAt: who.user.created_at, profile, data: data as Record<string, Record<string, unknown>[]>, pdfs, linkDays: LINK_DAYS, extraFiles });
+    // The request row comes first, so the nightly job always finds the files (and the hourly limit counts a failed try too).
+    const { data: reqRow, error: reqErr } = await db.from('account_requests').insert({ user_id: uid, kind: 'export', status: 'pending', file_path: path }).select('id').single();
+    if (reqErr) throw reqErr;
+    try {
     const { error: up } = await db.storage.from('exports').upload(path, new Blob([file], { type: 'application/json' }), { contentType: 'application/json' });
     if (up) throw up;
     const { error: up2 } = await db.storage.from('exports').upload(reportPath, new Blob([report], { type: 'text/html' }), { contentType: 'text/html' });
@@ -93,8 +128,14 @@ Deno.serve(async (req) => {
     if (re || !rlink) throw re ?? new Error('link');
     const viewer = `${siteUrl()}/export#u=${encodeURIComponent(publicLink(rlink.signedUrl))}`;
     await sendAccountMail('export', email, lang, viewer, publicLink(link.signedUrl));
-    await db.from('account_requests').insert({ user_id: uid, kind: 'export', status: 'done', done_at: new Date().toISOString(), file_path: path });
+    await db.from('account_requests').update({ status: 'done', done_at: new Date().toISOString() }).eq('id', reqRow.id);
     return json({ sent: true });
+    } catch (e) {
+      // The mail did not go (or an upload failed): do not leave personal data behind.
+      await db.storage.from('exports').remove([path, reportPath]);
+      await db.from('account_requests').update({ status: 'cancelled', file_path: null }).eq('id', reqRow.id);
+      throw e;
+    }
   } catch (e) {
     console.error('export-data', e);
     return json({ error: 'export' }, 500);
