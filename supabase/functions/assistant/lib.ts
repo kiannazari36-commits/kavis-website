@@ -105,3 +105,16 @@ export function answerLang(question: string, lang: string): AnswerLang {
   if (en > tr) return 'en';
   return fallback;
 }
+
+/**
+ * Languages the question must be translated into before searching the lesson text: the languages of the student's
+ * lessons that differ from the question's language (a Turkish question on a Persian PDF finds nothing by its own
+ * words). Most common lesson languages first, at most 2 (one cheap translation call each).
+ */
+export function searchTargets(questionLang: AnswerLang, lessonLangs: (string | null | undefined)[]): AnswerLang[] {
+  const count = new Map<AnswerLang, number>();
+  for (const l of lessonLangs) {
+    if ((l === 'tr' || l === 'en' || l === 'fa' || l === 'ar') && l !== questionLang) count.set(l, (count.get(l) ?? 0) + 1);
+  }
+  return [...count].sort((a, b) => b[1] - a[1]).slice(0, 2).map(([l]) => l);
+}

@@ -14,7 +14,7 @@
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 import { addUsage, overBudget } from '../_shared/budget.ts';
-import { ANSWER_LANG_NAMES, OUTSIDE_LABELS, answerLang, costUsd, lessonText, queryTerms, rankChunks, splitTail, tsQuery, type AnswerLang } from './lib.ts';
+import { ANSWER_LANG_NAMES, OUTSIDE_LABELS, answerLang, costUsd, lessonText, queryTerms, rankChunks, searchTargets, splitTail, tsQuery, type AnswerLang } from './lib.ts';
 
 // Haiku 5.5 answers normal lesson questions (tested 10 Nov 2026: as faithful to the PDF as Sonnet, ~16x cheaper).
 // Photos of questions also go to Haiku (tested 11 Nov 2026: same right answer as Sonnet). "AI + research" stays on Sonnet:
@@ -117,8 +117,10 @@ Deno.serve(async (req) => {
   const db = createClient(Deno.env.get('SUPABASE_URL')!, secretKey(), { auth: { persistSession: false } });
 
   const token = (req.headers.get('Authorization') ?? '').replace('Bearer ', '');
-  const { data: who } = await db.auth.getUser(token);
-  if (!who?.user) return json({ error: 'not signed in' }, 401);
+  const { data: who, error: authError } = await db.auth.getUser(token);
+  // `reason` tells why (session_not_found = the login was ended on another device or by sign-out; bad_jwt = not a student's
+  // token, e.g. the public anon key was sent as the Bearer token); only the error code, never the token.
+  if (!who?.user) return json({ error: 'not signed in', reason: (authError as { code?: string } | null)?.code ?? null }, 401);
   const uid = who.user.id;
 
   const body = await req.json().catch(() => ({}));
@@ -162,7 +164,7 @@ Deno.serve(async (req) => {
   }
 
   // Which lessons to search: one lesson, one course, or all of the student's lessons.
-  let lessons = db.from('materials').select('id, title').eq('user_id', uid).eq('status', 'ready');
+  let lessons = db.from('materials').select('id, title, language').eq('user_id', uid).eq('status', 'ready');
   if (materialId) lessons = lessons.eq('id', materialId);
   else if (courseId) lessons = lessons.eq('course_id', courseId);
   const { data: mats } = await lessons;
@@ -186,7 +188,26 @@ Deno.serve(async (req) => {
   }
   // The answer language is decided here, once, from the question (else the app language).
   const lang = answerLang(question, appLang);
-  const terms = queryTerms(question);
+  let terms = queryTerms(question);
+  // A question in another language than the lessons (Turkish question, Persian PDF): also search with the question
+  // translated into the lessons' language (one cheap Haiku call each). The answer stays in the question's language.
+  if (!whole && ids.length && terms.length && !image) {
+    for (const target of searchTargets(lang, (mats ?? []).map((m) => m.language as string | null))) {
+      try {
+        const tr = await client.messages.create({
+          model: FAST_MODEL,
+          max_tokens: 200,
+          messages: [{ role: 'user', content: `Translate this study question into ${ANSWER_LANG_NAMES[target]}. Keep technical terms and drug names as a textbook in that language writes them. Reply with the translation only.\n\n${question}` }],
+        });
+        usage.input += tr.usage.input_tokens;
+        usage.output += tr.usage.output_tokens;
+        const translated = tr.content.filter((b) => b.type === 'text').map((b) => (b as { text: string }).text).join(' ').trim().slice(0, 500);
+        terms = [...new Set([...terms, ...queryTerms(translated)])].slice(0, 14);
+      } catch (e) {
+        console.error('assistant translate-for-search', e); // the search goes on with the question's own words
+      }
+    }
+  }
   if (!whole && ids.length && terms.length) {
     const { data } = await db
       .from('material_chunks')
