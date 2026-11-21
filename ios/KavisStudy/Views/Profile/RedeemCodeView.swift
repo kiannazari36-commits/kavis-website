@@ -21,7 +21,14 @@ struct RedeemCodeView: View {
         return f.string(from: d)
     }
 
+    /// Invite codes are web-only (Apple review 3.1.1): the iPhone app shows no code field. The code and the server stay as they are.
+    static let visibleOniOS = false
+
     var body: some View {
+        if Self.visibleOniOS { content }
+    }
+
+    private var content: some View {
         VStack(spacing: 8) {
             if trial.status.premium, trial.status.premiumSource == "promo", let until = trial.status.premiumUntil {
                 Text(t("codeActive", ["date": Self.dateText(until, lang: lang)]))

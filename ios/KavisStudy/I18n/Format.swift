@@ -17,6 +17,18 @@ enum Format {
     /// Persian uses Persian digits; the other languages use 0–9.
     static func num(_ n: Int, _ lang: Lang) -> String { num(String(n), lang) }
 
+    /// "0 KB", "1,2 MB": sizes in the app language's number style (ByteCountFormatter prints "Zero KB" for 0).
+    static func bytes(_ n: Int, _ lang: Lang) -> String {
+        let units = ["B", "KB", "MB", "GB"]
+        var value = Double(n), i = 0
+        while value >= 1000, i < units.count - 1 { value /= 1000; i += 1 }
+        if n == 0 { i = 1 }
+        let f = NumberFormatter()
+        f.locale = lang.locale
+        f.maximumFractionDigits = (i >= 2 && value < 10) ? 1 : 0
+        return "\(f.string(from: NSNumber(value: value)) ?? "0") \(units[i])"
+    }
+
     static func num(_ s: String, _ lang: Lang) -> String {
         guard lang == .fa else { return s }
         return String(s.map { c in c.wholeNumberValue.map { faDigits[$0] } ?? c })

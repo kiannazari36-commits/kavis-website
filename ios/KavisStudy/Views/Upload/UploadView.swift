@@ -28,6 +28,10 @@ struct UploadView: View {
     @State private var pickedData: Data?
     @State private var lessonName = ""
     @State private var courseId: String?
+    /// "Bu dosya okunamadı" alert after a file that is not a readable PDF was picked.
+    @State private var unreadableOpen = false
+    /// The course choice is required: the picker turns red once "Dersi hazırla" was pressed without one.
+    @State private var courseMissing = false
     @State private var courses: [Course] = CoursesAPI.lastCourses
     /// The lesson on the server (the first part of a split PDF) and where the server is with it.
     @State private var lessonId: String?
@@ -102,6 +106,9 @@ struct UploadView: View {
                       allowedContentTypes: showAudioImporter ? [.audio] : [.pdf]) { result in
             guard case .success(let url) = result else { return }
             if mode == .audio { pickSound(url) } else { handlePicked(url) }
+        }
+        .alert(prefs.t("upUnreadable"), isPresented: $unreadableOpen) {
+            Button(prefs.t("upOk"), role: .cancel) {}
         }
         .animation(.easeOut(duration: 0.2), value: longSheet)
         .animation(.easeInOut(duration: 0.2), value: mode)
@@ -398,8 +405,7 @@ struct UploadView: View {
         VStack(alignment: .leading, spacing: 6) {
             Text(d("Ders")).font(KFont.ui(13, .medium, lang: lang)).foregroundStyle(KPhone.text2)
             Menu {
-                Button(prefs.t("up_pickCourse")) { courseId = nil }
-                ForEach(courses) { c in Button(c.name[lang]) { courseId = c.id } }
+                ForEach(courses) { c in Button(c.name[lang]) { courseId = c.id; courseMissing = false } }
             } label: {
                 HStack {
                     Text(courses.first { $0.id == courseId }?.name[lang] ?? prefs.t("up_pickCourse"))
@@ -409,7 +415,7 @@ struct UploadView: View {
                 }
                 .padding(.horizontal, 14).frame(height: 48)
                 .background(KPhone.card, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(KPhone.line, lineWidth: 1))
+                .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(courseMissing && courseId == nil ? KOnb.bad : KPhone.line, lineWidth: courseMissing && courseId == nil ? 2 : 1))
             }
         }
     }
@@ -790,7 +796,7 @@ struct UploadView: View {
         if i == 1, let n = x["terms"], n > 0 { parts.append(Format.num(n, lang)) }
         if i == 3, let n = x["questions"], n > 0 { parts.append(Format.num(n, lang)) }
         if i == 4, let n = x["cards"], n > 0 { parts.append(Format.num(n, lang)) }
-        parts.append(prefs.t(i < doneSteps ? "up_done" : i == doneSteps && !ready ? "up_working" : "up_wait"))
+        parts.append(prefs.t(i < doneSteps ? "up_done" : i == doneSteps && !ready && serverStatus != .failed ? "up_working" : "up_wait"))
         return parts.joined(separator: " · ")
     }
 
@@ -880,6 +886,10 @@ struct UploadView: View {
             KIcon(name: .check, size: 16, width: 2.6)
                 .foregroundStyle(Color.pair(0xFFFCF6, 0x0E2A1D))
                 .frame(width: 28, height: 28).background(KOnb.ok, in: Circle())
+        } else if i == doneSteps, serverStatus == .failed {
+            KIcon(name: .close, size: 14, width: 2.6)
+                .foregroundStyle(Color.pair(0xFFFCF6, 0x2A0F0B))
+                .frame(width: 28, height: 28).background(KOnb.bad, in: Circle())
         } else if i == doneSteps {
             SpinnerRing().frame(width: 28, height: 28)
         } else {
@@ -926,7 +936,9 @@ struct UploadView: View {
                     .background(KPhone.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                     .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(KPhone.line, lineWidth: 1))
             }
-            Text(d("Bu deneme ücretsiz ders hakkından düşmez.")).font(KFont.ui(12, lang: lang)).foregroundStyle(KOnb.text3).padding(.bottom, 6)
+            if !trial.status.premium {
+                Text(d("Bu deneme ücretsiz ders hakkından düşmez.")).font(KFont.ui(12, lang: lang)).foregroundStyle(KOnb.text3).padding(.bottom, 6)
+            }
         }
         .padding(.horizontal, 24).padding(.top, 30).padding(.bottom, 8)
     }
@@ -937,8 +949,10 @@ struct UploadView: View {
     private func handlePicked(_ url: URL) {
         let scoped = url.startAccessingSecurityScopedResource()
         defer { if scoped { url.stopAccessingSecurityScopedResource() } }
-        guard let data = try? Data(contentsOf: url), let info = PDFInspector.inspect(url) else {
-            toast.show(prefs.t("up_notPdf"))
+        guard let data = try? Data(contentsOf: url), let info = PDFInspector.inspect(url), info.pages > 0 else {
+            // Not a real PDF (e.g. a text file named .pdf): say so clearly and forget the earlier choice.
+            picked = nil; pickedData = nil; lessonName = ""
+            unreadableOpen = true
             return
         }
         if info.megabytes > UploadAPI.maxMB {
@@ -955,10 +969,19 @@ struct UploadView: View {
         if info.pages > TrialLimits.pagesPerPdf { rangeTo = String(TrialLimits.pagesPerPdf); longSheet = true }
     }
 
+    /// A lesson without a course would not show in any list, so the course is required (when the student has any).
+    private var courseChosen: Bool { courseId != nil || courses.isEmpty }
+
+    private func needCourse() {
+        courseMissing = true
+        toast.show(prefs.t("upNeedCourse"))
+    }
+
     /// "Dersi hazırla": needs a file and a name, and the trial / Premium to allow a new PDF.
     private func prepare() {
         guard let picked, pickedData != nil else { return toast.show(prefs.t("up_needFile")) }
         guard !lessonName.trimmingCharacters(in: .whitespaces).isEmpty else { return toast.show(prefs.t("up_needName")) }
+        guard courseChosen else { return needCourse() }
         trial.perform(.pdf) {
             if !picked.hasText { mode = .error; return }
             if picked.pages > TrialLimits.pagesPerPdf { longSheet = true; return }
@@ -1090,6 +1113,7 @@ struct UploadView: View {
     /// "Dersi hazırla · n sayfa": the photos go up as one lesson (it uses a trial lesson, like a PDF).
     private func preparePhotos() {
         guard !photos.isEmpty, !busy else { return }
+        guard courseChosen else { return needCourse() }
         trial.perform(.pdf) { Task { await uploadPhotos() } }
     }
 

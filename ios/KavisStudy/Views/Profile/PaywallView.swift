@@ -245,6 +245,12 @@ struct PaywallView: View {
                 Text(t("pwManage")).font(KFont.ui(15, .semibold, lang: lang)).foregroundStyle(C.onPri)
                     .frame(maxWidth: .infinity, minHeight: 50).background(C.pri, in: RoundedRectangle(cornerRadius: 14))
             }
+            // The footer with these links is hidden for Premium accounts, so they sit here too (Apple review 5.1.1(i)).
+            HStack(spacing: 14) {
+                link(t("legalTerms")) { openLegal("terms") }
+                link(t("legalPrivacy")) { openLegal("privacy") }
+            }
+            .frame(maxWidth: .infinity)
         }
         .padding(16)
         .background(C.card, in: RoundedRectangle(cornerRadius: 18, style: .continuous))

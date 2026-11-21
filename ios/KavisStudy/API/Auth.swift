@@ -57,7 +57,8 @@ enum AuthAPI {
             let r = try await supabase.auth.signUp(
                 email: email.trimmingCharacters(in: .whitespaces),
                 password: password,
-                data: ["full_name": .string(name.trimmingCharacters(in: .whitespaces)), "app_lang": .string(lang.rawValue)],
+                data: ["full_name": .string(name.trimmingCharacters(in: .whitespaces)), "app_lang": .string(lang.rawValue),
+                       "ai_consent": .string("accepted"), "ai_consent_at": .string(ISO8601DateFormatter().string(from: Date()))],
                 redirectTo: URL(string: "\(Config.webBaseURL)/home")
             )
             // An email that already has a confirmed account comes back without identities, and no email is sent.

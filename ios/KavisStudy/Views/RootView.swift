@@ -5,6 +5,8 @@ struct RootView: View {
     @Environment(AppModel.self) private var app
     @Environment(\.horizontalSizeClass) private var sizeClass
     @Environment(AudioLessonModel.self) private var audio
+    @Environment(TrialModel.self) private var trial
+    private var consent: AIConsent { AIConsent.shared }
 
     /// iPad (full width): the left rail of design/NewIPad.dc.html around the app's screens.
     private var rail: Bool { sizeClass == .regular && app.route.showsPadRail }
@@ -27,6 +29,29 @@ struct RootView: View {
         }
         .animation(.easeOut(duration: 0.2), value: audio.lesson != nil)
         .modifier(RootTasks())
+        .overlay { if let key = trial.lockedKey, showsOwnLock == false { lockDialog(key) } }
+        .overlay { if let sheet = consent.sheet, app.user != nil { AIConsentSheet(sheet: sheet) } }
+        .animation(.easeOut(duration: 0.2), value: trial.lockedKey)
+        .animation(.easeOut(duration: 0.2), value: consent.sheet == nil)
+        // First time on home with an account that never answered (Apple / Google sign-in): ask once.
+        .task(id: app.route == .home && app.user != nil) {
+            guard app.route == .home, let user = app.user else { return }
+            AIConsent.shared.load(userId: user.id)
+            AIConsent.shared.askIfNeeded()
+        }
+    }
+
+    /// Home and Upload draw their own "Premium only" dialog; every other screen (assistant, samples…) uses this one.
+    private var showsOwnLock: Bool {
+        switch app.route {
+        case .home, .upload: true
+        default: false
+        }
+    }
+
+    private func lockDialog(_ key: String) -> some View {
+        TrialLockedDialog(messageKey: key, ended: trial.status.ended, onCancel: { trial.lockedKey = nil },
+                          onPremium: { trial.lockedKey = nil; app.go(.paywall(key == "pwWhyShare" ? key : nil)) })
     }
 
     /// The small "Sesli anlatım" player: not where it would cover the screen's own bottom controls.
@@ -138,7 +163,8 @@ private struct RootTasks: ViewModifier {
         // The account's language and appearance apply on this phone too (set on another device or at sign-up),
         // and the reminder follows the account's settings.
         .task(id: app.user?.id) {
-            guard app.user != nil else { return }
+            guard let user = app.user else { return }
+            AIConsent.shared.load(userId: user.id)
             PushService.start()
             if let l = await AccountAPI.fetchLang() { prefs.lang = l }
             if let s = await SettingsAPI.fetch() {

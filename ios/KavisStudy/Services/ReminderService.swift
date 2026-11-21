@@ -6,12 +6,16 @@ enum ReminderService {
     private static let id = "kavis.dailyReminder"
 
     /// Schedules (or removes) the reminder for the settings. Asks for permission the first time it is switched on.
-    static func refresh(_ settings: Settings, lang: Lang) async {
+    ///
+    /// `askPermission` is true only when the student changed a reminder setting (a meaningful moment); at app start the
+    /// reminder is only scheduled when notifications are already allowed, so no permission box pops up on the first screen.
+    static func refresh(_ settings: Settings, lang: Lang, askPermission: Bool = false) async {
         let center = UNUserNotificationCenter.current()
         center.removePendingNotificationRequests(withIdentifiers: [id])
         guard settings.reviewReminder, settings.pushNotifications else { return }
         let state = await center.notificationSettings().authorizationStatus
         if state == .notDetermined {
+            guard askPermission else { return }
             guard (try? await center.requestAuthorization(options: [.alert, .sound])) == true else { return }
         } else if state == .denied {
             return

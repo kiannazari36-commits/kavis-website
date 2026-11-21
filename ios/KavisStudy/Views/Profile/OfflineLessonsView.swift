@@ -89,6 +89,6 @@ struct OfflineLessonsView: View {
     private func reload() { items = OfflineStore.lessons() }
 
     private func size(_ bytes: Int) -> String {
-        ByteCountFormatter.string(fromByteCount: Int64(bytes), countStyle: .file)
+        Format.bytes(bytes, prefs.lang)
     }
 }

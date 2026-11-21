@@ -83,6 +83,10 @@ struct OnboardingView: View {
                 }
             }
             .accessibilityHidden(true)
+            // One line, shown on the last intro card: Kavis gives no medical advice (Apple review 1.4).
+            if step == .intro3 {
+                Text(prefs.t("medDisclaimer")).font(KFont.ui(12, lang: lang)).foregroundStyle(KPhone.text3).multilineTextAlignment(.center)
+            }
             Button(action: next) {
                 Text(buttonLabel)
                     .font(KFont.ui(23, .medium, lang: lang))
@@ -239,7 +243,6 @@ struct OnboardingView: View {
 
     private var planStep: some View {
         VStack(alignment: .leading, spacing: 10) {
-            eyebrow("\(Format.num(2, lang)) / \(Format.num(6, lang))")
             title(d("Haftalık çalışma planın"), size: 28, lineHeight: 1.15)
             lead(d("Gerçekçi bir hedef seç; tekrar takvimi ve hatırlatmalar buna göre kurulur."), size: 14).padding(.bottom, 6)
 
@@ -321,7 +324,6 @@ struct OnboardingView: View {
 
     private var departmentStep: some View {
         VStack(alignment: .leading, spacing: 10) {
-            eyebrow("\(Format.num(3, lang)) / \(Format.num(6, lang))")
             title(d("Hangi bölümde okuyorsun?"), size: 28, lineHeight: 1.12)
             lead(d("Terim açıklamalarını ve soru tarzını bölümüne göre ayarlarız."), size: 14).padding(.bottom, 4)
             TextField("", text: $school, prompt: Text(prefs.t("wel_schoolPh")).foregroundStyle(KPhone.text3))

@@ -25,14 +25,17 @@ final class TrialModel {
     func lockReason(for action: TrialAction) -> String? {
         if status.premium { return nil }
         if action == .share { return "pwWhyShare" }
-        if status.ended { return "trialLocked" }
+        if status.ended { return action == .question ? "trialQEnded" : "trialLocked" }
         if action == .pdf, status.pdfsUsed >= TrialLimits.pdfs { return "trialPdfFull" }
         if action == .question, status.questionsUsed >= TrialLimits.questions { return "trialQFull" }
         return nil
     }
 
     /// Runs `run` when allowed; otherwise opens the dialog.
-    func perform(_ action: TrialAction, run: () -> Void) {
-        if let key = lockReason(for: action) { lockedKey = key } else { run() }
+    @MainActor func perform(_ action: TrialAction, run: () -> Void) {
+        if let key = lockReason(for: action) { lockedKey = key; return }
+        // Sharing sends nothing to the AI provider; everything else does (Apple review 5.1.2(i)).
+        if action != .share, !AIConsent.shared.allowsAI() { return }
+        run()
     }
 }
