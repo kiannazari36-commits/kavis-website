@@ -148,7 +148,8 @@
   "quizMyMistakes": "Hatalarım",
   "quizRight": "Doğru cevap",
   "quizYours": "Senin cevabın",
-  "quizClose": "Kapat"
+  "quizClose": "Kapat",
+  "exShort": "{r} soru istedin, {b} soru hazırdı. Sınav bu sorularla açılıyor."
  },
  "en": {
   "remindTitle": "Study time",
@@ -299,7 +300,8 @@
   "quizMyMistakes": "My mistakes",
   "quizRight": "Right answer",
   "quizYours": "Your answer",
-  "quizClose": "Close"
+  "quizClose": "Close",
+  "exShort": "You asked for {r} questions; {b} were ready. The exam opens with these."
  },
  "fa": {
   "remindTitle": "وقت مطالعه",
@@ -450,7 +452,8 @@
   "quizMyMistakes": "اشتباهات من",
   "quizRight": "پاسخ درست",
   "quizYours": "پاسخ تو",
-  "quizClose": "بستن"
+  "quizClose": "بستن",
+  "exShort": "{r} سؤال خواستی، {b} سؤال آماده بود. آزمون با همین‌ها باز می‌شود."
  },
  "ar": {
   "remindTitle": "وقت الدراسة",
@@ -601,6 +604,7 @@
   "quizMyMistakes": "أخطائي",
   "quizRight": "الإجابة الصحيحة",
   "quizYours": "إجابتك",
-  "quizClose": "إغلاق"
+  "quizClose": "إغلاق",
+  "exShort": "طلبت {r} سؤالًا وكان {b} جاهزًا. يُفتح الاختبار بهذه الأسئلة."
  }
 }
