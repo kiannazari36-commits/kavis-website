@@ -458,3 +458,4 @@ Still open, in this order:
 - [ ] Existing users will see the one-time consent screen (18+ and AI) after this migration; expected.
 - [ ] Apple Sign in key for token revoke (secrets `APPLE_TEAM_ID`, `APPLE_KEY_ID`, `APPLE_CLIENT_ID`, `APPLE_PRIVATE_KEY`): Kian creates the key (A4 in `docs/KIAN_YAPILACAKLAR.md`).
 - [ ] iOS build 4 archive + upload + select in App Store Connect.
+- [x] Apple Sign in key made 22 Nov 2026 (Key ID `XB8P444PAG`, Team `TFTPYS8XHV`, client `study.kavis.app`): Supabase secrets `APPLE_TEAM_ID`, `APPLE_KEY_ID`, `APPLE_CLIENT_ID`, `APPLE_PRIVATE_KEY` set live. The token revoke on account deletion starts to work for Apple logins made with iOS build 4 or later (the app sends the authorization code to `apple-link`); earlier Apple accounts have no stored token. Keep the `.p8` file safe (Downloads/AuthKey_XB8P444PAG.p8: move it to a safe place, e.g. a password manager); never commit it.
