@@ -34,6 +34,8 @@ const TABLES = [
   'assistant_threads', 'assistant_messages', 'notifications', 'shares', 'support_tickets', 'support_messages',
   'push_tokens', 'promo_attempts', 'promo_redemptions', 'share_receipts', 'material_content', 'material_chunks',
 ];
+// Tables whose owner column is not called user_id.
+const OWNER_COLUMN: Record<string, string> = { share_receipts: 'receiver_id' };
 const LINK_DAYS = 7;
 
 /** All files under "<user>/" in a bucket (folders are walked through). */
@@ -73,7 +75,7 @@ Deno.serve(async (req) => {
     for (const table of TABLES) {
       const rows: unknown[] = [];
       for (let from = 0; ; from += 1000) {
-        const { data: page, error } = await db.from(table).select('*').eq('user_id', uid).range(from, from + 999);
+        const { data: page, error } = await db.from(table).select('*').eq(OWNER_COLUMN[table] ?? 'user_id', uid).range(from, from + 999);
         if (error) throw new Error(`${table}: ${error.message}`);
         rows.push(...(page ?? []));
         if (!page || page.length < 1000) break;
