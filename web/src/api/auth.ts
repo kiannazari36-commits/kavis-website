@@ -133,6 +133,26 @@ export async function sendPasswordReset(email: string) {
   return true;
 }
 
+const recoveryTries = new Map<string, Promise<boolean>>();
+
+/**
+ * Reset link with `token_hash` in the address (see docs/BACKEND.md, "Reset password" email template): trades it for
+ * a session. A token works once, so the same hash is only tried once even if React runs the page twice.
+ * Resolves false when the link is used, expired or wrong.
+ */
+export function verifyRecovery(tokenHash: string): Promise<boolean> {
+  let p = recoveryTries.get(tokenHash);
+  if (!p) {
+    p = supabase.auth.verifyOtp({ token_hash: tokenHash, type: 'recovery' }).then(({ data, error }) => {
+      if (error || !data.session) return false;
+      user = toUser(data.session);
+      return true;
+    });
+    recoveryTries.set(tokenHash, p);
+  }
+  return p;
+}
+
 /** Sets a new password; works only while signed in through the reset link (or normally signed in). */
 export async function setNewPassword(password: string) {
   const { data, error } = await supabase.auth.updateUser({ password });

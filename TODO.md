@@ -76,6 +76,7 @@ Everything that is not finished yet. Updated after every step.
 - [x] Local test copy of the backend (`supabase start` + `dev:local`), so Claude can test with fake accounts (25 Oct 2026)
 - [x] Email sending for the 6-digit code (29 Oct 2026): Resend (region eu-west-1, domain kavis.study) as custom SMTP in Supabase, sender kod@kavis.study, 100 emails/hour; "Confirm signup" template shows {{ .Token }} in tr/en/fa/ar by `app_lang`; web shows the code screen (`EMAIL_CODE = true`); Site URL https://kavis.study
   - [ ] Other Supabase email templates (reset password, change email) still the English default: translate later
+  - [ ] **Reset-password email (23 Nov 2026 user report):** web fix ready (`Reset` in Login.tsx handles `token_hash`, shows a clear message for used/iPhone `?code=` links). After it is live, paste the template from `docs/EMAIL_RESET_TEMPLATE.md` into Supabase → Emails → Templates → Reset password (fixes iPhone-requested links for all app builds)
 - [x] Edge Functions (none built yet; list in `docs/BACKEND.md`); secrets only in Supabase secrets (checked 27 Oct 2026: done)
 - [x] Fill `course_catalog` per department: migration `20261106151035_course_catalog_fill.sql` LIVE since 6 Nov 2026 with Kian's OK (tested locally first: Eczacılık 20, Tıp 16, Diş Hekimliği 16, Hemşirelik 14, Sağlık Bilimleri 12, Turkish names only). Later: show it in onboarding instead of the fixed `SUGGESTIONS` in `web/src/api/onboarding.ts`, and fa / en / ar names
 - [x] Connect the iOS app (`supabase-swift`) (checked 27 Oct 2026: done)

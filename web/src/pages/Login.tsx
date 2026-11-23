@@ -5,8 +5,9 @@ import { useToast } from '../components/Toast';
 import Wordmark from '../components/Wordmark';
 import LangThemeSwitch from '../components/LangThemeSwitch';
 import Icon, { AppleLogo, GoogleLogo } from '../components/Icon';
-import { AuthFail, currentUser, hasSession, logIn, logOut, onSignedIn, resendCode, sendPasswordReset, setNewPassword, signUp, socialLogIn, verifyEmail, type Provider } from '../api/auth';
+import { AuthFail, currentUser, hasSession, logIn, logOut, onSignedIn, resendCode, sendPasswordReset, setNewPassword, signUp, socialLogIn, verifyEmail, verifyRecovery, type Provider } from '../api/auth';
 import { checkDeviceLimit } from '../api/devices';
+import { resetPlan } from '../api/resetLink';
 import { consentNeeded, recordConsent, rememberConsent } from '../api/consent';
 import s from './Login.module.css';
 
@@ -556,7 +557,10 @@ function Forgot({ initialEmail, onBack }: { initialEmail: string; onBack: () => 
   );
 }
 
-/** Opened from the reset link: the link signs the student in, then they choose a new password. */
+/**
+ * Opened from the reset link. Whatever the consent state, the link ends on the "new password" form (or on a clear
+ * "link used / expired" message with a button for a new one); the consent screen only comes after the password is saved.
+ */
 function Reset({ onExpired }: { onExpired: () => void }) {
   const { t } = useI18n();
   const toast = useToast();
@@ -564,7 +568,23 @@ function Reset({ onExpired }: { onExpired: () => void }) {
   const [pw, setPw] = useState('');
   const [pw2, setPw2] = useState('');
   const [busy, setBusy] = useState(false);
-  const signedIn = !!currentUser();
+  // Decided once from the address this page was opened with (Supabase removes the #hash after reading it).
+  const [plan] = useState(() => resetPlan(location.search, location.hash, !!currentUser()));
+  const [state, setState] = useState<'checking' | 'form' | 'expired' | 'app'>(plan === 'verify' ? 'checking' : plan);
+
+  useEffect(() => {
+    if (plan !== 'verify') return;
+    let alive = true;
+    const hash = new URLSearchParams(location.search).get('token_hash') ?? '';
+    verifyRecovery(hash).then((ok) => {
+      if (!alive) return;
+      history.replaceState(null, '', '/login?mode=reset'); // the used token must not stay in the address bar
+      setState(ok ? 'form' : 'expired');
+    });
+    return () => {
+      alive = false;
+    };
+  }, [plan]);
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -581,13 +601,15 @@ function Reset({ onExpired }: { onExpired: () => void }) {
     }
   };
 
-  if (!signedIn) {
+  if (state === 'checking') return <div className={s.verify} aria-busy="true" />;
+
+  if (state !== 'form') {
     return (
       <div className={s.verify}>
         <h1 className={s.title}>
           {t('forgotA')} <span>{t('forgotB')}</span>
         </h1>
-        <p className={s.verifyText}>{t('resetExpired')}</p>
+        <p className={s.verifyText}>{t(state === 'app' ? 'resetApp' : 'resetExpired')}</p>
         <button type="button" className={s.submit} onClick={onExpired}>
           {t('sendLink')}
         </button>
