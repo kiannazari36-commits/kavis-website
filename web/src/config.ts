@@ -21,4 +21,4 @@ export const SUPPORT_REPLY_HOURS = 24;
  * bracketed lawyer notes. Set to false once the texts are checked (or before App Review): the banner and every
  * "[AVUKAT KONTROL EDECEK …]"-style note disappear when the page is drawn. The notes stay in src/i18n/legal.ts.
  */
-export const LEGAL_DRAFT_VISIBLE = true;
+export const LEGAL_DRAFT_VISIBLE = false;
