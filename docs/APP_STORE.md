@@ -122,7 +122,7 @@ First release. Upload your PDF and get a reading page, summary, audio, cards, qu
 **Subtitle / name:** see section 1.
 
 ## 5. Age rating questionnaire (App Information > Age Rating > Edit)
-Apple changes the exact wording from time to time. If a question below looks different, answer by the idea in the "Why" column. Expected result: **4+** (or 9+ if Apple counts the medical-information question; accept whatever Apple calculates and do not change true answers to get a lower rating).
+Apple changes the exact wording from time to time. If a question below looks different, answer by the idea in the "Why" column. Decided 21 Nov 2026: the age rating is **18+** (Kian's choice: target audience is university students and the privacy/terms texts say 18). Answer every question truthfully (AI chatbot = Yes); accept whatever Apple calculates and do not change true answers to get a lower rating.
 | Question | Answer | Why |
 |---|---|---|
 | Cartoon / fantasy violence, realistic violence, prolonged graphic violence, guns | None | App has no such content of its own |
@@ -177,19 +177,23 @@ Privacy policy must say the same (what is collected, that lesson text goes to An
 
 ## App Review information
 - **Demo account is required** (Apple will not enter an email code from a real inbox). Make a reviewer account in the **live** Supabase (ask Kian first, it writes to the live database) with a fixed login Apple can use, a trial that does not expire during review, and one finished lesson inside. Put the login in the "Sign-in required" fields and describe the code flow in the notes. Never put this login in git.
-- Notes for the reviewer (English, paste into App Review > Notes):
+- Notes for the reviewer (English, paste into App Review > Notes). Updated 24 Nov 2026 for build 4 (18+, no invite code on iOS, email-confirmed account deletion, Sign in with Apple token revoke, background audio, copyright line):
 ```text
-Kavis Study turns a student's own uploaded PDF (or slide photo or lecture transcript) into an interactive study lesson, with summaries, flash cards, quizzes and an AI assistant that only uses the student's own material.
+Kavis Study turns a student's own uploaded PDF (or slide photo or lecture transcript) into an interactive study lesson, with summaries, flash cards, quizzes and an AI assistant that answers only from the student's own material.
 
-SIGN IN: use the demo account in the Sign-in fields (email + password; no code needed). It is a normal account on our own free trial (extended so it does not run out during review) with one finished lesson, so every screen can be tried and you can test the purchase in the sandbox. A new account gets our own 3-day free trial (no card).
+SIGN IN: please use the demo account in the Sign-in fields (email + password; no code needed). Please do not create a new account: sandbox purchases are only accepted for the demo account. The demo account has a finished lesson so every screen can be tried. The app allows up to 2 signed-in devices per account; if you see "You're signed in on 2 devices", tap "Sign out" next to one device and continue.
 
-PREMIUM: sold only through Apple in-app purchase (auto-renewable monthly and yearly, in the subscription group "Kavis Premium"). To see the paywall and test a purchase: sign in with the demo account and tap "Premium'a geç" on the home screen, or Settings > Premium. Restore Purchases, Terms of Use and Privacy Policy links are on the paywall. Premium unlocks all of the user's devices through our server.
+PREMIUM: sold only through Apple in-app purchase (auto-renewable monthly and yearly, subscription group "Kavis Premium"). Open the paywall from Home > "Premium'a geç" or Settings > Premium. Price, renewal and cancellation text, Terms of Use, Privacy Policy and Restore Purchases are on that screen. Our own 3-day trial needs no purchase and no card; it is not an Apple free trial. The monthly plan has an Apple introductory price (first 3 months, pay as you go) read from StoreKit.
 
-AI: lesson text is sent to a third-party AI service (Anthropic) only to write answers, summaries and quizzes; this is disclosed at sign-up and in the privacy policy, and the user agrees to it when creating an account.
+AI: lesson text is sent to a third-party AI provider (Anthropic) only to write answers, summaries and quizzes. The user agrees to this (and confirms being 18 or older) when creating an account, and it is described in the Privacy Policy. Answers can be wrong; the chat shows a notice and a "Report" button under each answer, and the Terms say the app gives no medical advice.
 
-ACCOUNT DELETION: Settings > Delete account.
-LECTURE RECORDING: speech-to-text runs on the device; only the transcript is sent to the AI. The sound file (up to 50 MB) is also uploaded to the user's own private storage folder (not readable by others) for playback, and is deleted with the lesson or account.
-SHARING (Premium): shares only app-made quizzes/summaries/cards, never the original PDF.
+ACCOUNT DELETION: Settings > Account and privacy > "Hesabı sil". A confirmation link is emailed to the account address as a safety step; deletion completes 30 days after confirmation and can be cancelled in the app. Sign in with Apple tokens are revoked at deletion. (If you cannot read the demo account's email, please just review the screen; we will delete the account on request.)
+
+LECTURE RECORDING: speech-to-text runs on the device (on-device recognition only); only the transcript is sent to the AI. The sound file (up to 50 MB) is also stored in the user's own private storage folder for playback and is deleted with the lesson or account. The background audio mode is used so audio lessons and live lecture recordings continue with the screen off.
+
+CONTENT: students upload their own course material (we do not provide third-party content). Uploads stay private to the account. The Premium share feature sends only app-made quizzes, summaries and flash cards to a person the user chooses, never the original PDF. There is no public feed, no messaging between users and no user profiles.
+
+AVAILABILITY: Turkey only. Age rating 18+.
 ```
 - Contact: Kian's phone and email (Apple needs a real person).
 
