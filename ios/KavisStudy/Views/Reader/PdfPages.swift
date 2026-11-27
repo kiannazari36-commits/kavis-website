@@ -50,7 +50,10 @@ struct PdfPagesView: UIViewRepresentable {
         v.displayMode = .singlePageContinuous
         v.displayDirection = .vertical
         v.pageBreakMargins = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
-        v.backgroundColor = UIColor(KRead.bg)
+        // PDF pages are white in dark mode too, and PencilKit would turn black ink white there (invisible): the whole
+        // PDF view is "light", only its background follows the app's theme.
+        v.overrideUserInterfaceStyle = .light
+        v.backgroundColor = Self.background(context.environment.colorScheme)
         if let p = document.page(at: max(0, min(startPage, document.pageCount) - 1)) {
             DispatchQueue.main.async { v.go(to: p) }
         }
@@ -72,6 +75,7 @@ struct PdfPagesView: UIViewRepresentable {
     func updateUIView(_ uiView: PDFView, context: Context) {
         let c = context.coordinator
         c.parent = self
+        uiView.backgroundColor = Self.background(context.environment.colorScheme)
         for (canvas, _) in c.pageOf {
             canvas.isUserInteractionEnabled = writing
             if !writing { canvas.resignFirstResponder() }
@@ -99,11 +103,16 @@ struct PdfPagesView: UIViewRepresentable {
                 c.lastWriting = writing
                 scroll.isScrollEnabled = !writing
                 Coordinator.gestures(in: uiView, on: !writing)
+                if writing { c.showPicker(page: page) }
             }
         }
     }
 
     func makeCoordinator() -> Coordinator { Coordinator(self) }
+
+    private static func background(_ scheme: ColorScheme) -> UIColor {
+        UIColor(KRead.bg).resolvedColor(with: UITraitCollection(userInterfaceStyle: scheme == .dark ? .dark : .light))
+    }
 
     /// The document stays with the reader (switching the view back shows it again): take this view's marks off it.
     static func dismantleUIView(_ uiView: PDFView, coordinator: Coordinator) {
@@ -151,6 +160,18 @@ struct PdfPagesView: UIViewRepresentable {
             page.addAnnotation(a)
             view?.annotationsChanged(on: page)
             added.append(a)
+        }
+
+        /// The colours and the eraser come with the pen, not only after the first line.
+        func showPicker(page: Int) {
+            DispatchQueue.main.async { [weak self] in
+                guard let self, self.parent.writing,
+                      let canvas = (self.pageOf.first { $0.value == page && $0.key.window != nil }
+                                    ?? self.pageOf.first { $0.key.window != nil })?.key else { return }
+                self.picker.addObserver(canvas)
+                self.picker.setVisible(true, forFirstResponder: canvas)
+                canvas.becomeFirstResponder()
+            }
         }
 
         /// Leaving the PDF view with the pen on: the tool picker must not stay over the reader bar.
@@ -291,6 +312,7 @@ struct PdfPagesView: UIViewRepresentable {
             canvas.isOpaque = false
             canvas.drawingPolicy = .anyInput
             canvas.isScrollEnabled = false
+            picker.colorUserInterfaceStyle = .light
             canvas.delegate = self
             canvas.isUserInteractionEnabled = parent.writing
             let number = (view.document?.index(for: page) ?? 0) + 1
