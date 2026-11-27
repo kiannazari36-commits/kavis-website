@@ -118,6 +118,9 @@ struct ReaderView: View {
                         toolbar.fixedSize(horizontal: wide, vertical: false)
                             .frame(maxHeight: .infinity, alignment: .bottom).padding(.bottom, wide ? 24 : 8)
                     }
+                    // The system's pen tools cover the bottom bar (and its pen button) on the iPhone, so the way
+                    // out of the pen is also at the top.
+                    if noteMode, section != nil || pdfMode { penDoneButton }
                 }
                 if wide, !portrait, panelOpen, let lesson {
                     panel(lesson)
@@ -1098,6 +1101,25 @@ struct ReaderView: View {
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(KRead.chip, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+    }
+
+    // MARK: Pen
+
+    /// Shown while the pen is on: closes it, so the page scrolls again.
+    private var penDoneButton: some View {
+        Button { noteMode = false } label: {
+            HStack(spacing: 8) {
+                KIcon(name: .check, size: 16, width: 2.4)
+                Text(t("penDone")).font(KFont.ui(15, .semibold, lang: lang))
+            }
+            .foregroundStyle(Color(hex: 0x2A2420))
+            .padding(.horizontal, 20).frame(height: 44)
+            .background(KColor.amb, in: Capsule())
+            .shadow(color: Color(hex: 0x2A2420, opacity: 0.22), radius: 12, y: 6)
+        }
+        .frame(maxHeight: .infinity, alignment: .top)
+        // iPhone: over the lesson title (not needed while writing); iPad: under the header row.
+        .padding(.top, wide ? 76 : 13)
     }
 
     // MARK: Bottom bar
