@@ -80,6 +80,9 @@ struct PdfPagesView: UIViewRepresentable {
             canvas.isUserInteractionEnabled = writing
             if !writing { canvas.resignFirstResponder() }
         }
+        // PDFKit's own switch for writing on its pages: it keeps its touches away from the pen layers (without it a
+        // real iPhone gave the finger to PDFKit and no line appeared).
+        uiView.isInMarkupMode = writing
         c.select(selectedTerm)
         c.mark(highlights, in: document)
         // Notes that arrive after the PDF (loaded from the server) fill the pages that are already on screen.
@@ -141,7 +144,11 @@ struct PdfPagesView: UIViewRepresentable {
         /// PDFKit's own touches (scroll, select, zoom), not the pen layers' ones.
         static func gestures(in view: UIView, on: Bool) {
             guard !(view is PKCanvasView) else { return }
-            for g in view.gestureRecognizers ?? [] where !(g is UITapGestureRecognizer && g.delegate is Coordinator) { g.isEnabled = on }
+            for g in view.gestureRecognizers ?? [] where !(g is UITapGestureRecognizer && g.delegate is Coordinator) {
+                // PencilKit's recognizers on the views around a page stay as they are.
+                if String(describing: type(of: g)).hasPrefix("PK") { continue }
+                g.isEnabled = on
+            }
             for v in view.subviews { gestures(in: v, on: on) }
         }
         weak var view: PDFView?
